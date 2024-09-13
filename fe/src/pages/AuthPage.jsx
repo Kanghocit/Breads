@@ -1,18 +1,12 @@
-import Signup from '../components/SignUp';
-import Login from '../components/Login';
-import { useRecoilValue } from 'recoil';
-import authScreenAtom from '../atoms/authAtom';
-
+import { useSelector } from "react-redux";
+import Login from "../components/Login";
+import Signup from "../components/SignUp";
+import PageConstant from "../util/PageConstants";
 
 const AuthPage = () => {
-    const authScreenState = useRecoilValue(authScreenAtom);
-    console.log(authScreenState);
+  const currentPage = useSelector((state) => state.util.currentPage);
 
-    return (
-        <>
-            {authScreenState === "login" ? <Login /> : <Signup />}
-        </>
-    );
-}
+  return <>{currentPage === PageConstant.LOGIN ? <Login /> : <Signup />}</>;
+};
 
 export default AuthPage;
