@@ -1,5 +1,5 @@
 import { Container } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import CreatePost from "./components/CreatePost";
 import Header from "./components/Header";
@@ -9,35 +9,56 @@ import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
+import { useEffect } from "react";
+import { getUserInfo } from "./store/UserSlice/asyncThunk";
 
 function App() {
-  const useId = useSelector((state) => state.user.userInfo._id);
-  console.log(!!useId);
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const userId = userInfo._id
+    ? userInfo._id
+    : JSON.parse(localStorage.getItem("userId"));
+
+  useEffect(() => {
+    if (!!userId) {
+      handleGetUserInfo();
+    }
+  }, []);
+
+  const handleGetUserInfo = async () => {
+    try {
+      dispatch(getUserInfo({ userId: userId }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <Container maxW="620px">
-      <Header />
+    <div className="app">
+      <Container maxW="620px">
+        <Header />
+
+        {!!userId && <LogoutButton />}
+        {!!userId && <CreatePost />}
+      </Container>
       <Routes>
         <Route
           path="/"
-          element={!!useId ? <HomePage /> : <Navigate to="/auth" />}
+          element={!!userId ? <HomePage /> : <Navigate to="/auth" />}
         />
         <Route
           path="/auth"
-          element={!useId ? <AuthPage /> : <Navigate to="/" />}
+          element={!userId ? <AuthPage /> : <Navigate to="/" />}
         />
         <Route
           path="/update"
-          element={!!useId ? <UpdateProfilePage /> : <Navigate to="/auth" />}
+          element={!!userId ? <UpdateProfilePage /> : <Navigate to="/auth" />}
         />
 
-        <Route path="/:username" element={<UserPage />} />
+        <Route path="/:userId" element={<UserPage />} />
         <Route path="/:username/post/:pid" element={<PostPage />} />
       </Routes>
-
-      {!!useId && <LogoutButton />}
-      {!!useId && <CreatePost />}
-    </Container>
+    </div>
   );
 }
 

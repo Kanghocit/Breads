@@ -1,36 +1,24 @@
 import { Flex, Spinner } from "@chakra-ui/react";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import UserHeader from "../components/UserHeader";
 import UserPost from "../components/UserPost";
-import useShowToast from "../hooks/useShowToast";
+import { getUserInfo } from "../store/UserSlice/asyncThunk";
 
 const UserPage = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const { username } = useParams();
-  const showToast = useShowToast();
-  const [loading, setLoading] = useState(false);
-  // useEffect(() => {
-  //   const getUser = async () => {
-  //     try {
-  //       const res = await fetch(`/api/users/profile/${username}`);
-  //       const data = await res.json();
-  //       if (data.error) {
-  //         showToast("Error", data.error, "error");
-  //         return
-  //       }
-  //       setUser(data);
-  //     } catch (error) {
-  //       showToast("Error", error, "error")
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   getUser();
-  // }, [username, showToast]);
+  const dispatch = useDispatch();
+  const { userInfo, isLoading } = useSelector((state) => state.user);
+  const { userId } = useParams();
 
-  if (!userInfo._id && loading) {
+  useEffect(() => {
+    const localUserId = localStorage.getItem("userId");
+    if (userId && userId !== JSON.parse(localUserId)) {
+      dispatch(getUserInfo({ userId }));
+    }
+  }, []);
+
+  if (isLoading) {
     return (
       <Flex justifyContent={"center"}>
         <Spinner size={"xl"} />
@@ -38,7 +26,8 @@ const UserPage = () => {
     );
   }
 
-  if (!userInfo._id && !loading) return <h1>User not found</h1>;
+  //Create a new page
+  // if (!userInfo._id && !loading) return <h1>User not found</h1>;
 
   return (
     <>

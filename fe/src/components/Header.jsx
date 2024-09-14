@@ -16,6 +16,7 @@ const Header = () => {
       )}
 
       <Image
+        mx={"auto"}
         cursor={"pointer"}
         alt="logo"
         w={6}

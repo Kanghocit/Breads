@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 import store from "./store/index.js";
+import React from "react";
 
 const styles = {
   global: (props) => ({
@@ -34,8 +35,9 @@ createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       <ChakraProvider theme={theme}>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+        {/*<ColorModeScript initialColorMode={theme.config.initialColorMode}> */}
         <App />
+        {/* </ColorModeScript> */}
       </ChakraProvider>
     </Provider>
   </BrowserRouter>

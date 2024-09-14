@@ -1,23 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { login } from "./asyncThunk";
+import { getUserInfo, login, logout } from "./asyncThunk";
+
+const defaultUser = {
+  _id: "",
+  email: "",
+  name: "",
+  username: "",
+  bio: "",
+  avatar: "",
+  followers: [],
+  followings: [],
+};
 
 const initialState = {
-  userInfo: {
-    _id: "",
-    email: "",
-    name: "",
-    username: "",
-    bio: "",
-    avatar: "",
-  },
-  userSelected: {
-    _id: "",
-    email: "",
-    name: "",
-    username: "",
-    bio: "",
-    avatar: "",
-  },
+  userInfo: defaultUser,
+  userSelected: defaultUser,
   isLoading: false,
 };
 
@@ -30,6 +27,16 @@ const userSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(login.fulfilled, (state, action) => {
+      state.userInfo = action.payload;
+      state.isLoading = false;
+    });
+    builder.addCase(logout.fulfilled, (state) => {
+      state.userInfo = defaultUser;
+    });
+    builder.addCase(getUserInfo.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getUserInfo.fulfilled, (state, action) => {
       state.userInfo = action.payload;
       state.isLoading = false;
     });

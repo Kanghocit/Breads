@@ -1,4 +1,4 @@
-import { ObjectId } from "../../util.js";
+import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
 
 export const getUserInfo = async (userId) => {

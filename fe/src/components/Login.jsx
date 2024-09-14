@@ -33,15 +33,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       dispatch(login(inputs));
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-      localStorage.setItem("users-KF", JSON.stringify(data));
     } catch (error) {
-      const errorMessage = error.message
-        ? error.messagea
-        : "Something went wrong";
       showToast("Error", error, "error");
     }
   };

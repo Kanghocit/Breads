@@ -11,11 +11,13 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
+import { updateProfile } from "../store/UserSlice/asyncThunk";
 
 export default function UpdateProfilePage() {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [inputs, setInputs] = useState({
     name: userInfo.name,
@@ -36,25 +38,8 @@ export default function UpdateProfilePage() {
     if (updating) return;
 
     try {
-      const res = await fetch(`/api/users/update/${userInfo._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...inputs, profilePicture: imgUrl }),
-      });
-
-      const data = await res.json();
-
-      console.log("API Response:", data);
-
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-
+      dispatch(updateProfile({ ...inputs, profilePicture: imgUrl }));
       showToast("Success", "Profile updated successfully", "success");
-      localStorage.setItem("users-KF", JSON.stringify(data));
     } catch (error) {
       showToast(
         "Error",
