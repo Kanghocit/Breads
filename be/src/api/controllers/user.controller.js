@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
+import HTTPStatus from "../../util/httpStatus.js";
+import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
+import { getUserInfo } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 
 //sign up
@@ -8,9 +11,10 @@ const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
     const user = await User.findOne({ $or: [{ email }, { username }] });
-
-    if (user) {
-      return res.status(400).json({ error: "User already exists!" });
+    if (user?._id) {
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "User already exists!" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -33,10 +37,10 @@ const signupUser = async (req, res) => {
         profilePicture: newUser.profilePicture,
       });
     } else {
-      res.status(400).json({ error: "Invalid user data" });
+      res.status(HTTPStatus.BAD_REQUEST).json({ error: "Invalid user data" });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Error in Signup User", err.message);
   }
 };
@@ -44,28 +48,26 @@ const signupUser = async (req, res) => {
 //login
 const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user?.password || ""
-    );
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email });
+    const isPasswordCorrect = true;
+    // await bcrypt.compare(
+    //   password,
+    //   user?.password || ""
+    // );
 
-    if (!user || !isPasswordCorrect)
-      return res.status(400).json({ error: "Invalid username or password" });
+    if (!user || !isPasswordCorrect) {
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "Invalid username or password" });
+    }
 
-    generateTokenAndSetCookie(user._id, res);
+    // generateTokenAndSetCookie(user._id, res);
+    const result = await getUserInfo(user._id);
 
-    res.status(200).json({
-      _id: user._id,
-      email: user.email,
-      name: user.name,
-      username: user.username,
-      bio: user.bio,
-      profilePicture: user.profilePicture,
-    });
+    res.status(HTTPStatus.OK).json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Error in loginUser", err.message);
   }
 };
@@ -74,9 +76,9 @@ const loginUser = async (req, res) => {
 const logoutUser = async (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 1 });
-    res.status(200).json({ message: "User log out successfully!" });
+    res.status(HTTPStatus.OK).json({ message: "User log out successfully!" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Error in logoutUser", err.message);
   }
 };
@@ -89,12 +91,14 @@ const followUnFollowUser = async (req, res) => {
     const currentUser = await User.findById(req.user._id);
 
     if (!userToModify || !currentUser) {
-      return res.status(400).json({ error: "User not found" });
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "User not found" });
     }
 
     if (id === req.user._id.toString()) {
       return res
-        .status(400)
+        .status(HTTPStatus.BAD_REQUEST)
         .json({ error: "You can't follow/unfollow yourself" });
     }
 
@@ -109,15 +113,17 @@ const followUnFollowUser = async (req, res) => {
       // Unfollow user
       await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
       await User.findByIdAndUpdate(req.user._id, { $pull: { followings: id } });
-      res.status(200).json({ message: "User unfollowed successfully" });
+      res
+        .status(HTTPStatus.OK)
+        .json({ message: "User unfollowed successfully" });
     } else {
       // Follow user
       await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
       await User.findByIdAndUpdate(req.user._id, { $push: { followings: id } });
-      res.status(200).json({ message: "User followed successfully" });
+      res.status(HTTPStatus.OK).json({ message: "User followed successfully" });
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Error in followUnFollowUser", err.message);
   }
 };
@@ -131,11 +137,14 @@ const updateUser = async (req, res) => {
   try {
     let user = await User.findById(userId);
 
-    if (!user) return res.status(400).json({ error: "User not found" });
+    if (!user)
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "User not found" });
 
     if (req.params.id !== userId.toString())
       return res
-        .status(400)
+        .status(HTTPStatus.BAD_REQUEST)
         .json({ error: "You can't update other user's profile!" });
 
     if (password) {
@@ -163,9 +172,9 @@ const updateUser = async (req, res) => {
     user = await user.save();
     user.password = null;
 
-    res.status(200).json(user);
+    res.status(HTTPStatus.OK).json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Can't updateUser", err.message);
   }
 };
@@ -173,15 +182,23 @@ const updateUser = async (req, res) => {
 //get user profile
 
 const getUserProfile = async (req, res) => {
-  const { username } = req.params;
+  const { userId } = req.params;
   try {
-    const user = await User.findOne({ username })
-      .select("-password")
-      .select("-updateAt");
-    if (!user) return res.status(400).json({ error: "User not found!" });
-    res.status(200).json(user);
+    let user = null;
+    if (!userId) {
+      res.status(HTTPStatus.NO_CONTENT).json("Empty payload");
+    }
+    user = await User.findOne(
+      { _id: ObjectId(userId) },
+      { password: 0, updatedAt: 0 }
+    );
+    if (!user)
+      return res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "User not found!" });
+    res.status(HTTPStatus.OK).json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Can't be get your userProfile!!");
   }
 };

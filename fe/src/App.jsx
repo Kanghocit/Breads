@@ -1,37 +1,65 @@
-import { Container } from "@chakra-ui/react"
-import { Navigate, Route, Routes } from "react-router-dom"
-import PostPage from "./pages/PostPage"
-import UserPage from "./pages/UserPage"
-import Header from "./components/Header"
-import HomePage from "./pages/HomePage"
-import AuthPage from "./pages/AuthPage"
-import userAtom from "./atoms/userAtom"
-import { useRecoilValue } from "recoil"
-import LogoutButton from "./components/LogoutButton"
-import UpdateProfilePage from "./pages/UpdateProfilePage"
-import CreatePost from "./components/CreatePost"
+import { Container } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Route, Routes } from "react-router-dom";
+import CreatePost from "./components/CreatePost";
+import Header from "./components/Header";
+import LogoutButton from "./components/LogoutButton";
+import AuthPage from "./pages/AuthPage";
+import HomePage from "./pages/HomePage";
+import PostPage from "./pages/PostPage";
+import UpdateProfilePage from "./pages/UpdateProfilePage";
+import UserPage from "./pages/UserPage";
+import { useEffect } from "react";
+import { getUserInfo } from "./store/UserSlice/asyncThunk";
 
 function App() {
-  const user = useRecoilValue(userAtom);
-  console.log(user);
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const userId = userInfo._id
+    ? userInfo._id
+    : JSON.parse(localStorage.getItem("userId"));
+
+  useEffect(() => {
+    if (!!userId) {
+      handleGetUserInfo();
+    }
+  }, []);
+
+  const handleGetUserInfo = async () => {
+    try {
+      dispatch(getUserInfo({ userId: userId }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <Container maxW="620px">
-      <Header />
+    <div className="app">
+      <Container maxW="620px">
+        <Header />
+
+        {!!userId && <LogoutButton />}
+        {!!userId && <CreatePost />}
+      </Container>
       <Routes>
+        <Route
+          path="/"
+          element={!!userId ? <HomePage /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/auth"
+          element={!userId ? <AuthPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/update"
+          element={!!userId ? <UpdateProfilePage /> : <Navigate to="/auth" />}
+        />
 
-        <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
-        <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
-        <Route path="/update" element={user ? <UpdateProfilePage /> : <Navigate to="/auth" />} />
-
-        <Route path="/:username" element={<UserPage />} />
+        <Route path="/:userId" element={<UserPage />} />
         <Route path="/:username/post/:pid" element={<PostPage />} />
       </Routes>
-
-      {user && <LogoutButton/>}
-      {user && <CreatePost/>}
-    </Container>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;

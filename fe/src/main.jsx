@@ -1,22 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import { ChakraProvider } from '@chakra-ui/react'
-import { mode } from '@chakra-ui/theme-tools'
-import { extendTheme } from '@chakra-ui/react'
-import { ColorModeScript } from '@chakra-ui/react'
-
-import { BrowserRouter } from 'react-router-dom'
-import './index.css'
-import { RecoilRoot } from 'recoil'
+import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react";
+import { mode } from "@chakra-ui/theme-tools";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App.jsx";
+import "./index.css";
+import store from "./store/index.js";
+import React from "react";
 
 const styles = {
   global: (props) => ({
     body: {
-      color: mode('gray.800', 'whiteAlpha.900')(props),
-      bg: mode('gray.100', '#101010')(props),
-    }
-  })
+      color: mode("gray.800", "whiteAlpha.900")(props),
+      bg: mode("gray.100", "#101010")(props),
+    },
+  }),
 };
 
 const config = {
@@ -27,25 +25,20 @@ const config = {
 const colors = {
   gray: {
     light: "#616161",
-    dark: "#1e1e1e"
-  }
+    dark: "#1e1e1e",
+  },
 };
 
-const theme = extendTheme({ config, styles, colors })
+const theme = extendTheme({ config, styles, colors });
 
-
-
-
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RecoilRoot>
-      <BrowserRouter>
-        <ChakraProvider theme={theme}>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          <App />
-        </ChakraProvider>
-      </BrowserRouter>
-    </RecoilRoot>
-  </StrictMode>,
-)
+createRoot(document.getElementById("root")).render(
+  <BrowserRouter>
+    <Provider store={store}>
+      <ChakraProvider theme={theme}>
+        {/*<ColorModeScript initialColorMode={theme.config.initialColorMode}> */}
+        <App />
+        {/* </ColorModeScript> */}
+      </ChakraProvider>
+    </Provider>
+  </BrowserRouter>
+);

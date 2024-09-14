@@ -1,15 +1,17 @@
-import { Button, Flex } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
-
+import { Button, Flex } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
-  return (
-    <Link to={"/Kang15.8"}>
-        <Flex w={"full"} justifyContent={"center"}>
-            <Button mx={"auto"}>Visit profile page</Button>
-        </Flex>
-    </Link>
-  )
-}
+  const userInfo = useSelector((state) => state.user.userInfo);
 
-export default HomePage
+  return (
+    <Link to={`/${userInfo._id}`}>
+      <Flex w={"full"} justifyContent={"center"}>
+        <Button mx={"auto"}>Visit profile page</Button>
+      </Flex>
+    </Link>
+  );
+};
+
+export default HomePage;
