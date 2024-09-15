@@ -33,3 +33,31 @@ export const uploadFile = async ({ base64, style = null }) => {
     console.error(err);
   }
 };
+
+export const randomAvatar = () => {
+  try {
+    const randomNum = Math.floor(Math.random() * 70);
+    const avatar = `https://i.pravatar.cc/300?img=${randomNum}`;
+    return avatar;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getImgUnsplash = async ({ searchValue, page }) => {
+  try {
+    const ACCESS_KEY = process.env.UNSPLASH_API_KEY || "";
+    if (!ACCESS_KEY) {
+      return "";
+    }
+    const url = `https://api.unsplash.com/search/photos?page=${page}&query=${searchValue.trim()}&client_id=${ACCESS_KEY}`;
+    const { data } = await axios.get(url);
+    const results = data.results;
+    const imgUrls = results.map(({ urls }) => {
+      return urls.thumb;
+    });
+    return imgUrls;
+  } catch (err) {
+    console.log(err);
+  }
+};
