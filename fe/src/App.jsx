@@ -13,12 +13,18 @@ import { useEffect } from "react";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostDetail from "./pages/PostDetail";
 import SeeMedia from "./components/SeeMedia";
+import PostPopup from "./components/PostPopup";
+import PostConstants from "./util/PostConstants";
 
 function App() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const userId = userInfo._id ? userInfo._id : localStorage.getItem("userId");
   const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
+  const postAction = useSelector((state) => state.post.postAction);
+  const openPostPopup =
+    postAction === PostConstants.ACTIONS.CREATE ||
+    postAction === PostConstants.ACTIONS.EDIT;
 
   useEffect(() => {
     if (!!userId) {
@@ -61,6 +67,7 @@ function App() {
         <Route path="/post/:postId" element={<PostDetail />} />
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
+      {openPostPopup && <PostPopup />}
     </div>
   );
 }

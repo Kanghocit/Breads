@@ -1,33 +1,36 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
-    Button,
-    CloseButton,
-    Flex,
-    FormControl,
-    Image,
-    Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text,
-    Textarea,
-    useColorModeValue,
-    useDisclosure,
+  Button,
+  CloseButton,
+  Flex,
+  FormControl,
+  Image,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Textarea,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { BsFillImageFill } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { POST } from "../config/API";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
+import { updatePostAction } from "../store/PostSlice";
+import PostConstants from "../util/PostConstants";
 
 const MAX_CHAR = 500;
 
 const CreatePost = () => {
+  const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
@@ -80,12 +83,14 @@ const CreatePost = () => {
         right={10}
         leftIcon={<AddIcon />}
         bg={useColorModeValue("gray.300", "gray.dark")}
-        onClick={onOpen}
+        onClick={() => {
+          dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+        }}
       >
         Post
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create Post</ModalHeader>
@@ -149,7 +154,7 @@ const CreatePost = () => {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </>
   );
 };
