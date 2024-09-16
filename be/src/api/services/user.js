@@ -24,3 +24,14 @@ export const getUserInfo = async (userId) => {
     console.log(err);
   }
 };
+
+export const createUser = async (payload) => {
+  try {
+    const newUser = new User({
+      ...payload,
+    });
+    await newUser.save();
+  } catch (err) {
+    console.log(err);
+  }
+};

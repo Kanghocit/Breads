@@ -13,7 +13,7 @@ const UserPage = () => {
 
   useEffect(() => {
     const localUserId = localStorage.getItem("userId");
-    if (userId && userId !== JSON.parse(localUserId)) {
+    if (userId && userId !== localUserId) {
       dispatch(getUserInfo({ userId }));
     }
   }, []);

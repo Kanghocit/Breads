@@ -11,13 +11,14 @@ import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import { useEffect } from "react";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
+import PostDetail from "./pages/PostDetail";
+import SeeMedia from "./components/SeeMedia";
 
 function App() {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const userId = userInfo._id
-    ? userInfo._id
-    : JSON.parse(localStorage.getItem("userId"));
+  const userId = userInfo._id ? userInfo._id : localStorage.getItem("userId");
+  const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
 
   useEffect(() => {
     if (!!userId) {
@@ -55,9 +56,11 @@ function App() {
           element={!!userId ? <UpdateProfilePage /> : <Navigate to="/auth" />}
         />
 
-        <Route path="/:userId" element={<UserPage />} />
+        <Route path="/user/:userId" element={<UserPage />} />
         <Route path="/:username/post/:pid" element={<PostPage />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
       </Routes>
+      {seeMediaInfo.open && <SeeMedia />}
     </div>
   );
 }

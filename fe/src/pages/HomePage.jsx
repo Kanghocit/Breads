@@ -1,16 +1,21 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Container, Flex } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import Post from "../components/Post";
+import SkeletonPost from "../components/Post/skeleton";
+import ContainerLayout from "../components/ContainerLayout";
 
 const HomePage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   return (
-    <Link to={`/${userInfo._id}`}>
-      <Flex w={"full"} justifyContent={"center"}>
-        <Button mx={"auto"}>Visit profile page</Button>
-      </Flex>
-    </Link>
+    <ContainerLayout>
+      {
+        <>
+          <Post />
+          <SkeletonPost />
+        </>
+      }
+    </ContainerLayout>
   );
 };
 
