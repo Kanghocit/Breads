@@ -102,15 +102,26 @@ const LeftSideBar = () => {
                 </Box>
               ))}
             </Flex>
-            <Flex direction={"column"}>
-              <Button mb={3} mt={7} bg={"none"}>
-                <Link as={RouterLink} to={`/`}>
-                  <MdOutlinePushPin size={24} />
-                </Link>
-              </Button>
-              <Button mb={7} mt={3} bg={"none"} _hover={"none"}>
-                <SidebarMenu />
-              </Button>
+            <Flex direction={"column"} >
+              <Box  bottom={0}>
+                <Button mt={7} mb={3} bg={"none"} >
+                  <Link as={RouterLink} to={`/`}>
+                    <MdOutlinePushPin size={24} />
+                  </Link>
+                </Button>
+                <Box
+                  mt={3} mb={7}
+                  bg={"none"}
+                  _hover={{ bg: "none" }}
+                  display="flex"
+                  justifyContent="center"
+                  height="24px"
+                  alignItems="center"
+                 
+                >
+                  <SidebarMenu />
+                </Box>
+              </Box>
             </Flex>
           </Flex>
         </Box>
