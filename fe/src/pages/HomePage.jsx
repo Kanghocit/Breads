@@ -2,7 +2,7 @@ import { Container, Flex } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import Post from "../components/Post";
 import SkeletonPost from "../components/Post/skeleton";
-import ContainerLayout from "../components/ContainerLayout";
+import ContainerLayout from "../components/MainBoxLayout";
 
 const HomePage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);

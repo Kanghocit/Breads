@@ -1,4 +1,4 @@
-import ContainerLayout from "../components/ContainerLayout";
+import ContainerLayout from "../components/MainBoxLayout";
 import Post from "../components/Post";
 
 const PostDetail = () => {

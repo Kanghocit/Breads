@@ -20,7 +20,7 @@ const UserHeader = ({ user }) => {
   const toast = useToast();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [following, setFollowing] = useState(
-    user.followers.includes(userInfo._id)
+    user.followers?.includes(userInfo._id)
   );
   const showToast = useShowToast();
   const [updating, setUpdating] = useState(false);
