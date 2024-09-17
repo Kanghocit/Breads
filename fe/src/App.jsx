@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostDetail from "./pages/PostDetail";
 import SeeMedia from "./components/SeeMedia";
+import LeftSideBar from "./components/base/LeftSideBar";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ function App() {
   return (
     <div className="app">
       <Container maxW="620px">
-        <Header />
+        {userId && <LeftSideBar/>}
 
         {!!userId && <LogoutButton />}
         {!!userId && <CreatePost />}
