@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const ObjectId = mongoose.Schema.Types.ObjectId;
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -23,16 +25,23 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: "",
+      default:
+        "https://as2.ftcdn.net/v2/jpg/04/10/43/77/1000_F_410437733_hdq4Q3QOH9uwh0mcqAhRFzOKfrCR24Ta.jpg",
     },
-    followers: {
-      type: [String],
-      default: [],
-    },
-    followings: {
-      type: [String],
-      default: [],
-    },
+    followers: [
+      {
+        type: ObjectId,
+        default: [],
+        required: false,
+      },
+    ],
+    followings: [
+      {
+        type: ObjectId,
+        default: [],
+        required: false,
+      },
+    ],
     bio: {
       type: String,
       default: "",

@@ -1,4 +1,5 @@
 export class Route {
-  static USER = "/user";
-  static POST = "/post";
+  static USER = "/users";
+  static POST = "/posts";
+  static COLLECTION = "/collection";
 }

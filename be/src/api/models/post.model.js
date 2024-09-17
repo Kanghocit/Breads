@@ -4,45 +4,38 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const postSchema = mongoose.Schema(
   {
-    postedBy: {
+    authorId: {
       type: ObjectId,
       ref: "User",
       required: true,
     },
-    text: {
+    content: {
       type: String,
       maxLength: 500,
     },
-    text: {
-      type: String,
+    media: {
+      type: Object,
+      required: false,
     },
-    img: {
-      type: String,
-    },
-    likes: {
-      type: [ObjectId],
-      ref: "User",
-      default: [],
-    },
-    replies: [
+    usersLike: [
       {
-        userId: {
-          type: ObjectId,
-          ref: "User",
-          required: true,
-        },
-        text: {
-          type: String,
-          required: true,
-        },
-        userProfile: {
-          type: String,
-        },
-        username: {
-          type: String,
-        },
+        type: ObjectId,
+        ref: "User",
+        default: [],
       },
     ],
+    replies: [
+      {
+        type: ObjectId,
+        ref: "Post",
+        default: [],
+      },
+    ],
+    parentPost: {
+      type: ObjectId,
+      ref: "Post",
+      required: false,
+    },
   },
   {
     timestamps: true,
