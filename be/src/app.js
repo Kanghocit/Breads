@@ -24,6 +24,5 @@ const corOption = {
 app.use(cors(corOption));
 
 app.use("/api", router);
-crawlData(app);
 
 export default app;

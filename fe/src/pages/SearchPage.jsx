@@ -1,5 +1,11 @@
+import ContainerLayout from "../components/MainBoxLayout";
+
 const SearchPage = () => {
-  return <>Search Page</>;
+  return (
+    <>
+      <ContainerLayout></ContainerLayout>
+    </>
+  );
 };
 
 export default SearchPage;

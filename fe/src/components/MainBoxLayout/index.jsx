@@ -1,22 +1,26 @@
 import { Container, Flex } from "@chakra-ui/react";
 
+export const containerBoxWidth = "640px";
+
 const ContainerLayout = ({ children }) => {
   return (
     <Flex
+      position={"sticky"}
       justifyContent={"center"}
       width={"calc(100vw-12px)"}
       margin={"0"}
-      mt={6}
+      height={"fit-content"}
     >
       <Container
         bg="white"
-        height={"100vh"}
+        minHeight={"100vh"}
+        height={"fit-content"}
         mt={6}
         borderRadius={"2xl"}
-        width={"640px"}
-        maxWidth={"640px"}
+        width={containerBoxWidth}
+        maxWidth={containerBoxWidth}
         margin={"0"}
-        paddingTop={"16px"}
+        padding={"16px"}
         boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
       >
         {children}
