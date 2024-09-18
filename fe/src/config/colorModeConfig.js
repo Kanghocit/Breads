@@ -14,8 +14,8 @@ const styles = {
 
 // Color Mode Config
 const config = {
-  initialColorMode: "dark", // Default color mode
-  useSystemColorMode: true, // Use system color mode settings
+  initialColorMode: "dark", 
+  useSystemColorMode: true, 
 };
 
 // Custom colors
