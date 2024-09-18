@@ -98,7 +98,7 @@ const SidebarMenu = () => {
             {...bgk}
             bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
           >
-            {menuItems.map((item, index) => (
+            {menuItems.map((item) => (
               <React.Fragment key={item.name}>
                 {item.name === "Report a problem" && (
                   <MenuDivider _hover={{ bg: "gray.dark" }} />
@@ -110,11 +110,9 @@ const SidebarMenu = () => {
                   color={colorMode === "dark" ? "gray.white" : "gray.dark"}
                   ml={"0.5rem"}
                   width={"calc(100% - 1rem)"}
-                    
                   _hover={{
-                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200", 
-                    borderRadius: "md", 
-                    
+                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
+                    borderRadius: "md",
                   }}
                 >
                   {item.name === "Interface" ? (
@@ -151,7 +149,6 @@ const SidebarMenu = () => {
               onClick={() => setIsSubMenuOpen(false)}
               bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
               color={colorMode === "dark" ? "gray.100" : "gray.dark"}
-              
             >
               <FaChevronLeft />
               <Box ml={10}>InterFace</Box>

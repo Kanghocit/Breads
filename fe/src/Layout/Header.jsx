@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { CiCircleMore } from "react-icons/ci";
 import { useSelector } from "react-redux";
 import { containerBoxWidth } from "../components/MainBoxLayout";
@@ -12,6 +12,7 @@ export const HeaderHeight = "80px";
 const Header = () => {
   const navigate = useNavigate();
   const currentPage = useSelector((state) => state.util.currentPage);
+  const { colorMode } = useColorMode();
   const [openBox, setOpenBox] = useState(false);
   const {
     HOME,
@@ -105,7 +106,7 @@ const Header = () => {
               cursor={"pointer"}
               transform={openBox ? "rotate(180deg)" : ""}
               _hover={{
-                bg: "gray",
+                bg: "gray.100",
               }}
               onClick={() => setOpenBox(!openBox)}
             />
@@ -116,19 +117,22 @@ const Header = () => {
               top={"calc(100% - 12px)"}
               left={"50%"}
               width={"200px"}
-              bg={"gray"}
               height={"fit-content"}
               borderRadius={"12px"}
-              padding="0"
+              padding="8px 12px"
               overflow={"hidden"}
+              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
             >
               {getBoxItems()?.map((item) => (
                 <Text
                   width={"100%"}
                   key={item}
-                  padding="12px 24px"
+                  padding="8px 12px"
                   cursor={"pointer"}
-                  _hover={{ bg: "lightgray" }}
+                  borderRadius={"8px"}
+                  _hover={{
+                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
+                  }}
                   onClick={() => {
                     handleNavigate(item);
                     setOpenBox(false);
