@@ -3,9 +3,10 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import CreatePostBtn from "./components/CreatePostBtn";
-import LeftSideBar from "./Layout/LeftSidebar";
 import PostPopup from "./components/PostPopup";
 import SeeMedia from "./components/SeeMedia";
+import Layout from "./Layout";
+import { HeaderHeight } from "./Layout/Header";
 import ActivityPage from "./pages/ActivityPage";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
@@ -43,20 +44,48 @@ function App() {
     }
   };
 
-  return (
-    <div className="app">
-      <Container maxW="620px">
-        {userId && <LeftSideBar />}
+  const ActivityRoute = () => {
+    const { ACTIVITY, FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS } =
+      PageConstant;
+    return ["", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS].map((page) => (
+      <Route
+        key={`route-${page}`}
+        path={`${ACTIVITY}/${page}`}
+        element={
+          !!userId ? (
+            <ActivityPage />
+          ) : (
+            <Navigate to={`/${PageConstant.AUTH}`} />
+          )
+        }
+      />
+    ));
+  };
 
-        {!!userId && <CreatePostBtn />}
-      </Container>
+  const HomeRoute = () => {
+    const { FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
+    return ["", FOR_YOU, FOLLOWING, LIKED, SAVED].map((page) => (
+      <Route
+        key={`route-${page}`}
+        path={`/${page}`}
+        element={
+          !!userId ? <HomePage /> : <Navigate to={`/${PageConstant.AUTH}`} />
+        }
+      />
+    ));
+  };
+
+  return (
+    <div
+      className="app"
+      style={{
+        marginTop: HeaderHeight,
+      }}
+    >
+      {!!userId && <Layout />}
+      <Container maxW="620px">{!!userId && <CreatePostBtn />}</Container>
       <Routes>
-        <Route
-          path="/"
-          element={
-            !!userId ? <HomePage /> : <Navigate to={`/${PageConstant.AUTH}`} />
-          }
-        />
+        {HomeRoute()}
         <Route
           path={`/${PageConstant.AUTH}`}
           element={!userId ? <AuthPage /> : <Navigate to="/" />}
@@ -77,7 +106,7 @@ function App() {
         <Route path="/post/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
-        <Route path={`/${PageConstant.ACTIVITY}`} element={<ActivityPage />} />
+        {ActivityRoute()}
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
       {openPostPopup && <PostPopup />}

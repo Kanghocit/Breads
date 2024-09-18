@@ -13,12 +13,12 @@ import {
 import { HiMenuAlt4 } from "react-icons/hi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import useShowToast from "../hooks/useShowToast";
+import useShowToast from "../../hooks/useShowToast";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../store/UserSlice/asyncThunk";
+import { logout } from "../../store/UserSlice/asyncThunk";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { MdOutlineBrightness2 } from "react-icons/md";
-import PageConstant from "../util/PageConstants";
+import PageConstant from "../../util/PageConstants";
 
 const SidebarMenu = () => {
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const SidebarMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const { colorMode, toggleColorMode, setColorMode } = useColorMode();
-  const bgk = { bg: "gray.800", color: "white" };
+  const bgk = { bg: "gray.dark", color: "100" };
 
   const menuItems = [
     {
@@ -63,6 +63,26 @@ const SidebarMenu = () => {
     },
   ];
 
+  const themeBtns = [
+    {
+      name: "Light",
+      icon: <BsBrightnessHigh />,
+      boxShadowFocus: "0 0 0 3px rgba(66, 153, 225, 0.6)",
+      onClick: () => setColorMode("light"),
+    },
+    {
+      name: "Dark",
+      icon: <MdOutlineBrightness2 />,
+      boxShadowFocus: "0 0 0 3px rgba(72, 187, 120, 0.6)",
+      onClick: () => setColorMode("dark"),
+    },
+    {
+      name: "Automatic",
+      boxShadowFocus: "0 0 0 3px rgba(229, 62, 62, 0.6)",
+      onClick: () => {},
+    },
+  ];
+
   const handleLogout = async () => {
     try {
       dispatch(logout());
@@ -94,11 +114,43 @@ const SidebarMenu = () => {
           <MenuButton as={Box} onClick={handleCloseMenu}>
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList {...bgk}>
+          <MenuList
+            {...bgk}
+            bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+          >
             {menuItems.map((item) => (
-              <MenuItem key={item.name} {...item.style} onClick={item.onClick}>
-                {item.name}
-              </MenuItem>
+              <React.Fragment key={item.name}>
+                {item.name === "Report a problem" && (
+                  <MenuDivider _hover={{ bg: "gray.dark" }} />
+                )}
+                <MenuItem
+                  {...item.style}
+                  onClick={item.onClick}
+                  bg={colorMode === "dark" ? "gray.dark" : "gray.white"}
+                  color={colorMode === "dark" ? "gray.white" : "gray.dark"}
+                  ml={"0.5rem"}
+                  width={"calc(100% - 1rem)"}
+                  padding={"12px"}
+                  _hover={{
+                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
+                    borderRadius: "md",
+                  }}
+                >
+                  {item.name === "Interface" ? (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      width="100%"
+                    >
+                      <Box>{item.name}</Box>
+                      <FaChevronRight />
+                    </Box>
+                  ) : (
+                    item.name
+                  )}
+                </MenuItem>
+              </React.Fragment>
             ))}
           </MenuList>
         </Menu>
@@ -108,13 +160,49 @@ const SidebarMenu = () => {
           <MenuButton as={Box} onClick={handleCloseMenu}>
             <HiMenuAlt4 size={24} />
           </MenuButton>
-          <MenuList {...bgk} px={2}>
-            <MenuItem {...bgk} onClick={() => setIsSubMenuOpen(false)}>
+          <MenuList
+            {...bgk}
+            bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+            px={3}
+          >
+            <MenuItem
+              {...bgk}
+              onClick={() => setIsSubMenuOpen(false)}
+              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+              color={colorMode === "dark" ? "gray.100" : "gray.dark"}
+              mb={"4px"}
+            >
               <FaChevronLeft />
-              <Box ml={10}>InterFace</Box>
+              <Box width={"100%"} textAlign={"center"}>
+                InterFace
+              </Box>
             </MenuItem>
-            <ButtonGroup isAttached mx="auto">
-              <Button
+            <ButtonGroup isAttached ml={1}>
+              {themeBtns.map((btn) => (
+                <Button
+                  key={btn.name}
+                  flex={1}
+                  onClick={btn.onClick}
+                  width={"80px"}
+                  _focus={{
+                    boxShadow: btn.boxShadowFocus,
+                    outline: "none",
+                  }}
+                >
+                  {btn?.icon ? (
+                    btn.icon
+                  ) : (
+                    <Box
+                      boxSizing="border-box"
+                      padding={"0 16px"}
+                      fontSize={"12px"}
+                    >
+                      {btn.name}
+                    </Box>
+                  )}
+                </Button>
+              ))}
+              {/* <Button
                 flex={1}
                 onClick={() => setColorMode("light")}
                 _focus={{
@@ -132,6 +220,7 @@ const SidebarMenu = () => {
                   outline: "none",
                 }}
               >
+                "0 0 0 3px rgba(72, 187, 120, 0.6)"
                 <MdOutlineBrightness2 />
               </Button>
               <Button
@@ -143,7 +232,7 @@ const SidebarMenu = () => {
                 }}
               >
                 <Box mx={3}>Automatic</Box>
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </MenuList>
         </Menu>

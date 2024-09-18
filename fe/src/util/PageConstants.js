@@ -4,7 +4,6 @@ class PageConstant {
   static SIGNUP = "signup";
   static HOME = "home";
   static SEARCH = "search";
-  static NOTIFICATION = "notification";
   static PROFILE = "profile";
   static ACTIVITY = "activity";
   static USER = "user";
@@ -14,6 +13,17 @@ class PageConstant {
     ACCOUNT: "setting/account",
     HELP: "setting/help",
   };
+
+  static FOLLOWING = "following";
+  static SAVED = "saved";
+  static FOR_YOU = "for_you";
+  static LIKED = "liked";
+
+  static FOLLOWS = "follows";
+  static REPLIES = "replies";
+  static MENTIONS = "mentions";
+  static QUOTES = "quotes";
+  static REPOSTS = "reposts";
 }
 
 export default PageConstant;

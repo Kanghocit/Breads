@@ -13,13 +13,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
 import { updatePostAction, updatePostInfo } from "../../store/PostSlice";
+import { replaceEmojis } from "../../util";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
-  const postInfo = useSelector((state) => state.post.postInfo);
+  const { postInfo, postAction } = useSelector((state) => state.post);
   const userInfo = useSelector((state) => state.user.userInfo);
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
@@ -29,7 +30,7 @@ const PostPopup = () => {
       dispatch(
         updatePostInfo({
           ...postInfo,
-          content: debounceContent,
+          content: replaceEmojis(debounceContent),
         })
       );
     }
@@ -46,6 +47,7 @@ const PostPopup = () => {
     >
       <ModalOverlay />
       <ModalContent
+        position={"relative"}
         boxSizing="border-box"
         width="620px"
         maxWidth={"620px"}
@@ -55,13 +57,29 @@ const PostPopup = () => {
         borderRadius={"16px"}
         id="modal"
       >
+        <Text
+          position={"absolute"}
+          top={"-36px"}
+          left={"50%"}
+          transform={"translateX(-50%)"}
+          color={"white"}
+          zIndex={4000}
+          textTransform={"capitalize"}
+          fontWeight={600}
+          fontSize={"18px"}
+        >
+          {postAction + " Bread"}
+        </Text>
         <Flex>
           <Avatar src={userInfo.avatar} width={"40px"} height={"40px"} />
-          <Container margin="0">
+          <Container margin="0" paddingRight={0}>
             <Text color="black" fontWeight={"600"}>
               {userInfo.username}
             </Text>
-            <TextArea text={content} setText={(value) => setContent(value)} />
+            <TextArea
+              text={content}
+              setText={(value) => setContent(replaceEmojis(value))}
+            />
             {!closePostAction && <PostPopupAction />}
             {postInfo.survey.length !== 0 && <PostSurvey />}
           </Container>
@@ -69,7 +87,7 @@ const PostPopup = () => {
         <ModalFooter padding="0">
           <Button
             mt={"6px"}
-            mr={"32px"}
+            mr={"16px"}
             colorScheme="white"
             border={"1px solid lightgray"}
             borderRadius={"6px"}

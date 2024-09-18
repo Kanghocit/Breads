@@ -15,7 +15,11 @@ const utilSlice = createSlice({
   reducers: {
     changePage: (state, action) => {
       const { nextPage, currentPage } = action.payload;
-      state.prevPage = currentPage;
+      if (!currentPage) {
+        state.prevPage = "";
+      } else {
+        state.prevPage = currentPage;
+      }
       state.currentPage = nextPage;
     },
     updateSeeMedia: (state, action) => {

@@ -1,5 +1,153 @@
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
+import { memo, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { containerBoxWidth } from "../components/MainBoxLayout";
+import PageConstant from "../util/PageConstants";
+
+export const HeaderHeight = "72px";
+
 const Header = () => {
-  return <></>;
+  const navigate = useNavigate();
+  const currentPage = useSelector((state) => state.util.currentPage);
+  const { colorMode } = useColorMode();
+  const [openBox, setOpenBox] = useState(false);
+  const {
+    HOME,
+    FOR_YOU,
+    FOLLOWING,
+    LIKED,
+    SAVED,
+    ACTIVITY,
+    FOLLOWS,
+    REPLIES,
+    MENTIONS,
+    QUOTES,
+    REPOSTS,
+    SEARCH,
+    USER,
+  } = PageConstant;
+
+  const getBoxItems = () => {
+    switch (currentPage) {
+      case HOME:
+        return ["For you", FOLLOWING, LIKED, SAVED];
+      case ACTIVITY:
+        return ["All", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS];
+    }
+  };
+
+  const getHeaderContent = () => {
+    if ([HOME, ACTIVITY].includes(currentPage)) {
+      let pathname = window.location.pathname;
+      pathname = pathname.slice(1, pathname.length);
+      let result = "";
+      if (!pathname || pathname === FOR_YOU) {
+        result = "For you";
+      } else if (currentPage === HOME) {
+        result = pathname;
+      } else if (currentPage === ACTIVITY) {
+        result = pathname.replace(ACTIVITY + "/", "");
+      }
+      return result[0]?.toUpperCase() + result.slice(1, result.length);
+    } else if (currentPage === SEARCH) {
+      return "Search";
+    } else if (currentPage === USER) {
+      return "User profile";
+    }
+  };
+
+  const handleNavigate = (item) => {
+    if (currentPage === ACTIVITY) {
+      navigate(ACTIVITY + "/" + item);
+    } else {
+      if (item === "For you") {
+        navigate("/" + FOR_YOU);
+      } else {
+        navigate("/" + item);
+      }
+    }
+  };
+
+  console.log(getBoxItems());
+
+  return (
+    <>
+      <Flex
+        position={"fixed"}
+        left={0}
+        top={0}
+        width={"100vw"}
+        maxWidth={"100vw"}
+        height={HeaderHeight}
+        zIndex={1000}
+        justifyContent={"center"}
+        alignItems={"center"}
+        bg={colorMode === "dark" ? "#101010" : "gray.100"}
+      >
+        <Flex
+          width={containerBoxWidth}
+          maxWidth={containerBoxWidth}
+          height={"100%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          gap={"12px"}
+          position={"relative"}
+          fontWeight={600}
+        >
+          {getHeaderContent()}
+          {[HOME, ACTIVITY].includes(currentPage) && (
+            <ChevronDownIcon
+              width={"32px"}
+              height={"32px"}
+              padding={"4px"}
+              borderRadius={"50%"}
+              cursor={"pointer"}
+              transform={openBox ? "rotate(180deg)" : ""}
+              _hover={{
+                bg: "gray.100",
+              }}
+              onClick={() => setOpenBox(!openBox)}
+            />
+          )}
+          {openBox && (
+            <Container
+              position={"absolute"}
+              top={"calc(100% - 12px)"}
+              left={"50%"}
+              width={"200px"}
+              height={"fit-content"}
+              borderRadius={"12px"}
+              padding="8px 12px"
+              overflow={"hidden"}
+              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+              boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
+            >
+              {getBoxItems()?.map((item) => (
+                <Text
+                  width={"100%"}
+                  key={item}
+                  padding="8px 12px"
+                  cursor={"pointer"}
+                  borderRadius={"8px"}
+                  _hover={{
+                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
+                  }}
+                  onClick={() => {
+                    handleNavigate(item);
+                    setOpenBox(false);
+                  }}
+                >
+                  {item[0].toUpperCase() + item.slice(1, item.length)}
+                </Text>
+              ))}
+            </Container>
+          )}
+        </Flex>
+      </Flex>
+    </>
+  );
 };
 
-export default Header;
+export default memo(Header);

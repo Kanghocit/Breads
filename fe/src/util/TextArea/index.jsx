@@ -18,6 +18,9 @@ const TextArea = ({ text, setText }) => {
   return (
     <div>
       <textarea
+        style={{
+          color: "black",
+        }}
         ref={textareaRef}
         value={text}
         onChange={handleChange}
