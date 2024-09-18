@@ -63,6 +63,26 @@ const SidebarMenu = () => {
     },
   ];
 
+  const themeBtns = [
+    {
+      name: "Light",
+      icon: <BsBrightnessHigh />,
+      boxShadowFocus: "0 0 0 3px rgba(66, 153, 225, 0.6)",
+      onClick: () => setColorMode("light"),
+    },
+    {
+      name: "Dark",
+      icon: <MdOutlineBrightness2 />,
+      boxShadowFocus: "0 0 0 3px rgba(72, 187, 120, 0.6)",
+      onClick: () => setColorMode("dark"),
+    },
+    {
+      name: "Automatic",
+      boxShadowFocus: "0 0 0 3px rgba(229, 62, 62, 0.6)",
+      onClick: () => {},
+    },
+  ];
+
   const handleLogout = async () => {
     try {
       dispatch(logout());
@@ -110,6 +130,7 @@ const SidebarMenu = () => {
                   color={colorMode === "dark" ? "gray.white" : "gray.dark"}
                   ml={"0.5rem"}
                   width={"calc(100% - 1rem)"}
+                  padding={"12px"}
                   _hover={{
                     bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
                     borderRadius: "md",
@@ -149,12 +170,39 @@ const SidebarMenu = () => {
               onClick={() => setIsSubMenuOpen(false)}
               bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
               color={colorMode === "dark" ? "gray.100" : "gray.dark"}
+              mb={"4px"}
             >
               <FaChevronLeft />
-              <Box ml={10}>InterFace</Box>
+              <Box width={"100%"} textAlign={"center"}>
+                InterFace
+              </Box>
             </MenuItem>
             <ButtonGroup isAttached ml={1}>
-              <Button
+              {themeBtns.map((btn) => (
+                <Button
+                  key={btn.name}
+                  flex={1}
+                  onClick={btn.onClick}
+                  width={"80px"}
+                  _focus={{
+                    boxShadow: btn.boxShadowFocus,
+                    outline: "none",
+                  }}
+                >
+                  {btn?.icon ? (
+                    btn.icon
+                  ) : (
+                    <Box
+                      boxSizing="border-box"
+                      padding={"0 16px"}
+                      fontSize={"12px"}
+                    >
+                      {btn.name}
+                    </Box>
+                  )}
+                </Button>
+              ))}
+              {/* <Button
                 flex={1}
                 onClick={() => setColorMode("light")}
                 _focus={{
@@ -172,6 +220,7 @@ const SidebarMenu = () => {
                   outline: "none",
                 }}
               >
+                "0 0 0 3px rgba(72, 187, 120, 0.6)"
                 <MdOutlineBrightness2 />
               </Button>
               <Button
@@ -183,7 +232,7 @@ const SidebarMenu = () => {
                 }}
               >
                 <Box mx={3}>Automatic</Box>
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </MenuList>
         </Menu>

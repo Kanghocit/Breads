@@ -1,13 +1,12 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
-import { CiCircleMore } from "react-icons/ci";
+import { memo, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { containerBoxWidth } from "../components/MainBoxLayout";
 import PageConstant from "../util/PageConstants";
-import { memo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-export const HeaderHeight = "80px";
+export const HeaderHeight = "72px";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -85,7 +84,7 @@ const Header = () => {
         zIndex={1000}
         justifyContent={"center"}
         alignItems={"center"}
-        bg={"#101010"}
+        bg={colorMode === "dark" ? "#101010" : "gray.100"}
       >
         <Flex
           width={containerBoxWidth}
@@ -95,6 +94,7 @@ const Header = () => {
           alignItems={"center"}
           gap={"12px"}
           position={"relative"}
+          fontWeight={600}
         >
           {getHeaderContent()}
           {[HOME, ACTIVITY].includes(currentPage) && (
@@ -122,6 +122,7 @@ const Header = () => {
               padding="8px 12px"
               overflow={"hidden"}
               bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+              boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
             >
               {getBoxItems()?.map((item) => (
                 <Text
