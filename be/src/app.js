@@ -2,7 +2,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import { crawlData } from "./api/crawl.js";
 import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
 

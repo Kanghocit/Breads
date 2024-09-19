@@ -16,6 +16,7 @@ const CreatePostBtn = () => {
         right={10}
         leftIcon={<AddIcon />}
         bg={useColorModeValue("gray.300", "gray.dark")}
+        zIndex={3000}
         onClick={() => {
           dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
         }}

@@ -6,7 +6,7 @@ const postSchema = mongoose.Schema(
   {
     authorId: {
       type: ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     content: {
@@ -14,28 +14,36 @@ const postSchema = mongoose.Schema(
       maxLength: 500,
     },
     media: {
-      type: Object,
+      type: Array,
       required: false,
     },
     usersLike: [
       {
         type: ObjectId,
-        ref: "User",
+        ref: "users",
         default: [],
       },
     ],
     replies: [
       {
         type: ObjectId,
-        ref: "Post",
+        ref: "posts",
         default: [],
       },
     ],
     parentPost: {
       type: ObjectId,
-      ref: "Post",
+      ref: "posts",
       required: false,
+      default: null,
     },
+    survey: [
+      {
+        type: ObjectId,
+        ref: "surveyoptions",
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,

@@ -1,59 +1,82 @@
-import { v2 as cloudinary } from "cloudinary";
 import HTTPStatus from "../../util/httpStatus.js";
+import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
+import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
+import { getPostDetail } from "../services/post.js";
+import { uploadFile } from "../utils/index.js";
 
 //create post
 const createPost = async (req, res) => {
   try {
-    const { postedBy, text } = req.body;
-    let { img } = req.body;
-    if (!postedBy || !text) {
-      return res
-        .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "Posted and text fields are requieded" });
-    }
-
-    const user = await User.findById(postedBy);
-
+    const payload = req.body;
+    const { authorId, content, media, parentPost, survey } = payload;
+    const user = await User.findById(authorId);
     if (!user) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "User not found" });
     }
-
-    if (user._id.toString() !== req.user._id.toString()) {
+    if (!content.trim() && !media?.url && survey.length === 0 && !parentPost) {
       return res
-        .status(HTTPStatus.UNAUTHORIZED)
-        .json({ error: "unauthorized to create post!" });
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "Cannot create post without payload" });
     }
-
     const maxLength = 500;
-    if (text.length > maxLength) {
+    if (content.length > maxLength) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
         .json({ error: `Text must be less than ${maxLength} characters` });
     }
-
-    if (img) {
-      const uploadedRespone = await cloudinary.uploader.upload(img);
-      img = uploadedRespone.secure_url;
+    let newMedia = [];
+    if (media.length) {
+      for (let fileInfo of media) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const isUrl = media.url.match(urlRegex)?.length > 0;
+        if (isUrl) {
+          const mediaUrl = await uploadFile({
+            base64: media.url,
+          });
+          fileInfo.url = mediaUrl;
+        }
+        newMedia.push(fileInfo);
+      }
     }
-
-    const newPost = new Post({ postedBy, text, img });
-
+    let newSurvey = [];
+    if (survey.length) {
+      newSurvey = survey.map((option) => {
+        const newOption = new SurveyOption({
+          ...option,
+          _id: ObjectId(),
+          usersId: [],
+        });
+        return newOption;
+      });
+      for (let option of newSurvey) {
+        await option.save();
+      }
+    }
+    const optionsId = newSurvey.map((option) => option?._id);
+    const newPost = new Post({
+      authorId,
+      content,
+      media: newMedia,
+      parentPost,
+      survey: optionsId,
+    });
     await newPost.save();
     res
-      .status(HTTPStatus.OK)
+      .status(HTTPStatus.CREATED)
       .json({ message: "Post created successfully!", newPost });
   } catch (err) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
 
 //get post
 const getPost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const postId = ObjectId(req.params.id);
+    const post = await Post.findById(postId);
     if (!post) {
       return res
         .status(HTTPStatus.NOT_FOUND)
@@ -165,8 +188,52 @@ const getFeedPosts = async (req, res) => {
 
     res.status(HTTPStatus.OK).json({ feedPosts });
   } catch (err) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+  }
+};
+
+//Temp
+const getPosts = async (req, res) => {
+  try {
+    const data = await Post.find();
+    let result = [];
+    for (let post of data) {
+      const postDetail = await getPostDetail(post._id);
+      result.push(postDetail);
+    }
+    res.status(HTTPStatus.OK).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+  }
+};
+
+const tickPostSurvey = async (req, res) => {
+  try {
+    const { optionId, userId, isAdd } = req.body;
+    if (!optionId || !userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    if (isAdd) {
+      await SurveyOption.updateOne(
+        { _id: ObjectId(optionId) },
+        {
+          $push: { usersId: userId },
+        }
+      );
+    } else {
+      await SurveyOption.updateOne(
+        { _id: ObjectId(optionId) },
+        {
+          $pull: { usersId: userId },
+        }
+      );
+    }
+    res.status(HTTPStatus.OK).json("OK");
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
 
@@ -175,6 +242,8 @@ export {
   deletePost,
   getFeedPosts,
   getPost,
+  getPosts,
   likeUnlikePost,
   replyToPost,
+  tickPostSurvey,
 };

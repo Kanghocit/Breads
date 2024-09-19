@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
 import { updatePostAction, updatePostInfo } from "../../store/PostSlice";
+import { createPost } from "../../store/PostSlice/asyncThunk";
 import { replaceEmojis } from "../../util";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
@@ -36,7 +37,20 @@ const PostPopup = () => {
     }
   }, [debounceContent]);
 
-  const closePostAction = !!postInfo.media.url || postInfo.survey.length !== 0;
+  const closePostAction =
+    !!postInfo.media?.length > 0 || postInfo.survey.length !== 0;
+
+  const handleCreatePost = async () => {
+    try {
+      const payload = {
+        authorId: userInfo._id,
+        ...postInfo,
+      };
+      dispatch(createPost(payload));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Modal
@@ -91,7 +105,9 @@ const PostPopup = () => {
             colorScheme="white"
             border={"1px solid lightgray"}
             borderRadius={"6px"}
-            onClick={() => {}}
+            onClick={() => {
+              handleCreatePost();
+            }}
           >
             Post
           </Button>

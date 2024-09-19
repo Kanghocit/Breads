@@ -21,6 +21,8 @@ import Actions from "../Actions";
 import PostMoreActionBox from "./MoreAction";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
+// import Moment from "react-moment";
+import Survey from "./Survey";
 
 const Post = ({ post, isDetail }) => {
   //Temp
@@ -55,14 +57,14 @@ const Post = ({ post, isDetail }) => {
           <Link as={RouterLink} to={`/user/${userInfo._id}`}>
             <Flex w={"full"} alignItems={"center"} gap={3}>
               <Avatar
-                src="/kang-avatar.png"
+                src={post?.authorInfo?.avatar}
                 size={"md"}
-                name="kang15.8"
+                name={post?.authorInfo?.username}
                 cursor={"pointer"}
               />
               <Flex>
                 <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
-                  An Khang
+                  {post?.authorInfo?.username}
                 </Text>
                 <Image src="/verified.png" w="4" h={4} ml={4} />
               </Flex>
@@ -71,6 +73,9 @@ const Post = ({ post, isDetail }) => {
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
+              {/* <Moment fromNow ago>
+                {post?.createdAt}
+              </Moment> */}
               1d
             </Text>
             <Popover>
@@ -94,19 +99,21 @@ const Post = ({ post, isDetail }) => {
           </Flex>
         </Flex>
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
-          Let's talk about KF
+          {post.content}
         </Text>
-        <Box
-          borderRadius={6}
-          overflow={"hidden"}
-          border={"1px solid"}
-          borderColor={"gray.light"}
-          cursor={"pointer"}
-          onClick={() => handleSeeFullMedia()}
-        >
-          <Image src="/post1.png" w={"full"} />
-        </Box>
-
+        {!!post.media?.length > 0 && (
+          <Box
+            borderRadius={6}
+            overflow={"hidden"}
+            border={"1px solid"}
+            borderColor={"gray.light"}
+            cursor={"pointer"}
+            onClick={() => handleSeeFullMedia()}
+          >
+            <Image src={post.media[0].url} w={"full"} />
+          </Box>
+        )}
+        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>

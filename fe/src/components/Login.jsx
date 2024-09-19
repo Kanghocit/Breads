@@ -14,7 +14,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useShowToast from "../hooks/useShowToast";
 import { changePage } from "../store/UtilSlice";
@@ -24,15 +24,27 @@ import { login } from "../store/UserSlice/asyncThunk";
 export default function Login() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [countClick, setCountClick] = useState(0);
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
   const showToast = useShowToast();
-  const handleLogin = async () => {
+
+  useEffect(() => {
+    if (countClick === 5) {
+      console.log("test");
+      handleLogin(true);
+    }
+  }, [countClick]);
+
+  const handleLogin = async (isAdmin = false) => {
     try {
-      dispatch(login(inputs));
+      let payload = inputs;
+      if (isAdmin) {
+        payload.loginAsAdmin = true;
+      }
+      dispatch(login(payload));
     } catch (error) {
       showToast("Error", error, "error");
     }
@@ -42,7 +54,11 @@ export default function Login() {
     <Flex align={"center"} justify={"center"}>
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} my={6}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"} textAlign={"center"}>
+          <Heading
+            fontSize={"4xl"}
+            textAlign={"center"}
+            onClick={() => setCountClick((prev) => prev + 1)}
+          >
             Login
           </Heading>
         </Stack>

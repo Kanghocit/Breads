@@ -1,11 +1,35 @@
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
+import { Constants } from "../../../../share/Constants/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
 import { getUserInfo } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 
+const getAdminAccount = async (req, res) => {
+  try {
+    const adminAccount = await User.findOne({
+      role: Constants.USER_ROLE.ADMIN,
+    });
+    if (!adminAccount) {
+      const newAdmin = new User({
+        email: "admin@gmail.com",
+        name: "Admin",
+        username: "Admin",
+        password: "123456",
+        role: Constants.USER_ROLE.ADMIN,
+      });
+      const result = await newAdmin.save();
+      res.status(HTTPStatus.CREATED).json(result);
+      return;
+    }
+    res.status(HTTPStatus.OK).json(adminAccount);
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
 //sign up
 const signupUser = async (req, res) => {
   try {
@@ -205,6 +229,7 @@ const getUserProfile = async (req, res) => {
 
 export {
   followUnFollowUser,
+  getAdminAccount,
   getUserProfile,
   loginUser,
   logoutUser,

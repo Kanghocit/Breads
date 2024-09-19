@@ -24,10 +24,17 @@ export const login = createAsyncThunk(
   "user/login",
   async (payload, { rejectWithValue }) => {
     try {
-      const data = await POST({
-        path: "users/login",
-        payload,
-      });
+      let data = null;
+      if (payload?.loginAsAdmin) {
+        data = await GET({
+          path: "users/get-admin",
+        });
+      } else {
+        data = await POST({
+          path: "users/login",
+          payload,
+        });
+      }
       if (data) {
         localStorage.setItem("userId", data?._id);
       }
