@@ -7,6 +7,7 @@ import {
   likeUnlikePost,
   replyToPost,
   getPosts,
+  tickPostSurvey,
 } from "../controllers/post.controller.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -19,5 +20,6 @@ router.post("/create", createPost);
 router.delete("/:id", protectRoute, deletePost);
 router.post("/like/:id", protectRoute, likeUnlikePost);
 router.post("/reply/:id", protectRoute, replyToPost);
+router.put("/tick-post-survey", tickPostSurvey);
 
 export default router;

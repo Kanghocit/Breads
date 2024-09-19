@@ -1,10 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { GET, POST } from "../../config/API";
+import { GET, POST, PUT } from "../../config/API";
 
 export const createPost = createAsyncThunk(
   "post/create",
   async (payload, thunkApi) => {
     try {
+      if (payload.survey?.length) {
+        payload.survey = payload.survey.filter(
+          (option) => option.value.trim() !== ""
+        );
+      }
       const dispatch = thunkApi.dispatch;
       const data = await POST({
         path: "posts/create",
@@ -27,6 +32,21 @@ export const getPosts = createAsyncThunk(
         path: "posts/get-all",
       });
       return posts;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const selectSurveyOption = createAsyncThunk(
+  "post/tickSurvey",
+  async (payload, thunkApi) => {
+    try {
+      await PUT({
+        path: "posts/tick-post-survey",
+        payload,
+      });
+      return payload;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }
