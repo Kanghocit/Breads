@@ -35,6 +35,11 @@ const postSchema = mongoose.Schema(
       type: ObjectId,
       ref: "Post",
       required: false,
+      default: null,
+    },
+    survey: {
+      type: Array,
+      required: false,
     },
   },
   {

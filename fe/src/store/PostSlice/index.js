@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createPost, getPosts } from "./asyncThunk";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {
@@ -19,6 +20,7 @@ const initialState = {
     survey: [],
   },
   postAction: "", //action's name
+  isLoading: false,
 };
 
 const postSlice = createSlice({
@@ -35,7 +37,25 @@ const postSlice = createSlice({
       state.postAction = action.payload ?? "";
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(getPosts.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getPosts.fulfilled, (state, action) => {
+      const listPost = action.payload;
+      state.isLoading = false;
+      state.listPost = listPost;
+    });
+    builder.addCase(createPost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(createPost.fulfilled, (state, action) => {
+      const newPost = action.payload;
+      state.listPost = [...state.listPost, newPost];
+      state.isLoading = false;
+      state.postAction = "";
+    });
+  },
 });
 
 export const { selectPost, updatePostInfo, updatePostAction } =

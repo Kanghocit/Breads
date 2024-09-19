@@ -28,6 +28,7 @@ export const uploadFile = async ({ base64, style = null }) => {
     if (style) {
       return `https://res.cloudinary.com/${cloud_name}/image/upload/${style}/${data.public_id}.png`;
     }
+    console.log("imgUrl: ", data.url);
     return data.url;
   } catch (err) {
     console.error(err);

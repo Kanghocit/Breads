@@ -17,6 +17,7 @@ import { replaceEmojis } from "../../util";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
 import PostSurvey from "./survey";
+import { createPost } from "../../store/PostSlice/asyncThunk";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,18 @@ const PostPopup = () => {
   }, [debounceContent]);
 
   const closePostAction = !!postInfo.media.url || postInfo.survey.length !== 0;
+
+  const handleCreatePost = async () => {
+    try {
+      const payload = {
+        authorId: userInfo._id,
+        ...postInfo,
+      };
+      dispatch(createPost(payload));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Modal
@@ -91,7 +104,9 @@ const PostPopup = () => {
             colorScheme="white"
             border={"1px solid lightgray"}
             borderRadius={"6px"}
-            onClick={() => {}}
+            onClick={() => {
+              handleCreatePost();
+            }}
           >
             Post
           </Button>

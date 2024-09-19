@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { containerBoxWidth } from "../components/MainBoxLayout";
 import PageConstant from "../util/PageConstants";
+import ClickOutsideComponent from "../util/ClickoutCPN";
 
 export const HeaderHeight = "72px";
 
@@ -70,8 +71,6 @@ const Header = () => {
     }
   };
 
-  console.log(getBoxItems());
-
   return (
     <>
       <Flex
@@ -98,51 +97,54 @@ const Header = () => {
         >
           {getHeaderContent()}
           {[HOME, ACTIVITY].includes(currentPage) && (
-            <ChevronDownIcon
-              width={"32px"}
-              height={"32px"}
-              padding={"4px"}
-              borderRadius={"50%"}
-              cursor={"pointer"}
-              transform={openBox ? "rotate(180deg)" : ""}
-              _hover={{
-                bg: "gray.100",
-              }}
-              onClick={() => setOpenBox(!openBox)}
-            />
-          )}
-          {openBox && (
-            <Container
-              position={"absolute"}
-              top={"calc(100% - 12px)"}
-              left={"50%"}
-              width={"200px"}
-              height={"fit-content"}
-              borderRadius={"12px"}
-              padding="8px 12px"
-              overflow={"hidden"}
-              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
-              boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
-            >
-              {getBoxItems()?.map((item) => (
-                <Text
-                  width={"100%"}
-                  key={item}
+            <ClickOutsideComponent onClose={() => setOpenBox(false)}>
+              <ChevronDownIcon
+                width={"32px"}
+                height={"32px"}
+                padding={"4px"}
+                borderRadius={"50%"}
+                cursor={"pointer"}
+                transform={openBox ? "rotate(180deg)" : ""}
+                _hover={{
+                  bg: "gray.100",
+                }}
+                onClick={() => setOpenBox(!openBox)}
+              />
+              {openBox && (
+                <Container
+                  position={"absolute"}
+                  top={"calc(100% - 12px)"}
+                  left={"50%"}
+                  width={"200px"}
+                  height={"fit-content"}
+                  borderRadius={"12px"}
                   padding="8px 12px"
-                  cursor={"pointer"}
-                  borderRadius={"8px"}
-                  _hover={{
-                    bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
-                  }}
-                  onClick={() => {
-                    handleNavigate(item);
-                    setOpenBox(false);
-                  }}
+                  overflow={"hidden"}
+                  bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+                  boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
                 >
-                  {item[0].toUpperCase() + item.slice(1, item.length)}
-                </Text>
-              ))}
-            </Container>
+                  {getBoxItems()?.map((item) => (
+                    <Text
+                      width={"100%"}
+                      key={item}
+                      padding="8px 12px"
+                      cursor={"pointer"}
+                      borderRadius={"8px"}
+                      _hover={{
+                        bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNavigate(item);
+                        setOpenBox(false);
+                      }}
+                    >
+                      {item[0].toUpperCase() + item.slice(1, item.length)}
+                    </Text>
+                  ))}
+                </Container>
+              )}
+            </ClickOutsideComponent>
           )}
         </Flex>
       </Flex>

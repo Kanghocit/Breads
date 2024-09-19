@@ -55,14 +55,14 @@ const Post = ({ post, isDetail }) => {
           <Link as={RouterLink} to={`/user/${userInfo._id}`}>
             <Flex w={"full"} alignItems={"center"} gap={3}>
               <Avatar
-                src="/kang-avatar.png"
+                src={post?.authorInfo?.avatar}
                 size={"md"}
-                name="kang15.8"
+                name={post?.authorInfo?.username}
                 cursor={"pointer"}
               />
               <Flex>
                 <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
-                  An Khang
+                  {post?.authorInfo?.username}
                 </Text>
                 <Image src="/verified.png" w="4" h={4} ml={4} />
               </Flex>
@@ -94,18 +94,20 @@ const Post = ({ post, isDetail }) => {
           </Flex>
         </Flex>
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
-          Let's talk about KF
+          {post.content}
         </Text>
-        <Box
-          borderRadius={6}
-          overflow={"hidden"}
-          border={"1px solid"}
-          borderColor={"gray.light"}
-          cursor={"pointer"}
-          onClick={() => handleSeeFullMedia()}
-        >
-          <Image src="/post1.png" w={"full"} />
-        </Box>
+        {!!post.media?.url && (
+          <Box
+            borderRadius={6}
+            overflow={"hidden"}
+            border={"1px solid"}
+            borderColor={"gray.light"}
+            cursor={"pointer"}
+            onClick={() => handleSeeFullMedia()}
+          >
+            <Image src="/post1.png" w={"full"} />
+          </Box>
+        )}
 
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />

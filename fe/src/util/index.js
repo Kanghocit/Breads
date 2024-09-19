@@ -94,3 +94,11 @@ export const replaceEmojis = (text) => {
   }
   return text;
 };
+
+export const convertToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
