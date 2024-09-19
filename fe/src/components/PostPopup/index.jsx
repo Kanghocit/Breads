@@ -93,6 +93,9 @@ const PostPopup = () => {
               text={content}
               setText={(value) => setContent(replaceEmojis(value))}
             />
+            {postInfo.media?.url && (
+              <Image src={postInfo.media.url} alt="Post Media" mt={4} />
+            )}
             {!closePostAction && <PostPopupAction />}
             {postInfo.survey.length !== 0 && <PostSurvey />}
           </Container>
