@@ -1,4 +1,4 @@
-import { CloseButton, Flex, Input } from "@chakra-ui/react";
+import { CloseButton, Flex, Input, useDisclosure } from "@chakra-ui/react";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { RiFileGifLine } from "react-icons/ri";
 import { VscListSelection } from "react-icons/vsc";
@@ -7,12 +7,14 @@ import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import usePreviewImg from "../../hooks/usePreviewImg";
 import { useRef } from "react";
 import { Image } from "@chakra-ui/react";
+import PostMedia from "./media";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
+  const {isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = () => {
     
@@ -67,13 +69,14 @@ const PostPopupAction = () => {
             cursor="pointer"
             onClick={() => imageRef.current.click()}
           />
-          <RiFileGifLine cursor="pointer" />
+          <RiFileGifLine cursor="pointer" onClick={onOpen} />
           <VscListSelection
             cursor="pointer"
             onClick={() => handleAddSurvey()}
           />
         </Flex>
       </Flex>
+      <PostMedia isOpen={isOpen} onClose={onClose}/>
     </>
   );
 };
