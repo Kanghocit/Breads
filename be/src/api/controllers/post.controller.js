@@ -15,7 +15,12 @@ const createPost = async (req, res) => {
     if (!user) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "User not found" });
     }
-    if (!content.trim() && !media?.url && survey.length === 0 && !parentPost) {
+    if (
+      !content.trim() &&
+      !media?.[0]?.url &&
+      survey.length === 0 &&
+      !parentPost
+    ) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
         .json({ error: "Cannot create post without payload" });
@@ -28,12 +33,14 @@ const createPost = async (req, res) => {
     }
     let newMedia = [];
     if (media.length) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
       for (let fileInfo of media) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const isUrl = media.url.match(urlRegex)?.length > 0;
-        if (isUrl) {
+        const isUrl = fileInfo.url.match(urlRegex)
+          ? fileInfo.url.match(urlRegex)?.length > 0
+          : false;
+        if (!isUrl) {
           const mediaUrl = await uploadFile({
-            base64: media.url,
+            base64: fileInfo.url,
           });
           fileInfo.url = mediaUrl;
         }
