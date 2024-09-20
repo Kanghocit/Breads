@@ -6,7 +6,7 @@ export const signUp = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const data = await POST({
-        path: "api/users/signup",
+        path: "users/signup",
         payload,
       });
       if (data) {
