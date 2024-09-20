@@ -31,11 +31,19 @@ export const getPostDetail = async (postId) => {
         },
       },
       { $unwind: "$authorInfo" },
+      {
+        $lookup: {
+          from: "surveyoptions",
+          localField: "survey",
+          foreignField: "_id",
+          as: "survey",
+        },
+      },
     ];
     const result = (await Post.aggregate(agg))?.[0];
     return result;
   } catch (err) {
-    return null;
     console.log(err);
+    return null;
   }
 };

@@ -5,7 +5,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const collectionSchema = mongoose.Schema({
   userId: {
     type: ObjectId,
-    ref: "User",
+    ref: "users",
     required: true,
   },
   postsId: [

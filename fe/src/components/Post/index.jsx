@@ -21,6 +21,8 @@ import Actions from "../Actions";
 import PostMoreActionBox from "./MoreAction";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
+// import Moment from "react-moment";
+import Survey from "./Survey";
 
 const Post = ({ post, isDetail }) => {
   //Temp
@@ -71,6 +73,9 @@ const Post = ({ post, isDetail }) => {
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
+              {/* <Moment fromNow ago>
+                {post?.createdAt}
+              </Moment> */}
               1d
             </Text>
             <Popover>
@@ -96,7 +101,7 @@ const Post = ({ post, isDetail }) => {
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
           {post.content}
         </Text>
-        {!!post.media?.url && (
+        {!!post.media?.length > 0 && (
           <Box
             borderRadius={6}
             overflow={"hidden"}
@@ -105,10 +110,10 @@ const Post = ({ post, isDetail }) => {
             cursor={"pointer"}
             onClick={() => handleSeeFullMedia()}
           >
-            <Image src="/post1.png" w={"full"} />
+            <Image src={post.media[0].url} w={"full"} />
           </Box>
         )}
-
+        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>

@@ -1,6 +1,7 @@
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
+import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
 import { getPostDetail } from "../services/post.js";
 import { uploadFile } from "../utils/index.js";
@@ -25,22 +26,41 @@ const createPost = async (req, res) => {
         .status(HTTPStatus.BAD_REQUEST)
         .json({ error: `Text must be less than ${maxLength} characters` });
     }
-    if (!!media.type) {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const isUrl = media.url.match(urlRegex)?.length > 0;
-      if (isUrl) {
-        const mediaUrl = await uploadFile({
-          base64: media.url,
-        });
-        media.url = mediaUrl;
+    let newMedia = [];
+    if (media.length) {
+      for (let fileInfo of media) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const isUrl = media.url.match(urlRegex)?.length > 0;
+        if (isUrl) {
+          const mediaUrl = await uploadFile({
+            base64: media.url,
+          });
+          fileInfo.url = mediaUrl;
+        }
+        newMedia.push(fileInfo);
       }
     }
+    let newSurvey = [];
+    if (survey.length) {
+      newSurvey = survey.map((option) => {
+        const newOption = new SurveyOption({
+          ...option,
+          _id: ObjectId(),
+          usersId: [],
+        });
+        return newOption;
+      });
+      for (let option of newSurvey) {
+        await option.save();
+      }
+    }
+    const optionsId = newSurvey.map((option) => option?._id);
     const newPost = new Post({
       authorId,
       content,
-      media,
+      media: newMedia,
       parentPost,
-      survey,
+      survey: optionsId,
     });
     await newPost.save();
     res
@@ -189,6 +209,34 @@ const getPosts = async (req, res) => {
   }
 };
 
+const tickPostSurvey = async (req, res) => {
+  try {
+    const { optionId, userId, isAdd } = req.body;
+    if (!optionId || !userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    if (isAdd) {
+      await SurveyOption.updateOne(
+        { _id: ObjectId(optionId) },
+        {
+          $push: { usersId: userId },
+        }
+      );
+    } else {
+      await SurveyOption.updateOne(
+        { _id: ObjectId(optionId) },
+        {
+          $pull: { usersId: userId },
+        }
+      );
+    }
+    res.status(HTTPStatus.OK).json("OK");
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+  }
+};
+
 export {
   createPost,
   deletePost,
@@ -197,4 +245,5 @@ export {
   getPosts,
   likeUnlikePost,
   replyToPost,
+  tickPostSurvey,
 };
