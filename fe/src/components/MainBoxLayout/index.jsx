@@ -12,7 +12,7 @@ const ContainerLayout = ({ children }) => {
       height={"fit-content"}
     >
       <Container
-        bg="white"
+        bg="dark"
         minHeight={"100vh"}
         height={"fit-content"}
         mt={6}

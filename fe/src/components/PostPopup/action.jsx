@@ -1,4 +1,4 @@
-import { Flex, Input } from "@chakra-ui/react";
+import { Flex, Input, useDisclosure } from "@chakra-ui/react";
 import { useRef } from "react";
 import { RiFileGifLine } from "react-icons/ri";
 import { TbLibraryPhoto } from "react-icons/tb";
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../../../share/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
+import PostMedia from "./media";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
