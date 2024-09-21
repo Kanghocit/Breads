@@ -1,27 +1,30 @@
-import { CloseButton, Flex, Input, useDisclosure } from "@chakra-ui/react";
-import { TbLibraryPhoto } from "react-icons/tb";
+import { Flex, Input } from "@chakra-ui/react";
+import { useRef } from "react";
 import { RiFileGifLine } from "react-icons/ri";
+import { TbLibraryPhoto } from "react-icons/tb";
 import { VscListSelection } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
+import { Constants } from "../../../../share/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
-import usePreviewImg from "../../hooks/usePreviewImg";
-import { useRef } from "react";
-import { Image } from "@chakra-ui/react";
-import PostMedia from "./media";
+import { convertToBase64 } from "../../util";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
-  const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
   const {isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleAddMedia = () => {
-    
+  const handleAddMedia = async (img) => {
+    const base64 = await convertToBase64(img);
     dispatch(
       updatePostInfo({
         ...postInfo,
-        media: { url: imgUrl },
+        media: [
+          {
+            url: base64,
+            type: Constants.MEDIA_TYPE.IMAGE,
+          },
+        ],
       })
     );
   };
@@ -41,29 +44,15 @@ const PostPopupAction = () => {
 
   return (
     <>
-      <Input type="file" hidden ref={imageRef} onChange={handleImageChange} />
+      <Input
+        type="file"
+        hidden
+        ref={imageRef}
+        onChange={(e) => {
+          handleAddMedia(e.target.files[0]);
+        }}
+      />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
-        {imgUrl && (
-          <Flex display="inline-flex">
-            <Image src={imgUrl} alt="Preview" />
-            <CloseButton
-              onClick={() => {
-                setImgUrl(null);
-                dispatch(
-                  updatePostInfo({
-                    ...postInfo,
-                    media: null,  
-                  })
-                );
-              }}
-              position="absolute"
-              top={3}
-              right={3}
-              borderRadius="50%"
-            />
-          </Flex>
-        )}
-
         <Flex maxWidth="100%" gap="10px">
           <TbLibraryPhoto
             cursor="pointer"
