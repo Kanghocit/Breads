@@ -82,8 +82,10 @@ function App() {
         marginTop: HeaderHeight,
       }}
     >
-      {!!userId && <Layout />}
-      <Container maxW="620px">{!!userId && <CreatePostBtn />}</Container>
+      {!!userId && !seeMediaInfo.open && <Layout />}
+      <Container maxW="620px">
+        {!!userId && !seeMediaInfo.open && <CreatePostBtn />}
+      </Container>
       <Routes>
         {HomeRoute()}
         <Route

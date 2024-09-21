@@ -21,15 +21,18 @@ import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
 import PostSurvey from "./survey";
+import useShowToast from "../../hooks/useShowToast";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
   const { postInfo, postAction } = useSelector((state) => state.post);
+  const showToast = useShowToast();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
+  const [clickPost, setClickPost] = useState(false);
 
   useEffect(() => {
     if (!!debounceContent) {
@@ -52,14 +55,15 @@ const PostPopup = () => {
         ...postInfo,
       };
       dispatch(createPost(payload));
+      showToast("", "Posting success", "success");
     } catch (err) {
       console.error(err);
+      showToast("Error", err, "error");
     }
   };
 
   const handleClose = () => {
     const { media, survey, content } = postInfo;
-    console.log(!!media.length || !!survey.length || !!content.length);
     if (!!media.length || !!survey.length || !!content.length) {
       setPopupCancelInfo({
         open: true,
@@ -131,12 +135,15 @@ const PostPopup = () => {
           </Flex>
           <ModalFooter padding="0">
             <Button
+              isLoading={clickPost}
+              loadingText="Posting"
               mt={"6px"}
               mr={"16px"}
               colorScheme="white"
               border={"1px solid lightgray"}
               borderRadius={"6px"}
               onClick={() => {
+                setClickPost(true);
                 handleCreatePost();
               }}
             >

@@ -203,7 +203,7 @@ const getFeedPosts = async (req, res) => {
 //Temp
 const getPosts = async (req, res) => {
   try {
-    const data = await Post.find();
+    const data = await Post.find().sort({ createdAt: -1 });
     let result = [];
     for (let post of data) {
       const postDetail = await getPostDetail(post._id);

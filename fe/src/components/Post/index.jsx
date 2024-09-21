@@ -21,8 +21,8 @@ import Actions from "../Actions";
 import PostMoreActionBox from "./MoreAction";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
-// import Moment from "react-moment";
 import Survey from "./Survey";
+import moment from "moment";
 
 const Post = ({ post, isDetail }) => {
   //Temp
@@ -35,19 +35,15 @@ const Post = ({ post, isDetail }) => {
     window.open(`/post/${1}`, "_self");
   };
 
-  const handleSeeFullMedia = () => {
+  const handleSeeFullMedia = (img) => {
     dispatch(
       updateSeeMedia({
         open: true,
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe5i-QQvQDL1IvfiSWYovid0R8ZFbtGKhuBA&s",
+        img: img,
       })
     );
     //Temp
-    dispatch(
-      selectPost({
-        _id: "abc",
-      })
-    );
+    dispatch(selectPost(post));
   };
 
   return (
@@ -73,10 +69,7 @@ const Post = ({ post, isDetail }) => {
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
-              {/* <Moment fromNow ago>
-                {post?.createdAt}
-              </Moment> */}
-              1d
+              {moment(post.createdAt).fromNow()}
             </Text>
             <Popover>
               <PopoverTrigger>
@@ -108,7 +101,7 @@ const Post = ({ post, isDetail }) => {
             border={"1px solid"}
             borderColor={"gray.light"}
             cursor={"pointer"}
-            onClick={() => handleSeeFullMedia()}
+            onClick={() => handleSeeFullMedia(post.media[0].url)}
           >
             <Image src={post.media[0].url} w={"full"} />
           </Box>

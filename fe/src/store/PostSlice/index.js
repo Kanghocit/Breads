@@ -60,7 +60,7 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
-      state.listPost = [...state.listPost, newPost];
+      state.listPost = [newPost, ...state.listPost];
       state.isLoading = false;
       state.postAction = "";
     });
