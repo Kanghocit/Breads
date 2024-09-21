@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { GET, POST, PUT } from "../../config/API";
+import { GET, PATCH, POST, PUT } from "../../config/API";
 
 export const signUp = createAsyncThunk(
   "user/signUp",
@@ -88,6 +88,44 @@ export const updateProfile = createAsyncThunk(
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const addPostToCollection = createAsyncThunk(
+  "user/addToCollection",
+  async (payload, thunkAPI) => {
+    try {
+      const { userId, postId } = payload;
+      await PATCH({
+        path: `collections/add`,
+        payload: {
+          userId: userId,
+          postId: postId,
+        },
+      });
+      return postId;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const removePostFromCollection = createAsyncThunk(
+  "user/removeFromCollection",
+  async (payload, thunkAPI) => {
+    try {
+      const { userId, postId } = payload;
+      await PATCH({
+        path: `collections/remove`,
+        payload: {
+          userId: userId,
+          postId: postId,
+        },
+      });
+      return postId;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );

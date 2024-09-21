@@ -21,7 +21,9 @@ const PostPopupAction = () => {
         media: [
           {
             url: base64,
-            type: Constants.MEDIA_TYPE.IMAGE,
+            type: img.type.includes("image")
+              ? Constants.MEDIA_TYPE.IMAGE
+              : Constants.MEDIA_TYPE.VIDEO,
           },
         ],
       })

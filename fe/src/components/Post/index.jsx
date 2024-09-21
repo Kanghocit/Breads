@@ -23,6 +23,7 @@ import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
 import Survey from "./Survey";
 import moment from "moment";
+import { Constants } from "../../../../share/Constants";
 
 const Post = ({ post, isDetail }) => {
   //Temp
@@ -79,15 +80,25 @@ const Post = ({ post, isDetail }) => {
                   width={"32px"}
                   height={"40px"}
                   padding={"0"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setOpenPostBox(!openPostBox);
+                  }}
                 >
-                  <BsThreeDots onClick={() => setOpenPostBox(!openPostBox)} />
+                  <BsThreeDots />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent width={"180px"}>
-                <PopoverBody width={"180px"}>
-                  <PostMoreActionBox />
-                </PopoverBody>
-              </PopoverContent>
+              {openPostBox && (
+                <PopoverContent width={"180px"}>
+                  <PopoverBody width={"180px"}>
+                    <PostMoreActionBox
+                      postId={post._id}
+                      setOpenPostBox={setOpenPostBox}
+                    />
+                  </PopoverBody>
+                </PopoverContent>
+              )}
             </Popover>
           </Flex>
         </Flex>
@@ -103,7 +114,11 @@ const Post = ({ post, isDetail }) => {
             cursor={"pointer"}
             onClick={() => handleSeeFullMedia(post.media[0].url)}
           >
-            <Image src={post.media[0].url} w={"full"} />
+            {post.media[0].type === Constants.MEDIA_TYPE.IMAGE ? (
+              <Image src={post.media[0].url} w={"full"} />
+            ) : (
+              <video src={post.media[0].url} controls />
+            )}
           </Box>
         )}
         {post.survey?.length > 0 && <Survey post={post} />}
