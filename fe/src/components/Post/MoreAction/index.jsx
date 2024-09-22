@@ -1,4 +1,4 @@
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { GoBookmarkSlash, GoReport } from "react-icons/go";
@@ -11,11 +11,11 @@ import {
 } from "../../../store/UserSlice/asyncThunk";
 
 const PostMoreActionBox = ({ postId, setOpenPostBox }) => {
-  console.log("hello");
   const userInfo = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
+  const { colorMode } = useColorMode();
   const savedBefore = useMemo(() => {
-    return userInfo.collection.includes(postId);
+    return userInfo?.collection?.includes(postId);
   }, [userInfo._id]);
 
   const handleSave = () => {
@@ -25,7 +25,6 @@ const PostMoreActionBox = ({ postId, setOpenPostBox }) => {
     };
     if (savedBefore) {
       dispatch(removePostFromCollection(payload));
-      s;
     } else {
       dispatch(addPostToCollection(payload));
     }
@@ -52,7 +51,15 @@ const PostMoreActionBox = ({ postId, setOpenPostBox }) => {
   ];
 
   return (
-    <Container width={"180px"} padding={0}>
+    <Container
+      width={"180px"}
+      position={"absolute"}
+      top={"calc(100% + 12px)"}
+      right={"50%"}
+      borderRadius={"12px"}
+      padding={"12px"}
+      bg={colorMode === "dark" ? "#101010" : "gray.100"}
+    >
       {actions.map(({ name, icon, onClick }) => (
         <Flex
           key={name}
@@ -62,13 +69,13 @@ const PostMoreActionBox = ({ postId, setOpenPostBox }) => {
           alignItems={"center"}
           padding={"0 10px"}
           borderRadius={"8px"}
+          _hover={{
+            bg: "gray",
+          }}
           onClick={(e) => {
             e.stopPropagation();
             onClick && onClick();
             setOpenPostBox(false);
-          }}
-          _hover={{
-            bg: "gray",
           }}
         >
           <Text>{name}</Text>

@@ -55,7 +55,7 @@ const PostPopup = () => {
         ...postInfo,
       };
       dispatch(createPost(payload));
-      showToast("", "Posting success", "success");
+      // showToast("", "Posting success", "success");
     } catch (err) {
       console.error(err);
       showToast("Error", err, "error");

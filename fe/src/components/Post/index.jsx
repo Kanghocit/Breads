@@ -24,6 +24,7 @@ import { selectPost } from "../../store/PostSlice";
 import Survey from "./Survey";
 import moment from "moment";
 import { Constants } from "../../../../share/Constants";
+import "./index.css";
 
 const Post = ({ post, isDetail }) => {
   //Temp
@@ -48,7 +49,7 @@ const Post = ({ post, isDetail }) => {
   };
 
   return (
-    <Card>
+    <Card className="post-container">
       <CardBody>
         <Flex justifyContent={"space-between"}>
           <Link as={RouterLink} to={`/user/${userInfo._id}`}>
@@ -72,7 +73,29 @@ const Post = ({ post, isDetail }) => {
             <Text fontSize={"sm"} color={"gray.light"}>
               {moment(post.createdAt).fromNow()}
             </Text>
-            <Popover>
+            <div className="btn-more-action">
+              <Button
+                bg={"transparent"}
+                borderRadius={"50%"}
+                width={"32px"}
+                height={"40px"}
+                padding={"0"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setOpenPostBox(!openPostBox);
+                }}
+              >
+                <BsThreeDots />
+              </Button>
+              {openPostBox && (
+                <PostMoreActionBox
+                  postId={post._id}
+                  setOpenPostBox={setOpenPostBox}
+                />
+              )}
+            </div>
+            {/* <Popover>
               <PopoverTrigger>
                 <Button
                   bg={"transparent"}
@@ -99,7 +122,7 @@ const Post = ({ post, isDetail }) => {
                   </PopoverBody>
                 </PopoverContent>
               )}
-            </Popover>
+            </Popover> */}
           </Flex>
         </Flex>
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>

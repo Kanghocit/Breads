@@ -1,4 +1,6 @@
+import PageConstant from "../../../../share/Constants/PageConstants.js";
 import { ObjectId } from "../../util/index.js";
+import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";
 
 export const getPostDetail = async (postId) => {
@@ -45,5 +47,25 @@ export const getPostDetail = async (postId) => {
   } catch (err) {
     console.log(err);
     return null;
+  }
+};
+
+export const getPostsIdByFilter = async (payload) => {
+  try {
+    let data = null;
+    const filter = payload.filter;
+    switch (filter) {
+      case PageConstant.SAVED:
+        const userId = payload.userId;
+        data = (await Collection.findOne({ userId: ObjectId(userId) }))
+          ?.postsId;
+        break;
+      default:
+        data = await Post.find({}, { _id: 1 }).sort({ createdAt: -1 });
+        break;
+    }
+    return data;
+  } catch (err) {
+    console.log(err);
   }
 };

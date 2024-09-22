@@ -3,7 +3,7 @@ import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
-import { getPostDetail } from "../services/post.js";
+import { getPostDetail, getPostsIdByFilter } from "../services/post.js";
 import { uploadFile } from "../utils/index.js";
 
 //create post
@@ -203,10 +203,11 @@ const getFeedPosts = async (req, res) => {
 //Temp
 const getPosts = async (req, res) => {
   try {
-    const data = await Post.find().sort({ createdAt: -1 });
+    const payload = req.query;
+    const data = await getPostsIdByFilter(payload);
     let result = [];
-    for (let post of data) {
-      const postDetail = await getPostDetail(post._id);
+    for (let id of data) {
+      const postDetail = await getPostDetail(id);
       result.push(postDetail);
     }
     res.status(HTTPStatus.OK).json(result);

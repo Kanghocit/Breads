@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import useShowToast from "../hooks/useShowToast";
 import { signUp } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice";
-import PageConstant from "../util/PageConstants";
+import PageConstant from "../../../share/Constants/PageConstants";
 
 export default function Signup() {
   const dispatch = useDispatch();
