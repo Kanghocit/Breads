@@ -17,7 +17,7 @@ router.get("/feed", protectRoute, getFeedPosts);
 router.get("/get-all", getPosts);
 router.get("/:id", getPost);
 router.post("/create", createPost);
-router.delete("/:id", protectRoute, deletePost);
+router.delete("/:id", deletePost);
 router.post("/like/:id", protectRoute, likeUnlikePost);
 router.post("/reply/:id", protectRoute, replyToPost);
 router.put("/tick-post-survey", tickPostSurvey);

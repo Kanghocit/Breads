@@ -21,7 +21,6 @@ import Actions from "../Actions";
 import PostMoreActionBox from "./MoreAction";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
-import Survey from "./Survey";
 import moment from "moment";
 import { Constants } from "../../../../share/Constants";
 import "./index.css";
