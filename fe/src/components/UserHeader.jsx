@@ -20,7 +20,7 @@ const UserHeader = ({ user }) => {
   const toast = useToast();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [following, setFollowing] = useState(
-    user.followers?.includes(userInfo._id)
+    user?.followers?.includes(userInfo?._id)
   );
   const showToast = useShowToast();
   const [updating, setUpdating] = useState(false);
@@ -46,7 +46,7 @@ const UserHeader = ({ user }) => {
     if (updating) return;
     setUpdating(true);
     try {
-      const res = await fetch(`/api/users/follow/${user._id}`, {
+      const res = await fetch(`/api/users/follow/${user?._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,10 +60,10 @@ const UserHeader = ({ user }) => {
       console.log(data);
 
       if (following) {
-        showToast("success", `Unfollowed ${user.name}`, "success");
+        showToast("success", `Unfollowed ${user?.name}`, "success");
         user.followers.pop();
       } else {
-        showToast("success", `Followed ${user.name}`, "success");
+        showToast("success", `Followed ${user?.name}`, "success");
         user.followers.push(userInfo._id); //simulate adding to followers
       }
       setFollowing(!following);
@@ -77,9 +77,9 @@ const UserHeader = ({ user }) => {
     <VStack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
-          <Text fontSize={"2xl"}>{user.name}</Text>
+          <Text fontSize={"2xl"}>{user?.name}</Text>
           <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"sm"}>{user.username}</Text>
+            <Text fontSize={"sm"}>{user?.username}</Text>
             <Text
               fontSize={"xs"}
               bg={"gray.dark"}
@@ -92,19 +92,19 @@ const UserHeader = ({ user }) => {
           </Flex>
         </Box>
         <Box>
-          {user.profilePicture && (
+          {user?.profilePicture && (
             <Avatar
-              name={user.name}
-              src={user.profilePicture}
+              name={user?.name}
+              src={user?.profilePicture}
               size={{
                 base: "md",
                 md: "xl",
               }}
             />
           )}
-          {!user.profilePicture && (
+          {!user?.profilePicture && (
             <Avatar
-              name={user.name}
+              name={user?.name}
               src="https://bit.ly/broken-link"
               size={{
                 base: "md",
@@ -115,14 +115,14 @@ const UserHeader = ({ user }) => {
         </Box>
       </Flex>
 
-      <Text>{user.bio}</Text>
+      <Text>{user?.bio}</Text>
 
-      {userInfo._id === user._id && (
+      {userInfo._id === user?._id && (
         <Link as={RouterLink} to="/update">
           <Button size={"sm"}> Update Profile</Button>
         </Link>
       )}
-      {userInfo._id !== user._id && (
+      {userInfo._id !== user?._id && (
         <Link as={RouterLink}>
           <Button
             size={"sm"}
@@ -135,7 +135,7 @@ const UserHeader = ({ user }) => {
       )}
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
-          <Text color={"gray.light"}>{user.followers.length} followers</Text>
+          <Text color={"gray.light"}>{user?.followers.length} followers</Text>
           <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>

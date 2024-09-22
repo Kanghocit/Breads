@@ -23,7 +23,7 @@ export const createPost = createAsyncThunk(
   }
 );
 
-//Temp
+// Temp
 export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (_, thunkApi) => {

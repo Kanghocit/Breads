@@ -25,3 +25,5 @@ const useGetUserProfile = () => {
   }, [username, showToast]);
   return { user };
 };
+
+export default useGetUserProfile;

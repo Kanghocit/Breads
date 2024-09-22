@@ -21,11 +21,8 @@ import Actions from "../Actions";
 import PostMoreActionBox from "./MoreAction";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import { selectPost } from "../../store/PostSlice";
-// import Moment from "react-moment";
-import Survey from "./Survey";
 
 const Post = ({ post, isDetail }) => {
-  //Temp
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [liked, setLiked] = useState(false);
@@ -39,10 +36,9 @@ const Post = ({ post, isDetail }) => {
     dispatch(
       updateSeeMedia({
         open: true,
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe5i-QQvQDL1IvfiSWYovid0R8ZFbtGKhuBA&s",
+        img: "https://media3.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/August2023/D6C07702-DD9D-49A4-9AD7-97C54D4949A0.jpeg",
       })
     );
-    //Temp
     dispatch(
       selectPost({
         _id: "abc",
@@ -54,28 +50,48 @@ const Post = ({ post, isDetail }) => {
     <Card>
       <CardBody>
         <Flex justifyContent={"space-between"}>
-          <Link as={RouterLink} to={`/user/${userInfo._id}`}>
-            <Flex w={"full"} alignItems={"center"} gap={3}>
-              <Avatar
-                src={post?.authorInfo?.avatar}
-                size={"md"}
-                name={post?.authorInfo?.username}
-                cursor={"pointer"}
-              />
-              <Flex>
-                <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
-                  {post?.authorInfo?.username}
-                </Text>
-                <Image src="/verified.png" w="4" h={4} ml={4} />
-              </Flex>
-            </Flex>
-          </Link>
+          <Popover trigger="hover" placement="bottom-start">
+            <PopoverTrigger>
+              <Link as={RouterLink} to={`/user/${userInfo._id}`}>
+                <Flex w={"full"} alignItems={"center"} gap={3}>
+                  <Avatar
+                    src={post?.authorInfo?.avatar}
+                    size={"md"}
+                    name={post?.authorInfo?.username}
+                    cursor={"pointer"}
+                  />
+                  <Flex>
+                    <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
+                      {post?.authorInfo?.username}
+                    </Text>
+                    <Image src="/verified.png" w="4" h={4} ml={4} />
+                  </Flex>
+                </Flex>
+              </Link>
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
+                <Box >
+                  <Flex justifyContent={"space-between"}>
+                  <Text fontWeight="bold">{userInfo?.username}</Text> 
+                  <Avatar
+                    src={post?.authorInfo?.avatar}
+                    size={"md"}
+                    name={post?.authorInfo?.username}
+                    cursor={"pointer"}
+                  />
+                  </Flex>
+                  <Text fontSize={"sm"}> {userInfo?.name}</Text>
+                  <Text>{post?.content}</Text>
+                  <Text color={"gray.400"}>{userInfo?.followers?.length || 0} người theo dõi</Text>
+                  <Button w={"100%"} bg={"black"}>Theo dõi</Button>
+                </Box>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
-              {/* <Moment fromNow ago>
-                {post?.createdAt}
-              </Moment> */}
               1d
             </Text>
             <Popover>
@@ -92,7 +108,7 @@ const Post = ({ post, isDetail }) => {
               </PopoverTrigger>
               <PopoverContent width={"180px"}>
                 <PopoverBody width={"180px"}>
-                  <PostMoreActionBox />
+                  <PostMoreActionBox user={userInfo} post={post} />
                 </PopoverBody>
               </PopoverContent>
             </Popover>
@@ -113,7 +129,6 @@ const Post = ({ post, isDetail }) => {
             <Image src={post.media[0].url} w={"full"} />
           </Box>
         )}
-        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>

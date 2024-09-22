@@ -1,23 +1,28 @@
 import { Flex, Spinner } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import UserHeader from "../components/UserHeader";
 import UserPost from "../components/UserPost";
 import { getUserInfo } from "../store/UserSlice/asyncThunk";
 import ContainerLayout from "../components/MainBoxLayout";
+import Post from "../components/Post/index";
+import { getPosts } from "../store/PostSlice/asyncThunk";
 
 const UserPage = () => {
   const dispatch = useDispatch();
   const { userInfo, isLoading } = useSelector((state) => state.user);
   const { userId } = useParams();
+  const [fetchingPosts, setFetchingPosts] = useState(true);
+  const [posts, setPosts] = useState();
 
   useEffect(() => {
+   
     const localUserId = localStorage.getItem("userId");
     if (userId && userId !== localUserId) {
       dispatch(getUserInfo({ userId }));
     }
-  }, []);
+  }, [dispatch, userId]);
 
   if (isLoading) {
     return (
@@ -34,25 +39,13 @@ const UserPage = () => {
     <>
       <ContainerLayout>
         <UserHeader user={userInfo} />
-        <UserPost
-          likes={1200}
-          replies={481}
-          postImg={"/post1.png"}
-          postTitle={"Post1"}
-        />
-        <UserPost
-          likes={450}
-          replies={81}
-          postImg={"/post2.png"}
-          postTitle={"Post2"}
-        />
-        <UserPost
-          likes={123}
-          replies={41}
-          postImg={"/post3.png"}
-          postTitle={"Post3"}
-        />
-        <UserPost likes={150} replies={48} postTitle={"Post4"} />
+        {fetchingPosts && (
+          <Flex justifyContent={"center"} my={12}>
+            <Spinner size={"xl"} />
+          </Flex>
+        )}
+        {!fetchingPosts && posts.length === 0 && <h1>User has not posts.</h1>}
+       
       </ContainerLayout>
     </>
   );
