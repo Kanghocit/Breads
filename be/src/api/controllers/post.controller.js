@@ -98,12 +98,14 @@ const getPost = async (req, res) => {
 //delete Post
 const deletePost = async (req, res) => {
   try {
+    const userId = req.user._id;
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
-
-    if (post.postedBy.toString() !== req.user._id.toString()) {
+    console.log("authorId:", post.authorId);
+    console.log("userId:", userId);
+    if (post.authorId.toString() !== userId.toString()) {
       return res
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });

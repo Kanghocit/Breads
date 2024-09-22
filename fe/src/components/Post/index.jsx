@@ -27,7 +27,6 @@ import { Constants } from "../../../../share/Constants";
 import "./index.css";
 
 const Post = ({ post, isDetail }) => {
-  //Temp
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [liked, setLiked] = useState(false);
@@ -52,22 +51,53 @@ const Post = ({ post, isDetail }) => {
     <Card className="post-container">
       <CardBody>
         <Flex justifyContent={"space-between"}>
-          <Link as={RouterLink} to={`/user/${userInfo._id}`}>
-            <Flex w={"full"} alignItems={"center"} gap={3}>
-              <Avatar
-                src={post?.authorInfo?.avatar}
-                size={"md"}
-                name={post?.authorInfo?.username}
-                cursor={"pointer"}
-              />
-              <Flex>
-                <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
-                  {post?.authorInfo?.username}
-                </Text>
-                <Image src="/verified.png" w="4" h={4} ml={4} />
-              </Flex>
-            </Flex>
-          </Link>
+          <Popover trigger="hover" placement="bottom-start">
+            <PopoverTrigger>
+              <Link as={RouterLink} to={`/user/${userInfo._id}`}>
+                <Flex w={"full"} alignItems={"center"} gap={3}>
+                  <Avatar
+                    src={post?.authorInfo?.avatar}
+                    size={"md"}
+                    name={post?.authorInfo?.username}
+                    cursor={"pointer"}
+                  />
+                  <Flex>
+                    <Text
+                      fontSize={"sm"}
+                      fontWeight={"bold"}
+                      cursor={"pointer"}
+                    >
+                      {post?.authorInfo?.username}
+                    </Text>
+                    <Image src="/verified.png" w="4" h={4} ml={4} />
+                  </Flex>
+                </Flex>
+              </Link>
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
+                <Box>
+                  <Flex justifyContent={"space-between"}>
+                    <Text fontWeight="bold">{userInfo?.username}</Text>
+                    <Avatar
+                      src={post?.authorInfo?.avatar}
+                      size={"md"}
+                      name={post?.authorInfo?.username}
+                      cursor={"pointer"}
+                    />
+                  </Flex>
+                  <Text fontSize={"sm"}> {userInfo?.name}</Text>
+                  <Text>{post?.content}</Text>
+                  <Text color={"gray.400"}>
+                    {userInfo?.followers?.length || 0} người theo dõi
+                  </Text>
+                  <Button w={"100%"} bg={"black"}>
+                    Theo dõi
+                  </Button>
+                </Box>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
@@ -90,39 +120,12 @@ const Post = ({ post, isDetail }) => {
               </Button>
               {openPostBox && (
                 <PostMoreActionBox
+                  post={post}
                   postId={post._id}
                   setOpenPostBox={setOpenPostBox}
                 />
               )}
             </div>
-            {/* <Popover>
-              <PopoverTrigger>
-                <Button
-                  bg={"transparent"}
-                  borderRadius={"50%"}
-                  width={"32px"}
-                  height={"40px"}
-                  padding={"0"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setOpenPostBox(!openPostBox);
-                  }}
-                >
-                  <BsThreeDots />
-                </Button>
-              </PopoverTrigger>
-              {openPostBox && (
-                <PopoverContent width={"180px"}>
-                  <PopoverBody width={"180px"}>
-                    <PostMoreActionBox
-                      postId={post._id}
-                      setOpenPostBox={setOpenPostBox}
-                    />
-                  </PopoverBody>
-                </PopoverContent>
-              )}
-            </Popover> */}
           </Flex>
         </Flex>
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
@@ -144,7 +147,6 @@ const Post = ({ post, isDetail }) => {
             )}
           </Box>
         )}
-        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>

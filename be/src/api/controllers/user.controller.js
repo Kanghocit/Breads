@@ -92,7 +92,7 @@ const loginUser = async (req, res) => {
         .json({ error: "Invalid username or password" });
     }
 
-    // generateTokenAndSetCookie(user._id, res);
+    generateTokenAndSetCookie(user._id, res);
     const result = await getUserInfo(user._id);
 
     res.status(HTTPStatus.OK).json(result);
