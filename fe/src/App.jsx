@@ -2,6 +2,7 @@ import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
+import PageConstant from "../../share/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
 import SeeMedia from "./components/SeeMedia";
@@ -17,7 +18,6 @@ import SettingPage from "./pages/SettingPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
-import PageConstant from "./util/PageConstants";
 import PostConstants from "./util/PostConstants";
 
 function App() {
@@ -82,8 +82,10 @@ function App() {
         marginTop: HeaderHeight,
       }}
     >
-      {!!userId && <Layout />}
-      <Container maxW="620px">{!!userId && <CreatePostBtn />}</Container>
+      {!!userId && !seeMediaInfo.open && <Layout />}
+      <Container maxW="620px">
+        {!!userId && !seeMediaInfo.open && <CreatePostBtn />}
+      </Container>
       <Routes>
         {HomeRoute()}
         <Route

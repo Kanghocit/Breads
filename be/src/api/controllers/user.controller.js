@@ -6,10 +6,11 @@ import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
 import { getUserInfo } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
+import Collection from "../models/collection.model.js";
 
 const getAdminAccount = async (req, res) => {
   try {
-    const adminAccount = await User.findOne({
+    let adminAccount = await User.findOne({
       role: Constants.USER_ROLE.ADMIN,
     });
     if (!adminAccount) {
@@ -24,6 +25,11 @@ const getAdminAccount = async (req, res) => {
       res.status(HTTPStatus.CREATED).json(result);
       return;
     }
+    const adminCollection = await Collection.findOne(
+      { userId: adminAccount._id },
+      { postsId: 1 }
+    );
+    adminAccount.collection = adminCollection;
     res.status(HTTPStatus.OK).json(adminAccount);
   } catch (err) {
     console.log(err);
@@ -51,7 +57,7 @@ const signupUser = async (req, res) => {
     });
     await newUser.save();
     if (newUser) {
-      generateTokenAndSetCookie(newUser._id, res);
+      // generateTokenAndSetCookie(newUser._id, res);
       res.status(201).json({
         _id: newUser._id,
         name: newUser.name,
@@ -87,6 +93,12 @@ const loginUser = async (req, res) => {
     }
 
     // generateTokenAndSetCookie(user._id, res);
+    res.cookie("userId", user._id, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     const result = await getUserInfo(user._id);
 
     res.status(HTTPStatus.OK).json(result);
@@ -212,10 +224,7 @@ const getUserProfile = async (req, res) => {
     if (!userId) {
       res.status(HTTPStatus.NO_CONTENT).json("Empty payload");
     }
-    user = await User.findOne(
-      { _id: ObjectId(userId) },
-      { password: 0, updatedAt: 0 }
-    );
+    user = await getUserInfo(userId);
     if (!user)
       return res
         .status(HTTPStatus.BAD_REQUEST)

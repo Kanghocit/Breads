@@ -8,6 +8,7 @@ import {
   replyToPost,
   getPosts,
   tickPostSurvey,
+  updatePost,
 } from "../controllers/post.controller.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -17,7 +18,8 @@ router.get("/feed", protectRoute, getFeedPosts);
 router.get("/get-all", getPosts);
 router.get("/:id", getPost);
 router.post("/create", createPost);
-router.delete("/:id", protectRoute, deletePost);
+router.delete("/:id", deletePost);
+router.put("/update/:id", updatePost);
 router.post("/like/:id", protectRoute, likeUnlikePost);
 router.post("/reply/:id", protectRoute, replyToPost);
 router.put("/tick-post-survey", tickPostSurvey);

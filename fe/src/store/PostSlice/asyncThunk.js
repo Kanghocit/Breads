@@ -23,13 +23,14 @@ export const createPost = createAsyncThunk(
   }
 );
 
-//Temp
+// Temp
 export const getPosts = createAsyncThunk(
   "post/getPosts",
-  async (_, thunkApi) => {
+  async (params, thunkApi) => {
     try {
       const posts = await GET({
         path: "posts/get-all",
+        params,
       });
       return posts;
     } catch (err) {

@@ -42,6 +42,7 @@ const SurveyOption = ({ option, post }) => {
         className="opt-bg"
         style={{
           width: `${percent}%`,
+          transition: "width 0.5s ease-in-out",
         }}
       ></div>
     </div>

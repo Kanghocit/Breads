@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/UserSlice/asyncThunk";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { MdOutlineBrightness2 } from "react-icons/md";
-import PageConstant from "../../util/PageConstants";
+import PageConstant from "../../../../share/Constants/PageConstants";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 
 const SidebarMenu = () => {

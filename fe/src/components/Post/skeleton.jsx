@@ -8,7 +8,13 @@ import {
 
 const SkeletonPost = () => {
   return (
-    <Box padding="6" boxShadow="lg" bg="white">
+    <Box
+      padding="6"
+      boxShadow="lg"
+      bg="white"
+      mb={"12px"}
+      borderRadius={"12px"}
+    >
       <Flex gap={"12px"}>
         <SkeletonCircle size="10" />
         <Skeleton height="16px" width={"88px"} />

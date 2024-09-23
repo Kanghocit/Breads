@@ -6,11 +6,11 @@ import { FiSearch } from "react-icons/fi";
 import { MdAdd, MdOutlinePushPin } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
+import PageConstant from "../../../../share/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
-import PageConstant from "../../util/PageConstants";
+import { changePage } from "../../store/UtilSlice";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
-import { changePage } from "../../store/UtilSlice";
 
 const LeftSideBar = () => {
   const dispatch = useDispatch();
@@ -119,22 +119,22 @@ const LeftSideBar = () => {
                 </Box>
               ))}
             </Flex>
-            <Flex direction={"column"} >
-              <Box  bottom={0}>
-                <Button mt={7} mb={3} bg={"none"} >
+            <Flex direction={"column"}>
+              <Box bottom={0}>
+                <Button mt={7} mb={3} bg={"none"}>
                   <Link as={RouterLink} to={`/`}>
                     <MdOutlinePushPin size={24} />
                   </Link>
                 </Button>
                 <Box
-                  mt={3} mb={7}
+                  mt={3}
+                  mb={7}
                   bg={"none"}
                   _hover={{ bg: "none" }}
                   display="flex"
                   justifyContent="center"
                   height="24px"
                   alignItems="center"
-                 
                 >
                   <SidebarMenu />
                 </Box>

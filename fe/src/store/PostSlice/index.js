@@ -8,11 +8,12 @@ export const surveyTemplate = ({ placeholder, value }) => {
   };
 };
 
-const defaultPostInfo = {
+export const defaultPostInfo = {
   content: "",
   media: [],
   survey: [],
 };
+
 
 const initialState = {
   listPost: [],
@@ -28,7 +29,7 @@ const initialState = {
     survey: [],
   },
   postAction: "", //action's name
-  isLoading: false,
+  isLoading: true,
 };
 
 const postSlice = createSlice({
@@ -43,6 +44,9 @@ const postSlice = createSlice({
     },
     updatePostAction: (state, action) => {
       state.postAction = action.payload ?? "";
+    },
+    updateListPost: (state, action) => {
+      state.listPost = action.payload ?? [];
     },
   },
   extraReducers: (builder) => {
@@ -60,7 +64,7 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
-      state.listPost = [...state.listPost, newPost];
+      state.listPost = [newPost, ...state.listPost];
       state.isLoading = false;
       state.postAction = "";
     });
@@ -92,6 +96,6 @@ const postSlice = createSlice({
   },
 });
 
-export const { selectPost, updatePostInfo, updatePostAction } =
+export const { selectPost, updatePostInfo, updatePostAction, updateListPost } =
   postSlice.actions;
 export default postSlice.reducer;

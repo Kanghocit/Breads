@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useShowToast from "../hooks/useShowToast";
 import { changePage } from "../store/UtilSlice";
-import PageConstant from "../util/PageConstants";
+import PageConstant from "../../../share/Constants/PageConstants";
 import { login } from "../store/UserSlice/asyncThunk";
 
 export default function Login() {

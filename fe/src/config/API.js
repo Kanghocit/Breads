@@ -8,7 +8,7 @@ export const GET = async ({ path, params = null }) => {
     if (params) {
       result = (
         await axios.get(url, {
-          params,
+          params: params,
         })
       )?.data;
     } else {

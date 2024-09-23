@@ -1,9 +1,10 @@
+import { HttpStatusCode } from "axios";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
-import { getPostDetail } from "../services/post.js";
+import { getPostDetail, getPostsIdByFilter } from "../services/post.js";
 import { uploadFile } from "../utils/index.js";
 
 //create post
@@ -15,7 +16,12 @@ const createPost = async (req, res) => {
     if (!user) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "User not found" });
     }
-    if (!content.trim() && !media?.url && survey.length === 0 && !parentPost) {
+    if (
+      !content.trim() &&
+      !media?.[0]?.url &&
+      survey.length === 0 &&
+      !parentPost
+    ) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
         .json({ error: "Cannot create post without payload" });
@@ -28,12 +34,14 @@ const createPost = async (req, res) => {
     }
     let newMedia = [];
     if (media.length) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
       for (let fileInfo of media) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const isUrl = media.url.match(urlRegex)?.length > 0;
-        if (isUrl) {
+        const isUrl = fileInfo.url.match(urlRegex)
+          ? fileInfo.url.match(urlRegex)?.length > 0
+          : false;
+        if (!isUrl) {
           const mediaUrl = await uploadFile({
-            base64: media.url,
+            base64: fileInfo.url,
           });
           fileInfo.url = mediaUrl;
         }
@@ -91,12 +99,14 @@ const getPost = async (req, res) => {
 //delete Post
 const deletePost = async (req, res) => {
   try {
+    const userId = req.user._id;
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
-
-    if (post.postedBy.toString() !== req.user._id.toString()) {
+    console.log("authorId:", post.authorId);
+    console.log("userId:", userId);
+    if (post.authorId.toString() !== userId.toString()) {
       return res
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });
@@ -108,6 +118,30 @@ const deletePost = async (req, res) => {
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
+  }
+};
+//updatePost
+const updatePost = async (req, res) => {
+  const { content } = req.body;
+  const postId = req.params.id;
+  console.log(req.user)
+  if(!req.user){
+    return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
+  }
+  try {
+    let post = await Post.findById(postId);
+    if(!post) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Post not found")
+    }
+
+    if(post.authorId.toString() !== req.user._id.toString()){
+      return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized to update this post"})
+    }
+
+    post.content = content || post.content 
+    post = await post.save();
+  } catch (error) {
+    res.status(HTTPStatus.SERVER_ERR).json({error: error.message})
   }
 };
 
@@ -196,10 +230,11 @@ const getFeedPosts = async (req, res) => {
 //Temp
 const getPosts = async (req, res) => {
   try {
-    const data = await Post.find();
+    const payload = req.query;
+    const data = await getPostsIdByFilter(payload);
     let result = [];
-    for (let post of data) {
-      const postDetail = await getPostDetail(post._id);
+    for (let id of data) {
+      const postDetail = await getPostDetail(id);
       result.push(postDetail);
     }
     res.status(HTTPStatus.OK).json(result);
@@ -243,6 +278,7 @@ export {
   getFeedPosts,
   getPost,
   getPosts,
+  updatePost,
   likeUnlikePost,
   replyToPost,
   tickPostSurvey,

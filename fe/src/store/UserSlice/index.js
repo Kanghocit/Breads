@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getUserInfo, login, logout } from "./asyncThunk";
+import {
+  getUserInfo,
+  login,
+  logout,
+  addPostToCollection,
+  removePostFromCollection,
+} from "./asyncThunk";
 
 const defaultUser = {
   _id: "",
@@ -10,6 +16,7 @@ const defaultUser = {
   avatar: "",
   followers: [],
   followings: [],
+  collection: [],
 };
 
 const initialState = {
@@ -39,6 +46,16 @@ const userSlice = createSlice({
     builder.addCase(getUserInfo.fulfilled, (state, action) => {
       state.userInfo = action.payload;
       state.isLoading = false;
+    });
+    builder.addCase(addPostToCollection.fulfilled, (state, action) => {
+      const postAddId = action.payload;
+      state.userInfo.collection = [...state.userInfo.collection, postAddId];
+    });
+    builder.addCase(removePostFromCollection.fulfilled, (state, action) => {
+      const { postId: postRemoveId } = action.payload;
+      state.userInfo.collection = state.userInfo.collection.filter(
+        (postId) => postId !== postRemoveId
+      );
     });
   },
 });

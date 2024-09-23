@@ -1,6 +1,8 @@
 import { ObjectId } from "../../util/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import Collection from "../models/collection.model.js";
+import { getPostDetail, getPostsIdByFilter } from "../services/post.js";
+import PageConstant from "../../../../share/Constants/PageConstants.js";
 
 export const getUserCollection = async (req, res) => {
   try {
@@ -13,34 +15,33 @@ export const getUserCollection = async (req, res) => {
   }
 };
 
-export const initUserCollection = async (req, res) => {
-  try {
-    const { userId, postId } = req.body;
-    const newCollection = new Collection({
-      userId: ObjectId(userId),
-      postsId: [postId],
-    });
-    await newCollection.save();
-    res.status(HTTPStatus.CREATED).json("Created");
-  } catch (err) {
-    console.log(err);
-    res.status(HTTPStatus.SERVER_ERR).json(err);
-  }
-};
-
 export const addPostToCollection = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const postId = req.body.postId;
-    await Collection.findOneAndUpdate(
-      {
+    const { userId, postId } = req.body;
+    if (!userId || !postId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const isValidCollection = await Collection.findOne({
+      userId: ObjectId(userId),
+    });
+    if (isValidCollection) {
+      await Collection.findOneAndUpdate(
+        {
+          userId: ObjectId(userId),
+        },
+        {
+          $push: { postsId: postId },
+        }
+      );
+      res.status(HTTPStatus.OK).json("Success");
+    } else {
+      const newCollection = new Collection({
         userId: ObjectId(userId),
-      },
-      {
-        $push: { postsId: postId },
-      }
-    );
-    res.status(HTTPStatus.OK).json("Success");
+        postsId: [postId],
+      });
+      await newCollection.save();
+      res.status(HTTPStatus.CREATED).json("Created");
+    }
   } catch (err) {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
@@ -49,8 +50,10 @@ export const addPostToCollection = async (req, res) => {
 
 export const removePostFromCollection = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const postId = req.body.postId;
+    const { postId, userId } = req.body;
+    if (!userId || !postId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
     await Collection.findOneAndUpdate(
       {
         userId: ObjectId(userId),
@@ -59,7 +62,16 @@ export const removePostFromCollection = async (req, res) => {
         $pull: { postsId: postId },
       }
     );
-    res.status(HTTPStatus.OK).json("Success");
+    const result = [];
+    const postsId = await getPostsIdByFilter({
+      filter: PageConstant.SAVED,
+      userId,
+    });
+    for (const id of postsId) {
+      const postDetail = await getPostDetail(id);
+      result.push(postDetail);
+    }
+    res.status(HTTPStatus.OK).json(result);
   } catch (err) {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
