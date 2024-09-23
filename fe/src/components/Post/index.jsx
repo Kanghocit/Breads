@@ -25,6 +25,7 @@ import Actions from "../Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import ClickOutsideComponent from "../../util/ClickoutCPN";
 
 const Post = ({ post, isDetail }) => {
   const dispatch = useDispatch();
@@ -104,27 +105,34 @@ const Post = ({ post, isDetail }) => {
               {moment(post.createdAt).fromNow()}
             </Text>
             <div className="btn-more-action">
-              <Button
-                bg={"transparent"}
-                borderRadius={"50%"}
-                width={"32px"}
-                height={"40px"}
-                padding={"0"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setOpenPostBox(!openPostBox);
+              <ClickOutsideComponent
+                onClose={() => {
+                  setOpenPostBox(false);
                 }}
               >
-                <BsThreeDots />
-              </Button>
-              {openPostBox && (
-                <PostMoreActionBox
-                  post={post}
-                  postId={post._id}
-                  setOpenPostBox={setOpenPostBox}
-                />
-              )}
+                <Button
+                  bg={"transparent"}
+                  borderRadius={"50%"}
+                  width={"32px"}
+                  height={"40px"}
+                  padding={"0"}
+                  onClick={(e) => {
+                    console.log("click here");
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setOpenPostBox(!openPostBox);
+                  }}
+                >
+                  <BsThreeDots />
+                </Button>
+                {openPostBox && (
+                  <PostMoreActionBox
+                    post={post}
+                    postId={post._id}
+                    setOpenPostBox={setOpenPostBox}
+                  />
+                )}
+              </ClickOutsideComponent>
             </div>
           </Flex>
         </Flex>

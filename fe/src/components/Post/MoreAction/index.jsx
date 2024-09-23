@@ -1,4 +1,10 @@
-import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Text,
+  useColorMode,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useMemo } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { GoBookmarkSlash, GoReport } from "react-icons/go";
@@ -10,15 +16,15 @@ import {
   addPostToCollection,
   removePostFromCollection,
 } from "../../../store/UserSlice/asyncThunk";
-import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import useCopyLink from "./CopyLink";
 import useDeletePost from "./DeletePost";
-import useUpdatePost from "./UpdatePost";
+import UpdatePost from "./UpdatePost";
 
 const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
   const { colorMode } = useColorMode();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const savedBefore = useMemo(() => {
     return userInfo?.collection?.includes(postId);
   }, [userInfo._id]);
@@ -37,7 +43,6 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
 
   const { copyURL } = useCopyLink();
   const { handleDeleteClick } = useDeletePost();
-  const { handleUpdateClick } = useUpdatePost();
 
   const actions = [
     {
@@ -73,7 +78,7 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
             name: "Update",
             icon: <MdEdit />, // Correct update icon
             onClick: () => {
-              handleUpdateClick(postId);
+              onOpen();
             },
           },
         ]
@@ -81,7 +86,7 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
   ];
 
   return (
-    <ClickOutsideComponent onClose={() => setOpenPostBox(false)}>
+    <>
       <Container
         width={"180px"}
         position={"absolute"}
@@ -108,6 +113,7 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
               e.stopPropagation();
               onClick && onClick();
               setOpenPostBox(false);
+              console.log("click action");
             }}
           >
             <Text>{name}</Text>
@@ -115,7 +121,8 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
           </Flex>
         ))}
       </Container>
-    </ClickOutsideComponent>
+      <UpdatePost isOpen={false} onClose={() => {}} post={post} />
+    </>
   );
 };
 

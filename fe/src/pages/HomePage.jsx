@@ -18,7 +18,6 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!initPage.current) {
-      console.log("here");
       dispatch(
         getPosts({
           filter: displayPageData,

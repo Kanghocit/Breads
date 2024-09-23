@@ -28,7 +28,7 @@ const PostMedia = ({ isOpen, onClose }) => {
     "https://media.giphy.com/media/3CCXHZWV6F6O9VQ7FL/giphy.gif?cid=790b7611c6m3breeww4znirt1f4wtzofs6dk6ddu9vyuoyvv&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
     "https://media.giphy.com/media/mLZ6kvGkH31z0BAKUX/giphy.gif?cid=790b7611c6m3breeww4znirt1f4wtzofs6dk6ddu9vyuoyvv&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
   ];
-  
+
   return (
     <>
       <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
@@ -58,8 +58,13 @@ const PostMedia = ({ isOpen, onClose }) => {
           >
             Chọn file GIF
           </Text>
-          <ModalCloseButton position={"absolute"} top={"-36px"} left={"0"} color={"white"} />
-          
+          <ModalCloseButton
+            position={"absolute"}
+            top={"-36px"}
+            left={"0"}
+            color={"white"}
+          />
+
           <ModalBody
             p={0}
             overflowY={"auto"}
