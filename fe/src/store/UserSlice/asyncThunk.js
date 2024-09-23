@@ -1,5 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { GET, PATCH, POST, PUT } from "../../config/API";
+import PageConstant from "../../../../share/Constants/PageConstants";
+import { updateListPost } from "../PostSlice";
 
 export const signUp = createAsyncThunk(
   "user/signUp",
@@ -115,16 +117,28 @@ export const removePostFromCollection = createAsyncThunk(
   "user/removeFromCollection",
   async (payload, thunkAPI) => {
     try {
+      const rootState = thunkAPI.getState();
+      const dispatch = thunkAPI.dispatch;
+      const displayPageData = rootState.util.displayPageData;
       const { userId, postId } = payload;
-      await PATCH({
+      const data = await PATCH({
         path: `collections/remove`,
         payload: {
           userId: userId,
           postId: postId,
         },
       });
-      return postId;
+      if (displayPageData === PageConstant.SAVED) {
+        dispatch(updateListPost(data));
+        return {
+          postId: postId,
+        };
+      }
+      return {
+        postId: postId,
+      };
     } catch (err) {
+      console.error(err);
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }

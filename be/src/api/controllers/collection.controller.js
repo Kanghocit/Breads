@@ -1,6 +1,8 @@
 import { ObjectId } from "../../util/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import Collection from "../models/collection.model.js";
+import { getPostDetail, getPostsIdByFilter } from "../services/post.js";
+import PageConstant from "../../../../share/Constants/PageConstants.js";
 
 export const getUserCollection = async (req, res) => {
   try {
@@ -60,7 +62,16 @@ export const removePostFromCollection = async (req, res) => {
         $pull: { postsId: postId },
       }
     );
-    res.status(HTTPStatus.OK).json("Success");
+    const result = [];
+    const postsId = await getPostsIdByFilter({
+      filter: PageConstant.SAVED,
+      userId,
+    });
+    for (const id of postsId) {
+      const postDetail = await getPostDetail(id);
+      result.push(postDetail);
+    }
+    res.status(HTTPStatus.OK).json(result);
   } catch (err) {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json(err);

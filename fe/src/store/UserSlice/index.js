@@ -52,7 +52,7 @@ const userSlice = createSlice({
       state.userInfo.collection = [...state.userInfo.collection, postAddId];
     });
     builder.addCase(removePostFromCollection.fulfilled, (state, action) => {
-      const postRemoveId = action.payload;
+      const { postId: postRemoveId } = action.payload;
       state.userInfo.collection = state.userInfo.collection.filter(
         (postId) => postId !== postRemoveId
       );

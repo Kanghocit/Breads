@@ -14,14 +14,18 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
-import { updatePostAction, updatePostInfo } from "../../store/PostSlice";
+import useShowToast from "../../hooks/useShowToast";
+import {
+  defaultPostInfo,
+  updatePostAction,
+  updatePostInfo,
+} from "../../store/PostSlice";
 import { createPost } from "../../store/PostSlice/asyncThunk";
 import { replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
 import PostSurvey from "./survey";
-import useShowToast from "../../hooks/useShowToast";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
@@ -48,6 +52,26 @@ const PostPopup = () => {
   const closePostAction =
     !!postInfo.media?.length > 0 || postInfo.survey.length !== 0;
 
+  const checkUploadCondition = () => {
+    let checkResult = true;
+    let msg = "";
+    if (postInfo.survey.length) {
+      const optionsValue = postInfo.survey.map(({ value }) => value);
+      const setValue = new Set(optionsValue);
+      const postSurvey = postInfo.survey.filter(
+        (option) => !!option.value.trim()
+      );
+      if ([setValue].length < postSurvey.length) {
+        checkResult = false;
+        msg = "Each option should be an unique value";
+      }
+    }
+    return {
+      checkCondition: checkResult,
+      msg: msg,
+    };
+  };
+
   const handleCreatePost = async () => {
     try {
       const payload = {
@@ -55,7 +79,6 @@ const PostPopup = () => {
         ...postInfo,
       };
       dispatch(createPost(payload));
-      // showToast("", "Posting success", "success");
     } catch (err) {
       console.error(err);
       showToast("Error", err, "error");
@@ -76,6 +99,7 @@ const PostPopup = () => {
         },
         rightBtnAction: () => {
           dispatch(updatePostAction());
+          dispatch(updatePostInfo(defaultPostInfo));
         },
       });
     } else {
@@ -143,6 +167,11 @@ const PostPopup = () => {
               border={"1px solid lightgray"}
               borderRadius={"6px"}
               onClick={() => {
+                const { checkCondition, msg } = checkUploadCondition();
+                if (!checkCondition) {
+                  showToast("Error", msg, "error");
+                  return;
+                }
                 setClickPost(true);
                 handleCreatePost();
               }}

@@ -21,7 +21,11 @@ const PostSurvey = () => {
     <Collapse in={true}>
       <Container margin={0} padding={0}>
         {survey.map((item, index) => (
-          <SurveyOption key={`survey-${index}`} option={item} index={index} />
+          <SurveyOption
+            key={`survey-${item.value}-${index}`}
+            option={item}
+            index={index}
+          />
         ))}
         <Flex
           justifyContent={"space-between"}

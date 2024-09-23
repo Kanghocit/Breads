@@ -13,17 +13,18 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
+import moment from "moment";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
-import Actions from "../Actions";
-import PostMoreActionBox from "./MoreAction";
-import { updateSeeMedia } from "../../store/UtilSlice";
-import { selectPost } from "../../store/PostSlice";
-import moment from "moment";
 import { Constants } from "../../../../share/Constants";
+import { selectPost } from "../../store/PostSlice";
+import { updateSeeMedia } from "../../store/UtilSlice";
+import Actions from "../Actions";
 import "./index.css";
+import PostMoreActionBox from "./MoreAction";
+import Survey from "./Survey";
 
 const Post = ({ post, isDetail }) => {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const Post = ({ post, isDetail }) => {
   const [openPostBox, setOpenPostBox] = useState(false);
 
   const handleSeeDetail = () => {
-    window.open(`/post/${1}`, "_self");
+    window.open(`/post/${post._id}`, "_self");
   };
 
   const handleSeeFullMedia = (img) => {
@@ -47,7 +48,7 @@ const Post = ({ post, isDetail }) => {
   };
 
   return (
-    <Card className="post-container">
+    <Card className="post-container" borderRadius={"12px"}>
       <CardBody>
         <Flex justifyContent={"space-between"}>
           <Popover trigger="hover" placement="bottom-start">
@@ -146,6 +147,7 @@ const Post = ({ post, isDetail }) => {
             )}
           </Box>
         )}
+        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>
