@@ -1,4 +1,4 @@
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Container, Flex, Text, useDisclosure } from "@chakra-ui/react";
 import { CiBookmark } from "react-icons/ci";
 import { IoIosLink } from "react-icons/io";
 import { IoBan } from "react-icons/io5";
@@ -7,11 +7,12 @@ import { MdDelete, MdEdit } from "react-icons/md"; // Correct icons for delete a
 import useCopyLink from "./CopyLink";
 import useDeletePost from "./DeletePost";
 import useUpdatePost from "./UpdatePost"; 
+import UpdatePost from "./UpdatePost";
 
 const PostMoreActionBox = ({ user, post }) => {
   const { copyURL } = useCopyLink();
   const { handleDeleteClick } = useDeletePost();
-  const { handleUpdateClick } = useUpdatePost(); 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   
   const handleActionClick = (actionName) => {
     switch (actionName) {
@@ -31,7 +32,7 @@ const PostMoreActionBox = ({ user, post }) => {
         handleDeleteClick(post);
         break;
       case "Update":
-        handleUpdateClick(post); 
+        onOpen();
         break;
       default:
         break;
@@ -59,17 +60,18 @@ const PostMoreActionBox = ({ user, post }) => {
       ? [
           {
             name: "Delete",
-            icon: <MdDelete />, // Correct delete icon
+            icon: <MdDelete />,
           },
           {
             name: "Update",
-            icon: <MdEdit />, // Correct update icon
+            icon: <MdEdit />, 
           },
         ]
       : []),
   ];
 
   return (
+    <>
     <Container width={"100%"} padding={0}>
       {actions.map(({ name, icon }) => (
         <Flex
@@ -85,6 +87,9 @@ const PostMoreActionBox = ({ user, post }) => {
         </Flex>
       ))}
     </Container>
+    <UpdatePost isOpen={isOpen} onClose={onClose} post={post} />
+    </>
+    
   );
 };
 

@@ -51,7 +51,7 @@ const signupUser = async (req, res) => {
     });
     await newUser.save();
     if (newUser) {
-      generateTokenAndSetCookie(newUser._id, res);
+      // generateTokenAndSetCookie(newUser._id, res);
       res.status(201).json({
         _id: newUser._id,
         name: newUser.name,
@@ -86,7 +86,13 @@ const loginUser = async (req, res) => {
         .json({ error: "Invalid username or password" });
     }
 
-    generateTokenAndSetCookie(user._id, res);
+    // generateTokenAndSetCookie(user._id, res);
+    res.cookie("userId", user._id, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     const result = await getUserInfo(user._id);
 
     res.status(HTTPStatus.OK).json(result);

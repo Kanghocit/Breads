@@ -7,7 +7,7 @@ const useDeletePost = () => {
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
 
-  const handleDeleteClick = async (post) => {
+  const handleDeleteClick = async(post) => {
     
     try {
       if (!window.confirm("Are you sure you want to delete this post?")) return;

@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
@@ -117,6 +118,30 @@ const deletePost = async (req, res) => {
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
+  }
+};
+//updatePost
+const updatePost = async (req, res) => {
+  const { content } = req.body;
+  const postId = req.params.id;
+  console.log(req.user)
+  if(!req.user){
+    return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
+  }
+  try {
+    let post = await Post.findById(postId);
+    if(!post) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Post not found")
+    }
+
+    if(post.authorId.toString() !== req.user._id.toString()){
+      return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized to update this post"})
+    }
+
+    post.content = content || post.content 
+    post = await post.save();
+  } catch (error) {
+    res.status(HTTPStatus.SERVER_ERR).json({error: error.message})
   }
 };
 
@@ -252,6 +277,7 @@ export {
   getFeedPosts,
   getPost,
   getPosts,
+  updatePost,
   likeUnlikePost,
   replyToPost,
   tickPostSurvey,

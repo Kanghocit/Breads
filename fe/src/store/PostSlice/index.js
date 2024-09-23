@@ -14,6 +14,7 @@ const defaultPostInfo = {
   survey: [],
 };
 
+
 const initialState = {
   listPost: [],
   postSelected: null,
