@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createPost, getPosts, selectSurveyOption } from "./asyncThunk";
+import {
+  createPost,
+  editPost,
+  getPosts,
+  selectSurveyOption,
+} from "./asyncThunk";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {
@@ -13,7 +18,6 @@ export const defaultPostInfo = {
   media: [],
   survey: [],
 };
-
 
 const initialState = {
   listPost: [],
@@ -66,6 +70,17 @@ const postSlice = createSlice({
       const newPost = action.payload;
       state.listPost = [newPost, ...state.listPost];
       state.isLoading = false;
+      state.postAction = "";
+    });
+    builder.addCase(editPost.fulfilled, (state, action) => {
+      const postUpdated = action.payload;
+      const postIndex = state.listPost.findIndex(
+        (post) => post._id === postUpdated._id
+      );
+      state.listPost[postIndex] = {
+        ...state.listPost[postIndex],
+        ...postUpdated,
+      };
       state.postAction = "";
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {

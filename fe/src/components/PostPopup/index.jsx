@@ -20,20 +20,25 @@ import {
   updatePostAction,
   updatePostInfo,
 } from "../../store/PostSlice";
-import { createPost } from "../../store/PostSlice/asyncThunk";
+import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
 import PostPopupAction from "./action";
 import PostSurvey from "./survey";
+import { Constants } from "../../../../share/Constants";
+import PostConstants from "../../util/PostConstants";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
-  const { postInfo, postAction } = useSelector((state) => state.post);
+  const { postInfo, postAction, postSelected } = useSelector(
+    (state) => state.post
+  );
+  const isEditing = postAction === PostConstants.ACTIONS.EDIT;
+  const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
-  const userInfo = useSelector((state) => state.user.userInfo);
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
   const [clickPost, setClickPost] = useState(false);
@@ -48,6 +53,12 @@ const PostPopup = () => {
       );
     }
   }, [debounceContent]);
+
+  useEffect(() => {
+    if (isEditing && postInfo?._id) {
+      setContent(postInfo.content);
+    }
+  }, [postInfo?._id]);
 
   const closePostAction =
     !!postInfo.media?.length > 0 || postInfo.survey.length !== 0;
@@ -72,13 +83,17 @@ const PostPopup = () => {
     };
   };
 
-  const handleCreatePost = async () => {
+  const handleUploadPost = async () => {
     try {
       const payload = {
         authorId: userInfo._id,
         ...postInfo,
       };
-      dispatch(createPost(payload));
+      if (isEditing) {
+        dispatch(editPost(payload));
+      } else {
+        dispatch(createPost(payload));
+      }
     } catch (err) {
       console.error(err);
       showToast("Error", err, "error");
@@ -90,8 +105,10 @@ const PostPopup = () => {
     if (!!media.length || !!survey.length || !!content.length) {
       setPopupCancelInfo({
         open: true,
-        title: "Stop Creating",
-        content: "Do you want to stop creating this post ?",
+        title: isEditing ? "Stop Editing" : "Stop Creating",
+        content: `Do you want to stop ${
+          isEditing ? "editing" : "creating"
+        } this post ?`,
         leftBtnText: "Cancel",
         rightBtnText: "Discard",
         leftBtnAction: () => {
@@ -151,7 +168,25 @@ const PostPopup = () => {
                 setText={(value) => setContent(replaceEmojis(value))}
               />
               {postInfo.media[0]?.url && (
-                <Image src={postInfo.media[0].url} alt="Post Media" mt={4} />
+                <>
+                  {postInfo.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
+                    <video
+                      src={postInfo.media[0].url}
+                      alt="Post Media"
+                      controls
+                      style={{
+                        width: "100%",
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={postInfo.media[0].url}
+                      alt="Post Media"
+                      mt={3}
+                      width={"100%"}
+                    />
+                  )}
+                </>
               )}
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}
@@ -160,7 +195,7 @@ const PostPopup = () => {
           <ModalFooter padding="0">
             <Button
               isLoading={clickPost}
-              loadingText="Posting"
+              loadingText={isEditing ? "Saving" : "Posting"}
               mt={"6px"}
               mr={"16px"}
               colorScheme="white"
@@ -173,10 +208,10 @@ const PostPopup = () => {
                   return;
                 }
                 setClickPost(true);
-                handleCreatePost();
+                handleUploadPost();
               }}
             >
-              Post
+              {isEditing ? "Save" : "Post"}
             </Button>
           </ModalFooter>
         </ModalContent>

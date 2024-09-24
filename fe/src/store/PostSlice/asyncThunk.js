@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { GET, POST, PUT } from "../../config/API";
+import { updatePostAction } from ".";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -16,6 +17,27 @@ export const createPost = createAsyncThunk(
         payload,
       });
       dispatch(getPosts());
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const editPost = createAsyncThunk(
+  "post/update",
+  async (payload, thunkApi) => {
+    try {
+      const rootState = thunkApi.getState();
+      const userInfo = rootState.user.userInfo;
+      payload = {
+        ...payload,
+        userId: userInfo._id,
+      };
+      const data = await PUT({
+        path: "posts/update",
+        payload,
+      });
       return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);

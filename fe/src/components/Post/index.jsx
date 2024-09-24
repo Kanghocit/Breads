@@ -117,7 +117,6 @@ const Post = ({ post, isDetail }) => {
                   height={"40px"}
                   padding={"0"}
                   onClick={(e) => {
-                    console.log("click here");
                     e.stopPropagation();
                     e.preventDefault();
                     setOpenPostBox(!openPostBox);
@@ -148,10 +147,10 @@ const Post = ({ post, isDetail }) => {
             cursor={"pointer"}
             onClick={() => handleSeeFullMedia(post.media[0].url)}
           >
-            {post.media[0].type === Constants.MEDIA_TYPE.IMAGE ? (
-              <Image src={post.media[0].url} w={"full"} />
-            ) : (
+            {post.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
               <video src={post.media[0].url} controls />
+            ) : (
+              <Image src={post.media[0].url} w={"full"} />
             )}
           </Box>
         )}

@@ -104,8 +104,6 @@ const deletePost = async (req, res) => {
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
-    console.log("authorId:", post.authorId);
-    console.log("userId:", userId);
     if (post.authorId.toString() !== userId.toString()) {
       return res
         .status(HTTPStatus.UNAUTHORIZED)
@@ -122,26 +120,31 @@ const deletePost = async (req, res) => {
 };
 //updatePost
 const updatePost = async (req, res) => {
-  const { content } = req.body;
-  const postId = req.params.id;
-  console.log(req.user)
-  if(!req.user){
-    return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
-  }
+  const payload = req.body;
+  const postId = payload._id;
+  const { media, content, survey } = payload;
+  // if(!req.user){
+  //   return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
+  // }
   try {
     let post = await Post.findById(postId);
-    if(!post) {
-      return res.status(HTTPStatus.NOT_FOUND).json("Post not found")
+    if (!post) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Post not found");
     }
 
-    if(post.authorId.toString() !== req.user._id.toString()){
-      return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized to update this post"})
+    if (post.authorId.toString() !== payload.userId.toString()) {
+      return res
+        .status(HTTPStatus.UNAUTHORIZED)
+        .json({ error: "Unauthorized to update this post" });
     }
 
-    post.content = content || post.content 
+    post.content = content;
+    post.media = media;
+    post.survey = survey;
     post = await post.save();
+    res.status(HTTPStatus.OK).json(post);
   } catch (error) {
-    res.status(HTTPStatus.SERVER_ERR).json({error: error.message})
+    res.status(HTTPStatus.SERVER_ERR).json({ error: error.message });
   }
 };
 

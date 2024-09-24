@@ -19,6 +19,12 @@ import {
 import useCopyLink from "./CopyLink";
 import useDeletePost from "./DeletePost";
 import UpdatePost from "./UpdatePost";
+import {
+  selectPost,
+  updatePostAction,
+  updatePostInfo,
+} from "../../../store/PostSlice";
+import PostConstants from "../../../util/PostConstants";
 
 const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -69,16 +75,18 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
       ? [
           {
             name: "Delete",
-            icon: <MdDelete />, // Correct delete icon
+            icon: <MdDelete />,
             onClick: () => {
               handleDeleteClick(postId);
             },
           },
           {
             name: "Update",
-            icon: <MdEdit />, // Correct update icon
+            icon: <MdEdit />,
             onClick: () => {
               onOpen();
+              dispatch(updatePostAction(PostConstants.ACTIONS.EDIT));
+              dispatch(updatePostInfo(post));
             },
           },
         ]
@@ -113,7 +121,6 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
               e.stopPropagation();
               onClick && onClick();
               setOpenPostBox(false);
-              console.log("click action");
             }}
           >
             <Text>{name}</Text>
