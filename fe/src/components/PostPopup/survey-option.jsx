@@ -5,10 +5,10 @@ import useDebounce from "../../hooks/useDebounce";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { replaceEmojis } from "../../util";
 
-const SurveyOption = ({ option, index }) => {
+const SurveyOption = ({ option, index, selectedOption, setSelectedOption }) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
-  const [optionContent, setOptionContent] = useState("");
+  const [optionContent, setOptionContent] = useState(option?.value ?? "");
   const debounceValue = useDebounce(optionContent, 500);
   const isInit = useRef(true);
 
@@ -19,6 +19,13 @@ const SurveyOption = ({ option, index }) => {
       isInit.current = false;
     }
   }, [debounceValue]);
+
+  useEffect(() => {
+    const inputTag = document.getElementById(`option-${selectedOption}`);
+    if (inputTag) {
+      inputTag.focus();
+    }
+  }, []);
 
   const handleOptionContent = (value) => {
     const survey = JSON.parse(JSON.stringify(postInfo.survey));
@@ -48,6 +55,7 @@ const SurveyOption = ({ option, index }) => {
 
   return (
     <Input
+      id={`option-${index}`}
       border={"1px solid gray"}
       margin={"6px 0"}
       color={"black"}
@@ -58,6 +66,7 @@ const SurveyOption = ({ option, index }) => {
       }}
       placeholder={option.placeholder}
       value={optionContent}
+      onClick={() => setSelectedOption(index)}
       onChange={(e) => setOptionContent(replaceEmojis(e.target.value))}
     />
   );

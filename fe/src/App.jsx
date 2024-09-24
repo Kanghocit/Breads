@@ -26,9 +26,8 @@ function App() {
   const userId = userInfo._id ? userInfo._id : localStorage.getItem("userId");
   const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
   const postAction = useSelector((state) => state.post.postAction);
-  const openPostPopup =
-    postAction === PostConstants.ACTIONS.CREATE ||
-    postAction === PostConstants.ACTIONS.EDIT;
+  const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
+  const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
 
   useEffect(() => {
     if (!!userId) {

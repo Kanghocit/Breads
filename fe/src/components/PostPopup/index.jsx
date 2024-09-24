@@ -17,6 +17,7 @@ import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
 import {
   defaultPostInfo,
+  selectPost,
   updatePostAction,
   updatePostInfo,
 } from "../../store/PostSlice";
@@ -28,6 +29,8 @@ import PostPopupAction from "./action";
 import PostSurvey from "./survey";
 import { Constants } from "../../../../share/Constants";
 import PostConstants from "../../util/PostConstants";
+import Post from "../Post";
+import PostReplied from "./PostReplied";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
@@ -117,10 +120,12 @@ const PostPopup = () => {
         rightBtnAction: () => {
           dispatch(updatePostAction());
           dispatch(updatePostInfo(defaultPostInfo));
+          dispatch(selectPost(null));
         },
       });
     } else {
       dispatch(updatePostAction());
+      dispatch(selectPost(null));
     }
   };
 
@@ -144,6 +149,15 @@ const PostPopup = () => {
           borderRadius={"16px"}
           id="modal"
         >
+          {postSelected?._id && postAction === PostConstants.ACTIONS.REPLY && (
+            <div
+              style={{
+                marginBottom: "12px",
+              }}
+            >
+              <PostReplied post={postSelected} />
+            </div>
+          )}
           <Text
             position={"absolute"}
             top={"-36px"}
@@ -182,7 +196,6 @@ const PostPopup = () => {
                     <Image
                       src={postInfo.media[0].url}
                       alt="Post Media"
-                      mt={3}
                       width={"100%"}
                     />
                   )}
@@ -190,6 +203,10 @@ const PostPopup = () => {
               )}
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}
+              {postSelected?._id &&
+                postAction === PostConstants.ACTIONS.REPOST && (
+                  <Post post={postSelected} />
+                )}
             </Container>
           </Flex>
           <ModalFooter padding="0">

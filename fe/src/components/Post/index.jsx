@@ -163,7 +163,7 @@ const Post = ({ post, isDetail }) => {
           )}
           {post.survey?.length > 0 && <Survey post={post} />}
           <Flex gap={3} my={3}>
-            <Actions liked={liked} setLiked={setLiked} />
+            <Actions post={post} />
           </Flex>
         </CardBody>
       </Card>
