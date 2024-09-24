@@ -13,14 +13,19 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
+import moment from "moment";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
-import Actions from "../Actions";
-import PostMoreActionBox from "./MoreAction";
-import { updateSeeMedia } from "../../store/UtilSlice";
+import { Constants } from "../../../../share/Constants";
 import { selectPost } from "../../store/PostSlice";
+import { updateSeeMedia } from "../../store/UtilSlice";
+import Actions from "../Actions";
+import "./index.css";
+import PostMoreActionBox from "./MoreAction";
+import Survey from "./Survey";
+import ClickOutsideComponent from "../../util/ClickoutCPN";
 
 const Post = ({ post, isDetail }) => {
   const dispatch = useDispatch();
@@ -29,25 +34,22 @@ const Post = ({ post, isDetail }) => {
   const [openPostBox, setOpenPostBox] = useState(false);
 
   const handleSeeDetail = () => {
-    window.open(`/post/${1}`, "_self");
+    window.open(`/post/${post._id}`, "_self");
   };
 
-  const handleSeeFullMedia = () => {
+  const handleSeeFullMedia = (img) => {
     dispatch(
       updateSeeMedia({
         open: true,
-        img: "https://media3.coolmate.me/cdn-cgi/image/quality=80,format=auto/uploads/August2023/D6C07702-DD9D-49A4-9AD7-97C54D4949A0.jpeg",
+        img: img,
       })
     );
-    dispatch(
-      selectPost({
-        _id: "abc",
-      })
-    );
+    //Temp
+    dispatch(selectPost(post));
   };
 
   return (
-    <Card>
+    <Card className="post-container" borderRadius={"12px"}>
       <CardBody>
         <Flex justifyContent={"space-between"}>
           <Popover trigger="hover" placement="bottom-start">
@@ -61,7 +63,11 @@ const Post = ({ post, isDetail }) => {
                     cursor={"pointer"}
                   />
                   <Flex>
-                    <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
+                    <Text
+                      fontSize={"sm"}
+                      fontWeight={"bold"}
+                      cursor={"pointer"}
+                    >
                       {post?.authorInfo?.username}
                     </Text>
                     <Image src="/verified.png" w="4" h={4} ml={4} />
@@ -71,20 +77,24 @@ const Post = ({ post, isDetail }) => {
             </PopoverTrigger>
             <PopoverContent>
               <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
-                <Box >
+                <Box>
                   <Flex justifyContent={"space-between"}>
-                  <Text fontWeight="bold">{userInfo?.username}</Text> 
-                  <Avatar
-                    src={post?.authorInfo?.avatar}
-                    size={"md"}
-                    name={post?.authorInfo?.username}
-                    cursor={"pointer"}
-                  />
+                    <Text fontWeight="bold">{userInfo?.username}</Text>
+                    <Avatar
+                      src={post?.authorInfo?.avatar}
+                      size={"md"}
+                      name={post?.authorInfo?.username}
+                      cursor={"pointer"}
+                    />
                   </Flex>
                   <Text fontSize={"sm"}> {userInfo?.name}</Text>
                   <Text>{post?.content}</Text>
-                  <Text color={"gray.400"}>{userInfo?.followers?.length || 0} người theo dõi</Text>
-                  <Button w={"100%"} bg={"black"}>Theo dõi</Button>
+                  <Text color={"gray.400"}>
+                    {userInfo?.followers?.length || 0} người theo dõi
+                  </Text>
+                  <Button w={"100%"} bg={"black"}>
+                    Theo dõi
+                  </Button>
                 </Box>
               </PopoverBody>
             </PopoverContent>
@@ -92,26 +102,38 @@ const Post = ({ post, isDetail }) => {
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
-              1d
+              {moment(post.createdAt).fromNow()}
             </Text>
-            <Popover>
-              <PopoverTrigger>
+            <div className="btn-more-action">
+              <ClickOutsideComponent
+                onClose={() => {
+                  setOpenPostBox(false);
+                }}
+              >
                 <Button
                   bg={"transparent"}
                   borderRadius={"50%"}
                   width={"32px"}
                   height={"40px"}
                   padding={"0"}
+                  onClick={(e) => {
+                    console.log("click here");
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setOpenPostBox(!openPostBox);
+                  }}
                 >
-                  <BsThreeDots onClick={() => setOpenPostBox(!openPostBox)} />
+                  <BsThreeDots />
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent width={"180px"}>
-                <PopoverBody width={"180px"}>
-                  <PostMoreActionBox user={userInfo} post={post} />
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
+                {openPostBox && (
+                  <PostMoreActionBox
+                    post={post}
+                    postId={post._id}
+                    setOpenPostBox={setOpenPostBox}
+                  />
+                )}
+              </ClickOutsideComponent>
+            </div>
           </Flex>
         </Flex>
         <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
@@ -124,11 +146,16 @@ const Post = ({ post, isDetail }) => {
             border={"1px solid"}
             borderColor={"gray.light"}
             cursor={"pointer"}
-            onClick={() => handleSeeFullMedia()}
+            onClick={() => handleSeeFullMedia(post.media[0].url)}
           >
-            <Image src={post.media[0].url} w={"full"} />
+            {post.media[0].type === Constants.MEDIA_TYPE.IMAGE ? (
+              <Image src={post.media[0].url} w={"full"} />
+            ) : (
+              <video src={post.media[0].url} controls />
+            )}
           </Box>
         )}
+        {post.survey?.length > 0 && <Survey post={post} />}
         <Flex gap={3} my={3}>
           <Actions liked={liked} setLiked={setLiked} />
         </Flex>

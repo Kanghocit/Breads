@@ -26,7 +26,7 @@ const UpdatePost = ({ isOpen, onClose, post }) => {
   });
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`/api/posts/update/${post._id}`, {
+      const res = await fetch(`/api/posts/update/${postId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

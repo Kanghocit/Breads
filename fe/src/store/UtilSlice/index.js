@@ -7,6 +7,7 @@ const initialState = {
     open: false,
     img: "",
   },
+  displayPageData: "",
 };
 
 const utilSlice = createSlice({
@@ -25,8 +26,12 @@ const utilSlice = createSlice({
     updateSeeMedia: (state, action) => {
       state.seeMediaInfo = action.payload;
     },
+    changeDisplayPageData: (state, action) => {
+      state.displayPageData = action.payload;
+    },
   },
 });
 
-export const { changePage, updateSeeMedia } = utilSlice.actions;
+export const { changePage, updateSeeMedia, changeDisplayPageData } =
+  utilSlice.actions;
 export default utilSlice.reducer;

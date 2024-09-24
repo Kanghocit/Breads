@@ -1,48 +1,54 @@
-import { Container, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Text,
+  useColorMode,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { useMemo } from "react";
 import { CiBookmark } from "react-icons/ci";
+import { GoBookmarkSlash, GoReport } from "react-icons/go";
 import { IoIosLink } from "react-icons/io";
 import { IoBan } from "react-icons/io5";
-import { GoReport } from "react-icons/go";
 import { MdDelete, MdEdit } from "react-icons/md"; // Correct icons for delete and update
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addPostToCollection,
+  removePostFromCollection,
+} from "../../../store/UserSlice/asyncThunk";
 import useCopyLink from "./CopyLink";
 import useDeletePost from "./DeletePost";
-import useUpdatePost from "./UpdatePost"; 
 import UpdatePost from "./UpdatePost";
 
-const PostMoreActionBox = ({ user, post }) => {
-  const { copyURL } = useCopyLink();
-  const { handleDeleteClick } = useDeletePost();
+const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const dispatch = useDispatch();
+  const { colorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  
-  const handleActionClick = (actionName) => {
-    switch (actionName) {
-      case "Save":
-        console.log("Saving post...");
-        break;
-      case "Block":
-        console.log("Blocking user...");
-        break;
-      case "Report":
-        console.log("Reporting post...");
-        break;
-      case "Copy link":
-        copyURL(post);
-        break;
-      case "Delete":
-        handleDeleteClick(post);
-        break;
-      case "Update":
-        onOpen();
-        break;
-      default:
-        break;
+  const savedBefore = useMemo(() => {
+    return userInfo?.collection?.includes(postId);
+  }, [userInfo._id]);
+
+  const handleSave = () => {
+    const payload = {
+      userId: userInfo._id,
+      postId: postId,
+    };
+    if (savedBefore) {
+      dispatch(removePostFromCollection(payload));
+    } else {
+      dispatch(addPostToCollection(payload));
     }
   };
 
+  const { copyURL } = useCopyLink();
+  const { handleDeleteClick } = useDeletePost();
+
   const actions = [
     {
-      name: "Save",
-      icon: <CiBookmark />,
+      name: savedBefore ? "Unsave" : "Save",
+      icon: savedBefore ? <GoBookmarkSlash /> : <CiBookmark />,
+      onClick: handleSave,
     },
     {
       name: "Block",
@@ -55,16 +61,25 @@ const PostMoreActionBox = ({ user, post }) => {
     {
       name: "Copy link",
       icon: <IoIosLink />,
+      onClick: () => {
+        copyURL(post);
+      },
     },
-    ...(user._id === post.authorId
+    ...(userInfo._id === post.authorId
       ? [
           {
             name: "Delete",
-            icon: <MdDelete />,
+            icon: <MdDelete />, // Correct delete icon
+            onClick: () => {
+              handleDeleteClick(postId);
+            },
           },
           {
             name: "Update",
-            icon: <MdEdit />, 
+            icon: <MdEdit />, // Correct update icon
+            onClick: () => {
+              onOpen();
+            },
           },
         ]
       : []),
@@ -72,24 +87,42 @@ const PostMoreActionBox = ({ user, post }) => {
 
   return (
     <>
-    <Container width={"100%"} padding={0}>
-      {actions.map(({ name, icon }) => (
-        <Flex
-          key={name}
-          justifyContent={"space-between"}
-          height={"36px"}
-          cursor={"pointer"}
-          alignItems={"center"}
-          onClick={() => handleActionClick(name)}
-        >
-          <Text>{name}</Text>
-          {icon}
-        </Flex>
-      ))}
-    </Container>
-    <UpdatePost isOpen={isOpen} onClose={onClose} post={post} />
+      <Container
+        width={"180px"}
+        position={"absolute"}
+        top={"calc(100% + 12px)"}
+        right={"50%"}
+        borderRadius={"12px"}
+        padding={"12px"}
+        bg={colorMode === "dark" ? "#101010" : "gray.100"}
+        zIndex={1000}
+      >
+        {actions.map(({ name, icon, onClick }) => (
+          <Flex
+            key={name}
+            justifyContent={"space-between"}
+            height={"36px"}
+            cursor={"pointer"}
+            alignItems={"center"}
+            padding={"0 10px"}
+            borderRadius={"8px"}
+            _hover={{
+              bg: "gray",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick && onClick();
+              setOpenPostBox(false);
+              console.log("click action");
+            }}
+          >
+            <Text>{name}</Text>
+            {icon}
+          </Flex>
+        ))}
+      </Container>
+      <UpdatePost isOpen={false} onClose={() => {}} post={post} />
     </>
-    
   );
 };
 

@@ -1,4 +1,5 @@
 import { ObjectId } from "../../util/index.js";
+import Collection from "../models/collection.model.js";
 import User from "../models/user.model.js";
 
 export const getUserInfo = async (userId) => {
@@ -6,20 +7,22 @@ export const getUserInfo = async (userId) => {
     if (!userId) {
       return null;
     }
-    const user = await User.findOne(
+    let user = await User.findOne(
       {
         _id: ObjectId(userId),
       },
       {
-        _id: 1,
-        email: 1,
-        name: 1,
-        username: 1,
-        bio: 1,
-        avatar: 1,
+        password: 0,
+        updatedAt: 0,
       }
     );
-    return user;
+    const userCollection = await Collection.findOne(
+      { userId: ObjectId(userId) },
+      { postsId: 1 }
+    );
+    const cloneUser = JSON.parse(JSON.stringify(user));
+    cloneUser.collection = userCollection.postsId ?? [];
+    return cloneUser;
   } catch (err) {
     console.log(err);
   }

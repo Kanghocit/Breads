@@ -6,10 +6,11 @@ import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
 import { getUserInfo } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
+import Collection from "../models/collection.model.js";
 
 const getAdminAccount = async (req, res) => {
   try {
-    const adminAccount = await User.findOne({
+    let adminAccount = await User.findOne({
       role: Constants.USER_ROLE.ADMIN,
     });
     if (!adminAccount) {
@@ -24,6 +25,11 @@ const getAdminAccount = async (req, res) => {
       res.status(HTTPStatus.CREATED).json(result);
       return;
     }
+    const adminCollection = await Collection.findOne(
+      { userId: adminAccount._id },
+      { postsId: 1 }
+    );
+    adminAccount.collection = adminCollection;
     res.status(HTTPStatus.OK).json(adminAccount);
   } catch (err) {
     console.log(err);
@@ -213,10 +219,7 @@ const getUserProfile = async (req, res) => {
     if (!userId) {
       res.status(HTTPStatus.NO_CONTENT).json("Empty payload");
     }
-    user = await User.findOne(
-      { _id: ObjectId(userId) },
-      { password: 0, updatedAt: 0 }
-    );
+    user = await getUserInfo(userId);
     if (!user)
       return res
         .status(HTTPStatus.BAD_REQUEST)

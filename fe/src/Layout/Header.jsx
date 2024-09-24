@@ -1,15 +1,17 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { memo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import PageConstant from "../../../share/Constants/PageConstants";
 import { containerBoxWidth } from "../components/MainBoxLayout";
-import PageConstant from "../util/PageConstants";
+import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
 
 export const HeaderHeight = "72px";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentPage = useSelector((state) => state.util.currentPage);
   const { colorMode } = useColorMode();
@@ -62,11 +64,14 @@ const Header = () => {
   const handleNavigate = (item) => {
     if (currentPage === ACTIVITY) {
       navigate(ACTIVITY + "/" + item);
+      dispatch(changeDisplayPageData(item));
     } else {
       if (item === "For you") {
         navigate("/" + FOR_YOU);
+        dispatch(changeDisplayPageData(FOR_YOU));
       } else {
         navigate("/" + item);
+        dispatch(changeDisplayPageData(item));
       }
     }
   };

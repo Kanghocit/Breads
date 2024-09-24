@@ -5,7 +5,7 @@ const ClickOutsideComponent = ({ children, onClose }) => {
 
   const handleClickOutside = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
-      onClose && onClose();
+      onClose && onClose(event);
     }
   };
 

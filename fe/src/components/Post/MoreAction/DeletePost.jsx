@@ -7,11 +7,10 @@ const useDeletePost = () => {
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
 
-  const handleDeleteClick = async(post) => {
-    console.log(post._id)
+  const handleDeleteClick = async (postId) => {
     try {
       if (!window.confirm("Are you sure you want to delete this post?")) return;
-      const res = await fetch(`/api/posts/${post?._id}`, {
+      const res = await fetch(`/api/posts/${postId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -37,8 +36,7 @@ const useDeletePost = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate(`/${userInfo.username}`); 
-
+      navigate(`/${userInfo.username}`);
     } catch (error) {
       toast({
         title: "Error",
