@@ -87,12 +87,7 @@ const loginUser = async (req, res) => {
     }
 
     // generateTokenAndSetCookie(user._id, res);
-    res.cookie("userId", user._id, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
+  
     const result = await getUserInfo(user._id);
 
     res.status(HTTPStatus.OK).json(result);

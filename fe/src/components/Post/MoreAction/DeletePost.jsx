@@ -8,7 +8,7 @@ const useDeletePost = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   const handleDeleteClick = async(post) => {
-    
+    console.log(post._id)
     try {
       if (!window.confirm("Are you sure you want to delete this post?")) return;
       const res = await fetch(`/api/posts/${post?._id}`, {

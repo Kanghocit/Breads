@@ -99,8 +99,12 @@ const getPost = async (req, res) => {
 //delete Post
 const deletePost = async (req, res) => {
   try {
+    
+    console.log(req.user)
     const userId = req.user._id;
+    
     const post = await Post.findById(req.params.id);
+    
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
