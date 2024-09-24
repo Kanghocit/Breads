@@ -1,10 +1,4 @@
-import {
-  Container,
-  Flex,
-  Text,
-  useColorMode,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { GoBookmarkSlash, GoReport } from "react-icons/go";
@@ -12,25 +6,28 @@ import { IoIosLink } from "react-icons/io";
 import { IoBan } from "react-icons/io5";
 import { MdDelete, MdEdit } from "react-icons/md"; // Correct icons for delete and update
 import { useDispatch, useSelector } from "react-redux";
+import useShowToast from "../../../hooks/useShowToast";
+import { updatePostAction, updatePostInfo } from "../../../store/PostSlice";
+import { deletePost } from "../../../store/PostSlice/asyncThunk";
 import {
   addPostToCollection,
   removePostFromCollection,
 } from "../../../store/UserSlice/asyncThunk";
-import useCopyLink from "./CopyLink";
-import useDeletePost from "./DeletePost";
-import UpdatePost from "./UpdatePost";
-import {
-  selectPost,
-  updatePostAction,
-  updatePostInfo,
-} from "../../../store/PostSlice";
 import PostConstants from "../../../util/PostConstants";
+import useCopyLink from "./CopyLink";
 
-const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
+const PostMoreActionBox = ({
+  post,
+  postId,
+  setOpenPostBox,
+  setPopupCancelInfo,
+  closePopupCancel,
+}) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
   const { colorMode } = useColorMode();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const showToast = useShowToast();
+  const { copyURL } = useCopyLink();
   const savedBefore = useMemo(() => {
     return userInfo?.collection?.includes(postId);
   }, [userInfo._id]);
@@ -47,8 +44,16 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
     }
   };
 
-  const { copyURL } = useCopyLink();
-  const { handleDeleteClick } = useDeletePost();
+  const handleDelete = () => {
+    try {
+      dispatch(deletePost({ postId: postId }));
+      closePopupCancel();
+      showToast("", "Delete success", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("", err, "error");
+    }
+  };
 
   const actions = [
     {
@@ -77,14 +82,28 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
             name: "Delete",
             icon: <MdDelete />,
             onClick: () => {
-              handleDeleteClick(postId);
+              setPopupCancelInfo({
+                open: true,
+                title: "Delete Bread",
+                content: `Do you want to delete this bread ?`,
+                leftBtnText: "Cancel",
+                rightBtnText: "Delete",
+                leftBtnAction: () => {
+                  closePopupCancel();
+                },
+                rightBtnAction: () => {
+                  handleDelete();
+                },
+                rightBtnStyle: {
+                  color: "red",
+                },
+              });
             },
           },
           {
             name: "Update",
             icon: <MdEdit />,
             onClick: () => {
-              onOpen();
               dispatch(updatePostAction(PostConstants.ACTIONS.EDIT));
               dispatch(updatePostInfo(post));
             },
@@ -128,7 +147,6 @@ const PostMoreActionBox = ({ post, postId, setOpenPostBox }) => {
           </Flex>
         ))}
       </Container>
-      <UpdatePost isOpen={false} onClose={() => {}} post={post} />
     </>
   );
 };

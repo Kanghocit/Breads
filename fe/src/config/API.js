@@ -53,3 +53,16 @@ export const PATCH = async ({ path, payload }) => {
     throw new Error(err);
   }
 };
+
+export const DELETE = async ({ path, params }) => {
+  try {
+    const url = serverUrl + "/api/" + path;
+    const { data } = await axios.delete(url, {
+      params: params,
+    });
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw new Error(err);
+  }
+};

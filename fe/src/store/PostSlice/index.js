@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   createPost,
+  deletePost,
   editPost,
   getPosts,
   selectSurveyOption,
@@ -82,6 +83,10 @@ const postSlice = createSlice({
         ...postUpdated,
       };
       state.postAction = "";
+    });
+    builder.addCase(deletePost.fulfilled, (state, action) => {
+      const postId = action.payload;
+      state.listPost = state.listPost.filter((post) => post._id !== postId);
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId } = action.payload;

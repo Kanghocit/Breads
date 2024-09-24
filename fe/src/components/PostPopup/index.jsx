@@ -108,7 +108,7 @@ const PostPopup = () => {
         title: isEditing ? "Stop Editing" : "Stop Creating",
         content: `Do you want to stop ${
           isEditing ? "editing" : "creating"
-        } this post ?`,
+        } this bread ?`,
         leftBtnText: "Cancel",
         rightBtnText: "Discard",
         leftBtnAction: () => {

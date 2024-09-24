@@ -99,8 +99,12 @@ const getPost = async (req, res) => {
 //delete Post
 const deletePost = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const post = await Post.findById(req.params.id);
+    const postId = req.params.id;
+    const userId = req.query.userId;
+    if (!postId | !userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
@@ -110,7 +114,7 @@ const deletePost = async (req, res) => {
         .json({ error: "Unauthorized to delete post" });
     }
 
-    await Post.findByIdAndDelete(req.params.id);
+    await Post.findByIdAndDelete(postId);
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });
   } catch (err) {

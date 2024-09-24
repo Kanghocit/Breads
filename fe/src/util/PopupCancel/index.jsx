@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "./index.css";
 
 const PopupCancel = ({ popupCancelInfo }) => {
@@ -22,7 +21,11 @@ const PopupCancel = ({ popupCancelInfo }) => {
           <button className="action" onClick={() => leftBtnAction()}>
             {leftBtnText}
           </button>
-          <button className="action" onClick={() => rightBtnAction()}>
+          <button
+            className="action"
+            onClick={() => rightBtnAction()}
+            style={popupCancelInfo.rightBtnStyle}
+          >
             {rightBtnText}
           </button>
         </div>
