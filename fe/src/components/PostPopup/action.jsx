@@ -7,13 +7,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../../../share/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
-import PostMedia from "./media";
+import GifBox from "./gif";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const imageRef = useRef(null);
-  const {isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = async (img) => {
     const base64 = await convertToBase64(img);
@@ -68,7 +68,7 @@ const PostPopupAction = () => {
           />
         </Flex>
       </Flex>
-      <PostMedia isOpen={isOpen} onClose={onClose}/>
+      <GifBox isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

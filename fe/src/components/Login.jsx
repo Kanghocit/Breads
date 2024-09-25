@@ -32,8 +32,8 @@ export default function Login() {
   const showToast = useShowToast();
 
   useEffect(() => {
+    //Login as admin
     if (countClick === 5) {
-      console.log("test");
       handleLogin(true);
     }
   }, [countClick]);

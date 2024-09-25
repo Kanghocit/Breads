@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createPost, getPosts, selectSurveyOption } from "./asyncThunk";
+import {
+  createPost,
+  deletePost,
+  editPost,
+  getPost,
+  getPosts,
+  selectSurveyOption,
+} from "./asyncThunk";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {
@@ -13,7 +20,6 @@ export const defaultPostInfo = {
   media: [],
   survey: [],
 };
-
 
 const initialState = {
   listPost: [],
@@ -50,6 +56,13 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(getPost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getPost.fulfilled, (state, action) => {
+      const postSelected = action.payload;
+      state.postSelected = postSelected;
+    });
     builder.addCase(getPosts.pending, (state) => {
       state.isLoading = true;
     });
@@ -67,6 +80,21 @@ const postSlice = createSlice({
       state.listPost = [newPost, ...state.listPost];
       state.isLoading = false;
       state.postAction = "";
+    });
+    builder.addCase(editPost.fulfilled, (state, action) => {
+      const postUpdated = action.payload;
+      const postIndex = state.listPost.findIndex(
+        (post) => post._id === postUpdated._id
+      );
+      state.listPost[postIndex] = {
+        ...state.listPost[postIndex],
+        ...postUpdated,
+      };
+      state.postAction = "";
+    });
+    builder.addCase(deletePost.fulfilled, (state, action) => {
+      const postId = action.payload;
+      state.listPost = state.listPost.filter((post) => post._id !== postId);
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId } = action.payload;

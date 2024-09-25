@@ -2,11 +2,13 @@ import { Collapse, Container, Flex, Text } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import SurveyOption from "./survey-option";
+import { useState } from "react";
 
 const PostSurvey = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const survey = postInfo.survey;
+  const [selectedOption, setSelectedOption] = useState(0);
 
   const handleRemoveSurvey = () => {
     dispatch(
@@ -25,6 +27,8 @@ const PostSurvey = () => {
             key={`survey-${item.value}-${index}`}
             option={item}
             index={index}
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
           />
         ))}
         <Flex

@@ -1,22 +1,64 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { GET, POST, PUT } from "../../config/API";
+import { DELETE, GET, POST, PUT } from "../../config/API";
 
 export const createPost = createAsyncThunk(
   "post/create",
-  async (payload, thunkApi) => {
+  async ({ postPayload, action }, thunkApi) => {
     try {
-      if (payload.survey?.length) {
-        payload.survey = payload.survey.filter(
+      if (postPayload.survey?.length) {
+        postPayload.survey = postPayload.survey.filter(
           (option) => option.value.trim() !== ""
         );
       }
       const dispatch = thunkApi.dispatch;
       const data = await POST({
         path: "posts/create",
-        payload,
+        payload: postPayload,
+        params: {
+          action: action,
+        },
       });
       dispatch(getPosts());
       return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const editPost = createAsyncThunk(
+  "post/update",
+  async (payload, thunkApi) => {
+    try {
+      const rootState = thunkApi.getState();
+      const userInfo = rootState.user.userInfo;
+      payload = {
+        ...payload,
+        userId: userInfo._id,
+      };
+      const data = await PUT({
+        path: "posts/update",
+        payload,
+      });
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "post/delete",
+  async (payload, thunkApi) => {
+    try {
+      const rootState = thunkApi.getState();
+      const userInfo = rootState.user.userInfo;
+      const { postId } = payload;
+      await DELETE({
+        path: "posts/" + postId,
+        params: { userId: userInfo._id },
+      });
+      return postId;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }
@@ -33,6 +75,20 @@ export const getPosts = createAsyncThunk(
         params,
       });
       return posts;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getPost = createAsyncThunk(
+  "post/getPost",
+  async (postId, thunkApi) => {
+    try {
+      const data = await GET({
+        path: "posts/" + postId,
+      });
+      return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }

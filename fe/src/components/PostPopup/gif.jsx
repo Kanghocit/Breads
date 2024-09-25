@@ -13,9 +13,13 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePostInfo } from "../../store/PostSlice";
+import { Constants } from "../../../../share/Constants";
 
-const PostMedia = ({ isOpen, onClose }) => {
+const GifBox = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
+  const postInfo = useSelector((state) => state.post.postInfo);
   const gif = [
     "https://media.giphy.com/media/3o6ZsUaNnPPLf9Ek1K/giphy.gif",
     "https://media.giphy.com/media/jq7tzQFz2ZaQNnLXl4/giphy.gif?cid=790b7611x869xooikr2du1u77b52xx0pgob7kvlukmrwh9wx&ep=v1_gifs_search&rid=giphy.gif&ct=g",
@@ -28,6 +32,21 @@ const PostMedia = ({ isOpen, onClose }) => {
     "https://media.giphy.com/media/3CCXHZWV6F6O9VQ7FL/giphy.gif?cid=790b7611c6m3breeww4znirt1f4wtzofs6dk6ddu9vyuoyvv&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
     "https://media.giphy.com/media/mLZ6kvGkH31z0BAKUX/giphy.gif?cid=790b7611c6m3breeww4znirt1f4wtzofs6dk6ddu9vyuoyvv&ep=v1_gifs_trending&rid=giphy.gif&ct=g",
   ];
+
+  const handleAddGif = (url) => {
+    dispatch(
+      updatePostInfo({
+        ...postInfo,
+        media: [
+          {
+            url: url,
+            type: Constants.MEDIA_TYPE.GIF,
+          },
+        ],
+      })
+    );
+    onClose();
+  };
 
   return (
     <>
@@ -56,7 +75,7 @@ const PostMedia = ({ isOpen, onClose }) => {
             fontWeight={600}
             fontSize={"18px"}
           >
-            Chọn file GIF
+            Choose a gif
           </Text>
           <ModalCloseButton
             position={"absolute"}
@@ -87,13 +106,14 @@ const PostMedia = ({ isOpen, onClose }) => {
             <Flex wrap="wrap" ml={"10px"}>
               {gif.map((link, index) => (
                 <Image
-                  key={index}
+                  key={link}
                   src={link}
                   alt={`GIF ${index + 1}`}
                   maxWidth="48%"
                   height="auto" // Maintain the original height of the GIF
                   borderRadius={"9px"}
                   m={1}
+                  onClick={() => handleAddGif(link)}
                 />
               ))}
             </Flex>
@@ -105,4 +125,4 @@ const PostMedia = ({ isOpen, onClose }) => {
   );
 };
 
-export default PostMedia;
+export default GifBox;

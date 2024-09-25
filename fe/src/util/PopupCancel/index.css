@@ -13,8 +13,8 @@
     transform: translate(-50%, -50%);
 
     width: fit-content;
-    min-width: 240px;
-    max-width: 420px;
+    min-width: 280px;
+    max-width: 460px;
 
     height: fit-content;
     min-height: 160px;
@@ -39,9 +39,12 @@
       gap: 10px;
       .title {
         font-weight: 600;
+        font-size: 18px;
       }
       .content {
         color: gray;
+        font-size: 14px;
+        font-weight: 600;
       }
     }
     .actions {
@@ -51,6 +54,7 @@
         height: 42px;
         border: 1px solid gray;
         font-size: 14px;
+        font-weight: 600;
         &:hover {
           opacity: 0.8;
         }

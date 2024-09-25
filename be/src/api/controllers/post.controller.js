@@ -4,13 +4,18 @@ import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
-import { getPostDetail, getPostsIdByFilter } from "../services/post.js";
+import {
+  getPostDetail,
+  getPostsIdByFilter,
+  handleReplyForParentPost,
+} from "../services/post.js";
 import { uploadFile } from "../utils/index.js";
 
 //create post
-const createPost = async (req, res) => {
+export const createPost = async (req, res) => {
   try {
     const payload = req.body;
+    const action = req.query.action;
     const { authorId, content, media, parentPost, survey } = payload;
     const user = await User.findById(authorId);
     if (!user) {
@@ -63,14 +68,24 @@ const createPost = async (req, res) => {
       }
     }
     const optionsId = newSurvey.map((option) => option?._id);
-    const newPost = new Post({
+    const newPostPayload = {
       authorId,
       content,
       media: newMedia,
-      parentPost,
       survey: optionsId,
-    });
+    };
+    if (action === "repost") {
+      newPostPayload.parentPost = parentPost;
+    }
+    const newPost = new Post(newPostPayload);
     await newPost.save();
+    if (parentPost && action === "reply") {
+      await handleReplyForParentPost({
+        parentId: parentPost,
+        replyId: newPost._id,
+        addNew: true,
+      });
+    }
     res
       .status(HTTPStatus.CREATED)
       .json({ message: "Post created successfully!", newPost });
@@ -81,38 +96,40 @@ const createPost = async (req, res) => {
 };
 
 //get post
-const getPost = async (req, res) => {
+export const getPost = async (req, res) => {
   try {
     const postId = ObjectId(req.params.id);
-    const post = await Post.findById(postId);
+    const post = await getPostDetail(postId);
     if (!post) {
       return res
         .status(HTTPStatus.NOT_FOUND)
         .json({ error: "Post not found!" });
     }
-    res.status(HTTPStatus.OK).json({ post });
+    res.status(HTTPStatus.OK).json(post);
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
   }
 };
 //delete Post
-const deletePost = async (req, res) => {
+export const deletePost = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const post = await Post.findById(req.params.id);
+    const postId = req.params.id;
+    const userId = req.query.userId;
+    if (!postId | !userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
     }
-    console.log("authorId:", post.authorId);
-    console.log("userId:", userId);
     if (post.authorId.toString() !== userId.toString()) {
       return res
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });
     }
 
-    await Post.findByIdAndDelete(req.params.id);
+    await Post.findByIdAndDelete(postId);
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });
   } catch (err) {
@@ -121,32 +138,37 @@ const deletePost = async (req, res) => {
   }
 };
 //updatePost
-const updatePost = async (req, res) => {
-  const { content } = req.body;
-  const postId = req.params.id;
-  console.log(req.user)
-  if(!req.user){
-    return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
-  }
+export const updatePost = async (req, res) => {
+  const payload = req.body;
+  const postId = payload._id;
+  const { media, content, survey } = payload;
+  // if(!req.user){
+  //   return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized"})
+  // }
   try {
     let post = await Post.findById(postId);
-    if(!post) {
-      return res.status(HTTPStatus.NOT_FOUND).json("Post not found")
+    if (!post) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Post not found");
     }
 
-    if(post.authorId.toString() !== req.user._id.toString()){
-      return res.status(HTTPStatus.UNAUTHORIZED).json({error: "Unauthorized to update this post"})
+    if (post.authorId.toString() !== payload.userId.toString()) {
+      return res
+        .status(HTTPStatus.UNAUTHORIZED)
+        .json({ error: "Unauthorized to update this post" });
     }
 
-    post.content = content || post.content 
+    post.content = content;
+    post.media = media;
+    post.survey = survey;
     post = await post.save();
+    res.status(HTTPStatus.OK).json(post);
   } catch (error) {
-    res.status(HTTPStatus.SERVER_ERR).json({error: error.message})
+    res.status(HTTPStatus.SERVER_ERR).json({ error: error.message });
   }
 };
 
 //like and unlike post
-const likeUnlikePost = async (req, res) => {
+export const likeUnlikePost = async (req, res) => {
   try {
     const { id: postId } = req.params;
     const userId = req.user._id;
@@ -174,7 +196,7 @@ const likeUnlikePost = async (req, res) => {
 
 //reply post
 
-const replyToPost = async (req, res) => {
+export const replyToPost = async (req, res) => {
   try {
     const { text } = req.body;
     const postId = req.params.id;
@@ -205,7 +227,7 @@ const replyToPost = async (req, res) => {
 };
 
 //get feed post
-const getFeedPosts = async (req, res) => {
+export const getFeedPosts = async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await User.findById(userId);
@@ -228,7 +250,7 @@ const getFeedPosts = async (req, res) => {
 };
 
 //Temp
-const getPosts = async (req, res) => {
+export const getPosts = async (req, res) => {
   try {
     const payload = req.query;
     const data = await getPostsIdByFilter(payload);
@@ -244,7 +266,7 @@ const getPosts = async (req, res) => {
   }
 };
 
-const tickPostSurvey = async (req, res) => {
+export const tickPostSurvey = async (req, res) => {
   try {
     const { optionId, userId, isAdd } = req.body;
     if (!optionId || !userId) {
@@ -270,16 +292,4 @@ const tickPostSurvey = async (req, res) => {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
-};
-
-export {
-  createPost,
-  deletePost,
-  getFeedPosts,
-  getPost,
-  getPosts,
-  updatePost,
-  likeUnlikePost,
-  replyToPost,
-  tickPostSurvey,
 };
