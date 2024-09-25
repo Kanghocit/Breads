@@ -34,7 +34,11 @@ const Actions = ({ post }) => {
       icon: <RepostIcon />,
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPOST));
-        dispatch(selectPost(post));
+        let postSelected = JSON.parse(JSON.stringify(post));
+        if (postSelected.parentPostInfo) {
+          delete postSelected.parentPostInfo;
+        }
+        dispatch(selectPost(postSelected));
       },
     },
     {
@@ -46,7 +50,7 @@ const Actions = ({ post }) => {
 
   return (
     <>
-      <Flex gap={3} my={2} onClick={(e) => e.preventDefault()} mb={0}>
+      <Flex onClick={(e) => e.preventDefault()} mb={0}>
         {listActions.map(({ name, icon, onClick }, index) => (
           <Button
             key={name}

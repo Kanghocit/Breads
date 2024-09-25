@@ -3,6 +3,7 @@ import {
   createPost,
   deletePost,
   editPost,
+  getPost,
   getPosts,
   selectSurveyOption,
 } from "./asyncThunk";
@@ -55,6 +56,13 @@ const postSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(getPost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getPost.fulfilled, (state, action) => {
+      const postSelected = action.payload;
+      state.postSelected = postSelected;
+    });
     builder.addCase(getPosts.pending, (state) => {
       state.isLoading = true;
     });

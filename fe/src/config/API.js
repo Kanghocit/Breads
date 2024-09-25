@@ -21,10 +21,12 @@ export const GET = async ({ path, params = null }) => {
   }
 };
 
-export const POST = async ({ path, payload }) => {
+export const POST = async ({ path, payload, params }) => {
   try {
     const url = serverUrl + "/api/" + path;
-    const { data } = await axios.post(url, payload);
+    const { data } = await axios.post(url, payload, {
+      params: params,
+    });
     return data;
   } catch (err) {
     console.error(err);

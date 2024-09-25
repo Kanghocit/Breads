@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Constants } from "../../../../share/Constants";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
@@ -24,13 +25,12 @@ import {
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
-import TextArea from "../../util/TextArea";
-import PostPopupAction from "./action";
-import PostSurvey from "./survey";
-import { Constants } from "../../../../share/Constants";
 import PostConstants from "../../util/PostConstants";
+import TextArea from "../../util/TextArea";
 import Post from "../Post";
+import PostPopupAction from "./action";
 import PostReplied from "./PostReplied";
+import PostSurvey from "./survey";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
@@ -95,7 +95,13 @@ const PostPopup = () => {
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
-        dispatch(createPost(payload));
+        if (
+          postAction === PostConstants.ACTIONS.REPLY ||
+          postAction === PostConstants.ACTIONS.REPOST
+        ) {
+          payload.parentPost = postSelected._id;
+        }
+        dispatch(createPost({ postPayload: payload, action: postAction }));
       }
     } catch (err) {
       console.error(err);
@@ -205,7 +211,7 @@ const PostPopup = () => {
               {postInfo.survey.length !== 0 && <PostSurvey />}
               {postSelected?._id &&
                 postAction === PostConstants.ACTIONS.REPOST && (
-                  <Post post={postSelected} />
+                  <Post post={postSelected} isParentPost={true} />
                 )}
             </Container>
           </Flex>

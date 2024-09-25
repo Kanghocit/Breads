@@ -1,20 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { GET, POST, PUT, DELETE } from "../../config/API";
-import { updatePostAction } from ".";
+import { DELETE, GET, POST, PUT } from "../../config/API";
 
 export const createPost = createAsyncThunk(
   "post/create",
-  async (payload, thunkApi) => {
+  async ({ postPayload, action }, thunkApi) => {
     try {
-      if (payload.survey?.length) {
-        payload.survey = payload.survey.filter(
+      if (postPayload.survey?.length) {
+        postPayload.survey = postPayload.survey.filter(
           (option) => option.value.trim() !== ""
         );
       }
       const dispatch = thunkApi.dispatch;
       const data = await POST({
         path: "posts/create",
-        payload,
+        payload: postPayload,
+        params: {
+          action: action,
+        },
       });
       dispatch(getPosts());
       return data;
@@ -73,6 +75,20 @@ export const getPosts = createAsyncThunk(
         params,
       });
       return posts;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getPost = createAsyncThunk(
+  "post/getPost",
+  async (postId, thunkApi) => {
+    try {
+      const data = await GET({
+        path: "posts/" + postId,
+      });
+      return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }

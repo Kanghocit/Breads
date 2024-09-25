@@ -29,10 +29,9 @@ import Survey from "./Survey";
 import PopupCancel from "../../util/PopupCancel";
 import usePopupCancel from "../../hooks/usePopupCancel";
 
-const Post = ({ post, isDetail }) => {
+const Post = ({ post, isDetail, isParentPost = false }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const [liked, setLiked] = useState(false);
   const [openPostBox, setOpenPostBox] = useState(false);
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
@@ -54,7 +53,11 @@ const Post = ({ post, isDetail }) => {
 
   return (
     <>
-      <Card className="post-container" borderRadius={"12px"}>
+      <Card
+        className="post-container"
+        borderRadius={"12px"}
+        border={isParentPost ? "1px solid gray" : ""}
+      >
         <CardBody>
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
@@ -84,7 +87,7 @@ const Post = ({ post, isDetail }) => {
                 <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
                   <Box>
                     <Flex justifyContent={"space-between"}>
-                      <Text fontWeight="bold">{userInfo?.username}</Text>
+                      <Text fontWeight="bold">{post.authorInfo?.username}</Text>
                       <Avatar
                         src={post?.authorInfo?.avatar}
                         size={"md"}
@@ -92,10 +95,10 @@ const Post = ({ post, isDetail }) => {
                         cursor={"pointer"}
                       />
                     </Flex>
-                    <Text fontSize={"sm"}> {userInfo?.name}</Text>
+                    <Text fontSize={"sm"}> {post.authorInfo?.name}</Text>
                     <Text>{post?.content}</Text>
                     <Text color={"gray.400"}>
-                      {userInfo?.followers?.length || 0} người theo dõi
+                      {post.authorInfo?.followers?.length || 0} người theo dõi
                     </Text>
                     <Button w={"100%"} bg={"black"}>
                       Theo dõi
@@ -107,43 +110,53 @@ const Post = ({ post, isDetail }) => {
 
             <Flex gap={4} alignItems={"center"}>
               <Text fontSize={"sm"} color={"gray.light"}>
-                {moment(post.createdAt).fromNow()}
+                {moment(post?.createdAt).fromNow()}
               </Text>
-              <div className="btn-more-action">
-                <ClickOutsideComponent
-                  onClose={() => {
-                    setOpenPostBox(false);
-                  }}
-                >
-                  <Button
-                    bg={"transparent"}
-                    borderRadius={"50%"}
-                    width={"32px"}
-                    height={"40px"}
-                    padding={"0"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setOpenPostBox(!openPostBox);
+              {!isParentPost && (
+                <div className="btn-more-action">
+                  <ClickOutsideComponent
+                    onClose={() => {
+                      setOpenPostBox(false);
                     }}
                   >
-                    <BsThreeDots />
-                  </Button>
-                  {openPostBox && (
-                    <PostMoreActionBox
-                      post={post}
-                      postId={post._id}
-                      setOpenPostBox={setOpenPostBox}
-                      setPopupCancelInfo={setPopupCancelInfo}
-                      closePopupCancel={closePopupCancel}
-                    />
-                  )}
-                </ClickOutsideComponent>
-              </div>
+                    <Button
+                      bg={"transparent"}
+                      borderRadius={"50%"}
+                      width={"32px"}
+                      height={"40px"}
+                      padding={"0"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setOpenPostBox(!openPostBox);
+                      }}
+                    >
+                      <BsThreeDots />
+                    </Button>
+                    {openPostBox && (
+                      <PostMoreActionBox
+                        post={post}
+                        postId={post._id}
+                        setOpenPostBox={setOpenPostBox}
+                        setPopupCancelInfo={setPopupCancelInfo}
+                        closePopupCancel={closePopupCancel}
+                      />
+                    )}
+                  </ClickOutsideComponent>
+                </div>
+              )}
             </Flex>
           </Flex>
-          <Text my={3} cursor={"pointer"} onClick={() => handleSeeDetail()}>
-            {post.content}
+          <Text
+            my={3}
+            cursor={"pointer"}
+            onClick={() => {
+              if (!isDetail) {
+                handleSeeDetail();
+              }
+            }}
+          >
+            {post?.content}
           </Text>
           {!!post.media?.length > 0 && (
             <Box
@@ -162,9 +175,14 @@ const Post = ({ post, isDetail }) => {
             </Box>
           )}
           {post.survey?.length > 0 && <Survey post={post} />}
-          <Flex gap={3} my={3}>
-            <Actions post={post} />
-          </Flex>
+          {post?.parentPostInfo && (
+            <Post post={post?.parentPostInfo} isParentPost={true} />
+          )}
+          {!isParentPost && (
+            <Flex gap={3} my={"10px"}>
+              <Actions post={post} />
+            </Flex>
+          )}
         </CardBody>
       </Card>
       {popupCancelInfo.open && (
