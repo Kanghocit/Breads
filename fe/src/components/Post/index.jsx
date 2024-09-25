@@ -33,6 +33,7 @@ const Post = ({ post, isDetail }) => {
   const [liked, setLiked] = useState(false);
   const [openPostBox, setOpenPostBox] = useState(false);
 
+  console.log(userInfo)
   const handleSeeDetail = () => {
     window.open(`/post/${post._id}`, "_self");
   };
@@ -52,53 +53,53 @@ const Post = ({ post, isDetail }) => {
     <Card className="post-container" borderRadius={"12px"}>
       <CardBody>
         <Flex justifyContent={"space-between"}>
-          <Popover trigger="hover" placement="bottom-start">
-            <PopoverTrigger>
-              <Link as={RouterLink} to={`/user/${userInfo._id}`}>
-                <Flex w={"full"} alignItems={"center"} gap={3}>
-                  <Avatar
-                    src={post?.authorInfo?.avatar}
-                    size={"md"}
-                    name={post?.authorInfo?.username}
-                    cursor={"pointer"}
-                  />
-                  <Flex>
-                    <Text
-                      fontSize={"sm"}
-                      fontWeight={"bold"}
-                      cursor={"pointer"}
-                    >
-                      {post?.authorInfo?.username}
-                    </Text>
-                    <Image src="/verified.png" w="4" h={4} ml={4} />
-                  </Flex>
-                </Flex>
-              </Link>
-            </PopoverTrigger>
-            <PopoverContent>
-              <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
-                <Box>
-                  <Flex justifyContent={"space-between"}>
-                    <Text fontWeight="bold">{userInfo?.username}</Text>
-                    <Avatar
-                      src={post?.authorInfo?.avatar}
-                      size={"md"}
-                      name={post?.authorInfo?.username}
-                      cursor={"pointer"}
-                    />
-                  </Flex>
-                  <Text fontSize={"sm"}> {userInfo?.name}</Text>
-                  <Text>{post?.content}</Text>
-                  <Text color={"gray.400"}>
-                    {userInfo?.followers?.length || 0} người theo dõi
+          <Flex w={"full"} alignItems={"center"} gap={3}>
+            <Avatar
+              src={post?.authorInfo?.avatar}
+              size={"md"}
+              name={post?.authorInfo?.username}
+              cursor={"pointer"}
+            />
+
+            <Popover trigger="hover" placement="bottom-start">
+              <PopoverTrigger>
+                <Link as={RouterLink} to={`/user/${userInfo._id}`}>
+                  <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
+                    {post?.authorInfo?.username}
                   </Text>
-                  <Button w={"100%"} bg={"black"}>
-                    Theo dõi
-                  </Button>
-                </Box>
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
+                </Link>
+              </PopoverTrigger>
+
+              <PopoverContent borderRadius={"12px"} border={"none"}>
+                <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
+                  <Box>
+                    <Flex justifyContent={"space-between"}>
+                      <Flex>
+                      <Text fontWeight="bold">{userInfo?.username}</Text>
+                      <Text>{userInfo.name}</Text>
+                      </Flex>
+                      <Avatar
+                        src={post?.authorInfo?.avatar}
+                        size={"md"}
+                        name={post?.authorInfo?.username}
+                        cursor={"pointer"}
+                      />
+                    </Flex>
+                    <Text fontSize={"sm"}> {userInfo?.name}</Text>
+                    <Text>{post?.content}</Text>
+                    <Text color={"gray.400"}>
+                      {userInfo?.followers?.length || 0} người theo dõi
+                    </Text>
+                    <Button w={"100%"} bg={"black"}  _hover={{ opacity: 0.8 }}>
+                      Theo dõi
+                    </Button>
+                  </Box>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+
+            <Image src="/verified.png" w="4" h={4} />
+          </Flex>
 
           <Flex gap={4} alignItems={"center"}>
             <Text fontSize={"sm"} color={"gray.light"}>
