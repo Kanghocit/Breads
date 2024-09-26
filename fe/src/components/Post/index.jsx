@@ -65,13 +65,13 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
         <CardBody>
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
-              <Flex w={"full"} alignItems={"center"} gap={3}>
+              <Flex alignItems={"center"} gap={3}>
                 <Avatar
                   src={post?.authorInfo?.avatar}
                   size={"md"}
                   name={post?.authorInfo?.username}
                   cursor={"pointer"}
-                  position={"relative"} 
+                  position={"relative"}
                 />
                 <Flex>
                   <PopoverTrigger>
@@ -116,8 +116,8 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                     <Button
                       w={"100%"}
                       bg={"black"}
-                      color={"white"} 
-                      _hover={{ opacity: 0.8 }} 
+                      color={"white"}
+                      _hover={{ opacity: 0.8 }}
                       _active={{ opacity: 0.6 }}
                       transition="opacity 0.2s"
                     >
