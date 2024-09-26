@@ -65,31 +65,40 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
         <CardBody>
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
-              <PopoverTrigger>
-                <Link as={RouterLink} to={`/users/${userInfo._id}`}>
-                  <Flex w={"full"} alignItems={"center"} gap={3}>
-                    <Avatar
-                      src={post?.authorInfo?.avatar}
-                      size={"md"}
-                      name={post?.authorInfo?.username}
-                      cursor={"pointer"}
-                    />
-                    <Flex>
+              <Flex w={"full"} alignItems={"center"} gap={3}>
+                <Avatar
+                  src={post?.authorInfo?.avatar}
+                  size={"md"}
+                  name={post?.authorInfo?.username}
+                  cursor={"pointer"}
+                  position={"relative"} // Set position to relative
+                />
+                <Flex>
+                  <PopoverTrigger>
+                    <Link as={RouterLink} to={`/user/${userInfo._id}`}>
                       <Text
                         fontSize={"sm"}
                         fontWeight={"bold"}
                         cursor={"pointer"}
+                        _hover={{ textDecoration: "underline" }}
                       >
                         {post?.authorInfo?.username}
                       </Text>
-                      <Image src="/verified.png" w="4" h={4} ml={4} />
-                    </Flex>
-                  </Flex>
-                </Link>
-              </PopoverTrigger>
-              <PopoverContent>
+                    </Link>
+                  </PopoverTrigger>
+                  <Image src="/verified.png" w="4" h={4} ml={2} />
+                </Flex>
+              </Flex>
+
+              <PopoverContent
+                position="absolute"
+                top="-1"
+                left="-7"
+                transform="translateX(-50%)"
+                borderRadius={"10px"}
+              >
                 <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
-                  <Box>
+                  <Box m={2}>
                     <Flex justifyContent={"space-between"}>
                       <Text fontWeight="bold">{post.authorInfo?.username}</Text>
                       <Avatar
@@ -104,7 +113,14 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                     <Text color={"gray.400"}>
                       {post.authorInfo?.followers?.length || 0} người theo dõi
                     </Text>
-                    <Button w={"100%"} bg={"black"}>
+                    <Button
+                      w={"100%"}
+                      bg={"black"}
+                      color={"white"} 
+                      _hover={{ opacity: 0.8 }} 
+                      _active={{ opacity: 0.6 }}
+                      transition="opacity 0.2s"
+                    >
                       Theo dõi
                     </Button>
                   </Box>
