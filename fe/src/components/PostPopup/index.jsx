@@ -1,3 +1,4 @@
+import { CloseIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Button,
@@ -31,7 +32,6 @@ import Post from "../Post";
 import PostPopupAction from "./action";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
-import { CloseIcon } from "@chakra-ui/icons";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
