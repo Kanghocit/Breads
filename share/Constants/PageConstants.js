@@ -6,7 +6,7 @@ class PageConstant {
   static SEARCH = "search";
   static PROFILE = "profile";
   static ACTIVITY = "activity";
-  static USER = "user";
+  static USER = "users";
   static SETTING = {
     DEFAULT: "setting",
     PRIVACY: "setting/privacy",

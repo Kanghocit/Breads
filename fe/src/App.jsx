@@ -102,9 +102,9 @@ function App() {
           }
         />
 
-        <Route path="/user/:userId" element={<UserPage />} />
+        <Route path="/users/:userId" element={<UserPage />} />
         <Route path="/:username/post/:pid" element={<PostPage />} />
-        <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
         {ActivityRoute()}

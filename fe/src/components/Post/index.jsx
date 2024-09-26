@@ -13,31 +13,34 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
+import { RiDoubleQuotesL } from "react-icons/ri";
 import moment from "moment";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Constants } from "../../../../share/Constants";
+import usePopupCancel from "../../hooks/usePopupCancel";
 import { selectPost } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
+import PopupCancel from "../../util/PopupCancel";
 import Actions from "../Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import PopupCancel from "../../util/PopupCancel";
-import usePopupCancel from "../../hooks/usePopupCancel";
-
+import PostConstants from "../../util/PostConstants";
 const Post = ({ post, isDetail, isParentPost = false }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const postAction = useSelector((state) => state.post.postAction);
   const [openPostBox, setOpenPostBox] = useState(false);
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
   const handleSeeDetail = () => {
-    window.open(`/post/${post._id}`, "_self");
+    window.open(`/posts/${post._id}`, "_self");
   };
 
   const handleSeeFullMedia = (img) => {
@@ -62,7 +65,7 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
               <PopoverTrigger>
-                <Link as={RouterLink} to={`/user/${userInfo._id}`}>
+                <Link as={RouterLink} to={`/users/${userInfo._id}`}>
                   <Flex w={"full"} alignItems={"center"} gap={3}>
                     <Avatar
                       src={post?.authorInfo?.avatar}
@@ -148,16 +151,39 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
             </Flex>
           </Flex>
           <Text
-            my={3}
-            cursor={"pointer"}
+            my={2}
+            cursor={
+              !isDetail &&
+              !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
+                ? "pointer"
+                : "text"
+            }
             onClick={() => {
-              if (!isDetail) {
+              if (
+                !isDetail &&
+                !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
+              ) {
                 handleSeeDetail();
               }
             }}
           >
             {post?.content}
           </Text>
+          {isParentPost && post?.quote?._id && !postAction && (
+            <Text
+              display={"flex"}
+              alignItems={"center"}
+              gap={"4px"}
+              color={"lightgray"}
+              cursor={"pointer"}
+              onClick={() => {
+                navigate(`/posts/${post?.quote?._id}`);
+              }}
+            >
+              <RiDoubleQuotesL />
+              {post?.quote?.content}
+            </Text>
+          )}
           {!!post.media?.length > 0 && (
             <Box
               borderRadius={6}
@@ -175,8 +201,23 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
             </Box>
           )}
           {post.survey?.length > 0 && <Survey post={post} />}
-          {post?.parentPostInfo && (
-            <Post post={post?.parentPostInfo} isParentPost={true} />
+          {post?.parentPostInfo?._id && (
+            <>
+              {post?.quote?._id && isParentPost ? (
+                <Text
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={"4px"}
+                  color={"lightgray"}
+                  cursor={"text"}
+                >
+                  <RiDoubleQuotesL />
+                  {post.quote.content}
+                </Text>
+              ) : (
+                <Post post={post?.parentPostInfo} isParentPost={true} />
+              )}
+            </>
           )}
           {!isParentPost && (
             <Flex gap={3} my={"10px"}>

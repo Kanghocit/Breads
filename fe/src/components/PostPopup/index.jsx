@@ -90,6 +90,7 @@ const PostPopup = () => {
     try {
       const payload = {
         authorId: userInfo._id,
+        type: postAction,
         ...postInfo,
       };
       if (isEditing) {
@@ -100,6 +101,12 @@ const PostPopup = () => {
           postAction === PostConstants.ACTIONS.REPOST
         ) {
           payload.parentPost = postSelected._id;
+          if (postAction === PostConstants.ACTIONS.REPOST) {
+            payload.quote = {
+              _id: postSelected._id,
+              content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
+            };
+          }
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
