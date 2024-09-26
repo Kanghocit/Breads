@@ -35,7 +35,7 @@ createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Provider store={store}>
       <ChakraProvider theme={theme}>
-        {/*<ColorModeScript initialColorMode={theme.config.initialColorMode}> */}
+        {/* <ColorModeScript initialColorMode={theme.config.initialColorMode}> */}
         <App />
         {/* </ColorModeScript> */}
       </ChakraProvider>

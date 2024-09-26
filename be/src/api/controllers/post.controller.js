@@ -16,7 +16,8 @@ export const createPost = async (req, res) => {
   try {
     const payload = req.body;
     const action = req.query.action;
-    const { authorId, content, media, parentPost, survey } = payload;
+    const { authorId, content, media, parentPost, survey, quote, type } =
+      payload;
     const user = await User.findById(authorId);
     if (!user) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "User not found" });
@@ -25,7 +26,8 @@ export const createPost = async (req, res) => {
       !content.trim() &&
       !media?.[0]?.url &&
       survey.length === 0 &&
-      !parentPost
+      !parentPost &&
+      !quote?._id
     ) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
@@ -73,6 +75,8 @@ export const createPost = async (req, res) => {
       content,
       media: newMedia,
       survey: optionsId,
+      quote,
+      type: type,
     };
     if (action === "repost") {
       newPostPayload.parentPost = parentPost;

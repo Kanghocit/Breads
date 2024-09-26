@@ -34,11 +34,7 @@ const Actions = ({ post }) => {
       icon: <RepostIcon />,
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPOST));
-        let postSelected = JSON.parse(JSON.stringify(post));
-        if (postSelected.parentPostInfo) {
-          delete postSelected.parentPostInfo;
-        }
-        dispatch(selectPost(postSelected));
+        dispatch(selectPost(post));
       },
     },
     {

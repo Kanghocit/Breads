@@ -31,6 +31,7 @@ import Post from "../Post";
 import PostPopupAction from "./action";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
+import { CloseIcon } from "@chakra-ui/icons";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ const PostPopup = () => {
     try {
       const payload = {
         authorId: userInfo._id,
+        type: postAction,
         ...postInfo,
       };
       if (isEditing) {
@@ -100,6 +102,12 @@ const PostPopup = () => {
           postAction === PostConstants.ACTIONS.REPOST
         ) {
           payload.parentPost = postSelected._id;
+          if (postAction === PostConstants.ACTIONS.REPOST) {
+            payload.quote = {
+              _id: postSelected._id,
+              content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
+            };
+          }
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
@@ -188,24 +196,52 @@ const PostPopup = () => {
                 setText={(value) => setContent(replaceEmojis(value))}
               />
               {postInfo.media[0]?.url && (
-                <>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "start",
+                    maxWidth: "100%",
+                    maxHeight: "40vh",
+                    border: "1px solid gray",
+                    borderRadius: "8px",
+                    position: "relative",
+                  }}
+                >
+                  <CloseIcon
+                    position={"absolute"}
+                    top={"16px"}
+                    right={"16px"}
+                    cursor={"pointer"}
+                    zIndex={1000}
+                    onClick={() => {
+                      dispatch(
+                        updatePostInfo({
+                          ...postInfo,
+                          media: [],
+                        })
+                      );
+                    }}
+                  />
                   {postInfo.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
                     <video
                       src={postInfo.media[0].url}
                       alt="Post Media"
                       controls
                       style={{
-                        width: "100%",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
                       }}
                     />
                   ) : (
                     <Image
                       src={postInfo.media[0].url}
                       alt="Post Media"
-                      width={"100%"}
+                      maxWidth={"100%"}
+                      maxHeight={"100%"}
+                      objectFit={"contain"}
                     />
                   )}
-                </>
+                </div>
               )}
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}

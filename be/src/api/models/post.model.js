@@ -44,6 +44,15 @@ const postSchema = mongoose.Schema(
         required: false,
       },
     ],
+    type: {
+      type: String,
+      default: "create",
+      required: true,
+    },
+    quote: {
+      type: Object,
+      required: false,
+    },
   },
   {
     timestamps: true,

@@ -6,7 +6,7 @@ class PageConstant {
   static SEARCH = "search";
   static PROFILE = "profile";
   static ACTIVITY = "activity";
-  static USER = "user";
+  static USER = "users";
   static SETTING = {
     DEFAULT: "setting",
     PRIVACY: "setting/privacy",
@@ -24,6 +24,7 @@ class PageConstant {
   static MENTIONS = "mentions";
   static QUOTES = "quotes";
   static REPOSTS = "reposts";
+  static POST_DETAIL = "post_detail";
 }
 
 export default PageConstant;
