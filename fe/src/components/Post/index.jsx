@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  Divider,
   Flex,
   Image,
   Link,
@@ -12,6 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
+  PopoverArrow,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import moment from "moment";
@@ -25,13 +34,19 @@ import { selectPost } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 import PopupCancel from "../../util/PopupCancel";
+import { FaAngleDown } from "react-icons/fa";
 import Actions from "../Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 import PostConstants from "../../util/PostConstants";
+import ViewActivity from "../PostPopup/ViewActivity";
 
 const Post = ({ post, isDetail, isParentPost = false }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -71,7 +86,7 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                   size={"md"}
                   name={post?.authorInfo?.username}
                   cursor={"pointer"}
-                  position={"relative"} 
+                  position={"relative"}
                 />
                 <Flex>
                   <PopoverTrigger>
@@ -116,8 +131,8 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                     <Button
                       w={"100%"}
                       bg={"black"}
-                      color={"white"} 
-                      _hover={{ opacity: 0.8 }} 
+                      color={"white"}
+                      _hover={{ opacity: 0.8 }}
                       _active={{ opacity: 0.6 }}
                       transition="opacity 0.2s"
                     >
@@ -241,6 +256,32 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
               <Actions post={post} />
             </Flex>
           )}
+          {isDetail && (
+            <>
+              <Divider />
+              <Flex mt={4} justifyContent={"space-between"} m={1}>
+                <Text p={2}>Thread reply</Text>
+                <Flex
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  p={2}
+                  cursor={"pointer"}
+                  _hover={{
+                    transform: "scale(1.05)",
+                    transition: "transform 0.2s ease-in-out",
+                  }}
+                  onClick={onOpen} // Open modal on click
+                >
+                  <Text>View Activity</Text>
+                  <FaAngleDown />
+                </Flex>
+              </Flex>
+              <Divider />
+            </>
+          )}
+
+          {/* Modal for activity details */}
+          <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
         </CardBody>
       </Card>
       {popupCancelInfo.open && (
