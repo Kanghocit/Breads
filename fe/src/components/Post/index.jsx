@@ -30,6 +30,7 @@ import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 import PostConstants from "../../util/PostConstants";
+
 const Post = ({ post, isDetail, isParentPost = false }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

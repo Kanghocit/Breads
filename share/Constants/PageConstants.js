@@ -24,6 +24,7 @@ class PageConstant {
   static MENTIONS = "mentions";
   static QUOTES = "quotes";
   static REPOSTS = "reposts";
+  static POST_DETAIL = "post_detail";
 }
 
 export default PageConstant;

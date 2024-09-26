@@ -1,13 +1,14 @@
+import { Flex } from "@chakra-ui/react";
 import { Fragment, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PageConstant from "../../../share/Constants/PageConstants";
+import { EmptyContentSvg } from "../assests/icons";
+import CreatePostBar from "../components/CreatePostBar";
 import ContainerLayout from "../components/MainBoxLayout";
 import Post from "../components/Post";
+import SkeletonPost from "../components/Post/skeleton";
 import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData, changePage } from "../store/UtilSlice";
-import SkeletonPost from "../components/Post/skeleton";
-import { EmptyContentSvg } from "../assests/icons";
-import { Flex } from "@chakra-ui/react";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -54,6 +55,7 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
+        <CreatePostBar />
         {listPost?.length !== 0 && !isLoading ? (
           <>
             {listPost?.map((post) => (
