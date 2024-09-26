@@ -71,7 +71,7 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                   size={"md"}
                   name={post?.authorInfo?.username}
                   cursor={"pointer"}
-                  position={"relative"} // Set position to relative
+                  position={"relative"} 
                 />
                 <Flex>
                   <PopoverTrigger>
