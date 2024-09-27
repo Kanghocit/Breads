@@ -270,6 +270,29 @@ export const getPosts = async (req, res) => {
   }
 };
 
+export const getUserPosts = async (req, res) => {
+  try {
+    const payload = req.query;
+    const userId = payload?.userId;
+    if (!userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("No userId");
+    }
+    const userInfo = await User.findOne({ _id: ObjectId(userId) });
+    if (!userInfo) {
+      res.status(HTTPStatus.FORBIDDEN).json("Invalid user");
+    }
+    let result = [];
+    const postsId = await getPostsIdByFilter(payload);
+    for (let id of postsId) {
+      const postDetail = await getPostDetail(id);
+      result.push(postDetail);
+    }
+    res.status(HTTPStatus.OK).json(result);
+  } catch (err) {
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
 export const tickPostSurvey = async (req, res) => {
   try {
     const { optionId, userId, isAdd } = req.body;
