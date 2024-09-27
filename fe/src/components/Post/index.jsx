@@ -13,10 +13,10 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
-import { RiDoubleQuotesL } from "react-icons/ri";
 import moment from "moment";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
+import { RiDoubleQuotesL } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Constants } from "../../../../share/Constants";
@@ -25,11 +25,11 @@ import { selectPost } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 import PopupCancel from "../../util/PopupCancel";
+import PostConstants from "../../util/PostConstants";
 import Actions from "../Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import PostConstants from "../../util/PostConstants";
 
 const Post = ({ post, isDetail, isParentPost = false }) => {
   const navigate = useNavigate();
@@ -40,6 +40,7 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
+  console.log(userInfo);
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
   };
@@ -65,13 +66,13 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
         <CardBody>
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
-              <Flex w={"full"} alignItems={"center"} gap={3}>
+              <Flex alignItems={"center"} gap={3}>
                 <Avatar
                   src={post?.authorInfo?.avatar}
                   size={"md"}
                   name={post?.authorInfo?.username}
                   cursor={"pointer"}
-                  position={"relative"} 
+                  position={"relative"}
                 />
                 <Flex>
                   <PopoverTrigger>
@@ -116,8 +117,8 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                     <Button
                       w={"100%"}
                       bg={"black"}
-                      color={"white"} 
-                      _hover={{ opacity: 0.8 }} 
+                      color={"white"}
+                      _hover={{ opacity: 0.8 }}
                       _active={{ opacity: 0.6 }}
                       transition="opacity 0.2s"
                     >
