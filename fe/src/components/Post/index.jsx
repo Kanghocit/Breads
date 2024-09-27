@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  Divider,
   Flex,
   Image,
   Link,
@@ -12,6 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
+  PopoverArrow,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
@@ -32,6 +41,10 @@ import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 
 const Post = ({ post, isDetail, isParentPost = false }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -241,6 +254,32 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
               <Actions post={post} />
             </Flex>
           )}
+          {isDetail && (
+            <>
+              <Divider />
+              <Flex mt={4} justifyContent={"space-between"} m={1}>
+                <Text p={2}>Thread reply</Text>
+                <Flex
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  p={2}
+                  cursor={"pointer"}
+                  _hover={{
+                    transform: "scale(1.05)",
+                    transition: "transform 0.2s ease-in-out",
+                  }}
+                  onClick={onOpen} // Open modal on click
+                >
+                  <Text>View Activity</Text>
+                  <FaAngleDown />
+                </Flex>
+              </Flex>
+              <Divider />
+            </>
+          )}
+
+          {/* Modal for activity details */}
+          <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
         </CardBody>
       </Card>
       {popupCancelInfo.open && (
