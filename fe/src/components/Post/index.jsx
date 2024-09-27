@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  Divider,
   Flex,
   Image,
   Link,
@@ -30,8 +31,13 @@ import Actions from "../Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import ViewActivity from "../PostPopup/ViewActivity";
+import { FaAngleDown } from "react-icons/fa";
 
 const Post = ({ post, isDetail, isParentPost = false }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -242,6 +248,31 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
               <Actions post={post} />
             </Flex>
           )}
+          {isDetail && (
+            <>
+              <Divider />
+              <Flex mt={4} justifyContent={"space-between"} m={1}>
+                <Text p={2}>Thread reply</Text>
+                <Flex
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  p={2}
+                  cursor={"pointer"}
+                  _hover={{
+                    transform: "scale(1.05)",
+                    transition: "transform 0.2s ease-in-out",
+                  }}
+                  onClick={onOpen}
+                >
+                  <Text>View Activity</Text>
+                  <FaAngleDown />
+                </Flex>
+              </Flex>
+              <Divider />
+            </>
+          )}
+
+          <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
         </CardBody>
       </Card>
       {popupCancelInfo.open && (
