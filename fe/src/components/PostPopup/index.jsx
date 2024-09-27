@@ -205,6 +205,7 @@ const PostPopup = () => {
                     border: "1px solid gray",
                     borderRadius: "8px",
                     position: "relative",
+                    overflow: "hidden",
                   }}
                 >
                   <CloseIcon
@@ -238,6 +239,7 @@ const PostPopup = () => {
                       alt="Post Media"
                       maxWidth={"100%"}
                       maxHeight={"100%"}
+                      width={"100%"}
                       objectFit={"contain"}
                     />
                   )}

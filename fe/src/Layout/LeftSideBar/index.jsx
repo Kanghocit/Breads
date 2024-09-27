@@ -5,7 +5,7 @@ import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import { MdAdd, MdOutlinePushPin } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../../../share/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
 import { changePage } from "../../store/UtilSlice";
@@ -14,6 +14,7 @@ import SidebarMenu from "./SidebarMenu";
 
 const LeftSideBar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -25,6 +26,7 @@ const LeftSideBar = () => {
       linkTo: "/",
       onClick: () => {
         dispatch(changePage({ currentPage, nextPage: PageConstant.HOME }));
+        navigate("/");
       },
     },
     {
@@ -32,6 +34,7 @@ const LeftSideBar = () => {
       linkTo: "/" + PageConstant.SEARCH,
       onClick: () => {
         dispatch(changePage({ currentPage, nextPage: PageConstant.SEARCH }));
+        navigate("/" + PageConstant.SEARCH);
       },
     },
     {
@@ -45,6 +48,7 @@ const LeftSideBar = () => {
       linkTo: "/" + PageConstant.ACTIVITY,
       onClick: () => {
         dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
+        navigate("/" + PageConstant.ACTIVITY);
       },
     },
     {
@@ -52,6 +56,7 @@ const LeftSideBar = () => {
       linkTo: "/" + PageConstant.USER + `/${userInfo._id}`,
       onClick: () => {
         dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
+        navigate("/" + PageConstant.USER + `/${userInfo._id}`);
       },
     },
   ];

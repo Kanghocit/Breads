@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DELETE, GET, POST, PUT } from "../../config/API";
+import PageConstant from "../../../../share/Constants/PageConstants";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -87,6 +88,24 @@ export const getPost = createAsyncThunk(
     try {
       const data = await GET({
         path: "posts/" + postId,
+      });
+      return data;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getUserPosts = createAsyncThunk(
+  "post/getUserPosts",
+  async (userId, thunkApi) => {
+    try {
+      const data = await GET({
+        path: "posts/get-user-posts",
+        params: {
+          userId: userId,
+          filter: PageConstant.USER,
+        },
       });
       return data;
     } catch (err) {

@@ -85,11 +85,18 @@ export const getPostsIdByFilter = async (payload) => {
   try {
     let data = null;
     const filter = payload.filter;
+    let userId = payload?.userId;
     switch (filter) {
       case PageConstant.SAVED:
-        const userId = payload.userId;
         data = (await Collection.findOne({ userId: ObjectId(userId) }))
           ?.postsId;
+        break;
+      case PageConstant.USER:
+        data = await Post.find({ authorId: ObjectId(userId) }, { _id: 1 }).sort(
+          {
+            createdAt: -1,
+          }
+        );
         break;
       default:
         data = await Post.find({}, { _id: 1 }).sort({

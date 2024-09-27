@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 const useCopyLink = () => {
   const toast = useToast();
   const copyURL = (postInfo) => {
-    const postURL = `${window.location.origin}/post/${postInfo?._id}`;
+    const postURL = `${window.location.origin}/posts/${postInfo?._id}`;
     navigator.clipboard.writeText(postURL).then(() => {
       toast({
         title: "",

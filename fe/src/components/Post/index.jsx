@@ -35,7 +35,7 @@ import { updateSeeMedia } from "../../store/UtilSlice";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
-import Actions from "../Actions";
+import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
@@ -53,7 +53,6 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
-  console.log(userInfo);
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
   };

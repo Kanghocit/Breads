@@ -5,6 +5,7 @@ import {
   editPost,
   getPost,
   getPosts,
+  getUserPosts,
   selectSurveyOption,
 } from "./asyncThunk";
 
@@ -120,6 +121,14 @@ const postSlice = createSlice({
             currentUsersId.filter((id) => id !== userId);
         }
       }
+    });
+    builder.addCase(getUserPosts.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getUserPosts.fulfilled, (state, action) => {
+      const userPosts = action.payload;
+      state.listPost = userPosts;
+      state.isLoading = false;
     });
   },
 });
