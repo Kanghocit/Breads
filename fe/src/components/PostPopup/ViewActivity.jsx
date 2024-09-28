@@ -1,43 +1,38 @@
 // ViewActivity.jsx
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Box,
-  Text,
-  Flex,
   Avatar,
+  Box,
   Container,
-  Image,
   Divider,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
 } from "@chakra-ui/react";
-import TextArea from "../../util/TextArea";
-import { FaRegEye } from "react-icons/fa";
+import { BsChatRightQuote } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { TbMessageReply } from "react-icons/tb";
 
-function ViewActivity({ post, isOpen, onClose }) {
-
+const ViewActivity = ({ post, isOpen, onClose }) => {
   const actionsArray = [
     {
-      action: FaRegEye,
-      num: 9999,
-      name: "View",
-    },
-    {
       action: CiHeart,
-      num: 5678,
+      num: post.usersLike?.length,
       name: "Likes",
     },
     {
-      action: CiHeart,
-      num: 2,
-      name: "Reports",
+      action: TbMessageReply,
+      num: post.replies?.length,
+      name: "Replies",
+    },
+    {
+      action: BsChatRightQuote,
+      num: post?.repostNum,
+      name: "Reposts",
     },
   ];
   return (
@@ -46,7 +41,7 @@ function ViewActivity({ post, isOpen, onClose }) {
       <ModalContent
         position={"relative"}
         boxSizing="border-box"
-        width="580px"
+        width="500px"
         maxWidth={"620px"}
         bg={"white"}
         color={"gray"}
@@ -77,7 +72,7 @@ function ViewActivity({ post, isOpen, onClose }) {
               <Text color="black" fontWeight={"600"}>
                 {post.authorInfo.username}
               </Text>
-              <TextArea text={post.content} />
+              <Text>{post.content}</Text>
             </Container>
           </Flex>
           <Box>
@@ -112,6 +107,6 @@ function ViewActivity({ post, isOpen, onClose }) {
       </ModalContent>
     </Modal>
   );
-}
+};
 
 export default ViewActivity;

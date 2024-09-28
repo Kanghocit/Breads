@@ -103,7 +103,7 @@ export const createPost = async (req, res) => {
 export const getPost = async (req, res) => {
   try {
     const postId = ObjectId(req.params.id);
-    const post = await getPostDetail(postId);
+    const post = await getPostDetail({ postId, getFullInfo: true });
     if (!post) {
       return res
         .status(HTTPStatus.NOT_FOUND)
@@ -260,7 +260,7 @@ export const getPosts = async (req, res) => {
     const data = await getPostsIdByFilter(payload);
     let result = [];
     for (let id of data) {
-      const postDetail = await getPostDetail(id);
+      const postDetail = await getPostDetail({ postId: id });
       result.push(postDetail);
     }
     res.status(HTTPStatus.OK).json(result);
@@ -284,7 +284,7 @@ export const getUserPosts = async (req, res) => {
     let result = [];
     const postsId = await getPostsIdByFilter(payload);
     for (let id of postsId) {
-      const postDetail = await getPostDetail(id);
+      const postDetail = await getPostDetail({ postId: id });
       result.push(postDetail);
     }
     res.status(HTTPStatus.OK).json(result);

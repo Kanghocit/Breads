@@ -36,6 +36,7 @@ const initialState = {
     survey: [],
   },
   postAction: "", //action's name
+  postReply: null,
   isLoading: true,
 };
 
@@ -54,6 +55,9 @@ const postSlice = createSlice({
     },
     updateListPost: (state, action) => {
       state.listPost = action.payload ?? [];
+    },
+    selectPostReply: (state, action) => {
+      state.postReply = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -133,6 +137,11 @@ const postSlice = createSlice({
   },
 });
 
-export const { selectPost, updatePostInfo, updatePostAction, updateListPost } =
-  postSlice.actions;
+export const {
+  selectPost,
+  updatePostInfo,
+  updatePostAction,
+  updateListPost,
+  selectPostReply,
+} = postSlice.actions;
 export default postSlice.reducer;

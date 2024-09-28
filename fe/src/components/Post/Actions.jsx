@@ -14,7 +14,11 @@ import {
   RepostIcon,
   ShareIcon,
 } from "../../assests/icons";
-import { selectPost, updatePostAction } from "../../store/PostSlice";
+import {
+  selectPost,
+  selectPostReply,
+  updatePostAction,
+} from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";
 import { useColorModeValue } from "@chakra-ui/react";
 import useCopyLink from "./MoreAction/CopyLink";
@@ -44,7 +48,7 @@ const Actions = ({ post }) => {
       icon: <ReplyIcon />,
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPLY));
-        dispatch(selectPost(post));
+        dispatch(selectPostReply(post));
       },
     },
     {
@@ -70,7 +74,7 @@ const Actions = ({ post }) => {
         {listActions.map(({ name, icon, onClick }, index) => {
           if (name === ACTIONS_NAME.SHARE) {
             return (
-              <Popover isOpen={openSubBox}>
+              <Popover isOpen={openSubBox} key={name}>
                 <PopoverTrigger>
                   <Button
                     onClick={onClick}
