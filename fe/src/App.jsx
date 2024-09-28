@@ -19,6 +19,7 @@ import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostConstants from "./util/PostConstants";
+import PageError from "./pages/PageError";
 
 function App() {
   const dispatch = useDispatch();
@@ -74,6 +75,9 @@ function App() {
     ));
   };
 
+  // Check if any error routes exist
+  const isErrorRoute = window.location.pathname === '/404'; // Update this condition based on your routing logic
+
   return (
     <div
       className="app"
@@ -81,9 +85,9 @@ function App() {
         marginTop: HeaderHeight,
       }}
     >
-      {!!userId && !seeMediaInfo.open && <Layout />}
+      {!isErrorRoute && !!userId && !seeMediaInfo.open && <Layout />}
       <Container maxW="620px">
-        {!!userId && !seeMediaInfo.open && <CreatePostBtn />}
+        {!isErrorRoute && !!userId && !seeMediaInfo.open && <CreatePostBtn />}
       </Container>
       <Routes>
         {HomeRoute()}
@@ -101,13 +105,13 @@ function App() {
             )
           }
         />
-
         <Route path="/users/:userId" element={<UserPage />} />
         <Route path="/:username/post/:pid" element={<PostPage />} />
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
         {ActivityRoute()}
+        <Route path="*" element={<PageError />} />
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
       {openPostPopup && <PostPopup />}

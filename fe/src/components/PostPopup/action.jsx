@@ -49,6 +49,7 @@ const PostPopupAction = () => {
     <>
       <Input
         type="file"
+        multiple
         hidden
         ref={imageRef}
         onChange={(e) => {
