@@ -34,7 +34,7 @@ import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import ViewActivity from "../PostPopup/ViewActivity";
+
 import { FaAngleDown } from "react-icons/fa";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
@@ -255,7 +255,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
           )}
           {isDetail && (
             <>
-              <Divider />
+              
               <Flex mt={4} justifyContent={"space-between"} m={1}>
                 <Text p={2}>Thread reply</Text>
                 <Flex
@@ -267,13 +267,13 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                     transform: "scale(1.05)",
                     transition: "transform 0.2s ease-in-out",
                   }}
-                  onClick={onOpen} // Open modal on click
+                  onClick={onOpen}
                 >
                   <Text>View Activity</Text>
                   <ChevronRightIcon />
                 </Flex>
               </Flex>
-              <Divider />
+              
               <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
               {post.replies?.length > 0 && (
                 <Container
@@ -285,7 +285,12 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                   borderY={"1px solid gray"}
                 >
                   {post.replies.map((reply) => (
-                    <Post key={reply._id} post={reply} isReply={true} />
+                    <>
+                    <Box mx={3}>
+                      <Post key={reply._id} post={reply} isReply={true} />
+                    </Box>
+                      <Divider my={2}/>
+                    </>
                   ))}
                 </Container>
               )}

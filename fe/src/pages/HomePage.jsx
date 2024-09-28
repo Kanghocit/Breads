@@ -78,8 +78,8 @@ const HomePage = () => {
                   flexDirection={"column"}
                   justifyContent={"center"}
                 >
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={`skeleton-post-${num}`} />
+                  {[...Array(5)].map((_, index) => (
+                    <SkeletonPost key={`skeleton-post-${index}`} />
                   ))}
                 </Flex>
               </>
