@@ -1,18 +1,15 @@
 import {
+  Box,
+  Button,
+  Image,
+  Input,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
-  Input,
-  Textarea,
+  ModalContent,
+  ModalFooter,
+  ModalOverlay,
   Text,
-  Box,
-  Image,
-  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
