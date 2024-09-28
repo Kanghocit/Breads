@@ -8,24 +8,40 @@ import {
   Heading,
   Input,
   Stack,
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ChangePWModal from "../components/UpdateUser/changePWModal";
+import LinksModal from "../components/UpdateUser/linksModal";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
+import { updateSeeMedia } from "../store/UtilSlice";
 
-export default function UpdateProfilePage() {
+const POPUP_TYPE = {
+  LINKS: "links",
+  PW: "pw",
+};
+
+const UpdateProfilePage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [inputs, setInputs] = useState({
     name: userInfo.name,
-    username: userInfo.username,
-    email: userInfo.email,
     bio: userInfo.bio,
-    password: "",
     profilePicture: userInfo.profilePicture,
+    links: userInfo.links ?? [""],
+  });
+  const [popup, setPopup] = useState({
+    isOpen: false,
+    type: "",
   });
 
   const fileRef = useRef(null);
@@ -36,7 +52,6 @@ export default function UpdateProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (updating) return;
-
     try {
       dispatch(updateProfile({ ...inputs, profilePicture: imgUrl }));
       showToast("Success", "Profile updated successfully", "success");
@@ -51,119 +66,204 @@ export default function UpdateProfilePage() {
     }
   };
 
+  const handleDeleteLink = (linkIndex) => {
+    if (inputs.links.length > 1) {
+      const newLinks = inputs.links.filter((_, index) => index !== linkIndex);
+      setInputs({
+        ...inputs,
+        links: newLinks,
+      });
+    } else if (inputs.links.length === 1) {
+      setInputs({
+        ...inputs,
+        links: [""],
+      });
+    }
+  };
+
+  const handleAddMoreLink = () => {
+    setInputs({
+      ...inputs,
+      links: [...inputs.links, ""],
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Flex align={"center"} justify={"center"}>
-        <Stack
-          spacing={4}
-          w={"full"}
-          maxW={"md"}
-          bg={useColorModeValue("white", "gray.dark")}
-          rounded={"xl"}
-          boxShadow={"lg"}
-          p={6}
-        >
-          <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-            User Profile Edit
-          </Heading>
-          <FormControl id="userName">
-            <Stack direction={["column", "row"]} spacing={6}>
-              <Center>
-                <Avatar
-                  size="xl"
-                  boxShadow={"md"}
-                  src={imgUrl || userInfo.profilePicture}
-                />
-              </Center>
-              <Center w="full">
-                <Button w="full" onClick={() => fileRef.current.click()}>
-                  Change Avatar
-                </Button>
-                <Input
-                  type="file"
-                  hidden
-                  ref={fileRef}
-                  onChange={handleImageChange}
-                />
-              </Center>
+    <>
+      <form onSubmit={handleSubmit}>
+        <Flex align={"center"} justify={"center"}>
+          <Stack
+            spacing={4}
+            w={"full"}
+            maxW={"md"}
+            bg={useColorModeValue("white", "gray.dark")}
+            rounded={"xl"}
+            boxShadow={"lg"}
+            p={6}
+          >
+            <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+              User Profile Edit
+            </Heading>
+            <FormControl id="userName">
+              <Stack direction={["column", "row"]} spacing={6}>
+                <Center>
+                  <Avatar
+                    size="xl"
+                    boxShadow={"md"}
+                    src={imgUrl || userInfo.avatar}
+                    cursor={"pointer"}
+                    onClick={() => {
+                      dispatch(
+                        updateSeeMedia({
+                          open: true,
+                          img: userInfo.avatar,
+                        })
+                      );
+                    }}
+                  />
+                </Center>
+                <Center w="full">
+                  <Button w="full" onClick={() => fileRef.current.click()}>
+                    Change Avatar
+                  </Button>
+                  <Input
+                    type="file"
+                    hidden
+                    ref={fileRef}
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </Center>
+              </Stack>
+            </FormControl>
+            <FormControl>
+              <FormLabel>FullName</FormLabel>
+              <Input
+                placeholder="An Khang"
+                onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
+                value={inputs.name}
+                _placeholder={{ color: "gray.500" }}
+                type="text"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Bio</FormLabel>
+              <Input
+                placeholder="Your bio..."
+                onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
+                value={inputs.bio}
+                _placeholder={{ color: "gray.500" }}
+                type="text"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Links</FormLabel>
+              <Flex
+                width={"100%"}
+                height={"fit-content"}
+                minHeight={"40px"}
+                border={"1px solid lightgray"}
+                borderRadius={"6px"}
+                alignItems={"center"}
+                padding={"10px 16px"}
+                flexWrap={"wrap"}
+                gap={"6px"}
+                onClick={() =>
+                  setPopup({
+                    isOpen: true,
+                    type: POPUP_TYPE.LINKS,
+                  })
+                }
+              >
+                {inputs.links.length === 1 && inputs.links[0] === "" ? (
+                  <Text>Your links</Text>
+                ) : (
+                  <>
+                    {inputs.links.map((link, index) => {
+                      if (link.trim()) {
+                        return (
+                          <Tag
+                            size={"md"}
+                            key={link + index}
+                            borderRadius="full"
+                            variant="solid"
+                            colorScheme="green"
+                          >
+                            <TagLabel>{link}</TagLabel>
+                            <TagCloseButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteLink(index);
+                              }}
+                            />
+                          </Tag>
+                        );
+                      }
+                    })}
+                  </>
+                )}
+              </Flex>
+            </FormControl>
+            <FormControl>
+              <Button
+                width={"100%"}
+                onClick={() =>
+                  setPopup({
+                    isOpen: true,
+                    type: POPUP_TYPE.PW,
+                  })
+                }
+              >
+                Change Password
+              </Button>
+            </FormControl>
+            <Stack spacing={6} direction={["column", "row"]}>
+              <Button
+                bg={"red.400"}
+                color={"white"}
+                w="full"
+                _hover={{
+                  bg: "red.500",
+                }}
+                onClick={() => {
+                  navigate(-1);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                bg={"green.400"}
+                color={"white"}
+                w="full"
+                _hover={{
+                  bg: "green.500",
+                }}
+                type="submit"
+                isLoading={updating}
+              >
+                Submit
+              </Button>
             </Stack>
-          </FormControl>
-          <FormControl>
-            <FormLabel>FullName</FormLabel>
-            <Input
-              placeholder="An Khang"
-              onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
-              value={inputs.name}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>User name</FormLabel>
-            <Input
-              placeholder="Kang15.8"
-              onChange={(e) =>
-                setInputs({ ...inputs, username: e.target.value })
-              }
-              value={inputs.username}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Email </FormLabel>
-            <Input
-              placeholder="Kang15.8"
-              onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
-              value={inputs.email}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Bio</FormLabel>
-            <Input
-              placeholder="Your bio..."
-              onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
-              value={inputs.bio}
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
-          </FormControl>
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
-            <Input
-              placeholder="password"
-              _placeholder={{ color: "gray.500" }}
-              type="password"
-            />
-          </FormControl>
-          <Stack spacing={6} direction={["column", "row"]}>
-            <Button
-              bg={"red.400"}
-              color={"white"}
-              w="full"
-              _hover={{
-                bg: "red.500",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              bg={"green.400"}
-              color={"white"}
-              w="full"
-              _hover={{
-                bg: "green.500",
-              }}
-              type="submit"
-              isLoading={updating}
-            >
-              Submit
-            </Button>
           </Stack>
-        </Stack>
-      </Flex>
-    </form>
+        </Flex>
+      </form>
+      {popup.isOpen && (
+        <>
+          {popup.type === POPUP_TYPE.LINKS ? (
+            <LinksModal
+              inputs={inputs}
+              setInputs={setInputs}
+              setPopup={setPopup}
+              handleDeleteLink={handleDeleteLink}
+              handleAddMoreLink={handleAddMoreLink}
+            />
+          ) : (
+            <ChangePWModal setPopup={setPopup} />
+          )}
+        </>
+      )}
+    </>
   );
-}
+};
+
+export default UpdateProfilePage;

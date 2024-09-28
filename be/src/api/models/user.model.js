@@ -50,6 +50,12 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
+    link: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,
