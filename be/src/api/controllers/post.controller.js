@@ -103,7 +103,7 @@ export const createPost = async (req, res) => {
 export const getPost = async (req, res) => {
   try {
     const postId = ObjectId(req.params.id);
-    const post = await getPostDetail(postId);
+    const post = await getPostDetail({ postId, getFullInfo: true });
     if (!post) {
       return res
         .status(HTTPStatus.NOT_FOUND)
@@ -260,13 +260,36 @@ export const getPosts = async (req, res) => {
     const data = await getPostsIdByFilter(payload);
     let result = [];
     for (let id of data) {
-      const postDetail = await getPostDetail(id);
+      const postDetail = await getPostDetail({ postId: id });
       result.push(postDetail);
     }
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+  }
+};
+
+export const getUserPosts = async (req, res) => {
+  try {
+    const payload = req.query;
+    const userId = payload?.userId;
+    if (!userId) {
+      res.status(HTTPStatus.BAD_REQUEST).json("No userId");
+    }
+    const userInfo = await User.findOne({ _id: ObjectId(userId) });
+    if (!userInfo) {
+      res.status(HTTPStatus.FORBIDDEN).json("Invalid user");
+    }
+    let result = [];
+    const postsId = await getPostsIdByFilter(payload);
+    for (let id of postsId) {
+      const postDetail = await getPostDetail({ postId: id });
+      result.push(postDetail);
+    }
+    res.status(HTTPStatus.OK).json(result);
+  } catch (err) {
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
 

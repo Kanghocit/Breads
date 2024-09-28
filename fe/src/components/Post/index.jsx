@@ -1,9 +1,11 @@
+import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
   Button,
   Card,
   CardBody,
+  Container,
   Divider,
   Flex,
   Image,
@@ -27,15 +29,17 @@ import { updateSeeMedia } from "../../store/UtilSlice";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
-import Actions from "../Actions";
+import ViewActivity from "../PostPopup/ViewActivity";
+import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 import ViewActivity from "../PostPopup/ViewActivity";
 import { FaAngleDown } from "react-icons/fa";
 
-const Post = ({ post, isDetail, isParentPost = false }) => {
+const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
+
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
@@ -46,7 +50,6 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
-  console.log(userInfo);
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
   };
@@ -68,8 +71,10 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
         className="post-container"
         borderRadius={"12px"}
         border={isParentPost ? "1px solid gray" : ""}
+        boxShadow={isReply ? "none" : ""}
+        width={"100%"}
       >
-        <CardBody>
+        <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
             <Popover trigger="hover" placement="bottom-start">
               <Flex alignItems={"center"} gap={3}>
@@ -244,7 +249,7 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
             </>
           )}
           {!isParentPost && (
-            <Flex gap={3} my={"10px"}>
+            <Flex gap={3} mt={"10px"} mb={isDetail ? "10px" : ""}>
               <Actions post={post} />
             </Flex>
           )}
@@ -262,17 +267,30 @@ const Post = ({ post, isDetail, isParentPost = false }) => {
                     transform: "scale(1.05)",
                     transition: "transform 0.2s ease-in-out",
                   }}
-                  onClick={onOpen}
+                  onClick={onOpen} // Open modal on click
                 >
                   <Text>View Activity</Text>
-                  <FaAngleDown />
+                  <ChevronRightIcon />
                 </Flex>
               </Flex>
               <Divider />
+              <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
+              {post.replies?.length > 0 && (
+                <Container
+                  width={"100%"}
+                  maxWidth={"100%"}
+                  padding={"12px 0"}
+                  mx={0}
+                  boxShadow={"none"}
+                  borderY={"1px solid gray"}
+                >
+                  {post.replies.map((reply) => (
+                    <Post key={reply._id} post={reply} isReply={true} />
+                  ))}
+                </Container>
+              )}
             </>
           )}
-
-          <ViewActivity post={post} isOpen={isOpen} onClose={onClose} />
         </CardBody>
       </Card>
       {popupCancelInfo.open && (

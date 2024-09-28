@@ -20,6 +20,7 @@ import useShowToast from "../../hooks/useShowToast";
 import {
   defaultPostInfo,
   selectPost,
+  selectPostReply,
   updatePostAction,
   updatePostInfo,
 } from "../../store/PostSlice";
@@ -35,7 +36,7 @@ import PostSurvey from "./survey";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
-  const { postInfo, postAction, postSelected } = useSelector(
+  const { postInfo, postAction, postSelected, postReply } = useSelector(
     (state) => state.post
   );
   const isEditing = postAction === PostConstants.ACTIONS.EDIT;
@@ -97,17 +98,14 @@ const PostPopup = () => {
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
-        if (
-          postAction === PostConstants.ACTIONS.REPLY ||
-          postAction === PostConstants.ACTIONS.REPOST
-        ) {
+        if (postAction === PostConstants.ACTIONS.REPOST) {
+          payload.quote = {
+            _id: postSelected._id,
+            content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
+          };
           payload.parentPost = postSelected._id;
-          if (postAction === PostConstants.ACTIONS.REPOST) {
-            payload.quote = {
-              _id: postSelected._id,
-              content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
-            };
-          }
+        } else if (postAction === PostConstants.ACTIONS.REPLY) {
+          payload.parentPost = postReply._id;
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
@@ -134,12 +132,20 @@ const PostPopup = () => {
         rightBtnAction: () => {
           dispatch(updatePostAction());
           dispatch(updatePostInfo(defaultPostInfo));
-          dispatch(selectPost(null));
+          if (postAction === PostConstants.ACTIONS.REPLY) {
+            dispatch(selectPostReply(null));
+          } else {
+            dispatch(selectPost(null));
+          }
         },
       });
     } else {
       dispatch(updatePostAction());
-      dispatch(selectPost(null));
+      if (postAction === PostConstants.ACTIONS.REPLY) {
+        dispatch(selectPostReply(null));
+      } else {
+        dispatch(selectPost(null));
+      }
     }
   };
 
@@ -163,13 +169,13 @@ const PostPopup = () => {
           borderRadius={"16px"}
           id="modal"
         >
-          {postSelected?._id && postAction === PostConstants.ACTIONS.REPLY && (
+          {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
             <div
               style={{
                 marginBottom: "12px",
               }}
             >
-              <PostReplied post={postSelected} />
+              <PostReplied />
             </div>
           )}
           <Text
@@ -205,6 +211,7 @@ const PostPopup = () => {
                     border: "1px solid gray",
                     borderRadius: "8px",
                     position: "relative",
+                    overflow: "hidden",
                   }}
                 >
                   <CloseIcon
@@ -238,6 +245,7 @@ const PostPopup = () => {
                       alt="Post Media"
                       maxWidth={"100%"}
                       maxHeight={"100%"}
+                      width={"100%"}
                       objectFit={"contain"}
                     />
                   )}

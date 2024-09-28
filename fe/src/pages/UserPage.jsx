@@ -1,51 +1,73 @@
-import { Flex, Spinner } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Flex } from "@chakra-ui/react";
+import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import UserHeader from "../components/UserHeader";
-import UserPost from "../components/UserPost";
-import { getUserInfo } from "../store/UserSlice/asyncThunk";
+import { EmptyContentSvg } from "../assests/icons";
 import ContainerLayout from "../components/MainBoxLayout";
-import Post from "../components/Post/index";
-import { getPosts } from "../store/PostSlice/asyncThunk";
+import Post from "../components/Post";
+import SkeletonPost from "../components/Post/skeleton";
+import UserHeader from "../components/UserHeader";
+import { getUserPosts } from "../store/PostSlice/asyncThunk";
+import { getUserInfo } from "../store/UserSlice/asyncThunk";
 
 const UserPage = () => {
   const dispatch = useDispatch();
-  const { userInfo, isLoading } = useSelector((state) => state.user);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const { listPost, isLoading } = useSelector((state) => state.post);
   const { userId } = useParams();
-  const [fetchingPosts, setFetchingPosts] = useState(true);
-  const [posts, setPosts] = useState();
 
   useEffect(() => {
-   
     const localUserId = localStorage.getItem("userId");
     if (userId && userId !== localUserId) {
       dispatch(getUserInfo({ userId }));
     }
-  }, [dispatch, userId]);
-
-  if (isLoading) {
-    return (
-      <Flex justifyContent={"center"}>
-        <Spinner size={"xl"} />
-      </Flex>
-    );
-  }
-
-  //Create a new page
-  // if (!userInfo._id && !loading) return <h1>User not found</h1>;
+    dispatch(getUserPosts(userId));
+  }, []);
 
   return (
     <>
       <ContainerLayout>
         <UserHeader user={userInfo} />
-        {fetchingPosts && (
-          <Flex justifyContent={"center"} my={12}>
-            <Spinner size={"xl"} />
-          </Flex>
-        )}
-        {!fetchingPosts && posts.length === 0 && <h1>User has not posts.</h1>}
-       
+        <div
+          style={{
+            marginTop: "24px",
+          }}
+        >
+          {listPost?.length !== 0 && !isLoading ? (
+            <>
+              {listPost?.map((post) => (
+                <Fragment key={post?._id}>
+                  <Post post={post} />
+                  <hr
+                    style={{
+                      height: "12px",
+                    }}
+                  />
+                </Fragment>
+              ))}
+            </>
+          ) : (
+            <>
+              {isLoading ? (
+                <>
+                  <Flex
+                    gap={"12px"}
+                    flexDirection={"column"}
+                    justifyContent={"center"}
+                  >
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={`skeleton-post-${num}`} />
+                    ))}
+                  </Flex>
+                </>
+              ) : (
+                <Flex justifyContent={"center"} alignItems={"center"}>
+                  <EmptyContentSvg />
+                </Flex>
+              )}
+            </>
+          )}
+        </div>
       </ContainerLayout>
     </>
   );

@@ -4,7 +4,7 @@ import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
-export const getPostDetail = async (postId) => {
+export const getPostDetail = async ({ postId, getFullInfo = false }) => {
   try {
     const agg = [
       {
@@ -59,6 +59,38 @@ export const getPostDetail = async (postId) => {
         },
       },
     ];
+    if (getFullInfo) {
+      agg.push({
+        $lookup: {
+          from: "posts",
+          localField: "replies",
+          foreignField: "_id",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "authorId",
+                foreignField: "_id",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 1,
+                      username: 1,
+                      avatar: 1,
+                    },
+                  },
+                ],
+                as: "authorInfo",
+              },
+            },
+            {
+              $unwind: "$authorInfo",
+            },
+          ],
+          as: "replies",
+        },
+      });
+    }
     let result = (await Post.aggregate(agg))?.[0];
     if (result.parentPostInfo?.length > 0) {
       result.parentPostInfo = result.parentPostInfo[0];
@@ -74,6 +106,8 @@ export const getPostDetail = async (postId) => {
     } else {
       delete result.parentPostInfo;
     }
+    const childrenPost = await Post.find({ parentPost: result?._id });
+    result.repostNum = childrenPost?.length ?? 0;
     return result;
   } catch (err) {
     console.log(err);
@@ -85,14 +119,22 @@ export const getPostsIdByFilter = async (payload) => {
   try {
     let data = null;
     const filter = payload.filter;
+    let userId = payload?.userId;
     switch (filter) {
       case PageConstant.SAVED:
-        const userId = payload.userId;
         data = (await Collection.findOne({ userId: ObjectId(userId) }))
           ?.postsId;
         break;
+      case PageConstant.USER:
+        data = await Post.find(
+          { authorId: ObjectId(userId), type: { $ne: "reply" } },
+          { _id: 1 }
+        ).sort({
+          createdAt: -1,
+        });
+        break;
       default:
-        data = await Post.find({}, { _id: 1 }).sort({
+        data = await Post.find({ type: { $ne: "reply" } }, { _id: 1 }).sort({
           createdAt: -1,
         });
         break;
