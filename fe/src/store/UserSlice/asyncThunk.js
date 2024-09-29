@@ -87,6 +87,7 @@ export const updateProfile = createAsyncThunk(
         path: `users/update/${userInfo._id}`,
         payload,
       });
+      console.log(data);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

@@ -14,15 +14,15 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
-import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
 import { updateSeeMedia } from "../store/UtilSlice";
+import { convertToBase64 } from "../util/index";
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -34,26 +34,58 @@ const UpdateProfilePage = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [inputs, setInputs] = useState({
-    name: userInfo.name,
-    bio: userInfo.bio,
-    profilePicture: userInfo.profilePicture,
-    links: userInfo.links ?? [""],
+    name: "",
+    bio: "",
+    links: [""],
+    avatar: "",
   });
   const [popup, setPopup] = useState({
     isOpen: false,
     type: "",
   });
-
   const fileRef = useRef(null);
   const [updating, setUpdating] = useState(false);
-
-  const { handleImageChange, imgUrl } = usePreviewImg();
   const showToast = useShowToast();
+
+  useEffect(() => {
+    if (userInfo._id) {
+      setInputs({
+        name: userInfo.name,
+        bio: userInfo.bio,
+        links: userInfo.links ?? [""],
+        avatar: userInfo.avatar,
+      });
+    }
+  }, [userInfo._id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (updating) return;
+    const payload = JSON.parse(JSON.stringify(inputs));
+    //Default links value
+    if (payload.links.length === 1 && payload.links[0] === "") {
+      payload.links = [];
+    }
+    const needUpdate = compareUpdateValue(payload);
+    if (!needUpdate || updating) {
+      showToast(
+        "",
+        !needUpdate ? "There is nothing new to update" : "Loading",
+        "info"
+      );
+      return;
+    }
+    for (let key of Object.keys(payload)) {
+      const msg = payloadValidation(payload, key);
+      if (msg) {
+        showToast("", msg, "error");
+        return;
+      }
+    }
     try {
-      dispatch(updateProfile({ ...inputs, profilePicture: imgUrl }));
+      if (typeof payload.avatar === "object") {
+        payload.avatar = await convertToBase64(payload.avatar);
+      }
+      dispatch(updateProfile(payload));
       showToast("Success", "Profile updated successfully", "success");
     } catch (error) {
       showToast(
@@ -64,6 +96,47 @@ const UpdateProfilePage = () => {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const compareUpdateValue = (payload) => {
+    let needUpdate = false;
+    if (payload.name !== userInfo.name) {
+      needUpdate = true;
+    } else if (payload.bio !== userInfo.bio) {
+      needUpdate = true;
+    } else {
+      if (payload.links.length !== userInfo.links.length) {
+        needUpdate = true;
+      } else {
+        const isSameLinks = payload.links.every(
+          (link, index) => link === userInfo.links[index]
+        );
+        if (!isSameLinks) {
+          needUpdate = true;
+        }
+      }
+    }
+    return needUpdate;
+  };
+
+  const payloadValidation = (payload, prop) => {
+    switch (prop) {
+      case "name":
+        if (!payload[prop].trim()) {
+          return "Empty name";
+        }
+        break;
+      case "links":
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        for (const link of payload.links) {
+          const isUrl = link.match(urlRegex)?.length > 0;
+          if (!isUrl) {
+            return "Invalid link value";
+          }
+        }
+        break;
+    }
+    return "";
   };
 
   const handleDeleteLink = (linkIndex) => {
@@ -110,7 +183,11 @@ const UpdateProfilePage = () => {
                   <Avatar
                     size="xl"
                     boxShadow={"md"}
-                    src={imgUrl || userInfo.avatar}
+                    src={
+                      typeof inputs.avatar === "string"
+                        ? inputs.avatar
+                        : URL.createObjectURL(inputs.avatar)
+                    }
                     cursor={"pointer"}
                     onClick={() => {
                       dispatch(
@@ -131,7 +208,9 @@ const UpdateProfilePage = () => {
                     hidden
                     ref={fileRef}
                     accept="image/*"
-                    onChange={handleImageChange}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, avatar: e.target.files[0] })
+                    }
                   />
                 </Center>
               </Stack>
@@ -183,11 +262,11 @@ const UpdateProfilePage = () => {
                       if (link.trim()) {
                         return (
                           <Tag
-                            size={"md"}
+                            size={"lg"}
                             key={link + index}
                             borderRadius="full"
                             variant="solid"
-                            colorScheme="green"
+                            colorScheme="blue"
                           >
                             <TagLabel>{link}</TagLabel>
                             <TagCloseButton

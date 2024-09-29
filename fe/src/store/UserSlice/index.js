@@ -5,6 +5,7 @@ import {
   logout,
   addPostToCollection,
   removePostFromCollection,
+  updateProfile,
 } from "./asyncThunk";
 
 const defaultUser = {
@@ -17,6 +18,7 @@ const defaultUser = {
   followers: [],
   followings: [],
   collection: [],
+  links: [],
 };
 
 const initialState = {
@@ -56,6 +58,10 @@ const userSlice = createSlice({
       state.userInfo.collection = state.userInfo.collection.filter(
         (postId) => postId !== postRemoveId
       );
+    });
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      const newUserData = action.payload;
+      state.userInfo = newUserData;
     });
   },
 });

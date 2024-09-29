@@ -50,7 +50,7 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
-    link: [
+    links: [
       {
         type: String,
         required: false,
