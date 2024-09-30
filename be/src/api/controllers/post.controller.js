@@ -240,7 +240,7 @@ export const getFeedPosts = async (req, res) => {
         .status(HTTPStatus.NOT_FOUND)
         .json({ message: "User not found!" });
     }
-    const following = user.followings;
+    const following = user.following;
 
     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
       createdAt: -1,
@@ -259,9 +259,11 @@ export const getPosts = async (req, res) => {
     const payload = req.query;
     const data = await getPostsIdByFilter(payload);
     let result = [];
-    for (let id of data) {
-      const postDetail = await getPostDetail({ postId: id });
-      result.push(postDetail);
+    if (data?.length) {
+      for (let id of data) {
+        const postDetail = await getPostDetail({ postId: id });
+        result.push(postDetail);
+      }
     }
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {

@@ -8,6 +8,7 @@ import { getUserInfo } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 import Collection from "../models/collection.model.js";
 import { uploadFile } from "../utils/index.js";
+import { crawlUser } from "../crawl.js";
 
 export const getAdminAccount = async (req, res) => {
   try {
@@ -134,23 +135,23 @@ export const followUnFollowUser = async (req, res) => {
     }
 
     // Ensure `following` is initialized
-    // if (!Array.isArray(currentUser.followings)) {
-    //     currentUser.followings = [];
+    // if (!Array.isArray(currentUser.following)) {
+    //     currentUser.following = [];
     // }
 
-    const isFollowing = currentUser.followings.includes(id);
+    const isFollowing = currentUser.following.includes(id);
 
     if (isFollowing) {
       // Unfollow user
-      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $pull: { followings: id } });
+      await User.findByIdAndUpdate(id, { $pull: { followed: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
       res
         .status(HTTPStatus.OK)
         .json({ message: "User unfollowed successfully" });
     } else {
       // Follow user
-      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $push: { followings: id } });
+      await User.findByIdAndUpdate(id, { $push: { followed: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
       res.status(HTTPStatus.OK).json({ message: "User followed successfully" });
     }
   } catch (err) {
@@ -268,5 +269,47 @@ export const getUserProfile = async (req, res) => {
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Can't be get your userProfile!!");
+  }
+};
+
+export const getUserToFollows = async (req, res) => {
+  try {
+    const { userId, page, limit } = req.query;
+    if (!userId) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
+    }
+    if (!page || !limit) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Need page and limit");
+    }
+    const userFollowed =
+      (await User.findOne({ _id: ObjectId(userId) }))?.followed ?? [];
+    const invalidToFollow = [...userFollowed, userId];
+    const skip = (page - 1) * limit;
+    const data = await User.find(
+      {
+        _id: { $nin: invalidToFollow },
+      },
+      {
+        _id: 1,
+        avatar: 1,
+        username: 1,
+        name: 1,
+      }
+    )
+      .skip(skip)
+      .limit(limit);
+    res.status(HTTPStatus.OK).json(data);
+  } catch (err) {
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const handleCrawlFakeUsers = async (req, res) => {
+  try {
+    await crawlUser();
+    res.status(HTTPStatus.OK).json("Crawl success");
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };

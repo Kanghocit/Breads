@@ -34,6 +34,7 @@ import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import UserInfoPopover from "../UserInfoPopover";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,69 +75,21 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
-            <Popover trigger="hover" placement="bottom-start">
-              <Flex alignItems={"center"} gap={3}>
-                <Avatar
-                  src={post?.authorInfo?.avatar}
-                  size={"md"}
-                  name={post?.authorInfo?.username}
-                  cursor={"pointer"}
-                  position={"relative"}
+            <Flex alignItems={"center"} gap={3}>
+              <Avatar
+                src={post?.authorInfo?.avatar}
+                size={"md"}
+                name={post?.authorInfo?.username}
+                cursor={"pointer"}
+                position={"relative"}
+              />
+              <Flex>
+                <UserInfoPopover
+                  userInfo={post?.authorInfo}
+                  content={post?.content}
                 />
-                <Flex>
-                  <PopoverTrigger>
-                    <Link as={RouterLink} to={`/user/${userInfo._id}`}>
-                      <Text
-                        fontSize={"sm"}
-                        fontWeight={"bold"}
-                        cursor={"pointer"}
-                        _hover={{ textDecoration: "underline" }}
-                      >
-                        {post?.authorInfo?.username}
-                      </Text>
-                    </Link>
-                  </PopoverTrigger>
-                  <Image src="/verified.png" w="4" h={4} ml={2} />
-                </Flex>
               </Flex>
-
-              <PopoverContent
-                position="absolute"
-                top="-1"
-                left="-7"
-                transform="translateX(-50%)"
-                borderRadius={"10px"}
-              >
-                <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
-                  <Box m={2}>
-                    <Flex justifyContent={"space-between"}>
-                      <Text fontWeight="bold">{post.authorInfo?.username}</Text>
-                      <Avatar
-                        src={post?.authorInfo?.avatar}
-                        size={"md"}
-                        name={post?.authorInfo?.username}
-                        cursor={"pointer"}
-                      />
-                    </Flex>
-                    <Text fontSize={"sm"}> {post.authorInfo?.name}</Text>
-                    <Text>{post?.content}</Text>
-                    <Text color={"gray.400"}>
-                      {post.authorInfo?.followers?.length || 0} người theo dõi
-                    </Text>
-                    <Button
-                      w={"100%"}
-                      bg={"black"}
-                      color={"white"}
-                      _hover={{ opacity: 0.8 }}
-                      _active={{ opacity: 0.6 }}
-                      transition="opacity 0.2s"
-                    >
-                      Theo dõi
-                    </Button>
-                  </Box>
-                </PopoverBody>
-              </PopoverContent>
-            </Popover>
+            </Flex>
 
             <Flex gap={4} alignItems={"center"}>
               <Text fontSize={"sm"} color={"gray.light"}>

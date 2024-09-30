@@ -12,7 +12,7 @@ import { getUserInfo } from "../store/UserSlice/asyncThunk";
 
 const UserPage = () => {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userSelected = useSelector((state) => state.user.userSelected);
   const { listPost, isLoading } = useSelector((state) => state.post);
   const { userId } = useParams();
 
@@ -22,12 +22,13 @@ const UserPage = () => {
       dispatch(getUserInfo({ userId }));
     }
     dispatch(getUserPosts(userId));
+    window.scrollTo(0, 0);
   }, []);
 
   return (
     <>
       <ContainerLayout>
-        <UserHeader user={userInfo} />
+        <UserHeader user={userSelected} />
         <div
           style={{
             marginTop: "24px",

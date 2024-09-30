@@ -29,7 +29,7 @@ export const login = createAsyncThunk(
       let data = null;
       if (payload?.loginAsAdmin) {
         data = await GET({
-          path: "users/get-admin",
+          path: "users/admin",
         });
       } else {
         data = await POST({

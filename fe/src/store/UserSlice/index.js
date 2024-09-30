@@ -15,7 +15,7 @@ const defaultUser = {
   username: "",
   bio: "",
   avatar: "",
-  followers: [],
+  followed: [],
   followings: [],
   collection: [],
   links: [],
@@ -46,7 +46,14 @@ const userSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getUserInfo.fulfilled, (state, action) => {
-      state.userInfo = action.payload;
+      const user = action.payload;
+      const localUserId = localStorage.getItem("userId");
+      const isCurrentUser = user._id === localUserId;
+      if (isCurrentUser) {
+        state.userInfo = user;
+      } else {
+        state.userSelected = user;
+      }
       state.isLoading = false;
     });
     builder.addCase(addPostToCollection.fulfilled, (state, action) => {
