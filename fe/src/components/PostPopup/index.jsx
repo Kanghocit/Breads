@@ -11,7 +11,7 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../../../share/Constants";
 import useDebounce from "../../hooks/useDebounce";
@@ -35,6 +35,55 @@ import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
+  const mediaContainerRef = useRef(null);
+  const isDragging = useRef(false);
+  const startPosition = useRef(0);
+  const scrollPosition = useRef(0);
+  const velocity = useRef(0);
+  const [momentum, setMomentum] = useState(false);
+
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    momentum && setMomentum(false);
+    startPosition.current = e.pageX - mediaContainerRef.current.offsetLeft;
+    scrollPosition.current = mediaContainerRef.current.scrollLeft;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    const currentPosition = e.pageX - mediaContainerRef.current.offsetLeft;
+    const distance = currentPosition - startPosition.current;
+    velocity.current = distance;
+    mediaContainerRef.current.scrollLeft = scrollPosition.current - distance;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    startMomentumScroll();
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging.current) {
+      isDragging.current = false;
+      startMomentumScroll();
+    }
+  };
+
+  const startMomentumScroll = () => {
+    let momentumVelocity = velocity.current;
+    if (momentumVelocity !== 0) {
+      setMomentum(true);
+      const inertiaInterval = setInterval(() => {
+        mediaContainerRef.current.scrollLeft -= momentumVelocity * 0.95;
+        momentumVelocity *= 0.95;
+        if (Math.abs(momentumVelocity) < 0.5) {
+          clearInterval(inertiaInterval);
+          setMomentum(false);
+        }
+      }, 16);
+    }
+  };
+
   const dispatch = useDispatch();
   const { postInfo, postAction, postSelected, postReply } = useSelector(
     (state) => state.post
@@ -44,49 +93,47 @@ const PostPopup = () => {
   const showToast = useShowToast();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
+
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
   const [clickPost, setClickPost] = useState(false);
 
   useEffect(() => {
-    if (!!debounceContent) {
+    if (debounceContent) {
       dispatch(
-        updatePostInfo({
-          ...postInfo,
-          content: replaceEmojis(debounceContent),
-        })
+        updatePostInfo({ ...postInfo, content: replaceEmojis(debounceContent) })
       );
     }
-  }, [debounceContent]);
+  }, [debounceContent, dispatch, postInfo]);
 
   useEffect(() => {
     if (isEditing && postInfo?._id) {
       setContent(postInfo.content);
     }
-  }, [postInfo?._id]);
+  }, [isEditing, postInfo]);
 
   const closePostAction =
-    !!postInfo.media?.length > 0 || postInfo.survey.length !== 0;
+    !!postInfo.media?.length || postInfo.survey.length !== 0;
 
-  const checkUploadCondition = () => {
+  const checkUploadCondition = useCallback(() => {
     let checkResult = true;
     let msg = "";
+
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
       const postSurvey = postInfo.survey.filter(
         (option) => !!option.value.trim()
       );
-      if ([setValue].length < postSurvey.length) {
+
+      if ([...setValue].length < postSurvey.length) {
         checkResult = false;
-        msg = "Each option should be an unique value";
+        msg = "Each option should be a unique value";
       }
     }
-    return {
-      checkCondition: checkResult,
-      msg: msg,
-    };
-  };
+
+    return { checkCondition: checkResult, msg };
+  }, [postInfo.survey]);
 
   const handleUploadPost = async () => {
     try {
@@ -95,6 +142,7 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
+
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
@@ -111,145 +159,147 @@ const PostPopup = () => {
       }
     } catch (err) {
       console.error(err);
-      showToast("Error", err, "error");
+      showToast("Error", err.message, "error");
     }
   };
 
   const handleClose = () => {
     const { media, survey, content } = postInfo;
-    if (!!media.length || !!survey.length || !!content.length) {
+
+    if (media.length || survey.length || content.length) {
       setPopupCancelInfo({
         open: true,
         title: isEditing ? "Stop Editing" : "Stop Creating",
         content: `Do you want to stop ${
           isEditing ? "editing" : "creating"
-        } this bread ?`,
+        } this bread?`,
         leftBtnText: "Cancel",
         rightBtnText: "Discard",
-        leftBtnAction: () => {
-          closePopupCancel();
-        },
+        leftBtnAction: closePopupCancel,
         rightBtnAction: () => {
           dispatch(updatePostAction());
           dispatch(updatePostInfo(defaultPostInfo));
-          if (postAction === PostConstants.ACTIONS.REPLY) {
-            dispatch(selectPostReply(null));
-          } else {
-            dispatch(selectPost(null));
-          }
+          postAction === PostConstants.ACTIONS.REPLY
+            ? dispatch(selectPostReply(null))
+            : dispatch(selectPost(null));
         },
       });
     } else {
       dispatch(updatePostAction());
-      if (postAction === PostConstants.ACTIONS.REPLY) {
-        dispatch(selectPostReply(null));
-      } else {
-        dispatch(selectPost(null));
-      }
+      postAction === PostConstants.ACTIONS.REPLY
+        ? dispatch(selectPostReply(null))
+        : dispatch(selectPost(null));
     }
   };
 
   return (
     <>
-      <Modal
-        isOpen={true}
-        onClose={() => {
-          handleClose();
-        }}
-      >
+      <Modal isOpen={true} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent
-          position={"relative"}
+          position="relative"
           boxSizing="border-box"
           width="620px"
-          maxWidth={"620px"}
-          bg={"white"}
-          color={"gray"}
+          maxWidth="620px"
+          bg="white"
+          color="gray"
           padding="24px"
-          borderRadius={"16px"}
-          id="modal"
+          borderRadius="16px"
         >
           {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
-            <div
-              style={{
-                marginBottom: "12px",
-              }}
-            >
+            <div style={{ marginBottom: "12px" }}>
               <PostReplied />
             </div>
           )}
           <Text
-            position={"absolute"}
-            top={"-36px"}
-            left={"50%"}
-            transform={"translateX(-50%)"}
-            color={"white"}
+            position="absolute"
+            top="-36px"
+            left="50%"
+            transform="translateX(-50%)"
+            color="white"
             zIndex={4000}
-            textTransform={"capitalize"}
+            textTransform="capitalize"
             fontWeight={600}
-            fontSize={"18px"}
+            fontSize="18px"
           >
             {postAction + " Bread"}
           </Text>
           <Flex>
-            <Avatar src={userInfo.avatar} width={"40px"} height={"40px"} />
+            <Avatar src={userInfo.avatar} width="40px" height="40px" />
             <Container margin="0" paddingRight={0}>
-              <Text color="black" fontWeight={"600"}>
+              <Text color="black" fontWeight="600">
                 {userInfo.username}
               </Text>
               <TextArea
                 text={content}
                 setText={(value) => setContent(replaceEmojis(value))}
               />
-              {postInfo.media[0]?.url && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "start",
-                    maxWidth: "100%",
-                    maxHeight: "40vh",
-                    border: "1px solid gray",
-                    borderRadius: "8px",
-                    position: "relative",
-                    overflow: "hidden",
+              {postInfo.media.length > 0 && (
+                <Flex
+                  gap="10px"
+                  mt="10px"
+                  wrap={postInfo.media.length <= 2 ? "wrap" : "nowrap"}
+                  justifyContent="flex-start"
+                  maxWidth="100%"
+                  border="1px solid gray"
+                  borderRadius="8px"
+                  overflowX={postInfo.media.length > 2 ? "auto" : "hidden"}
+                  padding="10px"
+                  ref={mediaContainerRef}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseLeave}
+                  css={{
+                    "&::-webkit-scrollbar": {
+                      display: "none",
+                    },
+                    "&": {
+                      msOverflowStyle: "none",
+                      scrollbarWidth: "none",
+                    },
+                    cursor:
+                      isDragging.current || momentum ? "grabbing" : "grab",
                   }}
                 >
-                  <CloseIcon
-                    position={"absolute"}
-                    top={"16px"}
-                    right={"16px"}
-                    cursor={"pointer"}
-                    zIndex={1000}
-                    onClick={() => {
-                      dispatch(
-                        updatePostInfo({
-                          ...postInfo,
-                          media: [],
-                        })
-                      );
-                    }}
-                  />
-                  {postInfo.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
-                    <video
-                      src={postInfo.media[0].url}
-                      alt="Post Media"
-                      controls
+                  {postInfo.media.map((media, index) => (
+                    <Flex
+                      key={index}
+                      position="relative"
+                      flexShrink={0}
+                      gap="10px"
                       style={{
-                        maxWidth: "100%",
-                        maxHeight: "100%",
+                        width:
+                          postInfo.media.length === 1
+                            ? "100%"
+                            : "calc(50% - 5px)",
+                        maxWidth: postInfo.media.length > 2 ? "200px" : "none",
                       }}
-                    />
-                  ) : (
-                    <Image
-                      src={postInfo.media[0].url}
-                      alt="Post Media"
-                      maxWidth={"100%"}
-                      maxHeight={"100%"}
-                      width={"100%"}
-                      objectFit={"contain"}
-                    />
-                  )}
-                </div>
+                    >
+                      {media.type === Constants.MEDIA_TYPE.VIDEO ? (
+                        <video
+                          src={media.url}
+                          controls
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          src={media.url}
+                          alt={`Post Media ${index}`}
+                          width="100%"
+                          height="200px"
+                          objectFit="cover"
+                          borderRadius="8px"
+                        />
+                      )}
+                    </Flex>
+                  ))}
+                </Flex>
               )}
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}
@@ -263,11 +313,11 @@ const PostPopup = () => {
             <Button
               isLoading={clickPost}
               loadingText={isEditing ? "Saving" : "Posting"}
-              mt={"6px"}
-              mr={"16px"}
+              mt="6px"
+              mr="16px"
               colorScheme="white"
-              border={"1px solid lightgray"}
-              borderRadius={"6px"}
+              border="1px solid lightgray"
+              borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
                 if (!checkCondition) {

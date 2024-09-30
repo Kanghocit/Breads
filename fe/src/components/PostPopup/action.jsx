@@ -15,19 +15,25 @@ const PostPopupAction = () => {
   const imageRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleAddMedia = async (img) => {
-    const base64 = await convertToBase64(img);
+  const handleAddMedia = async (files) => {
+    // Tạo mảng để lưu trữ các media sau khi convert sang base64
+    const mediaArray = await Promise.all(
+      Array.from(files).map(async (file) => {
+        const base64 = await convertToBase64(file);
+        return {
+          url: base64,
+          type: file.type.includes("image")
+            ? Constants.MEDIA_TYPE.IMAGE
+            : Constants.MEDIA_TYPE.VIDEO,
+        };
+      })
+    );
+  
+    // Cập nhật state với nhiều media
     dispatch(
       updatePostInfo({
         ...postInfo,
-        media: [
-          {
-            url: base64,
-            type: img.type.includes("image")
-              ? Constants.MEDIA_TYPE.IMAGE
-              : Constants.MEDIA_TYPE.VIDEO,
-          },
-        ],
+        media: [...(postInfo.media || []), ...mediaArray], // Nối các media mới với media cũ
       })
     );
   };
@@ -49,10 +55,11 @@ const PostPopupAction = () => {
     <>
       <Input
         type="file"
+        multiple
         hidden
         ref={imageRef}
         onChange={(e) => {
-          handleAddMedia(e.target.files[0]);
+          handleAddMedia(e.target.files);
         }}
       />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">

@@ -8,6 +8,7 @@ import {
   getUserPosts,
   selectSurveyOption,
 } from "./asyncThunk";
+import PostConstants from "../../util/PostConstants";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {
@@ -82,7 +83,11 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
-      state.listPost = [newPost, ...state.listPost];
+      if (state.postAction === PostConstants.ACTIONS.REPLY) {
+        state.postSelected.replies = [...state.postSelected.replies, newPost];
+      } else {
+        state.listPost = [newPost, ...state.listPost];
+      }
       state.isLoading = false;
       state.postAction = "";
     });
@@ -95,11 +100,13 @@ const postSlice = createSlice({
         ...state.listPost[postIndex],
         ...postUpdated,
       };
+      state.postSelected = state.postInfo;
       state.postAction = "";
     });
     builder.addCase(deletePost.fulfilled, (state, action) => {
       const postId = action.payload;
-      state.listPost = state.listPost.filter((post) => post._id !== postId);
+      state.listPost = state.postSelected.replies.filter((post) => post._id !== postId);
+      state.postSelected.replies = state.listPost;
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId } = action.payload;
