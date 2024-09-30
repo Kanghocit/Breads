@@ -131,7 +131,7 @@ export const deletePost = async (req, res) => {
     const postId = req.params.id;
     const userId = req.query.userId;
     if (!postId | !userId) {
-      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     const post = await Post.findById(postId);
     if (!post) {
@@ -250,7 +250,7 @@ export const getFeedPosts = async (req, res) => {
         .status(HTTPStatus.NOT_FOUND)
         .json({ message: "User not found!" });
     }
-    const following = user.followings;
+    const following = user.following;
 
     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
       createdAt: -1,
@@ -269,9 +269,11 @@ export const getPosts = async (req, res) => {
     const payload = req.query;
     const data = await getPostsIdByFilter(payload);
     let result = [];
-    for (let id of data) {
-      const postDetail = await getPostDetail({ postId: id });
-      result.push(postDetail);
+    if (data?.length) {
+      for (let id of data) {
+        const postDetail = await getPostDetail({ postId: id });
+        result.push(postDetail);
+      }
     }
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {
@@ -285,11 +287,11 @@ export const getUserPosts = async (req, res) => {
     const payload = req.query;
     const userId = payload?.userId;
     if (!userId) {
-      res.status(HTTPStatus.BAD_REQUEST).json("No userId");
+      return res.status(HTTPStatus.BAD_REQUEST).json("No userId");
     }
     const userInfo = await User.findOne({ _id: ObjectId(userId) });
     if (!userInfo) {
-      res.status(HTTPStatus.FORBIDDEN).json("Invalid user");
+      return res.status(HTTPStatus.FORBIDDEN).json("Invalid user");
     }
     let result = [];
     const postsId = await getPostsIdByFilter(payload);
@@ -307,7 +309,7 @@ export const tickPostSurvey = async (req, res) => {
   try {
     const { optionId, userId, isAdd } = req.body;
     if (!optionId || !userId) {
-      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     if (isAdd) {
       await SurveyOption.updateOne(

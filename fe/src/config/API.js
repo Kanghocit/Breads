@@ -1,7 +1,7 @@
 import axios from "axios";
 export const serverUrl = "http://localhost:8080";
 
-export const GET = async ({ path, params = null }) => {
+export const GET = async ({ path, params = null, showToast = null }) => {
   try {
     const url = serverUrl + "/api/" + path;
     let result = null;
@@ -16,12 +16,15 @@ export const GET = async ({ path, params = null }) => {
     }
     return result;
   } catch (err) {
-    console.error(err);
+    if (showToast && err.response.data) {
+      const errorMsg = err.response.data;
+      showToast("", errorMsg, "error");
+    }
     throw new Error(err);
   }
 };
 
-export const POST = async ({ path, payload, params }) => {
+export const POST = async ({ path, payload, params, showToast = null }) => {
   try {
     const url = serverUrl + "/api/" + path;
     const { data } = await axios.post(url, payload, {
@@ -29,34 +32,43 @@ export const POST = async ({ path, payload, params }) => {
     });
     return data;
   } catch (err) {
-    console.error(err);
+    if (showToast && err.response.data) {
+      const errorMsg = err.response.data;
+      showToast("", errorMsg, "error");
+    }
     throw new Error(err);
   }
 };
 
-export const PUT = async ({ path, payload }) => {
+export const PUT = async ({ path, payload, showToast = null }) => {
   try {
     const url = serverUrl + "/api/" + path;
     const { data } = await axios.put(url, payload);
     return data;
   } catch (err) {
-    console.error(err);
+    if (showToast && err.response.data) {
+      const errorMsg = err.response.data;
+      showToast("", errorMsg, "error");
+    }
     throw new Error(err);
   }
 };
 
-export const PATCH = async ({ path, payload }) => {
+export const PATCH = async ({ path, payload, showToast = null }) => {
   try {
     const url = serverUrl + "/api/" + path;
     const { data } = await axios.patch(url, payload);
     return data;
   } catch (err) {
-    console.error(err);
+    if (showToast && err.response.data) {
+      const errorMsg = err.response.data;
+      showToast("", errorMsg, "error");
+    }
     throw new Error(err);
   }
 };
 
-export const DELETE = async ({ path, params }) => {
+export const DELETE = async ({ path, params, showToast = null }) => {
   try {
     const url = serverUrl + "/api/" + path;
     const { data } = await axios.delete(url, {
@@ -64,7 +76,10 @@ export const DELETE = async ({ path, params }) => {
     });
     return data;
   } catch (err) {
-    console.error(err);
+    if (showToast && err.response.data) {
+      const errorMsg = err.response.data;
+      showToast("", errorMsg, "error");
+    }
     throw new Error(err);
   }
 };

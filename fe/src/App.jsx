@@ -80,7 +80,7 @@ function App() {
     <div
       className="app"
       style={{
-        marginTop: HeaderHeight,
+        marginTop: HeaderHeight + 12 + "px",
       }}
     >
       
