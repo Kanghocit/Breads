@@ -5,6 +5,7 @@ import {
   logout,
   addPostToCollection,
   removePostFromCollection,
+  updateProfile,
 } from "./asyncThunk";
 
 const defaultUser = {
@@ -14,9 +15,10 @@ const defaultUser = {
   username: "",
   bio: "",
   avatar: "",
-  followers: [],
+  followed: [],
   followings: [],
   collection: [],
+  links: [],
 };
 
 const initialState = {
@@ -44,7 +46,14 @@ const userSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getUserInfo.fulfilled, (state, action) => {
-      state.userInfo = action.payload;
+      const user = action.payload;
+      const localUserId = localStorage.getItem("userId");
+      const isCurrentUser = user._id === localUserId;
+      if (isCurrentUser) {
+        state.userInfo = user;
+      } else {
+        state.userSelected = user;
+      }
       state.isLoading = false;
     });
     builder.addCase(addPostToCollection.fulfilled, (state, action) => {
@@ -56,6 +65,10 @@ const userSlice = createSlice({
       state.userInfo.collection = state.userInfo.collection.filter(
         (postId) => postId !== postRemoveId
       );
+    });
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      const newUserData = action.payload;
+      state.userInfo = newUserData;
     });
   },
 });

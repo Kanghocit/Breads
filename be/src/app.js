@@ -6,7 +6,7 @@ import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
 
 // Connect to MongoDB
-connectDB();
+await connectDB();
 
 const app = express();
 

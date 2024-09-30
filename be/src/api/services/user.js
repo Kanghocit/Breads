@@ -21,19 +21,8 @@ export const getUserInfo = async (userId) => {
       { postsId: 1 }
     );
     const cloneUser = JSON.parse(JSON.stringify(user));
-    cloneUser.collection = userCollection.postsId ?? [];
+    cloneUser.collection = userCollection?.postsId ?? [];
     return cloneUser;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-export const createUser = async (payload) => {
-  try {
-    const newUser = new User({
-      ...payload,
-    });
-    await newUser.save();
   } catch (err) {
     console.log(err);
   }

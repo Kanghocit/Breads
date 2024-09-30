@@ -20,7 +20,7 @@ const UserHeader = ({ user }) => {
   const toast = useToast();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [following, setFollowing] = useState(
-    user?.followers?.includes(userInfo?._id)
+    user?.followed?.includes(userInfo?._id)
   );
   const showToast = useShowToast();
   const [updating, setUpdating] = useState(false);
@@ -59,10 +59,10 @@ const UserHeader = ({ user }) => {
       }
       if (following) {
         showToast("success", `Unfollowed ${user?.name}`, "success");
-        user.followers.pop();
+        user.followed.pop();
       } else {
         showToast("success", `Followed ${user?.name}`, "success");
-        user.followers.push(userInfo._id); //simulate adding to followers
+        user.followed.push(userInfo._id); //simulate adding to followed
       }
       setFollowing(!following);
     } catch (error) {
@@ -90,17 +90,17 @@ const UserHeader = ({ user }) => {
           </Flex>
         </Box>
         <Box>
-          {user?.profilePicture && (
+          {user?.avatar && (
             <Avatar
               name={user?.name}
-              src={user?.profilePicture}
+              src={user?.avatar}
               size={{
                 base: "md",
                 md: "xl",
               }}
             />
           )}
-          {!user?.profilePicture && (
+          {!user?.avatar && (
             <Avatar
               name={user?.name}
               src="https://bit.ly/broken-link"
@@ -133,7 +133,7 @@ const UserHeader = ({ user }) => {
       )}
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
-          <Text color={"gray.light"}>{user?.followers.length} followers</Text>
+          <Text color={"gray.light"}>{user?.followed.length} followed</Text>
           <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>

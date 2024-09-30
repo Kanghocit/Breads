@@ -8,7 +8,7 @@ import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
 
-export const HeaderHeight = "72px";
+export const HeaderHeight = 72;
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ const Header = () => {
         top={0}
         width={"100vw"}
         maxWidth={"100vw"}
-        height={HeaderHeight}
+        height={HeaderHeight + "px"}
         zIndex={1000}
         justifyContent={"center"}
         alignItems={"center"}

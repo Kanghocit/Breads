@@ -19,7 +19,7 @@ export const addPostToCollection = async (req, res) => {
   try {
     const { userId, postId } = req.body;
     if (!userId || !postId) {
-      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     const isValidCollection = await Collection.findOne({
       userId: ObjectId(userId),
@@ -52,7 +52,7 @@ export const removePostFromCollection = async (req, res) => {
   try {
     const { postId, userId } = req.body;
     if (!userId || !postId) {
-      res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     await Collection.findOneAndUpdate(
       {
