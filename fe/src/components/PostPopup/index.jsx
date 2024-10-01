@@ -42,6 +42,12 @@ const PostPopup = () => {
   const velocity = useRef(0);
   const [momentum, setMomentum] = useState(false);
 
+  const handleRemoveMedia = (indexToRemove) => {
+    const updatedMedia = postInfo.media.filter(
+      (_, index) => index !== indexToRemove
+    );
+    dispatch(updatePostInfo({ ...postInfo, media: updatedMedia }));
+  };
   const handleMouseDown = (e) => {
     isDragging.current = true;
     momentum && setMomentum(false);
@@ -99,18 +105,19 @@ const PostPopup = () => {
   const [clickPost, setClickPost] = useState(false);
 
   useEffect(() => {
-    if (debounceContent) {
+    if (debounceContent && debounceContent !== postInfo.content) {
       dispatch(
         updatePostInfo({ ...postInfo, content: replaceEmojis(debounceContent) })
       );
     }
   }, [debounceContent, dispatch, postInfo]);
-
+  
   useEffect(() => {
-    if (isEditing && postInfo?._id) {
+    if (isEditing && postInfo?._id && postInfo.content !== content) {
       setContent(postInfo.content);
     }
-  }, [isEditing, postInfo]);
+  }, [isEditing, postInfo, content]);
+  
 
   const closePostAction =
     !!postInfo.media?.length || postInfo.survey.length !== 0;
@@ -297,6 +304,20 @@ const PostPopup = () => {
                           borderRadius="8px"
                         />
                       )}
+
+                      <Button
+                        onClick={() => handleRemoveMedia(index)}
+                        size="sm"
+                        position="absolute"
+                        top="4px"
+                        right="4px"
+                        borderRadius="full"
+                        color="white"
+                        padding="4px"
+                        zIndex={1}
+                      >
+                        <CloseIcon boxSize="10px" />
+                      </Button>
                     </Flex>
                   ))}
                 </Flex>

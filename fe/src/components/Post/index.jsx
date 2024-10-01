@@ -9,15 +9,11 @@ import {
   Divider,
   Flex,
   Image,
-  Link,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
 import moment from "moment";
-import { useState } from "react";
+
+import { useRef, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,7 +34,7 @@ import UserInfoPopover from "../UserInfoPopover";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const isDragging = useRef(false);
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
@@ -49,6 +45,52 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
+  const mediaContainerRef = useRef(null);
+  const startPosition = useRef(0);
+  const scrollPosition = useRef(0);
+  const velocity = useRef(0);
+  const [momentum, setMomentum] = useState(false);
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    momentum && setMomentum(false);
+    startPosition.current = e.pageX - mediaContainerRef.current.offsetLeft;
+    scrollPosition.current = mediaContainerRef.current.scrollLeft;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    const currentPosition = e.pageX - mediaContainerRef.current.offsetLeft;
+    const distance = currentPosition - startPosition.current;
+    velocity.current = distance;
+    mediaContainerRef.current.scrollLeft = scrollPosition.current - distance;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    startMomentumScroll();
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging.current) {
+      isDragging.current = false;
+      startMomentumScroll();
+    }
+  };
+
+  const startMomentumScroll = () => {
+    let momentumVelocity = velocity.current;
+    if (momentumVelocity !== 0) {
+      setMomentum(true);
+      const inertiaInterval = setInterval(() => {
+        mediaContainerRef.current.scrollLeft -= momentumVelocity * 0.95;
+        momentumVelocity *= 0.95;
+        if (Math.abs(momentumVelocity) < 0.5) {
+          clearInterval(inertiaInterval);
+          setMomentum(false);
+        }
+      }, 16);
+    }
+  };
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
   };
@@ -165,21 +207,69 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             </Text>
           )}
           {!!post.media?.length > 0 && (
-            <Box
-              borderRadius={6}
-              overflow={"hidden"}
-              border={"1px solid"}
-              borderColor={"gray.light"}
-              cursor={"pointer"}
-              onClick={() => handleSeeFullMedia(post.media[0].url)}
+            <Flex
+              gap="10px"
+              mt="10px"
+              wrap={post.media.length <= 2 ? "wrap" : "nowrap"}
+              justifyContent="flex-start"
+              maxWidth="100%"
+              border="1px solid gray"
+              borderRadius="8px"
+              overflowX={post.media.length > 2 ? "auto" : "hidden"}
+              padding="10px"
+              ref={mediaContainerRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              css={{
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+                "&": {
+                  msOverflowStyle: "none",
+                  scrollbarWidth: "none",
+                },
+                cursor: isDragging.current || momentum ? "grabbing" : "grab",
+              }}
             >
-              {post.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
-                <video src={post.media[0].url} controls />
-              ) : (
-                <Image src={post.media[0].url} w={"full"} alt="post-img" />
-              )}
-            </Box>
+              {post.media.map((media, index) => (
+                <Flex
+                  key={index}
+                  position="relative"
+                  flexShrink={0}
+                  gap="10px"
+                  style={{
+                    width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
+                    maxWidth: post.media.length > 2 ? "200px" : "none",
+                  }}
+                >
+                  {media.type === Constants.MEDIA_TYPE.VIDEO ? (
+                    <video
+                      src={media.url}
+                      controls
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      src={media.url}
+                      alt={`Post Media ${index}`}
+                      width="100%"
+                      height={post.media.length === 1 ? "auto" : "200px"}
+                      objectFit="cover"
+                      borderRadius="8px"
+                    />
+                  )}
+                </Flex>
+              ))}
+            </Flex>
           )}
+
           {post.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
