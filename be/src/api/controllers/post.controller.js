@@ -90,9 +90,19 @@ export const createPost = async (req, res) => {
         addNew: true,
       });
     }
-    res
-      .status(HTTPStatus.CREATED)
-      .json({ message: "Post created successfully!", newPost });
+    const result = JSON.parse(JSON.stringify(newPost));
+    const authorInfo = await User.findOne(
+      {
+        _id: ObjectId(authorId),
+      },
+      {
+        _id: 1,
+        avatar: 1,
+        username: 1,
+      }
+    );
+    result.authorInfo = authorInfo;
+    res.status(HTTPStatus.CREATED).json(result);
   } catch (err) {
     console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
@@ -132,7 +142,16 @@ export const deletePost = async (req, res) => {
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });
     }
-
+    const repliesId = post.replies;
+    if (repliesId?.length) {
+      await Post.deleteMany({ _id: { $in: repliesId } });
+    }
+    await Post.updateMany(
+      { "quote._id": postId },
+      {
+        quote: {},
+      }
+    );
     await Post.findByIdAndDelete(postId);
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });

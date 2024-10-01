@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSurveyOption } from "../../../store/PostSlice/asyncThunk";
 import "./index.css";
 
-const SurveyOption = ({ option, post }) => {
+const SurveyOption = ({ option, post, isParentPost = false }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const handleTickOption = () => {
@@ -18,13 +18,13 @@ const SurveyOption = ({ option, post }) => {
   };
   const percent = useMemo(() => {
     const total = post.survey.reduce(
-      (count, option) => count + option.usersId.length,
+      (count, option) => count + option.usersId?.length,
       0
     );
     if (total === 0) {
       return 0;
     }
-    return Math.floor((option.usersId.length / total) * 100);
+    return Math.floor((option.usersId?.length / total) * 100);
   }, [post]);
 
   return (
@@ -34,8 +34,12 @@ const SurveyOption = ({ option, post }) => {
         <p className="percent">{percent}%</p>
         <input
           type="checkbox"
-          onChange={() => handleTickOption()}
-          checked={option.usersId.includes(userInfo._id)}
+          onChange={() => {
+            if (!isParentPost) {
+              handleTickOption();
+            }
+          }}
+          checked={option.usersId?.includes(userInfo._id)}
         />
       </div>
       <div

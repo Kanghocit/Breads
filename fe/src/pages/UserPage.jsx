@@ -17,13 +17,10 @@ const UserPage = () => {
   const { userId } = useParams();
 
   useEffect(() => {
-    const localUserId = localStorage.getItem("userId");
-    if (userId && userId !== localUserId) {
-      dispatch(getUserInfo({ userId }));
-    }
+    dispatch(getUserInfo({ userId }));
     dispatch(getUserPosts(userId));
     window.scrollTo(0, 0);
-  }, []);
+  }, [userId]);
 
   return (
     <>

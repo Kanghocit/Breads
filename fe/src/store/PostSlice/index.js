@@ -8,6 +8,8 @@ import {
   getUserPosts,
   selectSurveyOption,
 } from "./asyncThunk";
+import PostConstants from "../../util/PostConstants";
+import PageConstant from "../../../../share/Constants/PageConstants";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {
@@ -82,7 +84,11 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
-      state.listPost = [newPost, ...state.listPost];
+      if (state.postAction === PostConstants.ACTIONS.REPLY) {
+        state.postSelected.replies = [...state.postSelected.replies, newPost];
+      } else {
+        state.listPost = [newPost, ...state.listPost];
+      }
       state.isLoading = false;
       state.postAction = "";
     });
@@ -95,11 +101,34 @@ const postSlice = createSlice({
         ...state.listPost[postIndex],
         ...postUpdated,
       };
+      state.postSelected = state.postInfo;
       state.postAction = "";
     });
     builder.addCase(deletePost.fulfilled, (state, action) => {
-      const postId = action.payload;
-      state.listPost = state.listPost.filter((post) => post._id !== postId);
+      const { postId, currentPage } = action.payload;
+      if (
+        state.postSelected?._id &&
+        postId !== state.postSelected?._id &&
+        currentPage === PageConstant.POST_DETAIL
+      ) {
+        state.listPost = state.postSelected.replies.filter(
+          (post) => post._id !== postId
+        );
+        state.postSelected.replies = state.listPost;
+      } else {
+        const listPost = JSON.parse(JSON.stringify(state.listPost));
+        const newListPost = listPost.filter(({ _id }) => _id !== postId);
+        for (let i = 0; i < newListPost.length; i++) {
+          const post = newListPost[i];
+          if (post.parentPost === postId) {
+            delete newListPost[i].parentPostInfo;
+          }
+          if (post?.quote?._id === postId) {
+            delete newListPost[i].quote;
+          }
+        }
+        state.listPost = newListPost;
+      }
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId } = action.payload;
@@ -123,6 +152,18 @@ const postSlice = createSlice({
         } else {
           state.listPost[postTickedIndex].survey[optionIndex].usersId =
             currentUsersId.filter((id) => id !== userId);
+        }
+      }
+      //Update share post with survey
+      const listPost = JSON.parse(JSON.stringify(state.listPost));
+      const postsShared = listPost.filter(
+        ({ parentPost }) => parentPost === postId
+      );
+      if (postsShared?.length) {
+        for (const post of postsShared) {
+          const postIndex = listPost.findIndex(({ _id }) => _id === post._id);
+          state.listPost[postIndex].parentPostInfo.survey =
+            state.listPost[postTickedIndex].survey;
         }
       }
     });

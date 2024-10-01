@@ -1,7 +1,7 @@
 import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import PageConstant from "../../share/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
@@ -19,9 +19,11 @@ import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostConstants from "./util/PostConstants";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation(); 
   const userInfo = useSelector((state) => state.user.userInfo);
   const userId = userInfo._id ? userInfo._id : localStorage.getItem("userId");
   const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
@@ -81,9 +83,14 @@ function App() {
         marginTop: HeaderHeight + 12 + "px",
       }}
     >
-      {!!userId && !seeMediaInfo.open && <Layout />}
+      
+      {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
+        <Layout />
+      )}
       <Container maxW="620px">
-        {!!userId && !seeMediaInfo.open && <CreatePostBtn />}
+        {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
+          <CreatePostBtn />
+        )}
       </Container>
       <Routes>
         {HomeRoute()}
@@ -107,6 +114,7 @@ function App() {
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
+        <Route path="/error" element={<ErrorPage />} />
         {ActivityRoute()}
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
