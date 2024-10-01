@@ -3,6 +3,7 @@ import { ObjectId } from "../../util/index.js";
 import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import SurveyOption from "../models/surveyOption.model.js";
 
 export const getPostDetail = async ({ postId, getFullInfo = false }) => {
   try {
@@ -92,7 +93,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
       });
     }
     let result = (await Post.aggregate(agg))?.[0];
-    if (result.parentPostInfo?.length > 0) {
+    if (result?.parentPostInfo?.length > 0) {
       result.parentPostInfo = result.parentPostInfo[0];
       const userInfo = await User.findOne(
         { _id: result.parentPostInfo.authorId },
@@ -102,12 +103,22 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           avatar: 1,
         }
       );
+      if (result.parentPostInfo.survey.length) {
+        const surveyOptions = await SurveyOption.find({
+          _id: { $in: result.parentPostInfo.survey },
+        });
+        result.parentPostInfo.survey = surveyOptions;
+      }
       result.parentPostInfo.authorInfo = userInfo;
     } else {
-      delete result.parentPostInfo;
+      if (result?.parentPostInfo) {
+        delete result.parentPostInfo;
+      }
     }
     const childrenPost = await Post.find({ parentPost: result?._id });
-    result.repostNum = childrenPost?.length ?? 0;
+    if (result) {
+      result.repostNum = childrenPost?.length ?? 0;
+    }
     return result;
   } catch (err) {
     console.log(err);

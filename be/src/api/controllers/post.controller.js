@@ -142,7 +142,16 @@ export const deletePost = async (req, res) => {
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });
     }
-
+    const repliesId = post.replies;
+    if (repliesId?.length) {
+      await Post.deleteMany({ _id: { $in: repliesId } });
+    }
+    await Post.updateMany(
+      { "quote._id": postId },
+      {
+        quote: {},
+      }
+    );
     await Post.findByIdAndDelete(postId);
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });

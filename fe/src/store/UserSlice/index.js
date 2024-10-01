@@ -51,6 +51,7 @@ const userSlice = createSlice({
       const isCurrentUser = user._id === localUserId;
       if (isCurrentUser) {
         state.userInfo = user;
+        state.userSelected = user;
       } else {
         state.userSelected = user;
       }

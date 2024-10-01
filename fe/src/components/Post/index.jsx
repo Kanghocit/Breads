@@ -1,7 +1,6 @@
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Avatar,
-  Box,
   Button,
   Card,
   CardBody,
@@ -17,7 +16,7 @@ import { useRef, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Constants } from "../../../../share/Constants";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import { selectPost } from "../../store/PostSlice";
@@ -26,11 +25,11 @@ import ClickOutsideComponent from "../../util/ClickoutCPN";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import ViewActivity from "../PostPopup/ViewActivity";
+import UserInfoPopover from "../UserInfoPopover";
 import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import UserInfoPopover from "../UserInfoPopover";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,12 +109,14 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
     <>
       <Card
         className="post-container"
-        borderRadius={"12px"}
+        padding={isReply ? "6px" : ""}
+        borderRadius={isReply ? "" : "12px"}
         border={isParentPost ? "1px solid gray" : ""}
         boxShadow={isReply ? "none" : ""}
         width={"100%"}
+        borderBottom={isReply ? "1px solid gray" : ""}
       >
-        <CardBody padding={isReply ? "0px" : "1.25rem"}>
+        <CardBody padding={isReply ? "8px 0" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
             <Flex alignItems={"center"} gap={3}>
               <Avatar
@@ -270,22 +271,47 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             </Flex>
           )}
 
-          {post.survey?.length > 0 && <Survey post={post} />}
-          {post?.parentPostInfo?._id && (
+          {post.survey?.length > 0 && (
+            <Survey post={post} isParentPost={isParentPost} />
+          )}
+          {post.parentPost && (
             <>
-              {post?.quote?._id && isParentPost ? (
-                <Text
-                  display={"flex"}
-                  alignItems={"center"}
-                  gap={"4px"}
-                  color={"lightgray"}
-                  cursor={"text"}
-                >
-                  <RiDoubleQuotesL />
-                  {post.quote.content}
-                </Text>
+              {post?.parentPostInfo?._id ? (
+                <>
+                  {post?.quote?._id && isParentPost ? (
+                    <Text
+                      display={"flex"}
+                      alignItems={"center"}
+                      gap={"4px"}
+                      color={"lightgray"}
+                      cursor={"text"}
+                    >
+                      <RiDoubleQuotesL />
+                      {post.quote.content}
+                    </Text>
+                  ) : (
+                    <Post post={post?.parentPostInfo} isParentPost={true} />
+                  )}
+                </>
               ) : (
-                <Post post={post?.parentPostInfo} isParentPost={true} />
+                <>
+                  {!isParentPost && (
+                    <Flex
+                      width={"100%"}
+                      height={"40px"}
+                      padding={"0"}
+                      margin={"0"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      borderRadius={"10px"}
+                      bg={"lightgray"}
+                    >
+                      <Text color={"gray"} fontWeight={600} fontSize={"14px"}>
+                        Empty content
+                      </Text>
+                    </Flex>
+                  )}
+                </>
               )}
             </>
           )}
@@ -320,7 +346,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 <Container
                   width={"100%"}
                   maxWidth={"100%"}
-                  padding={"12px 0"}
+                  padding={"0"}
                   mx={0}
                   boxShadow={"none"}
                   borderY={"1px solid gray"}

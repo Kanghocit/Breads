@@ -54,12 +54,16 @@ export const deletePost = createAsyncThunk(
     try {
       const rootState = thunkApi.getState();
       const userInfo = rootState.user.userInfo;
+      const currentPage = rootState.util.currentPage;
       const { postId } = payload;
       await DELETE({
         path: "posts/" + postId,
         params: { userId: userInfo._id },
       });
-      return postId;
+      return {
+        postId,
+        currentPage,
+      };
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }
