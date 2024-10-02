@@ -1,29 +1,42 @@
 import express from "express";
 import {
-  followUnFollowUser,
+  changePassword,
+  followUser,
   getAdminAccount,
   getUserProfile,
+  getUserToFollows,
+  handleCrawlFakeUsers,
   loginUser,
   logoutUser,
   signupUser,
   updateUser,
-  changePassword,
-  getUserToFollows,
-  handleCrawlFakeUsers,
 } from "../controllers/user.controller.js";
-import protectRoute from "../middlewares/protectRoute.js";
+// import protectRoute from "../middlewares/protectRoute.js";
+import { USER_PATH } from "../../../../share/APIConfig.js";
 
 const router = express.Router();
+const {
+  ADMIN,
+  PROFILE,
+  USERS_FOLLOW,
+  SIGN_UP,
+  LOGIN,
+  LOGOUT,
+  FOLLOW,
+  UPDATE,
+  CHANGE_PW,
+  CRAWL_USER,
+} = USER_PATH;
 
-router.get("/admin", getAdminAccount);
-router.get("/profile/:userId", getUserProfile);
-router.get("/users-follow", getUserToFollows);
-router.post("/signup", signupUser);
-router.post("/login", loginUser);
-router.post("/logout", logoutUser);
-router.post("/follow/:id", protectRoute, followUnFollowUser);
-router.put("/update/:id", updateUser);
-router.put("/change-pw/:id", changePassword);
-router.post("/crawl-user", handleCrawlFakeUsers);
+router.get(ADMIN, getAdminAccount);
+router.get(PROFILE + ":userId", getUserProfile);
+router.get(USERS_FOLLOW, getUserToFollows);
+router.post(SIGN_UP, signupUser);
+router.post(LOGIN, loginUser);
+router.post(LOGOUT, logoutUser);
+router.put(FOLLOW, followUser);
+router.put(UPDATE + ":id", updateUser);
+router.put(CHANGE_PW + ":id", changePassword);
+router.post(CRAWL_USER, handleCrawlFakeUsers);
 
 export default router;

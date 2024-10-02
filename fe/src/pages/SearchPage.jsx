@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import ContainerLayout from "../components/MainBoxLayout";
 import UserFollowBox from "../components/UserFollowBox";
 import { GET } from "../config/API";
+import { Route, USER_PATH } from "../../../share/APIConfig";
 
 const SearchPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -22,7 +23,7 @@ const SearchPage = () => {
     try {
       setLoading(true);
       const data = await GET({
-        path: "users/users-follow",
+        path: Route.USER + USER_PATH.USERS_FOLLOW,
         params: {
           userId: userInfo._id,
           page: page,

@@ -130,7 +130,7 @@ export const getPostsIdByFilter = async (payload) => {
   try {
     let data = null;
     const filter = payload.filter;
-    let userId = payload?.userId;
+    let userId = payload.userId;
     switch (filter) {
       case PageConstant.SAVED:
         data = (await Collection.findOne({ userId: ObjectId(userId) }))
@@ -139,6 +139,17 @@ export const getPostsIdByFilter = async (payload) => {
       case PageConstant.USER:
         data = await Post.find(
           { authorId: ObjectId(userId), type: { $ne: "reply" } },
+          { _id: 1 }
+        ).sort({
+          createdAt: -1,
+        });
+        break;
+      case PageConstant.FOLLOWING:
+        const userInfo = await User.findOne({ _id: userId });
+        const userFollowing = JSON.parse(JSON.stringify(userInfo)).following;
+        console.log("userFollowing: ", userFollowing);
+        data = await Post.find(
+          { type: { $ne: "reply" }, authorId: { $in: userFollowing } },
           { _id: 1 }
         ).sort({
           createdAt: -1,

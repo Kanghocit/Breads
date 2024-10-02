@@ -10,13 +10,18 @@ import {
   PopoverTrigger,
   Text,
 } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import PageConstant from "../../../../share/Constants/PageConstants";
+import useShowToast from "../../hooks/useShowToast";
 import { changePage } from "../../store/UtilSlice";
+import { handleFlow } from "../FollowBtn";
 
-const UserInfoPopover = ({ userInfo, content = "" }) => {
+const UserInfoPopover = ({ user, content = "" }) => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const isFollowing = userInfo?.following?.includes(user?._id);
+  const showToast = useShowToast();
 
   const handleGoToUserPage = () => {
     dispatch(changePage({ nextPage: PageConstant.USER }));
@@ -27,7 +32,7 @@ const UserInfoPopover = ({ userInfo, content = "" }) => {
       <PopoverTrigger>
         <Link
           as={RouterLink}
-          to={`/users/${userInfo._id}`}
+          to={`/users/${user._id}`}
           onClick={() => handleGoToUserPage()}
         >
           <Text
@@ -36,7 +41,7 @@ const UserInfoPopover = ({ userInfo, content = "" }) => {
             cursor={"pointer"}
             _hover={{ textDecoration: "underline" }}
           >
-            {userInfo?.username}
+            {user?.username}
           </Text>
         </Link>
       </PopoverTrigger>
@@ -51,18 +56,18 @@ const UserInfoPopover = ({ userInfo, content = "" }) => {
         <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
           <Box m={2}>
             <Flex justifyContent={"space-between"}>
-              <Text fontWeight="bold">{userInfo.username}</Text>
+              <Text fontWeight="bold">{user.username}</Text>
               <Avatar
-                src={userInfo?.avatar}
+                src={user?.avatar}
                 size={"md"}
-                name={userInfo?.username}
+                name={user?.username}
                 cursor={"pointer"}
               />
             </Flex>
-            <Text fontSize={"sm"}> {userInfo.name}</Text>
+            <Text fontSize={"sm"}> {user.name}</Text>
             {content && <Text>{content}</Text>}
             <Text color={"gray.400"}>
-              {userInfo?.followed?.length || 0} người theo dõi
+              {user?.followed?.length || 0} người theo dõi
             </Text>
             <Button
               w={"100%"}
@@ -72,8 +77,9 @@ const UserInfoPopover = ({ userInfo, content = "" }) => {
               _hover={{ opacity: 0.8 }}
               _active={{ opacity: 0.6 }}
               transition="opacity 0.2s"
+              onClick={() => handleFlow(userInfo, user, dispatch, showToast)}
             >
-              Theo dõi
+              {isFollowing ? "Unfollow" : "Follow"}
             </Button>
           </Box>
         </PopoverBody>

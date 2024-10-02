@@ -72,14 +72,14 @@ const PostMoreActionBox = ({
       icon: savedBefore ? <GoBookmarkSlash /> : <CiBookmark />,
       onClick: handleSave,
     },
-    {
-      name: "Block",
-      icon: <IoBan />,
-    },
-    {
-      name: "Report",
-      icon: <GoReport />,
-    },
+    // {
+    //   name: "Block",
+    //   icon: <IoBan />,
+    // },
+    // {
+    //   name: "Report",
+    //   icon: <GoReport />,
+    // },
     {
       name: "Copy link",
       icon: <IoIosLink />,

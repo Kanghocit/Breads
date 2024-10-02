@@ -128,7 +128,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               />
               <Flex>
                 <UserInfoPopover
-                  userInfo={post?.authorInfo}
+                  user={post?.authorInfo}
                   content={post?.content}
                 />
               </Flex>
