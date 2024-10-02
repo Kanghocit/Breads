@@ -21,8 +21,9 @@ import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
 import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
-import { updateSeeMedia } from "../store/UtilSlice";
+import { changePage, updateSeeMedia } from "../store/UtilSlice";
 import { convertToBase64 } from "../util/index";
+import PageConstant from "../../../share/Constants/PageConstants";
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -87,6 +88,8 @@ const UpdateProfilePage = () => {
       }
       dispatch(updateProfile(payload));
       showToast("Success", "Profile updated successfully", "success");
+      dispatch(changePage({ nextPage: PageConstant.USER }));
+      navigate(`/users/${userInfo._id}`);
     } catch (error) {
       showToast(
         "Error",

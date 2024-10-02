@@ -14,7 +14,7 @@ export class USER_PATH {
   static SIGN_UP = "/signup";
   static LOGIN = "/login";
   static LOGOUT = "/logout";
-  static FOLLOW = "/follow/";
+  static FOLLOW = "/follow";
   static UPDATE = "/update/";
   static CHANGE_PW = "/change-pw/";
   static CRAWL_USER = "/crawl-user";

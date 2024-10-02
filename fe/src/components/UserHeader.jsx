@@ -7,70 +7,25 @@ import {
   MenuItem,
   MenuList,
   Portal,
-  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
+import FollowBtn from "./FollowBtn";
 
 const UserHeader = ({ user }) => {
-  const toast = useToast();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const [following, setFollowing] = useState(
-    user?.followed?.includes(userInfo?._id)
-  );
   const showToast = useShowToast();
-  const [updating, setUpdating] = useState(false);
 
   const copyURL = () => {
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
-      toast({
-        title: "Account created.",
-        description: "Profile link copied.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast("", "Profile link copied", "success");
     });
   };
 
-  const handleFollowUnFollow = async () => {
-    if (!userInfo) {
-      showToast("Error", "Please login to follow", "error");
-      return;
-    }
-    if (updating) return;
-    setUpdating(true);
-    try {
-      const res = await fetch(`/api/users/follow/${user?._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
-      if (following) {
-        showToast("success", `Unfollowed ${user?.name}`, "success");
-        user.followed.pop();
-      } else {
-        showToast("success", `Followed ${user?.name}`, "success");
-        user.followed.push(userInfo._id); //simulate adding to followed
-      }
-      setFollowing(!following);
-    } catch (error) {
-      showToast("Error", error, "error");
-    } finally {
-      setUpdating(false);
-    }
-  };
   return (
     <VStack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>
@@ -122,13 +77,7 @@ const UserHeader = ({ user }) => {
       )}
       {userInfo._id !== user?._id && (
         <Link as={RouterLink}>
-          <Button
-            size={"sm"}
-            onClick={handleFollowUnFollow}
-            isLoading={updating}
-          >
-            {following ? "Unfollow" : "Follow"}
-          </Button>
+          <FollowBtn user={user} />
         </Link>
       )}
       <Flex w={"full"} justifyContent={"space-between"}>

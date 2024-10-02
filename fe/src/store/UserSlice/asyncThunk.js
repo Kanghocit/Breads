@@ -65,15 +65,19 @@ export const logout = createAsyncThunk(
 
 export const getUserInfo = createAsyncThunk(
   "user/getUserInfo",
-  async (payload, { rejectWithValue }) => {
+  async (payload, thunkAPI) => {
     try {
       const userId = payload.userId;
+      const getCurrentUser = payload.getCurrentUser;
       const data = await GET({
         path: Route.USER + USER_PATH.PROFILE + userId,
       });
-      return data;
+      return {
+        user: data,
+        getCurrentUser: getCurrentUser,
+      };
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );
@@ -139,6 +143,26 @@ export const removePostFromCollection = createAsyncThunk(
       return {
         postId: postId,
       };
+    } catch (err) {
+      console.error(err);
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const followUser = createAsyncThunk(
+  "user/handleFollow",
+  async (payload, thunkAPI) => {
+    try {
+      const { userFlId, userId } = payload;
+      await PUT({
+        path: Route.USER + USER_PATH.FOLLOW,
+        payload: {
+          userFlId,
+          userId,
+        },
+      });
+      return userFlId;
     } catch (err) {
       console.error(err);
       return thunkAPI.rejectWithValue(err.response.data);

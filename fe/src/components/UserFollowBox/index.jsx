@@ -1,9 +1,10 @@
-import { Avatar, Button, Container, Flex, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import UserInfoPopover from "../UserInfoPopover";
+import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
-import { changePage } from "../../store/UtilSlice";
+import { useNavigate } from "react-router-dom";
 import PageConstant from "../../../../share/Constants/PageConstants";
+import { changePage } from "../../store/UtilSlice";
+import FollowBtn from "../FollowBtn";
+import UserInfoPopover from "../UserInfoPopover";
 
 const UserFollowBox = ({ userInfo }) => {
   const navigate = useNavigate();
@@ -32,13 +33,13 @@ const UserFollowBox = ({ userInfo }) => {
           onClick={() => getToUserPage()}
         />
         <Container>
-          <UserInfoPopover userInfo={userInfo} />
+          <UserInfoPopover user={userInfo} />
           <Text fontWeight={"400"} fontSize={"14px"}>
             {userInfo.name}
           </Text>
         </Container>
       </Flex>
-      <Button>Follow</Button>
+      <FollowBtn user={userInfo} />
     </Flex>
   );
 };

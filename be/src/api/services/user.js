@@ -27,3 +27,29 @@ export const getUserInfo = async (userId) => {
     console.log(err);
   }
 };
+
+export const updateFollow = async (userId, userFlId, isAdd, isFollowing) => {
+  try {
+    let updateSyntax;
+    const updateField = isFollowing
+      ? { following: userFlId }
+      : { followed: userFlId };
+    if (isAdd) {
+      updateSyntax = {
+        $push: updateField,
+      };
+    } else {
+      updateSyntax = {
+        $pull: updateField,
+      };
+    }
+    await User.updateOne(
+      {
+        _id: ObjectId(userId),
+      },
+      updateSyntax
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};

@@ -4,7 +4,7 @@ import { Constants } from "../../../../share/Constants/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
-import { getUserInfo } from "../services/user.js";
+import { getUserInfo, updateFollow } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 import Collection from "../models/collection.model.js";
 import { uploadFile } from "../utils/index.js";
@@ -116,44 +116,26 @@ export const logoutUser = async (req, res) => {
 };
 
 //follow and unfollow
-export const followUnFollowUser = async (req, res) => {
+export const followUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const userToModify = await User.findById(id);
-    const currentUser = await User.findById(req.user._id);
-
-    if (!userToModify || !currentUser) {
-      return res
-        .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "User not found" });
+    const { userFlId, userId } = req.body;
+    if (!userFlId || !userId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
-
-    if (id === req.user._id.toString()) {
-      return res
-        .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "You can't follow/unfollow yourself" });
+    const userInfo = await User.findOne({ _id: ObjectId(userId) });
+    if (!userInfo) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Invalid user");
     }
-
-    // Ensure `following` is initialized
-    // if (!Array.isArray(currentUser.following)) {
-    //     currentUser.following = [];
-    // }
-
-    const isFollowing = currentUser.following.includes(id);
-
+    const userFollowing = JSON.parse(JSON.stringify(userInfo))?.following;
+    const isFollowing = userFollowing?.includes(userFlId);
     if (isFollowing) {
-      // Unfollow user
-      await User.findByIdAndUpdate(id, { $pull: { followed: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
-      res
-        .status(HTTPStatus.OK)
-        .json({ message: "User unfollowed successfully" });
+      await updateFollow(userId, userFlId, false, true);
+      await updateFollow(userFlId, userId, false, false);
     } else {
-      // Follow user
-      await User.findByIdAndUpdate(id, { $push: { followed: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
-      res.status(HTTPStatus.OK).json({ message: "User followed successfully" });
+      await updateFollow(userId, userFlId, true, true);
+      await updateFollow(userFlId, userId, true, false);
     }
+    res.status(HTTPStatus.OK).json("ok");
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log("Error in followUnFollowUser", err.message);
@@ -195,7 +177,6 @@ export const updateUser = async (req, res) => {
       const checkLinks = links.every(
         (link) => link.match(urlRegex)?.length > 0
       );
-      console.log("checkLinks: ", checkLinks);
       if (checkLinks) {
         user.links = links;
       }
@@ -282,7 +263,7 @@ export const getUserToFollows = async (req, res) => {
       return res.status(HTTPStatus.BAD_REQUEST).json("Need page and limit");
     }
     const userFollowed =
-      (await User.findOne({ _id: ObjectId(userId) }))?.followed ?? [];
+      (await User.findOne({ _id: ObjectId(userId) }))?.following ?? [];
     const invalidToFollow = [...userFollowed, userId];
     const skip = (page - 1) * limit;
     const data = await User.find(

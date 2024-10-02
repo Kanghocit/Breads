@@ -1,4 +1,5 @@
 import express from "express";
+import { POST_PATH } from "../../../../share/APIConfig.js";
 import {
   createPost,
   deletePost,
@@ -12,14 +13,15 @@ import {
 import protectRoute from "../middlewares/protectRoute.js";
 
 const router = express.Router();
+const { GET_ALL, USER, CREATE, UPDATE, LIKE, TICK_SURVEY } = POST_PATH;
 
-router.get("/all", getPosts);
-router.get("/user-posts", getUserPosts);
+router.get(GET_ALL, getPosts);
+router.get(USER, getUserPosts);
 router.get("/:id", getPost);
-router.post("/create", createPost);
+router.post(CREATE, createPost);
 router.delete("/:id", deletePost);
-router.put("/update", updatePost);
-router.post("/like/:id", protectRoute, likeUnlikePost);
-router.put("/tick-post-survey", tickPostSurvey);
+router.put(UPDATE, updatePost);
+router.post(LIKE + ":id", protectRoute, likeUnlikePost);
+router.put(TICK_SURVEY, tickPostSurvey);
 
 export default router;

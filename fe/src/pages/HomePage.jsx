@@ -16,6 +16,7 @@ const HomePage = () => {
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   const { listPost, isLoading } = useSelector((state) => state.post);
   const initPage = useRef(true);
+  const { FOR_YOU } = PageConstant;
 
   useEffect(() => {
     if (!initPage.current) {
@@ -35,7 +36,6 @@ const HomePage = () => {
   }, []);
 
   const handleGetDataByPage = () => {
-    const { FOR_YOU } = PageConstant;
     let pathname = window.location.pathname;
     pathname = pathname.slice(1, pathname.length);
     let result = "";
@@ -55,7 +55,7 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
-        <CreatePostBar />
+        {displayPageData === FOR_YOU && <CreatePostBar />}
         {listPost?.length !== 0 && !isLoading ? (
           <>
             {listPost?.map((post) => (
