@@ -2,13 +2,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { GET, PATCH, POST, PUT } from "../../config/API";
 import PageConstant from "../../../../share/Constants/PageConstants";
 import { updateListPost } from "../PostSlice";
+import { COLLECTION_PATH, Route, USER_PATH } from "../../../../share/APIConfig";
 
 export const signUp = createAsyncThunk(
   "user/signUp",
   async (payload, { rejectWithValue }) => {
     try {
       const data = await POST({
-        path: "users/signup",
+        path: Route.USER + USER_PATH.SIGN_UP,
         payload,
       });
       if (data) {
@@ -29,11 +30,11 @@ export const login = createAsyncThunk(
       let data = null;
       if (payload?.loginAsAdmin) {
         data = await GET({
-          path: "users/admin",
+          path: Route.USER + USER_PATH.ADMIN,
         });
       } else {
         data = await POST({
-          path: "users/login",
+          path: Route.USER + USER_PATH.LOGIN,
           payload,
         });
       }
@@ -52,7 +53,7 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await POST({
-        path: "users/logout",
+        path: Route.USER + USER_PATH.LOGOUT,
       });
       localStorage.removeItem("userId");
       return data;
@@ -68,7 +69,7 @@ export const getUserInfo = createAsyncThunk(
     try {
       const userId = payload.userId;
       const data = await GET({
-        path: "users/profile/" + userId,
+        path: Route.USER + USER_PATH.PROFILE + userId,
       });
       return data;
     } catch (err) {
@@ -84,7 +85,7 @@ export const updateProfile = createAsyncThunk(
       const rootState = thunkAPI.getState();
       const userInfo = rootState.user.userInfo;
       const data = await PUT({
-        path: `users/update/${userInfo._id}`,
+        path: Route.USER + USER_PATH.UPDATE + userInfo._id,
         payload,
       });
       console.log(data);
@@ -101,7 +102,7 @@ export const addPostToCollection = createAsyncThunk(
     try {
       const { userId, postId } = payload;
       await PATCH({
-        path: `collections/add`,
+        path: Route.COLLECTION + COLLECTION_PATH.ADD,
         payload: {
           userId: userId,
           postId: postId,
@@ -123,7 +124,7 @@ export const removePostFromCollection = createAsyncThunk(
       const displayPageData = rootState.util.displayPageData;
       const { userId, postId } = payload;
       const data = await PATCH({
-        path: `collections/remove`,
+        path: Route.COLLECTION + COLLECTION_PATH.ADD,
         payload: {
           userId: userId,
           postId: postId,
