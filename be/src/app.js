@@ -4,6 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
+import { crawlPosts } from "./api/crawl.js";
 
 // Connect to MongoDB
 await connectDB();
@@ -24,4 +25,5 @@ app.use(cors(corOption));
 
 app.use("/api", router);
 
+crawlPosts();
 export default app;

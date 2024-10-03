@@ -94,11 +94,12 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
     window.open(`/posts/${post._id}`, "_self");
   };
 
-  const handleSeeFullMedia = (img) => {
+  const handleSeeFullMedia = (media, index) => {
     dispatch(
       updateSeeMedia({
         open: true,
-        img: img,
+        media: media,
+        currentMediaIndex: index,
       })
     );
     //Temp
@@ -255,6 +256,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                         objectFit: "cover",
                         borderRadius: "8px",
                       }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSeeFullMedia(post.media, index);
+                      }}
                     />
                   ) : (
                     <Image
@@ -264,6 +270,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                       height={post.media.length === 1 ? "auto" : "200px"}
                       objectFit="cover"
                       borderRadius="8px"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSeeFullMedia(post.media, index);
+                      }}
                     />
                   )}
                 </Flex>
