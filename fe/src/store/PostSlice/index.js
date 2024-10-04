@@ -105,8 +105,10 @@ const postSlice = createSlice({
     });
     builder.addCase(deletePost.fulfilled, (state, action) => {
       const postId = action.payload;
-      state.listPost = state.postSelected.replies.filter((post) => post._id !== postId);
-      state.postSelected.replies = state.listPost;
+      if(state.postSelected._id){
+        state.listPost = state.postSelected?.replies.filter((post) => post._id !== postId);
+        state.postSelected.replies = state.listPost;
+      }
     });
     builder.addCase(selectSurveyOption.fulfilled, (state, action) => {
       const { postId, userId, isAdd, optionId } = action.payload;
