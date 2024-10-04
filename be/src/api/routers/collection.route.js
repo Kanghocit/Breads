@@ -4,12 +4,14 @@ import {
   getUserCollection,
   removePostFromCollection,
 } from "../controllers/collection.controller.js";
-import protectRoute from "../middlewares/protectRoute.js";
+// import protectRoute from "../middlewares/protectRoute.js";
+import { COLLECTION_PATH } from "../../../../share/APIConfig.js";
 
 const router = express.Router();
+const { ADD, REMOVE } = COLLECTION_PATH;
 
 router.get("/:userId", getUserCollection);
-router.patch("/add", addPostToCollection);
-router.patch("/remove", removePostFromCollection);
+router.patch(ADD, addPostToCollection);
+router.patch(REMOVE, removePostFromCollection);
 
 export default router;

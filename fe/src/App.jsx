@@ -10,6 +10,7 @@ import Layout from "./Layout";
 import { HeaderHeight } from "./Layout/Header";
 import ActivityPage from "./pages/ActivityPage";
 import AuthPage from "./pages/AuthPage";
+import ErrorPage from "./pages/ErrorPage";
 import HomePage from "./pages/HomePage";
 import PostDetail from "./pages/PostDetail";
 import PostPage from "./pages/PostPage";
@@ -19,14 +20,12 @@ import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostConstants from "./util/PostConstants";
-import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   const dispatch = useDispatch();
-  const location = useLocation(); 
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const userId = userInfo._id ? userInfo._id : localStorage.getItem("userId");
-  const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
+  const location = useLocation();
+  const userId = localStorage.getItem("userId");
+  const { seeMediaInfo, currentPage } = useSelector((state) => state.util);
   const postAction = useSelector((state) => state.post.postAction);
   const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
   const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
@@ -39,7 +38,7 @@ function App() {
 
   const handleGetUserInfo = async () => {
     try {
-      dispatch(getUserInfo({ userId: userId }));
+      dispatch(getUserInfo({ userId, getCurrentUser: true }));
     } catch (err) {
       console.error(err);
     }
@@ -83,7 +82,6 @@ function App() {
         marginTop: HeaderHeight + 12 + "px",
       }}
     >
-      
       {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
         <Layout />
       )}

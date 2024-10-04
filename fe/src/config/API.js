@@ -3,7 +3,7 @@ export const serverUrl = "http://localhost:8080";
 
 export const GET = async ({ path, params = null, showToast = null }) => {
   try {
-    const url = serverUrl + "/api/" + path;
+    const url = serverUrl + "/api" + path;
     let result = null;
     if (params) {
       result = (
@@ -26,7 +26,7 @@ export const GET = async ({ path, params = null, showToast = null }) => {
 
 export const POST = async ({ path, payload, params, showToast = null }) => {
   try {
-    const url = serverUrl + "/api/" + path;
+    const url = serverUrl + "/api" + path;
     const { data } = await axios.post(url, payload, {
       params: params,
     });
@@ -42,7 +42,7 @@ export const POST = async ({ path, payload, params, showToast = null }) => {
 
 export const PUT = async ({ path, payload, showToast = null }) => {
   try {
-    const url = serverUrl + "/api/" + path;
+    const url = serverUrl + "/api" + path;
     const { data } = await axios.put(url, payload);
     return data;
   } catch (err) {
@@ -56,7 +56,7 @@ export const PUT = async ({ path, payload, showToast = null }) => {
 
 export const PATCH = async ({ path, payload, showToast = null }) => {
   try {
-    const url = serverUrl + "/api/" + path;
+    const url = serverUrl + "/api" + path;
     const { data } = await axios.patch(url, payload);
     return data;
   } catch (err) {
@@ -70,7 +70,7 @@ export const PATCH = async ({ path, payload, showToast = null }) => {
 
 export const DELETE = async ({ path, params, showToast = null }) => {
   try {
-    const url = serverUrl + "/api/" + path;
+    const url = serverUrl + "/api" + path;
     const { data } = await axios.delete(url, {
       params: params,
     });

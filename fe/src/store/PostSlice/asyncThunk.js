@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DELETE, GET, POST, PUT } from "../../config/API";
 import PageConstant from "../../../../share/Constants/PageConstants";
+import { POST_PATH, Route } from "../../../../share/APIConfig";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -13,7 +14,7 @@ export const createPost = createAsyncThunk(
       }
       const dispatch = thunkApi.dispatch;
       const data = await POST({
-        path: "posts/create",
+        path: Route.POST + POST_PATH.CREATE,
         payload: postPayload,
         params: {
           action: action,
@@ -38,7 +39,7 @@ export const editPost = createAsyncThunk(
         userId: userInfo._id,
       };
       const data = await PUT({
-        path: "posts/update",
+        path: Route.POST + POST_PATH.UPDATE,
         payload,
       });
       return data;
@@ -54,12 +55,16 @@ export const deletePost = createAsyncThunk(
     try {
       const rootState = thunkApi.getState();
       const userInfo = rootState.user.userInfo;
+      const currentPage = rootState.util.currentPage;
       const { postId } = payload;
       await DELETE({
-        path: "posts/" + postId,
+        path: Route.POST + "/" + postId,
         params: { userId: userInfo._id },
       });
-      return postId;
+      return {
+        postId,
+        currentPage,
+      };
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }
@@ -72,7 +77,7 @@ export const getPosts = createAsyncThunk(
   async (params, thunkApi) => {
     try {
       const posts = await GET({
-        path: "posts/get-all",
+        path: Route.POST + POST_PATH.GET_ALL,
         params,
       });
       return posts;
@@ -87,7 +92,7 @@ export const getPost = createAsyncThunk(
   async (postId, thunkApi) => {
     try {
       const data = await GET({
-        path: "posts/" + postId,
+        path: Route.POST + "/" + postId,
       });
       return data;
     } catch (err) {
@@ -101,7 +106,7 @@ export const getUserPosts = createAsyncThunk(
   async (userId, thunkApi) => {
     try {
       const data = await GET({
-        path: "posts/get-user-posts",
+        path: Route.POST + POST_PATH.USER,
         params: {
           userId: userId,
           filter: PageConstant.USER,
@@ -119,7 +124,7 @@ export const selectSurveyOption = createAsyncThunk(
   async (payload, thunkApi) => {
     try {
       await PUT({
-        path: "posts/tick-post-survey",
+        path: Route.POST + POST_PATH.TICK_SURVEY,
         payload,
       });
       return payload;

@@ -6,7 +6,9 @@ import {
   addPostToCollection,
   removePostFromCollection,
   updateProfile,
+  followUser,
 } from "./asyncThunk";
+import PageConstant from "../../../../share/Constants/PageConstants";
 
 const defaultUser = {
   _id: "",
@@ -46,10 +48,8 @@ const userSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getUserInfo.fulfilled, (state, action) => {
-      const user = action.payload;
-      const localUserId = localStorage.getItem("userId");
-      const isCurrentUser = user._id === localUserId;
-      if (isCurrentUser) {
+      const { user, getCurrentUser } = action.payload;
+      if (getCurrentUser) {
         state.userInfo = user;
       } else {
         state.userSelected = user;
@@ -69,6 +69,19 @@ const userSlice = createSlice({
     builder.addCase(updateProfile.fulfilled, (state, action) => {
       const newUserData = action.payload;
       state.userInfo = newUserData;
+    });
+    builder.addCase(followUser.fulfilled, (state, action) => {
+      const userFlId = action.payload;
+      const userInfo = JSON.parse(JSON.stringify(state.userInfo));
+      let newFollowList = [];
+      if (userInfo?.following?.includes(userFlId)) {
+        newFollowList = userInfo.following.filter(
+          (userId) => userId !== userFlId
+        );
+      } else {
+        newFollowList = [...userInfo.following, userFlId];
+      }
+      state.userInfo.following = newFollowList;
     });
   },
 });

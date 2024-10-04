@@ -1,6 +1,6 @@
 import "dotenv/config";
 import app from "./src/app.js";
-import { initSocket } from "./src/socket/listener/socket.js";
+import { initSocket } from "./src/socket/socket.js";
 
 const PORT = process.env.PORT || 8080;
 

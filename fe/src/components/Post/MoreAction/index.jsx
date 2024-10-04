@@ -15,6 +15,8 @@ import {
 } from "../../../store/UserSlice/asyncThunk";
 import PostConstants from "../../../util/PostConstants";
 import useCopyLink from "./CopyLink";
+import { useNavigate } from "react-router-dom";
+import PageConstant from "../../../../../share/Constants/PageConstants";
 
 const PostMoreActionBox = ({
   post,
@@ -23,13 +25,16 @@ const PostMoreActionBox = ({
   setPopupCancelInfo,
   closePopupCancel,
 }) => {
+  const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const postSelected = useSelector((state) => state.post.postSelected);
+  const currentPage = useSelector((state) => state.util.currentPage);
   const dispatch = useDispatch();
   const { colorMode } = useColorMode();
   const showToast = useShowToast();
   const { copyURL } = useCopyLink();
   const savedBefore = useMemo(() => {
-    return userInfo?.collection?.includes(postId);
+    return userInfo?.collecOtion?.includes(postId);
   }, [userInfo._id]);
 
   const handleSave = () => {
@@ -49,6 +54,12 @@ const PostMoreActionBox = ({
       dispatch(deletePost({ postId: postId }));
       closePopupCancel();
       showToast("", "Delete success", "success");
+      if (
+        postId === postSelected?._id &&
+        currentPage === PageConstant.POST_DETAIL
+      ) {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
       showToast("", err, "error");
@@ -61,14 +72,14 @@ const PostMoreActionBox = ({
       icon: savedBefore ? <GoBookmarkSlash /> : <CiBookmark />,
       onClick: handleSave,
     },
-    {
-      name: "Block",
-      icon: <IoBan />,
-    },
-    {
-      name: "Report",
-      icon: <GoReport />,
-    },
+    // {
+    //   name: "Block",
+    //   icon: <IoBan />,
+    // },
+    // {
+    //   name: "Report",
+    //   icon: <GoReport />,
+    // },
     {
       name: "Copy link",
       icon: <IoIosLink />,

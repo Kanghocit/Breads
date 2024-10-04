@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { PUT } from "../../config/API";
 import useShowToast from "../../hooks/useShowToast";
+import { Route, USER_PATH } from "../../../../share/APIConfig";
 
 const ChangePWModal = ({ setPopup }) => {
   const showToast = useShowToast();
@@ -42,7 +43,7 @@ const ChangePWModal = ({ setPopup }) => {
         return;
       }
       await PUT({
-        path: "/users/change-pw/" + userInfo._id,
+        path: Route.USER + USER_PATH.CHANGE_PW + userInfo._id,
         payload: {
           currentPW: currentPWValue,
           newPW: newPWValue,

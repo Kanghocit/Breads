@@ -1,29 +1,27 @@
 import express from "express";
+import { POST_PATH } from "../../../../share/APIConfig.js";
 import {
   createPost,
   deletePost,
-  getFeedPosts,
   getPost,
-  likeUnlikePost,
-  replyToPost,
   getPosts,
+  getUserPosts,
+  likeUnlikePost,
   tickPostSurvey,
   updatePost,
-  getUserPosts,
 } from "../controllers/post.controller.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
 const router = express.Router();
+const { GET_ALL, USER, CREATE, UPDATE, LIKE, TICK_SURVEY } = POST_PATH;
 
-router.get("/feed", protectRoute, getFeedPosts);
-router.get("/get-all", getPosts);
-router.get("/get-user-posts", getUserPosts);
+router.get(GET_ALL, getPosts);
+router.get(USER, getUserPosts);
 router.get("/:id", getPost);
-router.post("/create", createPost);
+router.post(CREATE, createPost);
 router.delete("/:id", deletePost);
-router.put("/update", updatePost);
-router.post("/like/:id", protectRoute, likeUnlikePost);
-router.post("/reply/:id", protectRoute, replyToPost);
-router.put("/tick-post-survey", tickPostSurvey);
+router.put(UPDATE, updatePost);
+router.post(LIKE + ":id", protectRoute, likeUnlikePost);
+router.put(TICK_SURVEY, tickPostSurvey);
 
 export default router;

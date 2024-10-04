@@ -142,7 +142,16 @@ export const deletePost = async (req, res) => {
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete post" });
     }
-
+    const repliesId = post.replies;
+    if (repliesId?.length) {
+      await Post.deleteMany({ _id: { $in: repliesId } });
+    }
+    await Post.updateMany(
+      { "quote._id": postId },
+      {
+        quote: {},
+      }
+    );
     await Post.findByIdAndDelete(postId);
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });
@@ -205,61 +214,6 @@ export const likeUnlikePost = async (req, res) => {
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
     console.log(err);
-  }
-};
-
-//reply post
-
-export const replyToPost = async (req, res) => {
-  try {
-    const { text } = req.body;
-    const postId = req.params.id;
-    const userId = req.user._id;
-    const userProfilePicture = req.user.profilePicture;
-    const username = req.user.username;
-
-    if (!text) {
-      return res
-        .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "Text field is required" });
-    }
-
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
-    }
-
-    const reply = { userId, text, userProfilePicture, username };
-    post.replies.push(reply);
-    await post.save();
-
-    res.status(HTTPStatus.OK).json({ message: "Reply add successfully", post });
-  } catch (err) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
-    console.log(err);
-  }
-};
-
-//get feed post
-export const getFeedPosts = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(HTTPStatus.NOT_FOUND)
-        .json({ message: "User not found!" });
-    }
-    const following = user.following;
-
-    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-      createdAt: -1,
-    });
-
-    res.status(HTTPStatus.OK).json({ feedPosts });
-  } catch (err) {
-    console.log(err);
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
 

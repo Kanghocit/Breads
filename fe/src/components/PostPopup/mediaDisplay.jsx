@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";
 
-const MediaDisplay = ({ post}) => {
+const MediaDisplay = ({ post }) => {
   const postAction = useSelector((state) => state.post.postAction);
   const dispatch = useDispatch();
   const mediaContainerRef = useRef(null);
@@ -114,8 +114,9 @@ const MediaDisplay = ({ post}) => {
                 src={media.url}
                 controls
                 style={{
-                  width: "100%",
-                  height: "200px",
+                  width: "auto",
+                  height: "250px",
+                  maxHeight: "300px",
                   objectFit: "cover",
                   borderRadius: "8px",
                 }}
@@ -131,7 +132,7 @@ const MediaDisplay = ({ post}) => {
                 onDragStart={(e) => e.preventDefault()}
               />
             )}
-            
+
             {postAction === PostConstants.ACTIONS.CREATE && (
               <Button
                 onClick={() => handleRemoveMedia(index)}

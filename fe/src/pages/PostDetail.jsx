@@ -5,7 +5,6 @@ import ContainerLayout from "../components/MainBoxLayout";
 import Post from "../components/Post";
 import { getPost } from "../store/PostSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice";
-import { Flex } from "@chakra-ui/react";
 
 const PostDetail = () => {
   const dispatch = useDispatch();
@@ -23,7 +22,6 @@ const PostDetail = () => {
   return (
     <ContainerLayout>
       {postSelected?._id && <Post post={postSelected} isDetail={true} />}
-      
     </ContainerLayout>
   );
 };
