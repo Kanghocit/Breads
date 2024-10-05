@@ -90,6 +90,7 @@ const GifBox = ({ isOpen, onClose }) => {
             <Flex wrap="wrap" ml={"10px"}>
               {gif.map((link, index) => (
                 <Image
+                  loading="lazy"
                   key={link}
                   src={link}
                   alt={`GIF ${index + 1}`}

@@ -83,16 +83,16 @@ const MediaDisplay = ({ post }) => {
     }
   };
   return (
-    post.media.length > 0 && (
+    post.media?.length > 0 && (
       <Flex
         gap="10px"
         mt="10px"
-        wrap={post.media.length <= 2 ? "wrap" : "nowrap"}
+        wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
         maxWidth="100%"
         // border="1px solid gray"
         borderRadius="8px"
-        overflowX={post.media.length > 2 ? "auto" : "hidden"}
+        overflowX={post.media?.length > 2 ? "auto" : "hidden"}
         padding="10px"
         ref={mediaContainerRef}
         onMouseDown={handleMouseDown}
@@ -116,7 +116,7 @@ const MediaDisplay = ({ post }) => {
             position="relative"
             flexShrink={0}
             gap="10px"
-            objectFit={post.media.length === 1 ? "contain" : "cover"}
+            objectFit={post.media?.length === 1 ? "contain" : "cover"}
             // style={{
             //   width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
 

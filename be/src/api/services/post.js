@@ -129,36 +129,53 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
 export const getPostsIdByFilter = async (payload) => {
   try {
     let data = null;
-    const filter = payload.filter;
-    let userId = payload.userId;
+    let { filter, userId, page, limit } = payload;
+    if (!page) {
+      page = 1;
+    }
+    if (!limit) {
+      limit = 20;
+    }
+    const skip = (page - 1) * limit;
     switch (filter) {
       case PageConstant.SAVED:
-        data = (await Collection.findOne({ userId: ObjectId(userId) }))
-          ?.postsId;
+        data = (
+          await Collection.findOne({ userId: ObjectId(userId) })
+            .skip(skip)
+            .limit(limit)
+        )?.postsId;
         break;
       case PageConstant.USER:
         data = await Post.find(
           { authorId: ObjectId(userId), type: { $ne: "reply" } },
           { _id: 1 }
-        ).sort({
-          createdAt: -1,
-        });
+        )
+          .skip(skip)
+          .limit(limit)
+          .sort({
+            createdAt: -1,
+          });
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });
         const userFollowing = JSON.parse(JSON.stringify(userInfo)).following;
-        console.log("userFollowing: ", userFollowing);
         data = await Post.find(
           { type: { $ne: "reply" }, authorId: { $in: userFollowing } },
           { _id: 1 }
-        ).sort({
-          createdAt: -1,
-        });
+        )
+          .skip(skip)
+          .limit(limit)
+          .sort({
+            createdAt: -1,
+          });
         break;
       default:
-        data = await Post.find({ type: { $ne: "reply" } }, { _id: 1 }).sort({
-          createdAt: -1,
-        });
+        data = await Post.find({ type: { $ne: "reply" } }, { _id: 1 })
+          .skip(skip)
+          .limit(limit)
+          .sort({
+            createdAt: -1,
+          });
         break;
     }
     return data;

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSurveyOption } from "../../../store/PostSlice/asyncThunk";
+import { selectSurveyOption } from "../../../../store/PostSlice/asyncThunk";
 import "./index.css";
 
 const SurveyOption = ({ option, post, isParentPost = false }) => {

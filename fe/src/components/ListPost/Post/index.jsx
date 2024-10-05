@@ -16,13 +16,13 @@ import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import usePopupCancel from "../../hooks/usePopupCancel";
-import ClickOutsideComponent from "../../util/ClickoutCPN";
-import PopupCancel from "../../util/PopupCancel";
-import PostConstants from "../../util/PostConstants";
-import MediaDisplay from "../PostPopup/mediaDisplay";
-import ViewActivity from "../PostPopup/ViewActivity";
-import UserInfoPopover from "../UserInfoPopover";
+import usePopupCancel from "../../../hooks/usePopupCancel";
+import ClickOutsideComponent from "../../../util/ClickoutCPN";
+import PopupCancel from "../../../util/PopupCancel";
+import PostConstants from "../../../util/PostConstants";
+import MediaDisplay from "../../PostPopup/mediaDisplay";
+import ViewActivity from "../../PostPopup/ViewActivity";
+import UserInfoPopover from "../../UserInfoPopover";
 import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
@@ -40,7 +40,6 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
-  console.log(post?.authorInfo);
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");
   };

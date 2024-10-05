@@ -29,7 +29,7 @@ import { replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
-import Post from "../Post";
+import Post from "../ListPost/Post";
 import PostPopupAction from "./action";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
@@ -49,21 +49,27 @@ const PostPopup = () => {
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
   const [clickPost, setClickPost] = useState(false);
+  const init = useRef(true);
 
   useEffect(() => {
-    if (debounceContent && debounceContent !== postInfo.content) {
+    if (debounceContent !== postInfo.content) {
       dispatch(
         updatePostInfo({ ...postInfo, content: replaceEmojis(debounceContent) })
       );
     }
   }, [debounceContent, dispatch, postInfo]);
-  
+
   useEffect(() => {
-    if (isEditing && postInfo?._id && postInfo.content !== content) {
+    if (
+      isEditing &&
+      postInfo?._id &&
+      postInfo.content !== content &&
+      init.current
+    ) {
       setContent(postInfo.content);
+      init.current = false;
     }
   }, [isEditing, postInfo, content]);
-  
 
   const closePostAction =
     !!postInfo.media?.length || postInfo.survey.length !== 0;
@@ -72,6 +78,7 @@ const PostPopup = () => {
     let checkResult = true;
     let msg = "";
 
+    //Check condition for survey
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
@@ -84,9 +91,17 @@ const PostPopup = () => {
         msg = "Each option should be a unique value";
       }
     }
+    if (
+      !postInfo.content.trim() &&
+      postInfo.survey.length === 0 &&
+      postInfo.media.length === 0
+    ) {
+      checkResult = false;
+      msg = "Can't upload new bread with empty payload";
+    }
 
     return { checkCondition: checkResult, msg };
-  }, [postInfo.survey]);
+  }, [postInfo]);
 
   const handleUploadPost = async () => {
     try {

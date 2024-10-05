@@ -11,7 +11,6 @@ export class Constants {
 }
 
 export const gif = [
-  "https://media.giphy.com/media/3o6ZsUaNnPPLf9Ek1K/giphy.gif",
   "https://media.giphy.com/media/jq7tzQFz2ZaQNnLXl4/giphy.gif?cid=790b7611x869xooikr2du1u77b52xx0pgob7kvlukmrwh9wx&ep=v1_gifs_search&rid=giphy.gif&ct=g",
   "https://media.giphy.com/media/l3vR85PnGsBwu1PFK/giphy.gif",
   "https://media.giphy.com/media/26Ff1YTzdkvKDHkqQ/giphy.gif",

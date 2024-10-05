@@ -13,13 +13,13 @@ import {
   ReplyIcon,
   RepostIcon,
   ShareIcon,
-} from "../../assests/icons";
+} from "../../../assests/icons";
 import {
   selectPost,
   selectPostReply,
   updatePostAction,
-} from "../../store/PostSlice";
-import PostConstants from "../../util/PostConstants";
+} from "../../../store/PostSlice";
+import PostConstants from "../../../util/PostConstants";
 import { useColorModeValue } from "@chakra-ui/react";
 import useCopyLink from "./MoreAction/CopyLink";
 import { IoIosLink } from "react-icons/io";

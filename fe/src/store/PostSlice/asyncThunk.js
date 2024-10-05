@@ -12,6 +12,9 @@ export const createPost = createAsyncThunk(
           (option) => option.value.trim() !== ""
         );
       }
+      const rootState = thunkApi.getState();
+      const currerntPage = rootState.util.currentPage;
+      const userInfo = rootState.user.userInfo;
       const dispatch = thunkApi.dispatch;
       const data = await POST({
         path: Route.POST + POST_PATH.CREATE,
@@ -20,7 +23,14 @@ export const createPost = createAsyncThunk(
           action: action,
         },
       });
-      dispatch(getPosts());
+      if (currerntPage !== PageConstant.USER) {
+        dispatch(
+          getPosts({
+            filter: currerntPage,
+            userId: userInfo._id,
+          })
+        );
+      }
       return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
@@ -76,6 +86,12 @@ export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (params, thunkApi) => {
     try {
+      if (!params?.page) {
+        params.page = 1;
+      }
+      if (!params?.limit) {
+        params.limit = 20;
+      }
       const posts = await GET({
         path: Route.POST + POST_PATH.GET_ALL,
         params,
