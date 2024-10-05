@@ -16,7 +16,7 @@ const PostPopupAction = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = async (files) => {
-    // Tạo mảng để lưu trữ các media sau khi convert sang base64
+    
     const mediaArray = await Promise.all(
       Array.from(files).map(async (file) => {
         const base64 = await convertToBase64(file);
@@ -29,11 +29,11 @@ const PostPopupAction = () => {
       })
     );
   
-    // Cập nhật state với nhiều media
+   
     dispatch(
       updatePostInfo({
         ...postInfo,
-        media: [...(postInfo.media || []), ...mediaArray], // Nối các media mới với media cũ
+        media: [...(postInfo.media || []), ...mediaArray], 
       })
     );
   };

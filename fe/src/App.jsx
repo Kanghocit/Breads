@@ -13,7 +13,6 @@ import AuthPage from "./pages/AuthPage";
 import ErrorPage from "./pages/ErrorPage";
 import HomePage from "./pages/HomePage";
 import PostDetail from "./pages/PostDetail";
-import PostPage from "./pages/PostPage";
 import SearchPage from "./pages/SearchPage";
 import SettingPage from "./pages/SettingPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
@@ -108,7 +107,6 @@ function App() {
         />
 
         <Route path="/users/:userId" element={<UserPage />} />
-        <Route path="/:username/post/:pid" element={<PostPage />} />
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />

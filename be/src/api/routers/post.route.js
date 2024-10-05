@@ -14,7 +14,7 @@ import { crawlPosts } from "../crawl.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
 const router = express.Router();
-const { GET_ALL, USER, CREATE, UPDATE, sLIKE, TICK_SURVEY, CRAWL_POST } =
+const { GET_ALL, USER, CREATE, UPDATE, LIKE, TICK_SURVEY, CRAWL_POST } =
   POST_PATH;
 
 router.get(GET_ALL, getPosts);
