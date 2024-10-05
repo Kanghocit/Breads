@@ -30,8 +30,8 @@ const randomUserId = (fakeUserIds) => {
 
 export const crawlData = async () => {
   try {
-    // await crawlPost();
     await crawlUser();
+    // await crawlPost();
   } catch (err) {
     console.log(err);
   }
@@ -51,12 +51,12 @@ const crawlPostsWithGif = async () => {
     console.log("Start crawling posts with gif");
     const fakeUserIds = await getListFakeUserId();
     //Maximum quantity of fake content: 250
-    const numberPost = 1;
+    const numberPost = 100;
     const { data } = await axios.get(
       `https://dummyjson.com/posts?limit=${numberPost}&select=body`
     );
     const postContentFake = data?.posts.map(({ body }) => body);
-    const arr = Array.from({ length: numberPost }, (_, i) => i);
+    const arr = Array.from({ length: numberPost + 1 }, (_, i) => i + 1);
     const postsData = [];
     for (const index of arr) {
       const content = postContentFake[index];
@@ -93,13 +93,11 @@ const crawlPostsWithImg = async () => {
         const numberQuery = Math.ceil(numberNeed / 10); // Each query gets 10 images
         const arr = Array.from({ length: numberQuery }, (_, i) => i);
         for (const page of arr) {
-          // const imageUrls = await getImgUnsplash({
-          //   searchValue: tag,
-          //   page: page,
-          // });
-          // totalImgs.push(...imageUrls);
-          const arr2 = Array.from({ length: 10 }, (_, i) => page * 10 + i);
-          totalImgs.push(...arr2);
+          const imageUrls = await getImgUnsplash({
+            searchValue: tag,
+            page: page,
+          });
+          totalImgs.push(...imageUrls);
         }
         return totalImgs;
       } catch (err) {
@@ -108,7 +106,7 @@ const crawlPostsWithImg = async () => {
       }
     };
     const { data } = await axios.get(
-      "https://dummyjson.com/posts?limit=100&select=title,tags"
+      "https://dummyjson.com/posts?limit=250&select=title,tags"
     );
     const { posts } = data;
     const tags = {};
@@ -183,7 +181,7 @@ const crawlPostsWithSurvey = async () => {
     let postsData = [];
     const filePath = path.resolve("survey.json");
     let data = fs.readFileSync(filePath, "utf8");
-    data = JSON.parse(data).splice(0, 1);
+    data = JSON.parse(data);
     for (const { question, A, B, C, D, answer } of data) {
       const listOption = [];
       const numberOption = Math.floor(Math.random() * 3) + 2;
@@ -217,13 +215,13 @@ const crawlPostsWithSurvey = async () => {
         return sortValues[index];
       });
       const userId = randomUserId(fakeUserIds);
-      // const options = await SurveyOption.insertMany(listOption, {
-      //   ordered: false,
-      // });
+      const options = await SurveyOption.insertMany(listOption, {
+        ordered: false,
+      });
       const optionIds = [];
-      // options.forEach(({ _id }) => {
-      //   optionIds.push(_id);
-      // });
+      options.forEach(({ _id }) => {
+        optionIds.push(_id);
+      });
       const postData = {
         content: question,
         authorId: userId,
@@ -239,11 +237,11 @@ const crawlPostsWithSurvey = async () => {
 
 export const crawlPosts = async () => {
   try {
-    // const imgPosts = await crawlPostsWithImg();
-    //const surveyPosts = await crawlPostsWithSurvey();
-    // const gifPosts = await crawlPostsWithGif();
-    // const totalCrawl = [...imgPosts, ...surveyPosts, ...gifPosts];
-    // await createPosts(totalCrawl);
+    const gifPosts = await crawlPostsWithGif();
+    const surveyPosts = await crawlPostsWithSurvey();
+    const imgPosts = await crawlPostsWithImg();
+    const totalCrawl = [...imgPosts, ...surveyPosts, ...gifPosts];
+    await createPosts(totalCrawl);
   } catch (err) {
     console.log(err);
   }

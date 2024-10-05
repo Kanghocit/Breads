@@ -248,6 +248,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 >
                   {media.type === Constants.MEDIA_TYPE.VIDEO ? (
                     <video
+                      loading="lazy"
                       src={media.url}
                       controls
                       style={{
@@ -264,6 +265,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                     />
                   ) : (
                     <Image
+                      loading="lazy"
                       src={media.url}
                       alt={`Post Media ${index}`}
                       width="100%"
