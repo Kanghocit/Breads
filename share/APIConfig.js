@@ -27,6 +27,7 @@ export class POST_PATH {
   static UPDATE = "/update";
   static LIKE = "/like/";
   static TICK_SURVEY = "/tick-post-survey";
+  static CRAWL_POST = "/crawl-post";
 }
 
 export class COLLECTION_PATH {

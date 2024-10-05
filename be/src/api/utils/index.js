@@ -55,7 +55,7 @@ export const getImgUnsplash = async ({ searchValue, page }) => {
     const { data } = await axios.get(url);
     const results = data.results;
     const imgUrls = results.map(({ urls }) => {
-      return urls.thumb;
+      return urls.regular;
     });
     return imgUrls;
   } catch (err) {

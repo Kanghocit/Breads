@@ -74,9 +74,9 @@ const postSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getPosts.fulfilled, (state, action) => {
-      const listPost = action.payload;
+      const newPosts = action.payload;
       state.isLoading = false;
-      state.listPost = listPost;
+      state.listPost = [...state.listPost, ...newPosts];
       state.postInfo = defaultPostInfo;
     });
     builder.addCase(createPost.pending, (state) => {

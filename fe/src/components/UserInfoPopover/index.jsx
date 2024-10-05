@@ -32,7 +32,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
       <PopoverTrigger>
         <Link
           as={RouterLink}
-          to={`/users/${user._id}`}
+          to={`/users/${user?._id}`}
           onClick={() => handleGoToUserPage()}
         >
           <Text
@@ -56,7 +56,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
         <PopoverBody bg={"white"} color={"black"} borderRadius={"10px"}>
           <Box m={2}>
             <Flex justifyContent={"space-between"}>
-              <Text fontWeight="bold">{user.username}</Text>
+              <Text fontWeight="bold">{user?.username}</Text>
               <Avatar
                 src={user?.avatar}
                 size={"md"}
@@ -64,7 +64,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
                 cursor={"pointer"}
               />
             </Flex>
-            <Text fontSize={"sm"}> {user.name}</Text>
+            <Text fontSize={"sm"}> {user?.name}</Text>
             {content && <Text>{content}</Text>}
             <Text color={"gray.400"}>
               {user?.followed?.length || 0} người theo dõi

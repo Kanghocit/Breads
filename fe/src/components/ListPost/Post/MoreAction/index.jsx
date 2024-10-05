@@ -6,17 +6,17 @@ import { IoIosLink } from "react-icons/io";
 import { IoBan } from "react-icons/io5";
 import { MdDelete, MdEdit } from "react-icons/md"; // Correct icons for delete and update
 import { useDispatch, useSelector } from "react-redux";
-import useShowToast from "../../../hooks/useShowToast";
-import { updatePostAction, updatePostInfo } from "../../../store/PostSlice";
-import { deletePost } from "../../../store/PostSlice/asyncThunk";
+import useShowToast from "../../../../hooks/useShowToast";
+import { updatePostAction, updatePostInfo } from "../../../../store/PostSlice";
+import { deletePost } from "../../../../store/PostSlice/asyncThunk";
 import {
   addPostToCollection,
   removePostFromCollection,
-} from "../../../store/UserSlice/asyncThunk";
-import PostConstants from "../../../util/PostConstants";
+} from "../../../../store/UserSlice/asyncThunk";
+import PostConstants from "../../../../util/PostConstants";
 import useCopyLink from "./CopyLink";
 import { useNavigate } from "react-router-dom";
-import PageConstant from "../../../../../share/Constants/PageConstants";
+import PageConstant from "../../../../../../share/Constants/PageConstants";
 
 const PostMoreActionBox = ({
   post,

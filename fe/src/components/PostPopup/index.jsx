@@ -29,67 +29,13 @@ import { replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
-import Post from "../Post";
+import Post from "../ListPost/Post";
 import PostPopupAction from "./action";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
+import MediaDisplay from "./mediaDisplay";
 
 const PostPopup = () => {
-  const mediaContainerRef = useRef(null);
-  const isDragging = useRef(false);
-  const startPosition = useRef(0);
-  const scrollPosition = useRef(0);
-  const velocity = useRef(0);
-  const [momentum, setMomentum] = useState(false);
-
-  const handleRemoveMedia = (indexToRemove) => {
-    const updatedMedia = postInfo.media.filter(
-      (_, index) => index !== indexToRemove
-    );
-    dispatch(updatePostInfo({ ...postInfo, media: updatedMedia }));
-  };
-  const handleMouseDown = (e) => {
-    isDragging.current = true;
-    momentum && setMomentum(false);
-    startPosition.current = e.pageX - mediaContainerRef.current.offsetLeft;
-    scrollPosition.current = mediaContainerRef.current.scrollLeft;
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-    const currentPosition = e.pageX - mediaContainerRef.current.offsetLeft;
-    const distance = currentPosition - startPosition.current;
-    velocity.current = distance;
-    mediaContainerRef.current.scrollLeft = scrollPosition.current - distance;
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    startMomentumScroll();
-  };
-
-  const handleMouseLeave = () => {
-    if (isDragging.current) {
-      isDragging.current = false;
-      startMomentumScroll();
-    }
-  };
-
-  const startMomentumScroll = () => {
-    let momentumVelocity = velocity.current;
-    if (momentumVelocity !== 0) {
-      setMomentum(true);
-      const inertiaInterval = setInterval(() => {
-        mediaContainerRef.current.scrollLeft -= momentumVelocity * 0.95;
-        momentumVelocity *= 0.95;
-        if (Math.abs(momentumVelocity) < 0.5) {
-          clearInterval(inertiaInterval);
-          setMomentum(false);
-        }
-      }, 16);
-    }
-  };
-
   const dispatch = useDispatch();
   const { postInfo, postAction, postSelected, postReply } = useSelector(
     (state) => state.post
@@ -103,21 +49,27 @@ const PostPopup = () => {
   const [content, setContent] = useState("");
   const debounceContent = useDebounce(content);
   const [clickPost, setClickPost] = useState(false);
+  const init = useRef(true);
 
   useEffect(() => {
-    if (debounceContent && debounceContent !== postInfo.content) {
+    if (debounceContent !== postInfo.content) {
       dispatch(
         updatePostInfo({ ...postInfo, content: replaceEmojis(debounceContent) })
       );
     }
   }, [debounceContent, dispatch, postInfo]);
-  
+
   useEffect(() => {
-    if (isEditing && postInfo?._id && postInfo.content !== content) {
+    if (
+      isEditing &&
+      postInfo?._id &&
+      postInfo.content !== content &&
+      init.current
+    ) {
       setContent(postInfo.content);
+      init.current = false;
     }
   }, [isEditing, postInfo, content]);
-  
 
   const closePostAction =
     !!postInfo.media?.length || postInfo.survey.length !== 0;
@@ -126,6 +78,7 @@ const PostPopup = () => {
     let checkResult = true;
     let msg = "";
 
+    //Check condition for survey
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
@@ -138,9 +91,17 @@ const PostPopup = () => {
         msg = "Each option should be a unique value";
       }
     }
+    if (
+      !postInfo.content.trim() &&
+      postInfo.survey.length === 0 &&
+      postInfo.media.length === 0
+    ) {
+      checkResult = false;
+      msg = "Can't upload new bread with empty payload";
+    }
 
     return { checkCondition: checkResult, msg };
-  }, [postInfo.survey]);
+  }, [postInfo]);
 
   const handleUploadPost = async () => {
     try {
@@ -241,87 +202,7 @@ const PostPopup = () => {
                 text={content}
                 setText={(value) => setContent(replaceEmojis(value))}
               />
-              {postInfo.media.length > 0 && (
-                <Flex
-                  gap="10px"
-                  mt="10px"
-                  wrap={postInfo.media.length <= 2 ? "wrap" : "nowrap"}
-                  justifyContent="flex-start"
-                  maxWidth="100%"
-                  border="1px solid gray"
-                  borderRadius="8px"
-                  overflowX={postInfo.media.length > 2 ? "auto" : "hidden"}
-                  padding="10px"
-                  ref={mediaContainerRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseLeave}
-                  css={{
-                    "&::-webkit-scrollbar": {
-                      display: "none",
-                    },
-                    "&": {
-                      msOverflowStyle: "none",
-                      scrollbarWidth: "none",
-                    },
-                    cursor:
-                      isDragging.current || momentum ? "grabbing" : "grab",
-                  }}
-                >
-                  {postInfo.media.map((media, index) => (
-                    <Flex
-                      key={index}
-                      position="relative"
-                      flexShrink={0}
-                      gap="10px"
-                      style={{
-                        width:
-                          postInfo.media.length === 1
-                            ? "100%"
-                            : "calc(50% - 5px)",
-                        maxWidth: postInfo.media.length > 2 ? "200px" : "none",
-                      }}
-                    >
-                      {media.type === Constants.MEDIA_TYPE.VIDEO ? (
-                        <video
-                          src={media.url}
-                          controls
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                          }}
-                        />
-                      ) : (
-                        <Image
-                          src={media.url}
-                          alt={`Post Media ${index}`}
-                          width="100%"
-                          height="200px"
-                          objectFit="cover"
-                          borderRadius="8px"
-                        />
-                      )}
-
-                      <Button
-                        onClick={() => handleRemoveMedia(index)}
-                        size="sm"
-                        position="absolute"
-                        top="4px"
-                        right="4px"
-                        borderRadius="full"
-                        color="white"
-                        padding="4px"
-                        zIndex={1}
-                      >
-                        <CloseIcon boxSize="10px" />
-                      </Button>
-                    </Flex>
-                  ))}
-                </Flex>
-              )}
+              <MediaDisplay post={postInfo} />
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}
               {postSelected?._id &&

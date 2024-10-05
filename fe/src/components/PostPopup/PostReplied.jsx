@@ -1,7 +1,7 @@
 import { Avatar, Container, Flex, Image, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Constants } from "../../../../share/Constants";
-import Survey from "../Post/Survey";
+import Survey from "../ListPost/Post/Survey";
 
 const PostReplied = () => {
   const postReply = useSelector((state) => state.post.postReply);
