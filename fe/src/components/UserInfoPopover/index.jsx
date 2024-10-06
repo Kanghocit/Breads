@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
 import { changePage } from "../../store/UtilSlice";
 import { handleFlow } from "../FollowBtn";

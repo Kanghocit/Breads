@@ -1,7 +1,7 @@
 import { Flex, Button, Image } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { useRef, useState } from "react";
-import { Constants } from "../../../../share/Constants";
+import { Constants } from "../../Breads-Shared/Constants";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";

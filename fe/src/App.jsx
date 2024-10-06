@@ -2,7 +2,7 @@ import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import PageConstant from "../../share/Constants/PageConstants";
+import PageConstant from "./Breads-Shared/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
 import SeeMedia from "./components/SeeMedia";

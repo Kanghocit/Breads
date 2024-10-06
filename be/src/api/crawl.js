@@ -157,7 +157,6 @@ const crawlPostsWithImg = async () => {
             type: Constants.MEDIA_TYPE.IMAGE,
           };
         });
-        console.log(media);
         const userId = randomUserId(fakeUserIds);
         const post = {
           content: title,

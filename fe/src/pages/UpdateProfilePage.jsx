@@ -23,7 +23,7 @@ import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
 import { changePage, updateSeeMedia } from "../store/UtilSlice";
 import { convertToBase64 } from "../util/index";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 
 const POPUP_TYPE = {
   LINKS: "links",

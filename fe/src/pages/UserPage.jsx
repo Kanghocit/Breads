@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";
 import UserHeader from "../components/UserHeader";

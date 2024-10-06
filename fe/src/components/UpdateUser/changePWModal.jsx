@@ -18,7 +18,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { PUT } from "../../config/API";
 import useShowToast from "../../hooks/useShowToast";
-import { Route, USER_PATH } from "../../../../share/APIConfig";
+import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
 
 const ChangePWModal = ({ setPopup }) => {
   const showToast = useShowToast();

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changePage } from "../store/UtilSlice";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ContainerLayout from "../components/MainBoxLayout";
 
 const ActivityPage = () => {

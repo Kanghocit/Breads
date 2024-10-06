@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import ContainerLayout from "../components/MainBoxLayout";
 import UserFollowBox from "../components/UserFollowBox";
 import { GET } from "../config/API";
-import { Route, USER_PATH } from "../../../share/APIConfig";
+import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 
 const SearchPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);

@@ -3,7 +3,7 @@ import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { memo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";

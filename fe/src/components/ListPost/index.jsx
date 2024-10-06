@@ -5,7 +5,7 @@ import { EmptyContentSvg } from "../../assests/icons";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 const ListPost = () => {
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ const ListPost = () => {
                       flexDirection={"column"}
                       justifyContent={"center"}
                     >
-                      {[1, 2, 3, 4, 5].map((num) => (
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                         <SkeletonPost key={`skeleton-post-${num}`} />
                       ))}
                     </Flex>
