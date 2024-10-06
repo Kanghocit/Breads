@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice";

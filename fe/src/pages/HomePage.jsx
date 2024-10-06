@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import PageConstant from "../../../share/Constants/PageConstants";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
 import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";

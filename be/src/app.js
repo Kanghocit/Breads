@@ -20,8 +20,10 @@ const corOption = {
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
+app.use("/test", (req, res) => {
+  res.send("OK");
+});
 app.use(cors(corOption));
-
 app.use("/api", router);
 
 export default app;

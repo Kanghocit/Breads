@@ -2,7 +2,7 @@ import express from "express";
 import postRouter from "./post.route.js";
 import userRouter from "./user.route.js";
 import collectionRouter from "./collection.route.js";
-import { Route } from "../../../../share/APIConfig.js";
+import { Route } from "../../Breads-Shared/APIConfig.js";
 
 const router = express.Router();
 

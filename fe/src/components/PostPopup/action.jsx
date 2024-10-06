@@ -4,7 +4,7 @@ import { RiFileGifLine } from "react-icons/ri";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { VscListSelection } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { Constants } from "../../../../share/Constants";
+import { Constants } from "../../Breads-Shared/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
 import GifBox from "./gif";
@@ -16,7 +16,6 @@ const PostPopupAction = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = async (files) => {
-    
     const mediaArray = await Promise.all(
       Array.from(files).map(async (file) => {
         const base64 = await convertToBase64(file);
@@ -28,12 +27,11 @@ const PostPopupAction = () => {
         };
       })
     );
-  
-   
+
     dispatch(
       updatePostInfo({
         ...postInfo,
-        media: [...(postInfo.media || []), ...mediaArray], 
+        media: [...(postInfo.media || []), ...mediaArray],
       })
     );
   };

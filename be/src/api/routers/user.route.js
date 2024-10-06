@@ -12,7 +12,7 @@ import {
   updateUser,
 } from "../controllers/user.controller.js";
 // import protectRoute from "../middlewares/protectRoute.js";
-import { USER_PATH } from "../../../../share/APIConfig.js";
+import { USER_PATH } from "../../Breads-Shared/APIConfig.js";
 
 const router = express.Router();
 const {

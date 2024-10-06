@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { Constants, gif } from "../../../../share/Constants";
+import { Constants, gif } from "../../Breads-Shared/Constants";
 import { updatePostInfo } from "../../store/PostSlice";
 
 const GifBox = ({ isOpen, onClose }) => {

@@ -1,7 +1,7 @@
 import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { changePage } from "../../store/UtilSlice";
 import FollowBtn from "../FollowBtn";
 import UserInfoPopover from "../UserInfoPopover";

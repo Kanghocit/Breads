@@ -9,7 +9,7 @@ import {
   selectSurveyOption,
 } from "./asyncThunk";
 import PostConstants from "../../util/PostConstants";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {

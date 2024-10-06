@@ -8,7 +8,7 @@ import {
   updateProfile,
   followUser,
 } from "./asyncThunk";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 const defaultUser = {
   _id: "",

@@ -16,7 +16,7 @@ import {
 import PostConstants from "../../../../util/PostConstants";
 import useCopyLink from "./CopyLink";
 import { useNavigate } from "react-router-dom";
-import PageConstant from "../../../../../../share/Constants/PageConstants";
+import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
 
 const PostMoreActionBox = ({
   post,

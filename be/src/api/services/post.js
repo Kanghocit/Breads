@@ -1,4 +1,4 @@
-import PageConstant from "../../../../share/Constants/PageConstants.js";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants.js";
 import { ObjectId } from "../../util/index.js";
 import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";

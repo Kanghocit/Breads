@@ -1,6 +1,6 @@
 import { Avatar, Container, Flex, Image, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import { Constants } from "../../../../share/Constants";
+import { Constants } from "../../Breads-Shared/Constants";
 import Survey from "../ListPost/Post/Survey";
 
 const PostReplied = () => {

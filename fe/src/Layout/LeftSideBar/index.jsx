@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { MdAdd, MdOutlinePushPin } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
 import { changePage } from "../../store/UtilSlice";
 import PostConstants from "../../util/PostConstants";

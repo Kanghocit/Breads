@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DELETE, GET, POST, PUT } from "../../config/API";
-import PageConstant from "../../../../share/Constants/PageConstants";
-import { POST_PATH, Route } from "../../../../share/APIConfig";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import { Route, POST_PATH } from "../../../../be/src/Breads-Shared/APIConfig";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -121,6 +121,7 @@ export const getUserPosts = createAsyncThunk(
   "post/getUserPosts",
   async (userId, thunkApi) => {
     try {
+      console.log("userId: ", userId);
       const data = await GET({
         path: Route.POST + POST_PATH.USER,
         params: {

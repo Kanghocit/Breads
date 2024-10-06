@@ -1,8 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { GET, PATCH, POST, PUT } from "../../config/API";
-import PageConstant from "../../../../share/Constants/PageConstants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { updateListPost } from "../PostSlice";
-import { COLLECTION_PATH, Route, USER_PATH } from "../../../../share/APIConfig";
+import {
+  COLLECTION_PATH,
+  Route,
+  USER_PATH,
+} from "../../Breads-Shared/APIConfig";
 
 export const signUp = createAsyncThunk(
   "user/signUp",

@@ -1,5 +1,5 @@
 import express from "express";
-import { POST_PATH } from "../../../../share/APIConfig.js";
+import { POST_PATH } from "../../Breads-Shared/APIConfig.js";
 import {
   createPost,
   deletePost,

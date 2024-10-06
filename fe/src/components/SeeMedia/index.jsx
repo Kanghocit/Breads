@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Constants } from "../../../../share/Constants";
+import { Constants } from "../../Breads-Shared/Constants";
 import { updateSeeMedia } from "../../store/UtilSlice";
 
 const SeeMedia = () => {
