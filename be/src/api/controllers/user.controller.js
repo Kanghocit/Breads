@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
-import { Constants } from "../../../../share/Constants/index.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";

@@ -5,7 +5,7 @@ import {
   removePostFromCollection,
 } from "../controllers/collection.controller.js";
 // import protectRoute from "../middlewares/protectRoute.js";
-import { COLLECTION_PATH } from "../../../../share/APIConfig.js";
+import { COLLECTION_PATH } from "../../Breads-Shared/APIConfig.js";
 
 const router = express.Router();
 const { ADD, REMOVE } = COLLECTION_PATH;

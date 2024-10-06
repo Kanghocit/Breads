@@ -1,8 +1,7 @@
 import axios from "axios";
 import { getImgUnsplash, randomAvatar } from "./utils/index.js";
 import User from "./models/user.model.js";
-import { Constants } from "../../../share/Constants/index.js";
-import { gif } from "../../../share/Constants/index.js";
+import { Constants, gif } from "../Breads-Shared/Constants/index.js";
 import fs from "fs";
 import path from "path";
 import { ObjectId } from "../util/index.js";
@@ -242,6 +241,7 @@ export const crawlPosts = async () => {
     const imgPosts = await crawlPostsWithImg();
     const totalCrawl = [...imgPosts, ...surveyPosts, ...gifPosts];
     await createPosts(totalCrawl);
+    console.log("crawl success");
   } catch (err) {
     console.log(err);
   }
