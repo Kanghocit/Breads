@@ -88,7 +88,7 @@ const Header = () => {
         zIndex={1000}
         justifyContent={"center"}
         alignItems={"center"}
-        bg={colorMode === "dark" ? "#101010" : "gray.100"}
+        bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
       >
         <Flex
           width={containerBoxWidth}
@@ -110,9 +110,7 @@ const Header = () => {
                 borderRadius={"50%"}
                 cursor={"pointer"}
                 transform={openBox ? "rotate(180deg)" : ""}
-                _hover={{
-                  bg: "gray.100",
-                }}
+                _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
                 onClick={() => setOpenBox(!openBox)}
               />
               {openBox && (
@@ -125,7 +123,7 @@ const Header = () => {
                   borderRadius={"12px"}
                   padding="8px 12px"
                   overflow={"hidden"}
-                  bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+                  bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
                   boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
                 >
                   {getBoxItems()?.map((item) => (
@@ -135,9 +133,7 @@ const Header = () => {
                       padding="8px 12px"
                       cursor={"pointer"}
                       borderRadius={"8px"}
-                      _hover={{
-                        bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
-                      }}
+                      _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleNavigate(item);

@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
-import { BiSolidHome } from "react-icons/bi";
+import { GrHomeRounded } from "react-icons/gr";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
@@ -22,7 +22,7 @@ const LeftSideBar = () => {
 
   const listItems = [
     {
-      icon: <BiSolidHome size={24} />,
+      icon: <GrHomeRounded size={24} />,
       linkTo: "/",
       onClick: () => {
         dispatch(changePage({ currentPage, nextPage: PageConstant.HOME }));
@@ -98,7 +98,9 @@ const LeftSideBar = () => {
                 <Box my={3} key={`side-bar-item-${index}`}>
                   <Button
                     bg="transparent"
-                    _hover={{ bg: "gray.dark" }}
+                    _hover={{
+                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                    }}
                     py={2}
                     px={4}
                     borderRadius="md"
@@ -110,7 +112,6 @@ const LeftSideBar = () => {
                       <Link
                         as={RouterLink}
                         to={item.linkTo}
-                        _hover={{ textDecoration: "none", bg: "gray.dark" }}
                         borderRadius="md"
                         width={"100%"}
                         height={"100%"}
@@ -124,10 +125,10 @@ const LeftSideBar = () => {
                 </Box>
               ))}
             </Flex>
-            <Flex direction={"column"}>
-              <Box bottom={0}>
-                <Button mt={7} mb={3} bg={"none"}>
-                  <Link as={RouterLink} to={`/`}>
+            <Flex direction={"column"} >
+              <Box bottom={0} >
+                <Button mt={7} mb={3} bg={"none"} _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}>
+                  <Link as={RouterLink} to={`/`} >
                     <MdOutlinePushPin size={24} />
                   </Link>
                 </Button>

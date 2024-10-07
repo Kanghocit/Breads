@@ -1,4 +1,4 @@
-import { Flex, Button, Image } from "@chakra-ui/react";
+import { Flex, Button, Image, useColorMode } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { useRef, useState } from "react";
 import { Constants } from "../../Breads-Shared/Constants";
@@ -11,6 +11,7 @@ const MediaDisplay = ({ post }) => {
   const dispatch = useDispatch();
   const mediaContainerRef = useRef(null);
   const isDragging = useRef(false);
+  const { colorMode } = useColorMode();
   const startPosition = useRef(0);
   const scrollPosition = useRef(0);
   const velocity = useRef(0);
@@ -87,6 +88,7 @@ const MediaDisplay = ({ post }) => {
       <Flex
         gap="10px"
         mt="10px"
+        bg={colorMode === "dark" ? "#181818" : "#fafafa"}
         wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
         maxWidth="100%"
