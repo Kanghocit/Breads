@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
-import { changePage } from "../../store/UtilSlice";
+import { changeDisplayPageData, changePage } from "../../store/UtilSlice";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
 
@@ -17,7 +17,7 @@ const LeftSideBar = () => {
   const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const currentPage = useSelector((state) => state.util.currentPage);
+  const { currentPage, displayPageData } = useSelector((state) => state.util);
   let bgk = { bg: "gray.dark" };
 
   const listItems = [
@@ -25,7 +25,12 @@ const LeftSideBar = () => {
       icon: <BiSolidHome size={24} />,
       linkTo: "/",
       onClick: () => {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.HOME }));
+        if (currentPage !== PageConstant.HOME) {
+          dispatch(changePage({ currentPage, nextPage: PageConstant.HOME }));
+          if (displayPageData !== PageConstant.FOR_YOU) {
+            dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
+          }
+        }
         navigate("/");
       },
     },
@@ -33,7 +38,9 @@ const LeftSideBar = () => {
       icon: <FiSearch size={24} />,
       linkTo: "/" + PageConstant.SEARCH,
       onClick: () => {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.SEARCH }));
+        if (currentPage !== PageConstant.SEARCH) {
+          dispatch(changePage({ currentPage, nextPage: PageConstant.SEARCH }));
+        }
         navigate("/" + PageConstant.SEARCH);
       },
     },
@@ -47,7 +54,11 @@ const LeftSideBar = () => {
       icon: <FaRegHeart size={24} />,
       linkTo: "/" + PageConstant.ACTIVITY,
       onClick: () => {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
+        if (currentPage !== PageConstant.ACTIVITY) {
+          dispatch(
+            changePage({ currentPage, nextPage: PageConstant.ACTIVITY })
+          );
+        }
         navigate("/" + PageConstant.ACTIVITY);
       },
     },
@@ -55,7 +66,9 @@ const LeftSideBar = () => {
       icon: <FaRegUser size={24} />,
       linkTo: "/" + PageConstant.USER + `/${userInfo._id}`,
       onClick: () => {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
+        if (currentPage !== PageConstant.USER) {
+          dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
+        }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
       },
     },
@@ -90,6 +103,17 @@ const LeftSideBar = () => {
                   src={
                     colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"
                   }
+                  onClick={() => {
+                    if (currentPage !== PageConstant.HOME) {
+                      dispatch(
+                        changePage({ currentPage, nextPage: PageConstant.HOME })
+                      );
+                      if (displayPageData !== PageConstant.FOR_YOU) {
+                        dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
+                      }
+                    }
+                    navigate("/");
+                  }}
                 />
               </Box>
             </Link>
@@ -102,8 +126,9 @@ const LeftSideBar = () => {
                     py={2}
                     px={4}
                     borderRadius="md"
-                    onClick={() => {
-                      item.onClick && item.onClick();
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      item.onClick && !item?.linkTo && item.onClick();
                     }}
                   >
                     {item?.linkTo ? (
@@ -114,6 +139,11 @@ const LeftSideBar = () => {
                         borderRadius="md"
                         width={"100%"}
                         height={"100%"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          item.onClick && item.onClick();
+                        }}
                       >
                         {item.icon}
                       </Link>

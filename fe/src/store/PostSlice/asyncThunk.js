@@ -96,7 +96,10 @@ export const getPosts = createAsyncThunk(
         path: Route.POST + POST_PATH.GET_ALL,
         params,
       });
-      return posts;
+      return {
+        posts: posts,
+        isNewPage: params?.isNewPage ?? false,
+      };
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }
@@ -121,7 +124,6 @@ export const getUserPosts = createAsyncThunk(
   "post/getUserPosts",
   async (userId, thunkApi) => {
     try {
-      console.log("userId: ", userId);
       const data = await GET({
         path: Route.POST + POST_PATH.USER,
         params: {

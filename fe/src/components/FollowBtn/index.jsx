@@ -2,6 +2,8 @@ import { Button } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import useShowToast from "../../hooks/useShowToast";
 import { followUser } from "../../store/UserSlice/asyncThunk";
+import { useState } from "react";
+import UnFollowPopup from "./UnfollowPopup";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   if (!userInfo?._id) {
@@ -25,14 +27,32 @@ const FollowBtn = ({ user }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const isFollowing = userInfo?.following?.includes(user?._id);
   const showToast = useShowToast();
+  const [openCancelPopup, setOpenCancelPopup] = useState(false);
 
   return (
-    <Button
-      size={"md"}
-      onClick={() => handleFlow(userInfo, user, dispatch, showToast)}
-    >
-      {isFollowing ? "Unfollow" : "Follow"}
-    </Button>
+    <>
+      <Button
+        size={"md"}
+        onClick={() => {
+          if (isFollowing) {
+            setOpenCancelPopup(true);
+          } else {
+            handleFlow(userInfo, user, dispatch, showToast);
+          }
+        }}
+      >
+        {isFollowing ? "Unfollow" : "Follow"}
+      </Button>
+      <UnFollowPopup
+        user={user}
+        isOpen={openCancelPopup}
+        onClose={() => setOpenCancelPopup(false)}
+        onClick={() => {
+          handleFlow(userInfo, user, dispatch, showToast);
+          setOpenCancelPopup(false);
+        }}
+      />
+    </>
   );
 };
 

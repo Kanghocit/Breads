@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
@@ -16,13 +16,21 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(changePage({ nextPage: PageConstant.HOME, currentPage }));
+    handleGetDataByPage();
   }, []);
 
   useEffect(() => {
-    dispatch(changePage({ nextPage: PageConstant.HOME, currentPage }));
-    handleGetDataByPage();
-    initPage.current = false;
-  }, []);
+    if (currentPage === PageConstant.HOME) {
+      console.log("displayPageData: ", displayPageData);
+      dispatch(
+        getPosts({
+          filter: displayPageData,
+          userId: localStorage.getItem("userId"),
+          isNewPage: true,
+        })
+      );
+    }
+  }, [displayPageData, currentPage]);
 
   const handleGetDataByPage = () => {
     let pathname = window.location.pathname;
@@ -35,12 +43,6 @@ const HomePage = () => {
     }
     if (result) {
       dispatch(changeDisplayPageData(result));
-      dispatch(
-        getPosts({
-          filter: result,
-          userId: localStorage.getItem("userId"),
-        })
-      );
     }
   };
 

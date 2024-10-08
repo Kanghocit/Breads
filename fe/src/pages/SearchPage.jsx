@@ -4,22 +4,33 @@ import ContainerLayout from "../components/MainBoxLayout";
 import UserFollowBox from "../components/UserFollowBox";
 import { GET } from "../config/API";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
+import { Container, Input, Text } from "@chakra-ui/react";
+import SearchBar from "../components/SearchBar";
 
 const SearchPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
+  const init = useRef(true);
 
   useEffect(() => {
     if (userInfo._id) {
-      handleGetUsers();
+      handleGetUsers(page, searchValue, true);
     }
   }, [userInfo._id, page]);
 
-  const handleGetUsers = async () => {
+  useEffect(() => {
+    if (!init.current) {
+      handleGetUsers(1, searchValue, false);
+    }
+    init.current = false;
+  }, [searchValue]);
+
+  const handleGetUsers = async (page, searchValue, isFetchMore) => {
     try {
       setLoading(true);
       const data = await GET({
@@ -28,10 +39,15 @@ const SearchPage = () => {
           userId: userInfo._id,
           page: page,
           limit: 20,
+          searchValue,
         },
       });
       if (data.length > 0) {
-        setUsers([...users, ...data]);
+        if (isFetchMore) {
+          setUsers([...users, ...data]);
+        } else {
+          setUsers(data);
+        }
       } else {
         setHasMore(false);
       }
@@ -59,12 +75,37 @@ const SearchPage = () => {
   return (
     <>
       <ContainerLayout>
+        <Container
+          width="100%"
+          maxWidth={"100%"}
+          height={"40px"}
+          borderRadius={"12px"}
+          bg={"white"}
+          margin={0}
+          marginBottom={"12px"}
+          padding={0}
+        >
+          <SearchBar
+            value={searchValue}
+            setValue={setSearchValue}
+            placeholder={"Search"}
+          />
+        </Container>
+        <Text
+          color={"gray"}
+          fontWeight={"500"}
+          mb={"12px"}
+          position={"relative"}
+          left={"4px"}
+        >
+          Suggested to follow
+        </Text>
         {users?.map((user, index) => {
           if (index + 1 < users.length) {
-            return <UserFollowBox key={user._id} userInfo={user} />;
+            return <UserFollowBox userInfo={user} />;
           } else {
             return (
-              <div key={user._id} ref={lastUserElementRef}>
+              <div ref={lastUserElementRef}>
                 <UserFollowBox userInfo={user} />
               </div>
             );

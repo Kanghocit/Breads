@@ -5,6 +5,7 @@ import { Constants } from "../../Breads-Shared/Constants";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";
+import { updateSeeMedia } from "../../store/UtilSlice";
 
 const MediaDisplay = ({ post }) => {
   const postAction = useSelector((state) => state.post.postAction);
@@ -117,6 +118,7 @@ const MediaDisplay = ({ post }) => {
             flexShrink={0}
             gap="10px"
             objectFit={post.media?.length === 1 ? "contain" : "cover"}
+            onClick={() => handleSeeFullMedia(post.media, index)}
             // style={{
             //   width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
 
@@ -135,6 +137,7 @@ const MediaDisplay = ({ post }) => {
                   objectFit: "cover",
                   borderRadius: "8px",
                 }}
+                onClick={() => handleSeeFullMedia(post.media, index)}
               />
             ) : (
               <Image
@@ -146,6 +149,11 @@ const MediaDisplay = ({ post }) => {
                 maxHeight="300px"
                 borderRadius="8px"
                 onDragStart={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleSeeFullMedia(post.media, index);
+                }}
               />
             )}
 

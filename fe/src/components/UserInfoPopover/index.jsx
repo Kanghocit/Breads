@@ -16,12 +16,15 @@ import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
 import { changePage } from "../../store/UtilSlice";
 import { handleFlow } from "../FollowBtn";
+import { useState } from "react";
+import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 const UserInfoPopover = ({ user, content = "" }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const isFollowing = userInfo?.following?.includes(user?._id);
   const showToast = useShowToast();
+  const [openCancelPopup, setOpenCancelPopup] = useState(false);
 
   const handleGoToUserPage = () => {
     dispatch(changePage({ nextPage: PageConstant.USER }));
@@ -77,13 +80,28 @@ const UserInfoPopover = ({ user, content = "" }) => {
               _hover={{ opacity: 0.8 }}
               _active={{ opacity: 0.6 }}
               transition="opacity 0.2s"
-              onClick={() => handleFlow(userInfo, user, dispatch, showToast)}
+              onClick={() => {
+                if (isFollowing) {
+                  setOpenCancelPopup(true);
+                } else {
+                  handleFlow(userInfo, user, dispatch, showToast);
+                }
+              }}
             >
               {isFollowing ? "Unfollow" : "Follow"}
             </Button>
           </Box>
         </PopoverBody>
       </PopoverContent>
+      <UnFollowPopup
+        user={user}
+        isOpen={openCancelPopup}
+        onClose={() => setOpenCancelPopup(false)}
+        onClick={() => {
+          handleFlow(userInfo, user, dispatch, showToast);
+          setOpenCancelPopup(false);
+        }}
+      />
     </Popover>
   );
 };

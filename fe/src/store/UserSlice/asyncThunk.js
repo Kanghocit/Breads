@@ -131,15 +131,18 @@ export const removePostFromCollection = createAsyncThunk(
       const dispatch = thunkAPI.dispatch;
       const displayPageData = rootState.util.displayPageData;
       const { userId, postId } = payload;
-      const data = await PATCH({
-        path: Route.COLLECTION + COLLECTION_PATH.ADD,
+      await PATCH({
+        path: Route.COLLECTION + COLLECTION_PATH.REMOVE,
         payload: {
           userId: userId,
           postId: postId,
         },
       });
       if (displayPageData === PageConstant.SAVED) {
-        dispatch(updateListPost(data));
+        const newListPost = rootState.post.listPost.filter(
+          (post) => post._id !== postId
+        );
+        dispatch(updateListPost(newListPost));
         return {
           postId: postId,
         };

@@ -2,10 +2,10 @@ import { Flex } from "@chakra-ui/react";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EmptyContentSvg } from "../../assests/icons";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
-import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 const ListPost = () => {
   const dispatch = useDispatch();
@@ -16,12 +16,22 @@ const ListPost = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
+  const init = useRef(true);
 
   useEffect(() => {
-    if (userInfo._id) {
+    if (userInfo._id && !init.current) {
       handleGetPosts();
     }
   }, [userInfo._id, page, currentPage]);
+
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      init.current = false;
+    }, 500);
+    return () => {
+      window.clearTimeout(timeOut);
+    };
+  });
 
   useEffect(() => {
     setPage(1);
@@ -29,17 +39,18 @@ const ListPost = () => {
 
   const handleGetPosts = async () => {
     try {
-      console.log("displayPageData: ", displayPageData);
       setLoading(true);
       if (currentPage === PageConstant.USER) {
       } else {
-        dispatch(
-          getPosts({
-            filter: displayPageData,
-            userId: userInfo?._id,
-            page: page,
-          })
-        );
+        if (!init.current) {
+          dispatch(
+            getPosts({
+              filter: displayPageData,
+              userId: userInfo?._id,
+              page: page,
+            })
+          );
+        }
       }
     } catch (err) {
       console.error("Error scroll to get more post: ", err);
@@ -70,7 +81,7 @@ const ListPost = () => {
             if (index + 1 === listPost?.length) {
               return (
                 <>
-                  <div key={post?._id} ref={lastEle}>
+                  <div ref={lastEle}>
                     <Post post={post} ref={lastEle} />
                     <hr
                       style={{
@@ -93,7 +104,7 @@ const ListPost = () => {
               );
             } else {
               return (
-                <Fragment key={post?._id}>
+                <Fragment>
                   <Post post={post} />
                   <hr
                     style={{
