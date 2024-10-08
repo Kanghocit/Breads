@@ -28,7 +28,10 @@ const SidebarMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const { colorMode, toggleColorMode, setColorMode } = useColorMode();
-  const bgk = { bg: "gray.dark", color: "100" };
+  const bgk = {
+    bg: colorMode === "dark" ? "#0a0a0a" : "#ffffff",
+    color: "100",
+  };
 
   const menuItems = [
     {
@@ -106,7 +109,11 @@ const SidebarMenu = () => {
   return (
     <Box>
       {!isMenuOpen && (
-        <Button onClick={handleMenuOpen} bg={"none"}>
+        <Button
+          onClick={handleMenuOpen}
+          bg={"none"}
+          _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+        >
           <HiMenuAlt4 size={24} />
         </Button>
       )}
@@ -118,24 +125,23 @@ const SidebarMenu = () => {
             </MenuButton>
             <MenuList
               {...bgk}
-              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+              bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
             >
               {menuItems.map((item) => (
                 <React.Fragment key={item.name}>
-                  {item.name === "Report a problem" && (
-                    <MenuDivider _hover={{ bg: "gray.dark" }} />
-                  )}
+                  {item.name === "Report a problem" && <MenuDivider />}
                   <MenuItem
                     {...item.style}
                     onClick={item.onClick}
-                    bg={colorMode === "dark" ? "gray.dark" : "gray.white"}
+                    bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
                     color={colorMode === "dark" ? "gray.white" : "gray.dark"}
                     ml={"0.5rem"}
                     width={"calc(100% - 1rem)"}
                     padding={"12px"}
+                    borderRadius="10px"
                     _hover={{
-                      bg: colorMode === "dark" ? "#2b2b2b" : "gray.200",
-                      borderRadius: "md",
+                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                      borderRadius: "10px",
                     }}
                   >
                     {item.name === "Interface" ? (
@@ -166,13 +172,13 @@ const SidebarMenu = () => {
             </MenuButton>
             <MenuList
               {...bgk}
-              bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+              bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
               px={3}
             >
               <MenuItem
                 {...bgk}
                 onClick={() => setIsSubMenuOpen(false)}
-                bg={colorMode === "dark" ? "gray.dark" : "gray.100"}
+                bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
                 color={colorMode === "dark" ? "gray.100" : "gray.dark"}
                 mb={"4px"}
               >
