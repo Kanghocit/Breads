@@ -170,7 +170,10 @@ export const getPostsIdByFilter = async (payload) => {
           });
         break;
       default:
-        data = await Post.find({ type: { $ne: "reply" } }, { _id: 1 })
+        data = await Post.find(
+          { type: { $ne: "reply" }, authorId: { $ne: ObjectId(userId) } },
+          { _id: 1 }
+        )
           .skip(skip)
           .limit(limit)
           .sort({

@@ -1,16 +1,18 @@
-import { Flex, Button, Image } from "@chakra-ui/react";
+import { Flex, Button, Image, useColorMode } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { useRef, useState } from "react";
 import { Constants } from "../../Breads-Shared/Constants";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";
+import { updateSeeMedia } from "../../store/UtilSlice";
 
 const MediaDisplay = ({ post }) => {
   const postAction = useSelector((state) => state.post.postAction);
   const dispatch = useDispatch();
   const mediaContainerRef = useRef(null);
   const isDragging = useRef(false);
+  const { colorMode } = useColorMode();
   const startPosition = useRef(0);
   const scrollPosition = useRef(0);
   const velocity = useRef(0);
@@ -87,6 +89,7 @@ const MediaDisplay = ({ post }) => {
       <Flex
         gap="10px"
         mt="10px"
+        bg={colorMode === "dark" ? "#181818" : "#fafafa"}
         wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
         maxWidth="100%"
@@ -117,6 +120,7 @@ const MediaDisplay = ({ post }) => {
             flexShrink={0}
             gap="10px"
             objectFit={post.media?.length === 1 ? "contain" : "cover"}
+            onClick={() => handleSeeFullMedia(post.media, index)}
             // style={{
             //   width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
 
@@ -135,6 +139,7 @@ const MediaDisplay = ({ post }) => {
                   objectFit: "cover",
                   borderRadius: "8px",
                 }}
+                onClick={() => handleSeeFullMedia(post.media, index)}
               />
             ) : (
               <Image
@@ -146,6 +151,11 @@ const MediaDisplay = ({ post }) => {
                 maxHeight="300px"
                 borderRadius="8px"
                 onDragStart={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleSeeFullMedia(post.media, index);
+                }}
               />
             )}
 

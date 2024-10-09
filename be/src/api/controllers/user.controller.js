@@ -255,7 +255,7 @@ export const getUserProfile = async (req, res) => {
 
 export const getUserToFollows = async (req, res) => {
   try {
-    const { userId, page, limit } = req.query;
+    const { userId, page, limit, searchValue } = req.query;
     if (!userId) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
     }
@@ -269,6 +269,7 @@ export const getUserToFollows = async (req, res) => {
     const data = await User.find(
       {
         _id: { $nin: invalidToFollow },
+        username: { $regex: searchValue },
       },
       {
         _id: 1,

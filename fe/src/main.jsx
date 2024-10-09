@@ -12,11 +12,13 @@ const styles = {
   global: (props) => ({
     body: {
       color: mode("gray.800", "whiteAlpha.900")(props),
-      bg: mode("gray.100", "#101010")(props),
+      bg: mode("#fafafa", "#0a0a0a")(props),
     },
   }),
 };
-
+// _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+// bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
+// color={colorMode === "dark" ? "#b8b8b8" : "#ffffff"}
 const config = {
   initialColorMode: "dark",
   useSystemColorMode: true,
@@ -25,7 +27,7 @@ const config = {
 const colors = {
   gray: {
     light: "#616161",
-    dark: "#1e1e1e",
+    dark: "#0a0a0a",
   },
 };
 

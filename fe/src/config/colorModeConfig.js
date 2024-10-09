@@ -7,15 +7,15 @@ const styles = {
   global: (props) => ({
     body: {
       color: mode("gray.800", "whiteAlpha.900")(props),
-      bg: mode("gray.100", "#101010")(props),
+      bg: mode("gray.100", "#fafafa")(props),
     },
   }),
 };
 
 // Color Mode Config
 const config = {
-  initialColorMode: "dark", 
-  useSystemColorMode: true, 
+  initialColorMode: "dark",
+  useSystemColorMode: true,
 };
 
 // Custom colors

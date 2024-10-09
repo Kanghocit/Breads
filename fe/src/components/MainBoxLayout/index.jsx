@@ -1,8 +1,9 @@
-import { Container, Flex } from "@chakra-ui/react";
+import { Container, Flex, useColorMode } from "@chakra-ui/react";
 
 export const containerBoxWidth = "640px";
 
 const ContainerLayout = ({ children }) => {
+  const { colorMode } = useColorMode();
   return (
     <Flex
       position={"sticky"}
@@ -12,7 +13,7 @@ const ContainerLayout = ({ children }) => {
       height={"fit-content"}
     >
       <Container
-        bg="dark"
+        bg={colorMode === "dark" ? "#111111" : "#fafafa"}
         minHeight={"100vh"}
         height={"fit-content"}
         mt={6}

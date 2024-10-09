@@ -10,12 +10,14 @@ import {
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import FollowBtn from "./FollowBtn";
+import { updateSeeMedia } from "../store/UtilSlice";
 
 const UserHeader = ({ user }) => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
 
@@ -24,6 +26,21 @@ const UserHeader = ({ user }) => {
     navigator.clipboard.writeText(currentURL).then(() => {
       showToast("", "Profile link copied", "success");
     });
+  };
+
+  const handleSeeAvatar = () => {
+    dispatch(
+      updateSeeMedia({
+        open: true,
+        media: [
+          {
+            url: user?.avatar,
+            type: "image",
+          },
+        ],
+        currentMediaIndex: 0,
+      })
+    );
   };
 
   return (
@@ -53,6 +70,7 @@ const UserHeader = ({ user }) => {
                 base: "md",
                 md: "xl",
               }}
+              onClick={() => handleSeeAvatar()}
             />
           )}
           {!user?.avatar && (

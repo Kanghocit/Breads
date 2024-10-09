@@ -107,6 +107,7 @@ const SeeMedia = () => {
         borderRadius={"50%"}
         cursor={"pointer"}
         zIndex={5000}
+        
         _hover={{
           bg: "gray",
         }}
@@ -126,7 +127,7 @@ const SeeMedia = () => {
               {moveBtn(1)}
             </>
           )}
-          <Flex justifyContent={"center"} height={"100vh"} bg={"transparent"}>
+          <Flex justifyContent={"center"} height={"100vh"} bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}>
             {currentMedia.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
                 style={{

@@ -8,6 +8,7 @@ import {
   Divider,
   Flex,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
 
@@ -30,7 +31,7 @@ import Survey from "./Survey";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { colorMode } = useColorMode();
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
@@ -48,10 +49,13 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
     <>
       <Card
         className="post-container"
-        borderRadius={"12px"}
-        border={isParentPost ? "1px solid gray" : ""}
-        boxShadow={isReply ? "none" : ""}
-        width={"100%"}
+        borderRadius="12px"
+        border={isParentPost ? "1px solid gray" : "none"}
+        boxShadow={isReply ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"}
+        bg={colorMode === "dark" ? "#181818" : "#ffffff"}
+        width="100%"
+        transform={isParentPost ? "scale(1.02)" : "none"}
+        transition="transform 0.2s ease"
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
@@ -72,7 +76,10 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             </Flex>
 
             <Flex gap={4} alignItems={"center"}>
-              <Text fontSize={"sm"} color={"gray.light"}>
+              <Text
+                fontSize={"sm"}
+                color={colorMode === "dark" ? "gray.100" : "gray.light"}
+              >
                 {moment(post?.createdAt).fromNow()}
               </Text>
               {!isParentPost && (
@@ -83,7 +90,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                     }}
                   >
                     <Button
-                      bg={"transparent"}
+                      bg={colorMode === "dark" ? "#181818" : "#ffffff"}
                       borderRadius={"50%"}
                       width={"32px"}
                       height={"40px"}

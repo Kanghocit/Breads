@@ -34,7 +34,7 @@ const PostMoreActionBox = ({
   const showToast = useShowToast();
   const { copyURL } = useCopyLink();
   const savedBefore = useMemo(() => {
-    return userInfo?.collecOtion?.includes(postId);
+    return userInfo?.collection?.includes(postId);
   }, [userInfo._id]);
 
   const handleSave = () => {
@@ -44,8 +44,10 @@ const PostMoreActionBox = ({
     };
     if (savedBefore) {
       dispatch(removePostFromCollection(payload));
+      showToast("", "Unsaved", "success");
     } else {
       dispatch(addPostToCollection(payload));
+      showToast("", "Saved", "success");
     }
   };
 
@@ -132,7 +134,7 @@ const PostMoreActionBox = ({
         right={"50%"}
         borderRadius={"12px"}
         padding={"12px"}
-        bg={colorMode === "dark" ? "#101010" : "gray.100"}
+        bg={colorMode === "dark" ? "#1c1e21" : "gray.100"}
         zIndex={1000}
       >
         {actions.map(({ name, icon, onClick }) => (
