@@ -52,7 +52,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
         borderRadius="12px"
         border={isParentPost ? "1px solid gray" : "none"}
         boxShadow={isReply ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"}
-        bg={colorMode === "dark" ? "#181818" : "#ffffff"}
+        bg={colorMode === "dark" ? "#202020" : "#ffffff"}
         width="100%"
         transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"

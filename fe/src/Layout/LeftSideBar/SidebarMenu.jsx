@@ -112,7 +112,11 @@ const SidebarMenu = () => {
         <Button
           onClick={handleMenuOpen}
           bg={"none"}
-          _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+          color={colorMode === "dark" ? "#f3f5f7" : "#a0a0a0"}
+          _hover={{ color: colorMode === "dark" ? "#f3f5f7" : "#000000" }}
+          _focus={{
+            color: colorMode === "dark" ? "#f3f5f7" : "#000000",
+          }}
         >
           <HiMenuAlt4 size={24} />
         </Button>
