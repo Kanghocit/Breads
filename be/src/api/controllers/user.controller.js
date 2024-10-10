@@ -291,7 +291,50 @@ export const handleCrawlFakeUsers = async (req, res) => {
     await crawlUser();
     res.status(HTTPStatus.OK).json("Crawl success");
   } catch (err) {
-    console.log(err);
+    console.log("handleCrawlFakeUsers: ", err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getUsersFollow = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    if (!userId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty userId");
+    }
+    const userInfo = await User.findOne({ _id: ObjectId(userId) });
+    if (!userInfo) {
+      return res.status(HTTPStatus.NOT_FOUND).json("Invalid user");
+    }
+    const followedUsers = await User.find(
+      {
+        _id: { $in: userInfo.followed },
+      },
+      {
+        _id: 1,
+        avatar: 1,
+        username: 1,
+        name: 1,
+        bio: 1,
+      }
+    );
+    const followingUsers = await User.find(
+      {
+        _id: { $in: userInfo.following },
+      },
+      {
+        _id: 1,
+        avatar: 1,
+        username: 1,
+        name: 1,
+        bio: 1,
+      }
+    );
+    res.status(HTTPStatus.OK).json({
+      followed: followedUsers,
+      following: followingUsers,
+    });
+  } catch (err) {
+    console.log("getUsersFollow: ", err);
   }
 };

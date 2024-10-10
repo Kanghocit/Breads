@@ -34,7 +34,7 @@ const SearchPage = () => {
     try {
       setLoading(true);
       const data = await GET({
-        path: Route.USER + USER_PATH.USERS_FOLLOW,
+        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
         params: {
           userId: userInfo._id,
           page: page,
