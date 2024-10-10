@@ -23,6 +23,8 @@ import PostConstants from "../../../util/PostConstants";
 import { useColorModeValue } from "@chakra-ui/react";
 import useCopyLink from "./MoreAction/CopyLink";
 import { IoIosLink } from "react-icons/io";
+import Socket from "../../../socket";
+import { NOTIFICATION_PATH } from "../../../Breads-Shared/APIConfig";
 
 const ACTIONS_NAME = {
   LIKE: "like",
@@ -36,12 +38,18 @@ const Actions = ({ post }) => {
   const dispatch = useDispatch();
   const [openSubBox, setOpenSubBox] = useState(false);
   const { copyURL } = useCopyLink();
+  const handleLike = () => {
+    const socket = Socket.getInstant();
+    socket.emitWithAck(NOTIFICATION_PATH.CREATE, "Hello socket");
+  };
 
   const listActions = [
     {
       name: ACTIONS_NAME.LIKE,
       icon: <LikeIcon />,
-      onClick: () => {},
+      onClick: () => {
+        handleLike();
+      },
     },
     {
       name: ACTIONS_NAME.REPLY,

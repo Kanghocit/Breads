@@ -6,6 +6,8 @@ import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";
 import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData, changePage } from "../store/UtilSlice";
+import useSocket from "../hooks/useSocket";
+import { NOTIFICATION_PATH } from "../Breads-Shared/APIConfig";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -21,7 +23,6 @@ const HomePage = () => {
 
   useEffect(() => {
     if (currentPage === PageConstant.HOME) {
-      console.log("displayPageData: ", displayPageData);
       dispatch(
         getPosts({
           filter: displayPageData,
@@ -31,6 +32,12 @@ const HomePage = () => {
       );
     }
   }, [displayPageData, currentPage]);
+
+  useSocket((socket) => {
+    socket.on(NOTIFICATION_PATH.GET, (payload) => {
+      console.log(payload);
+    });
+  }, []);
 
   const handleGetDataByPage = () => {
     let pathname = window.location.pathname;

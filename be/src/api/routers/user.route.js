@@ -4,6 +4,7 @@ import {
   followUser,
   getAdminAccount,
   getUserProfile,
+  getUsersFollow,
   getUserToFollows,
   handleCrawlFakeUsers,
   loginUser,
@@ -18,7 +19,7 @@ const router = express.Router();
 const {
   ADMIN,
   PROFILE,
-  USERS_FOLLOW,
+  USERS_TO_FOLLOW,
   SIGN_UP,
   LOGIN,
   LOGOUT,
@@ -26,11 +27,13 @@ const {
   UPDATE,
   CHANGE_PW,
   CRAWL_USER,
+  USERS_FOLLOW,
 } = USER_PATH;
 
+router.get(USERS_FOLLOW, getUsersFollow);
 router.get(ADMIN, getAdminAccount);
 router.get(PROFILE + ":userId", getUserProfile);
-router.get(USERS_FOLLOW, getUserToFollows);
+router.get(USERS_TO_FOLLOW, getUserToFollows);
 router.post(SIGN_UP, signupUser);
 router.post(LOGIN, loginUser);
 router.post(LOGOUT, logoutUser);
