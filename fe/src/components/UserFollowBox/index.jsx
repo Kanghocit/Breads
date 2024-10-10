@@ -6,7 +6,7 @@ import { changePage } from "../../store/UtilSlice";
 import FollowBtn from "../FollowBtn";
 import UserInfoPopover from "../UserInfoPopover";
 
-const UserFollowBox = ({ userInfo }) => {
+const UserFollowBox = ({ userInfo, inFollowBox = false }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -23,8 +23,9 @@ const UserFollowBox = ({ userInfo }) => {
       alignItems={"center"}
       bg="white"
       padding={"0 12px"}
-      borderRadius={"10px"}
-      mb={"10px"}
+      borderRadius={inFollowBox ? "" : "10px"}
+      mb={inFollowBox ? "" : "10px"}
+      borderBottom={inFollowBox ? "1px solid gray" : ""}
     >
       <Flex>
         <Avatar

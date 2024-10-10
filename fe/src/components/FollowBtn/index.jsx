@@ -41,7 +41,11 @@ const FollowBtn = ({ user }) => {
           }
         }}
       >
-        {isFollowing ? "Unfollow" : "Follow"}
+        {isFollowing
+          ? "Unfollow"
+          : userInfo.followed?.includes(user._id)
+          ? "Follow Back"
+          : "Follow"}
       </Button>
       <UnFollowPopup
         user={user}
