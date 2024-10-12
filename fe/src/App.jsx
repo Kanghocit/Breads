@@ -17,6 +17,7 @@ import SearchPage from "./pages/SearchPage";
 import SettingPage from "./pages/SettingPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
+import ChatPage from "./pages/ChatPage";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostConstants from "./util/PostConstants";
 
@@ -110,7 +111,9 @@ function App() {
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
-        <Route path="/error" element={<ErrorPage />} />
+
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="*" element={<ErrorPage />} />
         {ActivityRoute()}
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}

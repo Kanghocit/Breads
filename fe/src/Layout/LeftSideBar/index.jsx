@@ -9,6 +9,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData, changePage } from "../../store/UtilSlice";
+import { FaFacebookMessenger } from "react-icons/fa";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
 
@@ -91,6 +92,22 @@ const LeftSideBar = () => {
       },
       color:
         currentPage === PageConstant.USER
+          ? colorMode === "dark"
+            ? "#f3f5f7"
+            : "#000000"
+          : undefined,
+    },
+    {
+      icon: <FaFacebookMessenger size={24}/>,
+      linkTo: "/" + PageConstant.CHAT ,
+      onClick: () => {
+        if (currentPage !== PageConstant.CHAT) {
+          dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT}));
+        }
+        navigate("/" + PageConstant.CHAT );
+      },
+      color:
+        currentPage === PageConstant.CHAT
           ? colorMode === "dark"
             ? "#f3f5f7"
             : "#000000"

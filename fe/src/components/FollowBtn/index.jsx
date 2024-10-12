@@ -23,6 +23,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
 };
 
 const FollowBtn = ({ user }) => {
+  
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const isFollowing = userInfo?.following?.includes(user?._id);

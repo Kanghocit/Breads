@@ -62,6 +62,7 @@ export const getUsersByPage = async ({ page, limit, matchQuery }) => {
       avatar: 1,
       username: 1,
       name: 1,
+      bio: 1,
     })
       .skip(skip)
       .limit(limit);

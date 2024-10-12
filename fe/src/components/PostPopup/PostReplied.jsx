@@ -26,6 +26,8 @@ const PostReplied = () => {
                   alt="postReply Media"
                   controls
                   style={{
+                    height: "250px",
+                    maxHeight: "300px",
                     width: "100%",
                   }}
                 />
@@ -33,6 +35,8 @@ const PostReplied = () => {
                 <Image
                   src={postReply.media[0].url}
                   alt="postReply Media"
+                  height={"250px"}
+                  maxHeight={"300px"}
                   width={"100%"}
                 />
               )}

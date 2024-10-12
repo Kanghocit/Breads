@@ -98,7 +98,9 @@ export const createPost = async (req, res) => {
       {
         _id: 1,
         avatar: 1,
+        name: 1,
         username: 1,
+        bio: 1,
       }
     );
     result.authorInfo = authorInfo;

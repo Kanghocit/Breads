@@ -21,6 +21,7 @@ import { useState } from "react";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 const UserInfoPopover = ({ user, content = "" }) => {
+  console.log("khang",user)
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
 
@@ -67,7 +68,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
             <Flex justifyContent={"space-between"} pb={4}>
               <Box>
                 <Text fontWeight="bold">{user?.username}</Text>
-                <Text fontSize={"sm"}>{userInfo?.name}</Text>
+                <Text fontSize={"sm"}>{user?.name}</Text>
               </Box>
               <Avatar
                 src={user?.avatar}
@@ -76,7 +77,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
                 cursor={"pointer"}
               />
             </Flex>
-            <Text fontSize={"sm"}> {userInfo?.bio}</Text>
+            <Text fontSize={"sm"}> {user?.bio}</Text>
             <Text color={"gray.400"}>
               {user?.followed?.length || 0} người theo dõi
             </Text>

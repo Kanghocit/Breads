@@ -28,6 +28,8 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
                 _id: 1,
                 username: 1,
                 avatar: 1,
+                bio: 1,
+                name: 1,
               },
             },
           ],
@@ -99,8 +101,10 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
         { _id: result.parentPostInfo.authorId },
         {
           _id: 1,
-          username: 1,
           avatar: 1,
+          name: 1,
+          username: 1,
+          bio: 1,
         }
       );
       if (result.parentPostInfo.survey.length) {

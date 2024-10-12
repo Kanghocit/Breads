@@ -40,6 +40,7 @@ const FOLLOW_TAB = {
 };
 
 const UserHeader = ({ user, usersFollow }) => {
+
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
@@ -225,6 +226,7 @@ const UserHeader = ({ user, usersFollow }) => {
                 {usersFollow.followed?.length > 0 ? (
                   usersFollow.followed?.map((userInfo) => (
                     <UserFollowBox
+                      user={user}
                       userInfo={userInfo}
                       key={userInfo?._id}
                       inFollowBox={true}

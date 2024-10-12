@@ -121,6 +121,7 @@ const MediaDisplay = ({ post }) => {
             gap="10px"
             objectFit={post.media?.length === 1 ? "contain" : "cover"}
             onClick={() => handleSeeFullMedia(post.media, index)}
+            
             // style={{
             //   width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
 
@@ -148,6 +149,7 @@ const MediaDisplay = ({ post }) => {
                 alt={`Post Media ${index}`}
                 width="auto"
                 height="250px"
+                
                 maxHeight="300px"
                 borderRadius="8px"
                 onDragStart={(e) => e.preventDefault()}

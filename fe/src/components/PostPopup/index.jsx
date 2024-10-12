@@ -1,19 +1,16 @@
-import { CloseIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Button,
   Container,
   Flex,
-  Image,
   Modal,
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text,
+  Text
 } from "@chakra-ui/react";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Constants } from "../../Breads-Shared/Constants";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
@@ -31,9 +28,9 @@ import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
 import PostPopupAction from "./action";
+import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
-import MediaDisplay from "./mediaDisplay";
 
 const PostPopup = () => {
   const dispatch = useDispatch();
