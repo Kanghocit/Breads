@@ -104,7 +104,7 @@ export const createPost = async (req, res) => {
     result.authorInfo = authorInfo;
     res.status(HTTPStatus.CREATED).json(result);
   } catch (err) {
-    console.log(err);
+    console.log("createPost: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
@@ -121,8 +121,8 @@ export const getPost = async (req, res) => {
     }
     res.status(HTTPStatus.OK).json(post);
   } catch (err) {
+    console.log("getPost: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
-    console.log(err);
   }
 };
 //delete Post
@@ -156,8 +156,8 @@ export const deletePost = async (req, res) => {
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });
   } catch (err) {
+    console.log("deletePost: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
-    console.log(err);
   }
 };
 //updatePost
@@ -186,6 +186,8 @@ export const updatePost = async (req, res) => {
     post = await post.save();
     res.status(HTTPStatus.OK).json(post);
   } catch (error) {
+    console.log("updatePost: ", err);
+
     res.status(HTTPStatus.SERVER_ERR).json({ error: error.message });
   }
 };
@@ -212,8 +214,8 @@ export const likeUnlikePost = async (req, res) => {
       res.status(HTTPStatus.OK).json({ message: "Post liked successfully!" });
     }
   } catch (err) {
+    console.log("likeUnlikePost: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
-    console.log(err);
   }
 };
 
@@ -231,7 +233,7 @@ export const getPosts = async (req, res) => {
     }
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {
-    console.log(err);
+    console.log("getPosts: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
@@ -255,6 +257,7 @@ export const getUserPosts = async (req, res) => {
     }
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {
+    console.log("getUserPosts: ", err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
@@ -282,7 +285,7 @@ export const tickPostSurvey = async (req, res) => {
     }
     res.status(HTTPStatus.OK).json("OK");
   } catch (err) {
-    console.log(err);
+    console.log("tickPostSurvey: ", err);
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };

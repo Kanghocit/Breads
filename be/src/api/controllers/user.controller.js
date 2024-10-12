@@ -4,7 +4,7 @@ import { Constants } from "../../Breads-Shared/Constants/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
-import { getUserInfo, updateFollow } from "../services/user.js";
+import { getUserInfo, getUsersByPage, updateFollow } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 import Collection from "../models/collection.model.js";
 import { uploadFile } from "../utils/index.js";
@@ -265,21 +265,15 @@ export const getUserToFollows = async (req, res) => {
     const userFollowed =
       (await User.findOne({ _id: ObjectId(userId) }))?.following ?? [];
     const invalidToFollow = [...userFollowed, userId];
-    const skip = (page - 1) * limit;
-    const data = await User.find(
-      {
-        _id: { $nin: invalidToFollow },
-        username: { $regex: searchValue },
-      },
-      {
-        _id: 1,
-        avatar: 1,
-        username: 1,
-        name: 1,
-      }
-    )
-      .skip(skip)
-      .limit(limit);
+    const matchQuery = {
+      _id: { $nin: invalidToFollow },
+      username: { $regex: searchValue },
+    };
+    const data = await getUsersByPage({
+      page,
+      limit,
+      matchQuery,
+    });
     res.status(HTTPStatus.OK).json(data);
   } catch (err) {
     res.status(HTTPStatus.SERVER_ERR).json(err);
@@ -336,5 +330,27 @@ export const getUsersFollow = async (req, res) => {
     });
   } catch (err) {
     console.log("getUsersFollow: ", err);
+  }
+};
+
+export const getUsersToTag = async (req, res) => {
+  try {
+    let { userId, page, limit, searchValue } = req.query;
+    if (!userId) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
+    }
+    if (!page) {
+      page = 1;
+    }
+    if (!limit) {
+      limit = 20;
+    }
+    const matchQuery = {
+      username: { $regex: searchValue },
+    };
+    const data = await getUsersByPage({ page, limit, matchQuery });
+    return data;
+  } catch (err) {
+    console.log("getUsersToTag: ", err);
   }
 };

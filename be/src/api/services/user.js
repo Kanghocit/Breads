@@ -53,3 +53,21 @@ export const updateFollow = async (userId, userFlId, isAdd, isFollowing) => {
     console.log(err);
   }
 };
+
+export const getUsersByPage = async ({ page, limit, matchQuery }) => {
+  try {
+    const skip = (page - 1) * limit;
+    const data = await User.find(matchQuery, {
+      _id: 1,
+      avatar: 1,
+      username: 1,
+      name: 1,
+    })
+      .skip(skip)
+      .limit(limit);
+    return data;
+  } catch (err) {
+    console.log("getUsersByPage: ", err);
+    return [];
+  }
+};
