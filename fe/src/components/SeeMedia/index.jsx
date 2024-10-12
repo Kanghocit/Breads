@@ -6,6 +6,7 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +16,7 @@ import { updateSeeMedia } from "../../store/UtilSlice";
 const SeeMedia = () => {
   const dispatch = useDispatch();
   const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
+  const { colorMode } = useColorMode();
   const currentMedia = seeMediaInfo.media?.[seeMediaInfo.currentMediaIndex];
 
   useEffect(() => {
@@ -107,7 +109,6 @@ const SeeMedia = () => {
         borderRadius={"50%"}
         cursor={"pointer"}
         zIndex={5000}
-        
         _hover={{
           bg: "gray",
         }}
@@ -127,7 +128,11 @@ const SeeMedia = () => {
               {moveBtn(1)}
             </>
           )}
-          <Flex justifyContent={"center"} height={"100vh"} bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}>
+          <Flex
+            justifyContent={"center"}
+            height={"100vh"}
+            bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
+          >
             {currentMedia.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
                 style={{

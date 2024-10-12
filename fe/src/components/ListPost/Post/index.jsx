@@ -11,13 +11,14 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
-
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { POST_PATH } from "../../../Breads-Shared/APIConfig";
 import usePopupCancel from "../../../hooks/usePopupCancel";
+import useSocket from "../../../hooks/useSocket";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import PopupCancel from "../../../util/PopupCancel";
 import PostConstants from "../../../util/PostConstants";
@@ -28,6 +29,7 @@ import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import { updatePostLike } from "../../../store/PostSlice";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,10 +38,24 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const dispatch = useDispatch();
   const postAction = useSelector((state) => state.post.postAction);
   const [openPostBox, setOpenPostBox] = useState(false);
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
+
+  useSocket((socket) => {
+    socket.on(POST_PATH.GET_ONE, ({ usersLike, postId }) => {
+      if (post._id === postId) {
+        dispatch(
+          updatePostLike({
+            postId,
+            usersLike: usersLike,
+          })
+        );
+      }
+    });
+  }, []);
 
   const handleSeeDetail = () => {
     window.open(`/posts/${post._id}`, "_self");

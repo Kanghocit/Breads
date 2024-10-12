@@ -5,26 +5,26 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { memo, useState } from "react";
+import { IoIosLink } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 import {
   LikeIcon,
   ReplyIcon,
   RepostIcon,
   ShareIcon,
 } from "../../../assests/icons";
+import { POST_PATH } from "../../../Breads-Shared/APIConfig";
+import Socket from "../../../socket";
 import {
   selectPost,
   selectPostReply,
   updatePostAction,
 } from "../../../store/PostSlice";
 import PostConstants from "../../../util/PostConstants";
-import { useColorModeValue } from "@chakra-ui/react";
 import useCopyLink from "./MoreAction/CopyLink";
-import { IoIosLink } from "react-icons/io";
-import Socket from "../../../socket";
-import { NOTIFICATION_PATH } from "../../../Breads-Shared/APIConfig";
 
 const ACTIONS_NAME = {
   LIKE: "like",
@@ -36,17 +36,45 @@ const ACTIONS_NAME = {
 
 const Actions = ({ post }) => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
   const [openSubBox, setOpenSubBox] = useState(false);
   const { copyURL } = useCopyLink();
+  const socket = Socket.getInstant();
+
   const handleLike = () => {
-    const socket = Socket.getInstant();
-    socket.emitWithAck(NOTIFICATION_PATH.CREATE, "Hello socket");
+    const payload = {
+      userId: userInfo._id,
+      postId: post._id,
+    };
+    socket.emitWithAck(POST_PATH.LIKE, payload);
+  };
+
+  const convertStatistic = (number) => {
+    let value = number;
+    let strValue = "";
+    switch (true) {
+      case number >= 1000000:
+        value = number / 1000000;
+        strValue = "M";
+        break;
+      case number >= 1000:
+        value = number / 1000;
+        strValue = "K";
+        break;
+      default:
+        return number;
+    }
+    const strArr = value.toString().split(".");
+    const intValue = strArr[0];
+    const firstFloatValue = strArr?.[1]?.[0] ?? "";
+    return intValue + (firstFloatValue ? "." + firstFloatValue : "") + strValue;
   };
 
   const listActions = [
     {
       name: ACTIONS_NAME.LIKE,
-      icon: <LikeIcon />,
+      icon: <LikeIcon liked={post.usersLike?.includes(userInfo._id)} />,
+      statistic: convertStatistic(post.usersLike?.length),
       onClick: () => {
         handleLike();
       },
@@ -79,7 +107,7 @@ const Actions = ({ post }) => {
   return (
     <>
       <Flex onClick={(e) => e.preventDefault()} mb={0}>
-        {listActions.map(({ name, icon, onClick }, index) => {
+        {listActions.map(({ name, statistic, icon, onClick }, index) => {
           if (name === ACTIONS_NAME.SHARE) {
             return (
               <Popover isOpen={openSubBox} key={name}>
@@ -126,17 +154,28 @@ const Actions = ({ post }) => {
             );
           } else {
             return (
-              <Button
-                key={name}
-                onClick={onClick}
-                width={"32px"}
-                height={"32px"}
-                padding={"6px 10px"}
-                bg={"transparent"}
-                borderRadius={"16px"}
-              >
-                {icon}
-              </Button>
+              <>
+                {!!statistic && (
+                  <Flex
+                    alignItems={"center"}
+                    fontSize={"14px"}
+                    fontWeight={500}
+                  >
+                    {statistic}
+                  </Flex>
+                )}
+                <Button
+                  key={name}
+                  onClick={onClick}
+                  width={"32px"}
+                  height={"32px"}
+                  padding={"6px 10px"}
+                  bg={"transparent"}
+                  borderRadius={"16px"}
+                >
+                  {icon}
+                </Button>
+              </>
             );
           }
         })}
@@ -145,4 +184,4 @@ const Actions = ({ post }) => {
   );
 };
 
-export default Actions;
+export default memo(Actions);

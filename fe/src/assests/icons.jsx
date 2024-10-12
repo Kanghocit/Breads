@@ -9,12 +9,12 @@ export const EmptyContentSvg = () => {
   );
 };
 
-export const LikeIcon = () => {
+export const LikeIcon = ({ liked }) => {
   return (
     <svg
       aria-label="Like"
-      color={""}
-      fill={"transparent"}
+      color={liked ? "red" : ""}
+      fill={liked ? "red" : "transparent"}
       height="19"
       role="img"
       viewBox="0 0 24 22"

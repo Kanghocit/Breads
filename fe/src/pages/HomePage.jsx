@@ -34,9 +34,7 @@ const HomePage = () => {
   }, [displayPageData, currentPage]);
 
   useSocket((socket) => {
-    socket.on(NOTIFICATION_PATH.GET, (payload) => {
-      console.log(payload);
-    });
+    socket.on(NOTIFICATION_PATH.GET, (payload) => {});
   }, []);
 
   const handleGetDataByPage = () => {
