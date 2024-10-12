@@ -6,23 +6,14 @@ import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
+import InfiniteScroll from "../InfiniteScroll";
 
 const ListPost = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { listPost, isLoading } = useSelector((state) => state.post);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const observer = useRef();
   const init = useRef(true);
-
-  useEffect(() => {
-    if (userInfo._id && !init.current) {
-      handleGetPosts();
-    }
-  }, [userInfo._id, page, currentPage]);
 
   useEffect(() => {
     const timeOut = setTimeout(() => {
@@ -31,15 +22,10 @@ const ListPost = () => {
     return () => {
       window.clearTimeout(timeOut);
     };
-  });
+  }, []);
 
-  useEffect(() => {
-    setPage(1);
-  }, [displayPageData]);
-
-  const handleGetPosts = async () => {
+  const handleGetPosts = async ({ page }) => {
     try {
-      setLoading(true);
       if (currentPage === PageConstant.USER) {
       } else {
         if (!init.current) {
@@ -54,67 +40,37 @@ const ListPost = () => {
       }
     } catch (err) {
       console.error("Error scroll to get more post: ", err);
-    } finally {
-      setLoading(false);
     }
   };
-
-  const lastEle = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
 
   return (
     <>
       {listPost?.length !== 0 ? (
         <>
-          {listPost?.map((post, index) => {
-            if (index + 1 === listPost?.length) {
-              return (
-                <>
-                  <div ref={lastEle}>
-                    <Post post={post} ref={lastEle} />
-                    <hr
-                      style={{
-                        height: "12px",
-                      }}
-                    />
-                  </div>
-                  {isLoading && (
-                    <Flex
-                      gap={"12px"}
-                      flexDirection={"column"}
-                      justifyContent={"center"}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                        <SkeletonPost key={`skeleton-post-${num}`} />
-                      ))}
-                    </Flex>
-                  )}
-                </>
-              );
-            } else {
-              return (
-                <Fragment>
-                  <Post post={post} />
-                  <hr
-                    style={{
-                      height: "12px",
-                    }}
-                  />
-                </Fragment>
-              );
+          <InfiniteScroll
+            queryFc={(page) => {
+              handleGetPosts({
+                page,
+              });
+            }}
+            data={listPost}
+            cpnFc={(post) => (
+              <Fragment>
+                <Post post={post} />
+                <hr
+                  style={{
+                    height: "12px",
+                  }}
+                />
+              </Fragment>
+            )}
+            condition={userInfo._id && !init.current}
+            deps={[userInfo._id, currentPage]}
+            skeletonCpn={<SkeletonPost />}
+            canScrollMore={
+              displayPageData === PageConstant.SAVED ? false : true
             }
-          })}
+          />
         </>
       ) : (
         <>

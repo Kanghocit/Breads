@@ -5,6 +5,7 @@ import {
   getAdminAccount,
   getUserProfile,
   getUsersFollow,
+  getUsersToTag,
   getUserToFollows,
   handleCrawlFakeUsers,
   loginUser,
@@ -28,12 +29,14 @@ const {
   CHANGE_PW,
   CRAWL_USER,
   USERS_FOLLOW,
+  USERS_TO_TAG,
 } = USER_PATH;
 
 router.get(USERS_FOLLOW, getUsersFollow);
 router.get(ADMIN, getAdminAccount);
 router.get(PROFILE + ":userId", getUserProfile);
 router.get(USERS_TO_FOLLOW, getUserToFollows);
+router.get(USERS_TO_TAG, getUsersToTag);
 router.post(SIGN_UP, signupUser);
 router.post(LOGIN, loginUser);
 router.post(LOGOUT, logoutUser);

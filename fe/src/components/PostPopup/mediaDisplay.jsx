@@ -89,7 +89,7 @@ const MediaDisplay = ({ post }) => {
       <Flex
         gap="10px"
         mt="10px"
-        bg={colorMode === "dark" ? "#181818" : "#fafafa"}
+        // bg={colorMode === "dark" ? "#181818" : "#fafafa"}
         wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
         maxWidth="100%"

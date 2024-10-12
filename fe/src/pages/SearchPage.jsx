@@ -1,38 +1,38 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Container, Text } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
+import InfiniteScroll from "../components/InfiniteScroll";
 import ContainerLayout from "../components/MainBoxLayout";
+import SearchBar from "../components/SearchBar";
 import UserFollowBox from "../components/UserFollowBox";
 import { GET } from "../config/API";
-import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
-import { Container, Input, Text } from "@chakra-ui/react";
-import SearchBar from "../components/SearchBar";
+import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
 
 const SearchPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const observer = useRef();
   const init = useRef(true);
 
   useEffect(() => {
-    if (userInfo._id) {
-      handleGetUsers(page, searchValue, true);
-    }
-  }, [userInfo._id, page]);
-
-  useEffect(() => {
     if (!init.current) {
-      handleGetUsers(1, searchValue, false);
+      handleGetUsers({
+        page: 1,
+        searchValue,
+        isFetchMore: false,
+      });
     }
     init.current = false;
   }, [searchValue]);
 
-  const handleGetUsers = async (page, searchValue, isFetchMore) => {
+  const handleGetUsers = async ({
+    page,
+    searchValue,
+    isFetchMore,
+    setHasMore = null,
+  }) => {
     try {
-      setLoading(true);
       const data = await GET({
         path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
         params: {
@@ -49,28 +49,12 @@ const SearchPage = () => {
           setUsers(data);
         }
       } else {
-        setHasMore(false);
+        setHasMore && setHasMore(false);
       }
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
-
-  const lastUserElementRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
 
   return (
     <>
@@ -100,17 +84,21 @@ const SearchPage = () => {
         >
           Suggested to follow
         </Text>
-        {users?.map((user, index) => {
-          if (index + 1 < users.length) {
-            return <UserFollowBox userInfo={user} />;
-          } else {
-            return (
-              <div ref={lastUserElementRef}>
-                <UserFollowBox userInfo={user} />
-              </div>
-            );
-          }
-        })}
+        <InfiniteScroll
+          queryFc={(page, setHasMore) => {
+            handleGetUsers({
+              page,
+              searchValue,
+              isFetchMore: true,
+              setHasMore,
+            });
+          }}
+          data={users}
+          cpnFc={(user) => <UserFollowBox userInfo={user} />}
+          condition={!!userInfo._id}
+          deps={[userInfo._id]}
+          skeletonCpn={<UserFollowBoxSkeleton />}
+        />
       </ContainerLayout>
     </>
   );

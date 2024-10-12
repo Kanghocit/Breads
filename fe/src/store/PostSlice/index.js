@@ -61,6 +61,24 @@ const postSlice = createSlice({
     selectPostReply: (state, action) => {
       state.postReply = action.payload;
     },
+    updatePostLike: (state, action) => {
+      const { postId, usersLike } = action.payload;
+      const postIndex = state.listPost.findIndex((post) => post._id === postId);
+
+      if (postIndex !== -1) {
+        state.listPost[postIndex] = {
+          ...state.listPost[postIndex],
+          usersLike: usersLike,
+        };
+      } else {
+        if (state.postSelected._id === postId) {
+          state.postSelected = {
+            ...state.postSelected,
+            usersLike: usersLike,
+          };
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPost.pending, (state) => {
@@ -189,5 +207,6 @@ export const {
   updatePostAction,
   updateListPost,
   selectPostReply,
+  updatePostLike,
 } = postSlice.actions;
 export default postSlice.reducer;

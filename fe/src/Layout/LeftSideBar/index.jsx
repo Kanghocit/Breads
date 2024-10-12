@@ -1,8 +1,8 @@
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
-import { GrHomeRounded } from "react-icons/gr";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
+import { GrHomeRounded } from "react-icons/gr";
 import { MdAdd, MdOutlinePushPin } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -33,6 +33,12 @@ const LeftSideBar = () => {
         }
         navigate("/");
       },
+      color:
+        currentPage === PageConstant.HOME
+          ? colorMode === "dark"
+            ? "#f3f5f7"
+            : "#000000"
+          : undefined,
     },
     {
       icon: <FiSearch size={24} />,
@@ -43,6 +49,12 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.SEARCH);
       },
+      color:
+        currentPage === PageConstant.SEARCH
+          ? colorMode === "dark"
+            ? "#f3f5f7"
+            : "#000000"
+          : undefined,
     },
     {
       icon: <MdAdd size={24} />,
@@ -61,6 +73,12 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.ACTIVITY);
       },
+      color:
+        currentPage === PageConstant.ACTIVITY
+          ? colorMode === "dark"
+            ? "#f3f5f7"
+            : "#000000"
+          : undefined,
     },
     {
       icon: <FaRegUser size={24} />,
@@ -71,6 +89,12 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
       },
+      color:
+        currentPage === PageConstant.USER
+          ? colorMode === "dark"
+            ? "#f3f5f7"
+            : "#000000"
+          : undefined,
     },
   ];
 
@@ -125,6 +149,10 @@ const LeftSideBar = () => {
                     _hover={{
                       bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
                     }}
+                    // _focus={{
+                    //   color: colorMode === "dark" ? "#f3f5f7" : "#000000",
+                    // }}
+                    color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
                     py={2}
                     px={4}
                     borderRadius="md"
@@ -145,6 +173,7 @@ const LeftSideBar = () => {
                           e.stopPropagation();
                           item.onClick && item.onClick();
                         }}
+                        color={item.color}
                       >
                         {item.icon}
                       </Link>
@@ -155,10 +184,18 @@ const LeftSideBar = () => {
                 </Box>
               ))}
             </Flex>
-            <Flex direction={"column"} >
-              <Box bottom={0} >
-                <Button mt={7} mb={3} bg={"none"} _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}>
-                  <Link as={RouterLink} to={`/`} >
+            <Flex direction={"column"}>
+              <Box bottom={0}>
+                <Button
+                  mt={7}
+                  mb={3}
+                  bg={"none"}
+                  color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
+                  _hover={{
+                    color: colorMode === "dark" ? "#f3f5f7" : "#000000",
+                  }}
+                >
+                  <Link as={RouterLink} to={`/`}>
                     <MdOutlinePushPin size={24} />
                   </Link>
                 </Button>
