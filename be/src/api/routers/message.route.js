@@ -1,6 +1,6 @@
 import express, { Router } from "express";
-import protectRoute from "../middlewares/protectRoute";
-import { deleteMessage, getMessage, sendMessage } from "../../socket/controllers/message.controller";
+import protectRoute from "../middlewares/protectRoute.js";
+import { deleteMessage, getMessage, sendMessage } from "../../socket/controllers/message.controller.js";
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.get("/:otherUserId", protectRoute, getMessage)
 router.delete("/:id",deleteMessage);
 
 
-export default Router;
+export default router;
