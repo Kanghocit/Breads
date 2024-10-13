@@ -69,8 +69,6 @@ const LeftSideBar = () => {
         navigate("/" + PageConstant.ACTIVITY);
       },
       color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
-
-      
     },
     {
       icon: <MdAdd size={24} />,
@@ -153,16 +151,19 @@ const LeftSideBar = () => {
                     _hover={{
                       bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
                     }}
-                    // _focus={{
-                    //   color: colorMode === "dark" ? "#f3f5f7" : "#000000",
-                    // }}
                     color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
                     py={2}
                     px={4}
                     borderRadius="md"
                     onClick={(e) => {
                       e.stopPropagation();
-                      item.onClick && !item?.linkTo && item.onClick();
+
+                      if (item.linkTo) {
+                        e.preventDefault();
+                        item.onClick && item.onClick();
+                      } else {
+                        item.onClick && item.onClick();
+                      }
                     }}
                   >
                     {item?.linkTo ? (
@@ -172,8 +173,8 @@ const LeftSideBar = () => {
                         borderRadius="md"
                         width={"100%"}
                         height={"100%"}
+                        _hover={{ textDecoration: "none" }}
                         onClick={(e) => {
-                          e.preventDefault();
                           e.stopPropagation();
                           item.onClick && item.onClick();
                         }}
