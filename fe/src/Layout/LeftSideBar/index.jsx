@@ -98,13 +98,13 @@ const LeftSideBar = () => {
           : undefined,
     },
     {
-      icon: <FaFacebookMessenger size={24}/>,
-      linkTo: "/" + PageConstant.CHAT ,
+      icon: <FaFacebookMessenger size={24} />,
+      linkTo: "/" + PageConstant.CHAT,
       onClick: () => {
         if (currentPage !== PageConstant.CHAT) {
-          dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT}));
+          dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT }));
         }
-        navigate("/" + PageConstant.CHAT );
+        navigate("/" + PageConstant.CHAT);
       },
       color:
         currentPage === PageConstant.CHAT

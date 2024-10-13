@@ -1,12 +1,12 @@
 import { Flex } from "@chakra-ui/react";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EmptyContentSvg } from "../../assests/icons";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { getPosts } from "../../store/PostSlice/asyncThunk";
+import InfiniteScroll from "../InfiniteScroll";
 import Post from "./Post";
 import SkeletonPost from "./Post/skeleton";
-import InfiniteScroll from "../InfiniteScroll";
 
 const ListPost = () => {
   const dispatch = useDispatch();
