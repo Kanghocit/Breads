@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import "./index.css";
+import { useColorModeValue } from "@chakra-ui/react";
 
 const TextArea = ({ text, setText }) => {
   const textareaRef = useRef(null);
+  const textColor = useColorModeValue("ccl.light","ccl.dark");
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -18,9 +20,7 @@ const TextArea = ({ text, setText }) => {
   return (
     <div>
       <textarea
-        style={{
-          color: "black",
-        }}
+        color={textColor}
         ref={textareaRef}
         value={text}
         onChange={handleChange}

@@ -7,7 +7,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text
+  Text,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +35,8 @@ import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
+  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
+  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useDispatch();
   const { postInfo, postAction, postSelected, postReply } = useSelector(
     (state) => state.post
@@ -166,10 +170,11 @@ const PostPopup = () => {
           boxSizing="border-box"
           width="620px"
           maxWidth="620px"
-          bg="white"
-          color="gray"
+          bg={bgColor}
+          color={textColor}
           padding="24px"
           borderRadius="16px"
+          zIndex={3000}
         >
           {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
             <div style={{ marginBottom: "12px" }}>
@@ -181,8 +186,7 @@ const PostPopup = () => {
             top="-36px"
             left="50%"
             transform="translateX(-50%)"
-            color="white"
-            zIndex={4000}
+            color={textColor}
             textTransform="capitalize"
             fontWeight={600}
             fontSize="18px"
@@ -192,7 +196,7 @@ const PostPopup = () => {
           <Flex>
             <Avatar src={userInfo.avatar} width="40px" height="40px" />
             <Container margin="0" paddingRight={0}>
-              <Text color="black" fontWeight="600">
+              <Text color={textColor} fontWeight="600">
                 {userInfo.username}
               </Text>
               <TextArea
@@ -214,8 +218,7 @@ const PostPopup = () => {
               loadingText={isEditing ? "Saving" : "Posting"}
               mt="6px"
               mr="16px"
-              colorScheme="white"
-              border="1px solid lightgray"
+              color={textColor}
               borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();

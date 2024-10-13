@@ -1,4 +1,4 @@
-import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Container, Flex, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
@@ -7,6 +7,8 @@ import FollowBtn from "../FollowBtn";
 import UserInfoPopover from "../UserInfoPopover";
 
 const UserFollowBox = ({ userInfo, inFollowBox = false }) => {
+  const bgColor = useColorModeValue("cbg.light","cbg.dark");
+  const textColor = useColorModeValue("ccl.light","ccl.dark");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -22,7 +24,7 @@ const UserFollowBox = ({ userInfo, inFollowBox = false }) => {
         height={"80px"}
         justifyContent={"space-between"}
         alignItems={"center"}
-        bg="white"
+        bg={bgColor}
         padding={"0 12px"}
         borderRadius={inFollowBox ? "" : "10px"}
         mb={inFollowBox ? "" : "10px"}

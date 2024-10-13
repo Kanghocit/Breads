@@ -125,7 +125,7 @@ const LeftSideBar = () => {
           position="fixed"
           top={0}
           left={0}
-          zIndex={2000}
+          zIndex={1000}
         >
           <Flex
             alignItems={"center"}

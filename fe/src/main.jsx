@@ -29,6 +29,18 @@ const colors = {
     light: "#616161",
     dark: "#0a0a0a",
   },
+  cbg:{
+    light: "#fafafa",
+    dark: "#181818"
+  },
+  cuse:{
+    light: "#ffffff",
+    dark: "#202020"
+  },
+  ccl:{
+    light: "#f3f5f7",
+    dark: "#000000",
+  }
 };
 
 const theme = extendTheme({ config, styles, colors });
