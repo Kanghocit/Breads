@@ -21,6 +21,16 @@ const LeftSideBar = () => {
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   let bgk = { bg: "gray.dark" };
 
+  const getButtonColor = (isActive, colorMode) => {
+    if (isActive) {
+      return colorMode === "dark" ? "#f3f5f7" : "#000000";
+    }
+    return colorMode === "dark" ? "#4d4d4d" : "#a0a0a0";
+  };
+
+  const getHoverColor = (colorMode) => {
+    return colorMode === "dark" ? "#171717" : "#f0f0f0";
+  };
   const listItems = [
     {
       icon: <GrHomeRounded size={24} />,
@@ -34,12 +44,7 @@ const LeftSideBar = () => {
         }
         navigate("/");
       },
-      color:
-        currentPage === PageConstant.HOME
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.HOME, colorMode),
     },
     {
       icon: <FiSearch size={24} />,
@@ -50,18 +55,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.SEARCH);
       },
-      color:
-        currentPage === PageConstant.SEARCH
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
-    },
-    {
-      icon: <MdAdd size={24} />,
-      onClick: () => {
-        dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
-      },
+      color: getButtonColor(currentPage === PageConstant.SEARCH, colorMode),
     },
     {
       icon: <FaRegHeart size={24} />,
@@ -74,12 +68,15 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.ACTIVITY);
       },
-      color:
-        currentPage === PageConstant.ACTIVITY
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
+
+      
+    },
+    {
+      icon: <MdAdd size={24} />,
+      onClick: () => {
+        dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+      },
     },
     {
       icon: <FaRegUser size={24} />,
@@ -90,12 +87,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
       },
-      color:
-        currentPage === PageConstant.USER
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
     {
       icon: <FaFacebookMessenger size={24} />,
@@ -106,12 +98,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.CHAT);
       },
-      color:
-        currentPage === PageConstant.CHAT
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.CHAT, colorMode),
     },
   ];
 
