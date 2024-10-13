@@ -9,7 +9,8 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Message from "./Message";
-import MessageInput from "./MessageInput";
+import MessageInput from "./MessageBar";
+
 const MessageContainer = () => {
   return (
     <Flex
@@ -54,22 +55,22 @@ const MessageContainer = () => {
             </Flex>
           ))}
 
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
-        <Message ownMessage={true}/>
-        <Message ownMessage={false}/>
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
       </Flex>
-      <MessageInput/>
+      <MessageInput />
     </Flex>
   );
 };
