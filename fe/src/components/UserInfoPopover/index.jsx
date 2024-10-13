@@ -11,17 +11,16 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
 import { changePage } from "../../store/UtilSlice";
 import { handleFlow } from "../FollowBtn";
-import { useState } from "react";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 const UserInfoPopover = ({ user, content = "" }) => {
-  console.log("khang",user)
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
 
@@ -53,7 +52,6 @@ const UserInfoPopover = ({ user, content = "" }) => {
       </PopoverTrigger>
 
       <PopoverContent
-        position="absolute"
         top="-1"
         left="-7"
         transform="translateX(-50%)"
@@ -104,6 +102,7 @@ const UserInfoPopover = ({ user, content = "" }) => {
           </Box>
         </PopoverBody>
       </PopoverContent>
+
       <UnFollowPopup
         user={user}
         isOpen={openCancelPopup}

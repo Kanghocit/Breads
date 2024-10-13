@@ -200,7 +200,7 @@ const UserHeader = ({ user, usersFollow }) => {
         }}
       >
         <ModalOverlay />
-        <ModalContent overflow={"hidden"}>
+        <ModalContent overflow={"hidden"} >
           <Tabs>
             <TabList width={"100%"} maxWidth={"100%"}>
               <Tab width={"50%"} textTransform={"capitalize"}>

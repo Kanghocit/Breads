@@ -85,7 +85,7 @@ const Header = () => {
         width={"100vw"}
         maxWidth={"100vw"}
         height={HeaderHeight + "px"}
-        zIndex={1000}
+        zIndex={999}
         justifyContent={"center"}
         alignItems={"center"}
         bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
