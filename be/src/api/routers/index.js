@@ -9,5 +9,6 @@ const router = express.Router();
 router.use(Route.USER, userRouter);
 router.use(Route.POST, postRouter);
 router.use(Route.COLLECTION, collectionRouter);
+router.use(Route.MESSAGE, messageRouter )
 
 export default router;
