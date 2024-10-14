@@ -20,9 +20,12 @@ const ChatPage = () => {
       w={{
         base: "100%",
         md: "80%",
-        lg: "750px",
+        lg: "90%",
       }}
-      p={4}
+      pl={"100px"}
+      pr={4}
+      
+      
       transform={"translateX(-50%)"}
     >
       <Flex

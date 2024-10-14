@@ -7,7 +7,7 @@ import FollowBtn from "../FollowBtn";
 import UserInfoPopover from "../UserInfoPopover";
 
 const UserFollowBox = ({ userInfo, inFollowBox = false }) => {
-  const bgColor = useColorModeValue("cbg.light","cbg.dark");
+  const bgColor = useColorModeValue("cuse.light","cuse.dark");
   const textColor = useColorModeValue("ccl.light","ccl.dark");
   const navigate = useNavigate();
   const dispatch = useDispatch();

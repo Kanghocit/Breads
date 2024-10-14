@@ -86,10 +86,11 @@ function App() {
         <Layout />
       )}
       <Container maxW="620px">
-        {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
+        {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && location.pathname !== "/chat" &&(
           <CreatePostBtn />
         )}
       </Container>
+      
       <Routes>
         {HomeRoute()}
         <Route

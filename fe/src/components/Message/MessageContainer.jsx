@@ -19,6 +19,7 @@ const MessageContainer = () => {
       p={2}
       borderRadius={"md"}
       flexDirection={"column"}
+      overflow={"hidden"}
     >
       <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
         <Avatar src="" size={"sm"} />
@@ -32,7 +33,7 @@ const MessageContainer = () => {
         gap={4}
         my={4}
         px={2}
-        height={"400px"}
+        height={"460px"}
         overflowY={"auto"}
       >
         {false &&

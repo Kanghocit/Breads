@@ -3,16 +3,19 @@ import {
   Flex,
   SkeletonCircle,
   SkeletonText,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 const UserFollowBoxSkeleton = ({ inFollowBox = false }) => {
+  const bgColor = useColorModeValue("cuse.light","cuse.dark");
+  const textColor = useColorModeValue("ccl.light","ccl.dark");
   return (
     <Flex
       width={"100%"}
       height={"80px"}
       justifyContent={"space-between"}
       alignItems={"center"}
-      bg="white"
+      bg={bgColor}
       padding={"0 12px"}
       borderRadius={inFollowBox ? "" : "10px"}
       mb={inFollowBox ? "" : "10px"}
