@@ -13,30 +13,18 @@ const ListPost = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { listPost, isLoading } = useSelector((state) => state.post);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
-  const init = useRef(true);
-
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      init.current = false;
-    }, 500);
-    return () => {
-      window.clearTimeout(timeOut);
-    };
-  }, []);
 
   const handleGetPosts = async ({ page }) => {
     try {
       if (currentPage === PageConstant.USER) {
       } else {
-        if (!init.current) {
-          dispatch(
-            getPosts({
-              filter: displayPageData,
-              userId: userInfo?._id,
-              page: page,
-            })
-          );
-        }
+        dispatch(
+          getPosts({
+            filter: displayPageData,
+            userId: userInfo?._id,
+            page: page,
+          })
+        );
       }
     } catch (err) {
       console.error("Error scroll to get more post: ", err);
@@ -59,17 +47,15 @@ const ListPost = () => {
                 <Post post={post} />
                 <hr
                   style={{
+                    borderColor: "transparent",
                     height: "12px",
                   }}
                 />
               </Fragment>
             )}
-            condition={userInfo._id && !init.current}
+            condition={!!userInfo._id}
             deps={[userInfo._id, currentPage]}
             skeletonCpn={<SkeletonPost />}
-            canScrollMore={
-              displayPageData === PageConstant.SAVED ? false : true
-            }
           />
         </>
       ) : (

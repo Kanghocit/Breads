@@ -8,7 +8,6 @@ import {
   ModalFooter,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -161,6 +160,10 @@ const PostPopup = () => {
     }
   };
 
+  const handleContent = (value) => {
+    setContent(replaceEmojis(value));
+  };
+
   return (
     <>
       <Modal isOpen={true} onClose={handleClose}>
@@ -201,7 +204,8 @@ const PostPopup = () => {
               </Text>
               <TextArea
                 text={content}
-                setText={(value) => setContent(replaceEmojis(value))}
+                setText={(value) => handleContent(value)}
+                tagUsers={true}
               />
               <MediaDisplay post={postInfo} />
               {!closePostAction && <PostPopupAction />}

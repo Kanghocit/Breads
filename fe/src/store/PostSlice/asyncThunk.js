@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { DELETE, GET, POST, PUT } from "../../config/API";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { Route, POST_PATH } from "../../../../be/src/Breads-Shared/APIConfig";
+import { updateHasMoreData } from "../UtilSlice";
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -86,6 +87,7 @@ export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (params, thunkApi) => {
     try {
+      const dispatch = thunkApi.dispatch;
       if (!params?.page) {
         params.page = 1;
       }
@@ -96,6 +98,8 @@ export const getPosts = createAsyncThunk(
         path: Route.POST + POST_PATH.GET_ALL,
         params,
       });
+      const hasMoreData = posts?.length !== 0 ? true : false;
+      dispatch(updateHasMoreData(hasMoreData));
       return {
         posts: posts,
         isNewPage: params?.isNewPage ?? false,

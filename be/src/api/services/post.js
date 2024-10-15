@@ -107,7 +107,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           bio: 1,
         }
       );
-      if (result.parentPostInfo.survey.length) {
+      if (result.parentPostInfo?.survey.length) {
         const surveyOptions = await SurveyOption.find({
           _id: { $in: result.parentPostInfo.survey },
         });
@@ -173,16 +173,45 @@ export const getPostsIdByFilter = async (payload) => {
             createdAt: -1,
           });
         break;
-      default:
-        data = await Post.find(
-          { type: { $ne: "reply" }, authorId: { $ne: ObjectId(userId) } },
-          { _id: 1 }
-        )
+      case PageConstant.LIKED:
+        data = await Post.find({ usersLike: userId }, { _id: 1 })
           .skip(skip)
           .limit(limit)
           .sort({
             createdAt: -1,
           });
+        break;
+      default:
+        data = await Post.aggregate([
+          {
+            $match: {
+              type: { $ne: "reply" },
+              authorId: { $ne: ObjectId(userId) },
+            },
+          },
+          {
+            $addFields: {
+              interactionCount: {
+                $add: [{ $size: "$usersLike" }, { $size: "$replies" }],
+              },
+            },
+          },
+          {
+            $sort: { interactionCount: -1, createdAt: -1 },
+          },
+          {
+            $skip: skip,
+          },
+          {
+            $limit: parseInt(limit),
+          },
+          {
+            $project: {
+              _id: 1,
+            },
+          },
+        ]);
+        data = data.map(({ _id }) => _id);
         break;
     }
     return data;
