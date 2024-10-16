@@ -1,63 +1,88 @@
-import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
+import {
+  Avatar,
+  Container,
+  Flex,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { updatePostInfo } from "../../../store/PostSlice";
 import UserInfoPopover from "../../UserInfoPopover";
-import { useColorModeValue } from "@chakra-ui/react";
 
 const UserBox = ({
   user,
-  canNavigate = true,
-  smallAvatar = false,
-  displayHoverPopup = true,
+  isTagBox = false,
+  setOpenTagBox = null,
+  searchValue = "",
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
+  const postInfo = useSelector((state) => state.post.postInfo);
 
   const getToUserPage = () => {
     navigate(`/users/${userInfo._id}`);
     dispatch(changePage({ nextPage: PageConstant.USER }));
   };
 
+  const tagUser = () => {
+    dispatch(
+      updatePostInfo({
+        ...postInfo,
+        usersTag: [
+          ...postInfo.usersTag,
+          {
+            searchValue: searchValue,
+            username: user.username,
+            userId: user._id,
+          },
+        ],
+      })
+    );
+    setOpenTagBox(false);
+  };
+
   return (
     <Flex
       bg={bgColor}
       alignItems={"center"}
-      padding={!displayHoverPopup ? "2px 8px" : ""}
-      borderRadius={!displayHoverPopup ? "6px" : ""}
-      cursor={!displayHoverPopup ? "pointer" : ""}
+      padding={isTagBox ? "2px 8px" : ""}
+      borderRadius={isTagBox ? "6px" : ""}
+      cursor={isTagBox ? "pointer" : ""}
       _hover={{
-        opacity: !displayHoverPopup ? "0.8" : "",
+        opacity: isTagBox ? "0.8" : "",
       }}
-      mb={!displayHoverPopup ? "4px" : ""}
+      mb={isTagBox ? "4px" : ""}
+      onClick={() => {
+        if (isTagBox) {
+          tagUser();
+        }
+      }}
     >
       <Avatar
-        size={smallAvatar ? "sm" : "md"}
+        size={isTagBox ? "sm" : "md"}
         src={user.avatar}
         cursor={"pointer"}
         onClick={() => {
-          if (canNavigate) {
+          if (!isTagBox) {
             getToUserPage();
           }
         }}
       />
       <Container>
-        {displayHoverPopup ? (
+        {!isTagBox ? (
           <UserInfoPopover user={user} />
         ) : (
-          <Text
-            fontSize={"sm"}
-            fontWeight={"bold"}
-            cursor={!displayHoverPopup ? "pointer" : ""}
-          >
+          <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
             {user?.username}
           </Text>
         )}
         <Text
           fontWeight={"400"}
           fontSize={"14px"}
-          cursor={!displayHoverPopup ? "pointer" : ""}
+          cursor={isTagBox ? "pointer" : ""}
         >
           {user.name}
         </Text>

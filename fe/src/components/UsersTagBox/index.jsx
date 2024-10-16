@@ -7,14 +7,14 @@ import { updateHasMoreData } from "../../store/UtilSlice";
 import InfiniteScroll from "../InfiniteScroll";
 import UserBox from "../UserFollowBox/UserBox";
 import UserBoxSekeleton from "../UserFollowBox/UserBox/skeleton";
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Flex, Spinner, Text } from "@chakra-ui/react";
 
-const UsersTagBox = ({ searchValue }) => {
+const UsersTagBox = ({ searchValue, setOpenTagBox }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const hasMoreData = useSelector((state) => state.util.hasMoreData);
   const [users, setUsers] = useState([]);
-  const debounceValue = useDebounce(searchValue, 1000);
+  const debounceValue = useDebounce(searchValue, 500);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -69,9 +69,9 @@ const UsersTagBox = ({ searchValue }) => {
         cpnFc={(user) => (
           <UserBox
             user={user}
-            canNavigate={false}
-            smallAvatar={true}
-            displayHoverPopup={false}
+            isTagBox={true}
+            setOpenTagBox={setOpenTagBox}
+            searchValue={debounceValue}
           />
         )}
         condition={!!userInfo._id}
@@ -79,6 +79,9 @@ const UsersTagBox = ({ searchValue }) => {
         skeletonCpn={<UserBoxSekeleton smallAvatar={true} />}
         reloadPageDeps={[debounceValue]}
       />
+      {users?.length === 0 && !isLoading && (
+        <Text textAlign={"center"}>There is no user</Text>
+      )}
     </>
   );
 };

@@ -2,6 +2,7 @@ import { Container, useColorModeValue } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import UsersTagBox from "../../components/UsersTagBox";
 import "./index.css";
+import { useSelector } from "react-redux";
 
 const getCaretCoordinates = (input) => {
   const { selectionStart } = input;
@@ -43,20 +44,25 @@ const getCaretCoordinates = (input) => {
 const TextArea = ({ text, setText, tagUsers = false }) => {
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
+  const postInfo = useSelector((state) => state.post.postInfo);
+  const usersTag = postInfo?.usersTag;
   const textAreaRef = useRef(null);
   const popupRef = useRef(null);
   const [searchValue, setSearchValue] = useState("");
+  const [openTagBox, setOpenTagBox] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.value;
-    if (!value[value.length - 1]?.trim() && !!searchValue?.trim()) {
-      setSearchValue("");
-    } else {
-      const tagRegex = /@(\w+)/g;
-      const tagNames = [...value.matchAll(tagRegex)].map((arr) => arr[1]);
-      const latestTagValue = tagNames[tagNames.length - 1];
-      if (searchValue !== tagNames[tagNames.length - 1]) {
-        setSearchValue(latestTagValue);
+    if (tagUsers) {
+      if (!value[value.length - 1]?.trim() && !!searchValue?.trim()) {
+        setSearchValue("");
+      } else {
+        const tagRegex = /@(\w+)/g;
+        const tagNames = [...value.matchAll(tagRegex)].map((arr) => arr[1]);
+        const latestTagValue = tagNames[tagNames.length - 1];
+        if (searchValue !== tagNames[tagNames.length - 1]) {
+          setSearchValue(latestTagValue);
+        }
       }
     }
     setText(value);
@@ -70,24 +76,35 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
   }, [text]);
 
   useEffect(() => {
-    if (!!searchValue?.trim()) {
-      const listenInput = (e) => {
-        const value = e.target.value;
-        // Check if the character before the cursor is "@"
-        const splitStr = value.split(" ");
-        if (splitStr[splitStr.length - 1]?.includes("@")) {
-          const { left, top } = getCaretCoordinates(textAreaRef.current);
-          popupRef.current.style.left = `${left + 16}px`;
-          popupRef.current.style.top = `${top}px`;
-          popupRef.current.style.display = "block";
-        } else {
-          popupRef.current.style.display = "none"; // Hide the popup if "@" isn't typed
+    if (usersTag?.length && tagUsers) {
+      const splitText = text.split(" ");
+      for (const textIndex in splitText) {
+        const tagIndex = usersTag.findIndex(
+          ({ searchValue }) => splitText[textIndex] === `@${searchValue}`
+        );
+        if (tagIndex !== -1) {
+          splitText[textIndex] = "@" + usersTag[tagIndex].username + " ";
         }
-      };
-      textAreaRef.current.addEventListener("input", listenInput);
-      return () => {
-        textAreaRef.current?.removeEventListener("input", listenInput);
-      };
+      }
+      const newText = splitText.join(" ");
+      setText(newText);
+      textAreaRef.current.focus();
+    }
+  }, [usersTag]);
+
+  useEffect(() => {
+    if (!!searchValue?.trim()) {
+      const splitStr = text.split(" ");
+      if (splitStr[splitStr.length - 1]?.includes("@")) {
+        const { left, top } = getCaretCoordinates(textAreaRef.current);
+        popupRef.current.style.left = `${left + 16}px`;
+        popupRef.current.style.top = `${top}px`;
+        setOpenTagBox(true);
+      } else {
+        setOpenTagBox(false);
+      }
+    } else {
+      setOpenTagBox(false);
     }
   }, [searchValue]);
 
@@ -102,9 +119,21 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         placeholder="Type something..."
         className="auto-expand-textarea"
       />
-      <Container ref={popupRef} className="tag-popup" bg={bgColor}>
-        <UsersTagBox searchValue={searchValue} />
-      </Container>
+      {tagUsers && (
+        <Container
+          ref={popupRef}
+          className="tag-popup"
+          bg={bgColor}
+          style={{
+            display: openTagBox ? "block" : "none",
+          }}
+        >
+          <UsersTagBox
+            searchValue={searchValue}
+            setOpenTagBox={setOpenTagBox}
+          />
+        </Container>
+      )}
     </div>
   );
 };

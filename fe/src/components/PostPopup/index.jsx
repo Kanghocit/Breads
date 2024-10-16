@@ -47,7 +47,7 @@ const PostPopup = () => {
     usePopupCancel();
 
   const [content, setContent] = useState("");
-  const debounceContent = useDebounce(content);
+  const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
   const init = useRef(true);
 
@@ -110,7 +110,6 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
-
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
@@ -122,6 +121,11 @@ const PostPopup = () => {
           payload.parentPost = postSelected._id;
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
+        }
+        if (payload.usersTag?.length) {
+          let usersId = payload.usersTag.map(({ userId }) => userId);
+          usersId = new Set(usersId);
+          payload.usersTag = [...usersId];
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }

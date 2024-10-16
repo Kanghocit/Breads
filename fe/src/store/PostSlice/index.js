@@ -22,6 +22,7 @@ export const defaultPostInfo = {
   content: "",
   media: [],
   survey: [],
+  usersTag: [],
 };
 
 const initialState = {
@@ -36,6 +37,7 @@ const initialState = {
     }
     */,
     survey: [],
+    usersTag: [],
   },
   postAction: "", //action's name
   postReply: null,
