@@ -18,6 +18,7 @@ const MessageContainer = () => {
       bg={useColorModeValue("gray.200", "#181818")}
       borderRadius={"md"}
       flexDirection={"column"}
+      overflow={"hidden"}
     >
       <Flex w={"full"} h={12} alignItems={"center"} gap={2} p={2}>
         <Avatar src="" size={"sm"} />
@@ -29,7 +30,9 @@ const MessageContainer = () => {
       <Flex
         flexDir={"column"}
         gap={4}
-        height={"400px"}
+        my={4}
+        px={2}
+        height={"460px"}
         overflowY={"auto"}
         p={2}
       >
