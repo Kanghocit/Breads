@@ -4,14 +4,16 @@ import {
   SkeletonText,
   Box,
   Flex,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 const SkeletonPost = () => {
+  const bgColor = useColorModeValue("cuse.light","cuse.dark");
   return (
     <Box
       padding="6"
       boxShadow="lg"
-      bg="white"
+      bg={bgColor}
       mb={"12px"}
       borderRadius={"12px"}
     >

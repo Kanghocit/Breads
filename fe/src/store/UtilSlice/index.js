@@ -8,6 +8,7 @@ const initialState = {
     img: "",
   },
   displayPageData: "",
+  hasMoreData: false,
 };
 
 const utilSlice = createSlice({
@@ -29,9 +30,16 @@ const utilSlice = createSlice({
     changeDisplayPageData: (state, action) => {
       state.displayPageData = action.payload;
     },
+    updateHasMoreData: (state, action) => {
+      state.hasMoreData = action.payload;
+    },
   },
 });
 
-export const { changePage, updateSeeMedia, changeDisplayPageData } =
-  utilSlice.actions;
+export const {
+  changePage,
+  updateSeeMedia,
+  changeDisplayPageData,
+  updateHasMoreData,
+} = utilSlice.actions;
 export default utilSlice.reducer;

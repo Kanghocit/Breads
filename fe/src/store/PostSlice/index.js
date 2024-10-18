@@ -22,21 +22,13 @@ export const defaultPostInfo = {
   content: "",
   media: [],
   survey: [],
+  usersTag: [],
 };
 
 const initialState = {
   listPost: [],
   postSelected: null,
-  postInfo: {
-    content: "",
-    media: [] /*
-    {
-      url: "",
-      type: "", //img, video, gif
-    }
-    */,
-    survey: [],
-  },
+  postInfo: defaultPostInfo,
   postAction: "", //action's name
   postReply: null,
   isLoading: true,

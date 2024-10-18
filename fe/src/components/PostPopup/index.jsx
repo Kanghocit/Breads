@@ -7,7 +7,8 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Text
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +34,8 @@ import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
+  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
+  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useDispatch();
   const { postInfo, postAction, postSelected, postReply } = useSelector(
     (state) => state.post
@@ -44,7 +47,7 @@ const PostPopup = () => {
     usePopupCancel();
 
   const [content, setContent] = useState("");
-  const debounceContent = useDebounce(content);
+  const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
   const init = useRef(true);
 
@@ -107,7 +110,6 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
-
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
@@ -119,6 +121,11 @@ const PostPopup = () => {
           payload.parentPost = postSelected._id;
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
+        }
+        if (payload.usersTag?.length) {
+          let usersId = payload.usersTag.map(({ userId }) => userId);
+          usersId = new Set(usersId);
+          payload.usersTag = [...usersId];
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
@@ -157,6 +164,10 @@ const PostPopup = () => {
     }
   };
 
+  const handleContent = (value) => {
+    setContent(replaceEmojis(value));
+  };
+
   return (
     <>
       <Modal isOpen={true} onClose={handleClose}>
@@ -166,10 +177,11 @@ const PostPopup = () => {
           boxSizing="border-box"
           width="620px"
           maxWidth="620px"
-          bg="white"
-          color="gray"
+          bg={bgColor}
+          color={textColor}
           padding="24px"
           borderRadius="16px"
+          zIndex={3000}
         >
           {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
             <div style={{ marginBottom: "12px" }}>
@@ -181,8 +193,7 @@ const PostPopup = () => {
             top="-36px"
             left="50%"
             transform="translateX(-50%)"
-            color="white"
-            zIndex={4000}
+            color={textColor}
             textTransform="capitalize"
             fontWeight={600}
             fontSize="18px"
@@ -192,12 +203,13 @@ const PostPopup = () => {
           <Flex>
             <Avatar src={userInfo.avatar} width="40px" height="40px" />
             <Container margin="0" paddingRight={0}>
-              <Text color="black" fontWeight="600">
+              <Text color={textColor} fontWeight="600">
                 {userInfo.username}
               </Text>
               <TextArea
                 text={content}
-                setText={(value) => setContent(replaceEmojis(value))}
+                setText={(value) => handleContent(value)}
+                tagUsers={true}
               />
               <MediaDisplay post={postInfo} />
               {!closePostAction && <PostPopupAction />}
@@ -214,8 +226,7 @@ const PostPopup = () => {
               loadingText={isEditing ? "Saving" : "Posting"}
               mt="6px"
               mr="16px"
-              colorScheme="white"
-              border="1px solid lightgray"
+              color={textColor}
               borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();

@@ -1,4 +1,4 @@
-import { Container, Text } from "@chakra-ui/react";
+import { Container, Text, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
@@ -6,10 +6,12 @@ import InfiniteScroll from "../components/InfiniteScroll";
 import ContainerLayout from "../components/MainBoxLayout";
 import SearchBar from "../components/SearchBar";
 import UserFollowBox from "../components/UserFollowBox";
-import { GET } from "../config/API";
 import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
+import { GET } from "../config/API";
 
 const SearchPage = () => {
+  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
+  const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const userInfo = useSelector((state) => state.user.userInfo);
   const [users, setUsers] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -49,7 +51,7 @@ const SearchPage = () => {
           setUsers(data);
         }
       } else {
-        setHasMore && setHasMore(false);
+        // setHasMore && setHasMore(false);
       }
     } catch (err) {
       console.error(err);
@@ -64,7 +66,7 @@ const SearchPage = () => {
           maxWidth={"100%"}
           height={"40px"}
           borderRadius={"12px"}
-          bg={"white"}
+          bg={bgColor}
           margin={0}
           marginBottom={"12px"}
           padding={0}
@@ -94,7 +96,7 @@ const SearchPage = () => {
             });
           }}
           data={users}
-          cpnFc={(user) => <UserFollowBox userInfo={user} />}
+          cpnFc={(user) => <UserFollowBox user={user} />}
           condition={!!userInfo._id}
           deps={[userInfo._id]}
           skeletonCpn={<UserFollowBoxSkeleton />}

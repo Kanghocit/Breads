@@ -21,6 +21,16 @@ const LeftSideBar = () => {
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   let bgk = { bg: "gray.dark" };
 
+  const getButtonColor = (isActive, colorMode) => {
+    if (isActive) {
+      return colorMode === "dark" ? "#f3f5f7" : "#000000";
+    }
+    return colorMode === "dark" ? "#4d4d4d" : "#a0a0a0";
+  };
+
+  const getHoverColor = (colorMode) => {
+    return colorMode === "dark" ? "#171717" : "#f0f0f0";
+  };
   const listItems = [
     {
       icon: <GrHomeRounded size={24} />,
@@ -34,12 +44,7 @@ const LeftSideBar = () => {
         }
         navigate("/");
       },
-      color:
-        currentPage === PageConstant.HOME
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.HOME, colorMode),
     },
     {
       icon: <FiSearch size={24} />,
@@ -50,18 +55,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.SEARCH);
       },
-      color:
-        currentPage === PageConstant.SEARCH
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
-    },
-    {
-      icon: <MdAdd size={24} />,
-      onClick: () => {
-        dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
-      },
+      color: getButtonColor(currentPage === PageConstant.SEARCH, colorMode),
     },
     {
       icon: <FaRegHeart size={24} />,
@@ -74,12 +68,13 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.ACTIVITY);
       },
-      color:
-        currentPage === PageConstant.ACTIVITY
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
+    },
+    {
+      icon: <MdAdd size={24} />,
+      onClick: () => {
+        dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+      },
     },
     {
       icon: <FaRegUser size={24} />,
@@ -90,12 +85,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
       },
-      color:
-        currentPage === PageConstant.USER
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
     {
       icon: <FaFacebookMessenger size={24} />,
@@ -106,12 +96,7 @@ const LeftSideBar = () => {
         }
         navigate("/" + PageConstant.CHAT);
       },
-      color:
-        currentPage === PageConstant.CHAT
-          ? colorMode === "dark"
-            ? "#f3f5f7"
-            : "#000000"
-          : undefined,
+      color: getButtonColor(currentPage === PageConstant.CHAT, colorMode),
     },
   ];
 
@@ -125,7 +110,7 @@ const LeftSideBar = () => {
           position="fixed"
           top={0}
           left={0}
-          zIndex={2000}
+          zIndex={1000}
         >
           <Flex
             alignItems={"center"}
@@ -166,16 +151,19 @@ const LeftSideBar = () => {
                     _hover={{
                       bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
                     }}
-                    // _focus={{
-                    //   color: colorMode === "dark" ? "#f3f5f7" : "#000000",
-                    // }}
                     color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
                     py={2}
                     px={4}
                     borderRadius="md"
                     onClick={(e) => {
                       e.stopPropagation();
-                      item.onClick && !item?.linkTo && item.onClick();
+
+                      if (item.linkTo) {
+                        e.preventDefault();
+                        item.onClick && item.onClick();
+                      } else {
+                        item.onClick && item.onClick();
+                      }
                     }}
                   >
                     {item?.linkTo ? (
@@ -185,8 +173,8 @@ const LeftSideBar = () => {
                         borderRadius="md"
                         width={"100%"}
                         height={"100%"}
+                        _hover={{ textDecoration: "none" }}
                         onClick={(e) => {
-                          e.preventDefault();
                           e.stopPropagation();
                           item.onClick && item.onClick();
                         }}

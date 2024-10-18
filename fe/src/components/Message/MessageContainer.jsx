@@ -16,11 +16,11 @@ const MessageContainer = () => {
     <Flex
       flex={70}
       bg={useColorModeValue("gray.200", "#181818")}
-      p={2}
       borderRadius={"md"}
       flexDirection={"column"}
+      overflow={"hidden"}
     >
-      <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
+      <Flex w={"full"} h={12} alignItems={"center"} gap={2} p={2}>
         <Avatar src="" size={"sm"} />
         <Text display={"flex"} alignItems={"center"}>
           Khang <Image src="/verified.png" w={4} h={4} ml={1} />
@@ -32,8 +32,9 @@ const MessageContainer = () => {
         gap={4}
         my={4}
         px={2}
-        height={"400px"}
+        height={"460px"}
         overflowY={"auto"}
+        p={2}
       >
         {false &&
           [...Array(5)].map((_, i) => (
@@ -54,21 +55,9 @@ const MessageContainer = () => {
               {i % 2 !== 0 && <SkeletonCircle size={7} />}
             </Flex>
           ))}
-
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
-        <Message ownMessage={true} />
-        <Message ownMessage={false} />
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, index) => (
+          <Message ownMessage={index % 2 == 0} />
+        ))}
       </Flex>
       <MessageInput />
     </Flex>

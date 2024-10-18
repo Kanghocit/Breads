@@ -2,20 +2,25 @@ import mongoose from "mongoose";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const collectionSchema = mongoose.Schema({
-  userId: {
-    type: ObjectId,
-    ref: "users",
-    required: true,
-  },
-  postsId: [
-    {
+const collectionSchema = mongoose.Schema(
+  {
+    userId: {
       type: ObjectId,
-      default: [],
-      required: false,
+      ref: "users",
+      required: true,
     },
-  ],
-});
+    postsId: [
+      {
+        type: ObjectId,
+        default: [],
+        required: false,
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const Collection = mongoose.model("Collection", collectionSchema);
 

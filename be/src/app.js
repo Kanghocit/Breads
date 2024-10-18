@@ -4,6 +4,11 @@ import express from "express";
 import helmet from "helmet";
 import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
+import {
+  uploadFileToDrive,
+  uploadFolderToDrive,
+} from "./api/utils/driveUpload.js";
+import path, { dirname } from "path";
 
 // Connect to MongoDB
 await connectDB();
@@ -25,5 +30,19 @@ app.use("/test", (req, res) => {
 });
 app.use(cors(corOption));
 app.use("/api", router);
+
+app.use("/upload-to-drive", async (req, res) => {
+  try {
+    const userId = "123";
+    const data = await uploadFileToDrive(
+      `C:\\Users\\Admin\\Desktop\\IT\\JS\\Breads\\be\\src\\test.docx`,
+      userId
+    );
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 
 export default app;

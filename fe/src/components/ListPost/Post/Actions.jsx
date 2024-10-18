@@ -16,7 +16,7 @@ import {
   RepostIcon,
   ShareIcon,
 } from "../../../assests/icons";
-import { POST_PATH } from "../../../Breads-Shared/APIConfig";
+import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import Socket from "../../../socket";
 import {
   selectPost,
@@ -46,7 +46,7 @@ const Actions = ({ post }) => {
       userId: userInfo._id,
       postId: post._id,
     };
-    socket.emitWithAck(POST_PATH.LIKE, payload);
+    socket.emitWithAck(Route.POST + POST_PATH.LIKE, payload);
   };
 
   const convertStatistic = (number) => {

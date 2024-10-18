@@ -1,10 +1,17 @@
 import { Container, Flex, Text } from "@chakra-ui/react";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { emojiMap } from "../../../../util";
 import IconWrapper from "../IconWrapper";
 
-const EmojiBox = () => {
-  const emojis = Object.values(emojiMap).map(({ icon }) => icon);
+const EmojiBox = ({ searchValue }) => {
+  const emojis = useMemo(() => {
+    const filterEmoji = Object.values(emojiMap)
+      .filter(({ names }) => {
+        return names.find((name) => name.includes(searchValue));
+      })
+      ?.map(({ icon }) => icon);
+    return filterEmoji;
+  }, [searchValue]);
 
   return (
     <Container
