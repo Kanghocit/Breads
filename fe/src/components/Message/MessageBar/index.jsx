@@ -13,6 +13,8 @@ import { MdThumbUp } from "react-icons/md";
 import useDebounce from "../../../hooks/useDebounce";
 import { updateMsgInfo } from "../../../store/MessageSlice";
 import { replaceEmojis } from "../../../util";
+import Socket from "../../../socket";
+import { MESSAGE_PATH, Route } from "../../../Breads-Shared/APIConfig";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -32,6 +34,7 @@ export const iconStyle = {
 
 const MessageInput = () => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
   const msgInfo = useSelector((state) => state.message.msgInfo);
   const files = msgInfo.files;
   const [popup, setPopup] = useState("");
@@ -97,6 +100,16 @@ const MessageInput = () => {
     // },
   ];
 
+  const handleSendMsg = () => {
+    const socket = Socket.getInstant();
+    const payload = {
+      recipientId: "66e66070f27cd4c9a4287fa0",
+      senderId: userInfo._id,
+      message: msgInfo,
+    };
+    socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, payload);
+  };
+
   return (
     <>
       <form
@@ -128,7 +141,10 @@ const MessageInput = () => {
             label={ACTIONS.SEND}
             icon={
               !!content.trim() ? (
-                <IoSendSharp style={iconStyle} />
+                <IoSendSharp
+                  style={iconStyle}
+                  onClick={() => handleSendMsg()}
+                />
               ) : (
                 <MdThumbUp style={iconStyle} />
               )

@@ -1,99 +1,90 @@
-import Conversation from "../../api/models/conversation.model.js";
-import Message from "../../api/models/message.model.js";
-import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
+import Conversation from "../../api/models/conversation.model.js";
+import Message from "../../api/models/message.model.js";
 
-async function sendMessage(req, res) {
-  try {
-    const { recipientId, message } = req.body;
-    const senderId = req.user._id;
-
-    let conversation = await Conversation.findOne({
-      participants: { $all: [senderId, recipientId] },
-    });
-    const msgId = ObjectId();
-    if (!conversation) {
-      conversation = new getCollection(Model.NOTIFICATION)({
-        participants: [senderId, recipientId],
-        msgIds: [msgId],
-        lastMsgId: msgId,
+export default class MessageController {
+  static async sendMessage(payload, socket, io) {
+    try {
+      const { recipientId, senderId, message } = payload;
+      let conversation = await Conversation.findOne({
+        participants: { $all: [senderId, recipientId] },
       });
-      await conversation.save();
+      const msgId = ObjectId();
+      if (!conversation) {
+        conversation = new Conversation({
+          participants: [senderId, recipientId],
+          msgIds: [msgId],
+          lastMsgId: msgId,
+        });
+        await conversation.save();
+      }
+      const newMessage = new Message({
+        _id: msgId,
+        conversationId: conversation._id,
+        sender: senderId,
+        text: message,
+      });
+      await newMessage.save();
+    } catch (error) {
+      console.error("sendMessage: ", error);
     }
-    const newMessage = new getCollection(Model.MESSAGE)({
-      _id: msgId,
-      conversationId: conversation._id,
-      sender: senderId,
-      text: message,
-    });
-    newMessage.save();
-  } catch (error) {
-    console.log("sendMessage: ", error);
+  }
+
+  static async getMessage(payload, socket, io) {
+    const { otherUserId, userId } = payload;
+    try {
+      const conversation = await getCollection(Model.CONVERSATION).findOne({
+        participants: { $all: [userId, otherUserId] },
+      });
+
+      const messages = await getCollection(Model.MESSAGE)
+        .find({
+          conversationId: ObjectId(conversation._id),
+        })
+        .sort({ createdAt: 1 })
+        .lean();
+    } catch (error) {
+      console.error("getMessage: ", error);
+    }
+  }
+
+  static async deleteMessage(payload, socket, io) {
+    try {
+      const { messageId, userId } = payload;
+      const mess = await getCollection(Model.MESSAGE).findOne({
+        _id: ObjectId(messageId),
+      });
+      if (mess.sender.toString() !== userId.toString()) {
+      }
+
+      await getCollection(Model.MESSAGE).deleteOne({
+        _id: ObjectId(messageId),
+      });
+    } catch (error) {
+      console.error("deleteMessage: ", error);
+    }
+  }
+
+  static async getConversations(req, res) {
+    const userId = req.user._id;
+    try {
+      const conversations = await getCollection(Model.CONVERSATION)
+        .findOne({
+          participants: ObjectId(userId),
+        })
+        .populate({
+          path: "participants",
+          select: "username avatar",
+        });
+
+      conversations.forEach((conversation) => {
+        conversation.participants = conversation.participants.filter(
+          (participant) => participant._id.toString() !== userId.toString()
+        );
+      });
+    } catch (error) {
+      console.error("getConversations: ", error);
+    }
   }
 }
-async function getMessage(req, res) {
-  const { otherUserId } = req.params;
-  const userId = req.user._id;
-  try {
-    const conversation = await getCollection(Model.NOTIFICATION).findOne({
-      participants: { $all: [userId, otherUserId] },
-    });
-
-    if (!conversation) {
-      return res
-        .status(HTTPStatus.NOT_FOUND)
-        .json({ error: "Conversation not found" });
-    }
-
-    const messages = await Message.find({
-      conversationId: conversation._id,
-    }).sort({ createdAt: 1 });
-    res.status(200).json(messages);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
-
-async function deleteMessage(req, res) {
-  try {
-    const { messageId } = req.params;
-    const userId = req.query.userId;
-
-    const mess = await Message.findById(messageId);
-    if (!mess) {
-      return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
-    }
-    if (mess.sender.toString() !== userId.toString()) {
-      return res
-        .status(HTTPStatus.UNAUTHORIZED)
-        .json({ error: "Unauthorized to delete message" });
-    }
-    await Message.findByIdAndDelete(messageId);
-    res.status(HTTPStatus.OK).json({ message: "Message deleted" });
-  } catch (error) {
-    res.status(HTTPStatus.SERVER_ERR).json(error);
-  }
-}
-
-async function getConversations(req, res) {
-  const userId = req.user._id;
-  try {
-    const conversations = await Conversation.find({
-      participants: userId,
-    }).populate({
-      path: "participants",
-      select: "username profilePicture",
-    });
-    conversations.forEach((conversation) => {
-      conversation.participants = conversation.participants.filter(
-        (participant) => participant._id.toString() !== userId.toString()
-      );
-    });
-    res.status(HTTPStatus.OK).json(conversations);
-  } catch (error) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: error.message });
-  }
-}
-
-export { sendMessage, getMessage, getConversations, deleteMessage };

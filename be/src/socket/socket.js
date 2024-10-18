@@ -1,5 +1,6 @@
 // import SocketListener from "../SocketRouters/index.js";
 import { Server } from "socket.io";
+import MessageListener from "./listeners/message.listener.js";
 import NotificationListener from "./listeners/notification.listener.js";
 import PostListener from "./listeners/post.listener.js";
 import UserListener from "./listeners/user.listener.js";
@@ -18,6 +19,7 @@ export const initSocket = (server, app) => {
       UserListener(socket, io);
       NotificationListener(socket, io);
       PostListener(socket, io);
+      MessageListener(socket, io);
       socket.on("disconnect", async (message) => {
         console.log("Socket disconnected");
         // await disconnect(socket, io);
