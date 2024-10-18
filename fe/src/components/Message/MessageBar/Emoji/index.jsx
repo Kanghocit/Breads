@@ -12,13 +12,16 @@ import {
   PopoverHeader,
   PopoverTrigger,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { MdEmojiEmotions } from "react-icons/md";
-import IconWrapper from "../IconWrapper";
 import { ACTIONS, iconStyle } from "..";
+import IconWrapper from "../IconWrapper";
 import EmojiBox from "./EmojiBox";
 
 const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
+  const [searchValue, setSearchValue] = useState("");
+
   return (
     <IconWrapper
       label={closeTooltip ? "" : ACTIONS.EMOJI}
@@ -31,14 +34,14 @@ const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
           <PopoverTrigger>
             <Button
               padding={0}
-              style={iconStyle}
+              style={{ ...iconStyle, width: "fit-content" }}
               bg={"transparent"}
               _hover={{
                 bg: "transparent",
               }}
               onClick={() => onOpen(ACTIONS.EMOJI)}
             >
-              <MdEmojiEmotions style={iconStyle} />
+              <MdEmojiEmotions style={{ ...iconStyle, width: "fit-content" }} />
             </Button>
           </PopoverTrigger>
           <PopoverContent width={"fit-content"}>
@@ -61,6 +64,8 @@ const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
                     placeholder="Search emoji"
                     height={"32px"}
                     fontSize={"14px"}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
                   />
                 </InputGroup>
                 <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
@@ -68,7 +73,7 @@ const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
             </PopoverHeader>
             <PopoverArrow />
             <PopoverBody padding={"8px 4px"} width={"fit-content"}>
-              <EmojiBox />
+              <EmojiBox searchValue={searchValue} />
             </PopoverBody>
           </PopoverContent>
         </Popover>

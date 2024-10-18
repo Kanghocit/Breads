@@ -28,17 +28,7 @@ export const defaultPostInfo = {
 const initialState = {
   listPost: [],
   postSelected: null,
-  postInfo: {
-    content: "",
-    media: [] /*
-    {
-      url: "",
-      type: "", //img, video, gif
-    }
-    */,
-    survey: [],
-    usersTag: [],
-  },
+  postInfo: defaultPostInfo,
   postAction: "", //action's name
   postReply: null,
   isLoading: true,
