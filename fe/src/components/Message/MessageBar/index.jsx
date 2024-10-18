@@ -91,10 +91,10 @@ const MessageInput = () => {
       action: ACTIONS.GIF,
       icon: <GifMsgBtn popup={popup} onClose={onClose} onOpen={onOpen} />,
     },
-    {
-      action: ACTIONS.AUDIO,
-      icon: <AiFillAudio style={iconStyle} />,
-    },
+    // {
+    //   action: ACTIONS.AUDIO,
+    //   icon: <AiFillAudio style={iconStyle} />,
+    // },
   ];
 
   return (

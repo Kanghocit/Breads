@@ -1,13 +1,27 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
+
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const messageSchema = new mongoose.Schema(
-    {
-        conversationId: {type: mongoose.Schema.Types.ObjectId, ref:"Conversation"},
-        sender: {type: mongoose.Schema.Types.ObjectId, ref:"User"},
-        text: String,
+  {
+    conversationId: { type: ObjectId, ref: "conversations", required: true },
+    sender: { type: ObjectId, ref: "users", required: true },
+    content: String,
+    media: {
+      type: Array,
+      required: false,
     },
-    {timestamps: true}
+    files: [
+      {
+        type: ObjectId,
+        ref: "files",
+        required: false,
+      },
+    ],
+  },
+  { timestamps: true }
 );
 
-const Message = mongoose.model("Message",messageSchema);
+const Message = mongoose.model("Message", messageSchema);
+
 export default Message;

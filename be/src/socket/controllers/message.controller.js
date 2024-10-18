@@ -1,6 +1,8 @@
 import Conversation from "../../api/models/conversation.model.js";
 import Message from "../../api/models/message.model.js";
 import HTTPStatus from "../../util/httpStatus.js";
+import { ObjectId, getCollection } from "../../util/index.js";
+import Model from "../../util/ModelName.js";
 
 async function sendMessage(req, res) {
   try {
@@ -10,41 +12,31 @@ async function sendMessage(req, res) {
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, recipientId] },
     });
+    const msgId = ObjectId();
     if (!conversation) {
-      conversation = new Conversation({
+      conversation = new getCollection(Model.NOTIFICATION)({
         participants: [senderId, recipientId],
-        lastMessage: {
-          text: message,
-          sender: senderId,
-        },
+        msgIds: [msgId],
+        lastMsgId: msgId,
       });
       await conversation.save();
     }
-    const newMessage = new Message({
+    const newMessage = new getCollection(Model.MESSAGE)({
+      _id: msgId,
       conversationId: conversation._id,
       sender: senderId,
       text: message,
     });
-    await Promise.all([
-      newMessage.save(),
-      conversation.updateOne({
-        lastMessage: {
-          text: message,
-          sender: senderId,
-        },
-      }),
-    ]);
-
-    res.status(HTTPStatus.CREATED).json(newMessage);
+    newMessage.save();
   } catch (error) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: error.message });
+    console.log("sendMessage: ", error);
   }
 }
 async function getMessage(req, res) {
   const { otherUserId } = req.params;
   const userId = req.user._id;
   try {
-    const conversation = await Conversation.findOne({
+    const conversation = await getCollection(Model.NOTIFICATION).findOne({
       participants: { $all: [userId, otherUserId] },
     });
 
@@ -64,22 +56,21 @@ async function getMessage(req, res) {
 }
 
 async function deleteMessage(req, res) {
-    try {
-      const { messageId } = req.params;
-      const userId = req.query.userId
+  try {
+    const { messageId } = req.params;
+    const userId = req.query.userId;
 
-      const mess = await Message.findById(messageId);
-      if(!mess){
-        return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
-      }
-      if(mess.sender.toString() !== userId.toString()){
-        return res
+    const mess = await Message.findById(messageId);
+    if (!mess) {
+      return res.status(HTTPStatus.NOT_FOUND).json({ error: "Post not found" });
+    }
+    if (mess.sender.toString() !== userId.toString()) {
+      return res
         .status(HTTPStatus.UNAUTHORIZED)
         .json({ error: "Unauthorized to delete message" });
-      }
-      await Message.findByIdAndDelete(messageId);
-      res.status(HTTPStatus.OK).json({message: "Message deleted"})
-    
+    }
+    await Message.findByIdAndDelete(messageId);
+    res.status(HTTPStatus.OK).json({ message: "Message deleted" });
   } catch (error) {
     res.status(HTTPStatus.SERVER_ERR).json(error);
   }
