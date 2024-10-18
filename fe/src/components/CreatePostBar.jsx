@@ -1,11 +1,19 @@
-import { Avatar, Button, Card, Flex, Input, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Card,
+  Flex,
+  Input,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostAction } from "../store/PostSlice";
 import PostConstants from "../util/PostConstants";
 
 const CreatePostBar = () => {
-  const bgColor = useColorModeValue("cuse.light","cuse.dark");
-  const textColor = useColorModeValue("ccl.light","ccl.dark");
+  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
+  const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
 
@@ -21,7 +29,7 @@ const CreatePostBar = () => {
         </a>
         <Input
           placeholder="What's new"
-          padding={"6px"}
+          padding={"12px"}
           border={"none"}
           onClick={() => handleOpenPostPopup()}
         />

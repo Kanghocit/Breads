@@ -2,6 +2,7 @@
 import { Server } from "socket.io";
 import NotificationListener from "./listeners/notification.listener.js";
 import PostListener from "./listeners/post.listener.js";
+import UserListener from "./listeners/user.listener.js";
 
 export const initSocket = (server, app) => {
   try {
@@ -14,6 +15,7 @@ export const initSocket = (server, app) => {
     app.set("socket_io", io);
     io.on("connection", async (socket) => {
       console.log("Server is connected with socket ", socket.id);
+      UserListener(socket, io);
       NotificationListener(socket, io);
       PostListener(socket, io);
       socket.on("disconnect", async (message) => {

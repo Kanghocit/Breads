@@ -1,12 +1,18 @@
-import { SmallAddIcon } from "@chakra-ui/icons";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiFillAudio } from "react-icons/ai";
 import { IoSendSharp } from "react-icons/io5";
 import { TbLibraryPhoto } from "react-icons/tb";
+import { useDispatch, useSelector } from "react-redux";
 import EmojiMsgBtn from "./Emoji";
+import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
+import UploadDisplay from "./UploadDisplay";
+import { MdThumbUp } from "react-icons/md";
+import useDebounce from "../../../hooks/useDebounce";
+import { updateMsgInfo } from "../../../store/MessageSlice";
+import { replaceEmojis } from "../../../util";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -25,10 +31,24 @@ export const iconStyle = {
 };
 
 const MessageInput = () => {
+  const dispatch = useDispatch();
+  const msgInfo = useSelector((state) => state.message.msgInfo);
+  const files = msgInfo.files;
   const [popup, setPopup] = useState("");
-  const mediaRef = useRef();
-  const fileRef = useRef();
   const [closeTooltip, setCloseTooltip] = useState(false);
+  const [filesData, setFilesData] = useState([]);
+  const [content, setContent] = useState("");
+  const debouceContent = useDebounce(content);
+  const mediaRef = useRef();
+
+  useEffect(() => {
+    dispatch(
+      updateMsgInfo({
+        ...msgInfo,
+        content: debouceContent,
+      })
+    );
+  }, [debouceContent]);
 
   const onClose = () => {
     setPopup("");
@@ -45,11 +65,7 @@ const MessageInput = () => {
       action: ACTIONS.FILES,
       icon: (
         <>
-          <Input type="file" style={iconStyle} hidden ref={fileRef} />
-          <SmallAddIcon
-            style={iconStyle}
-            onClick={() => fileRef.current.click()}
-          />
+          <FileUpload setFilesData={setFilesData} />
         </>
       ),
     },
@@ -82,26 +98,45 @@ const MessageInput = () => {
   ];
 
   return (
-    <form>
-      <InputGroup alignItems={"center"}>
-        {icons.map(({ action, icon }) => (
-          <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
-        ))}
-        <Input flex={1} placeholder="Type a message" margin={"0 8px"} />
-        <InputRightElement cursor={"pointer"} mr={"32px"}>
-          <EmojiMsgBtn
-            popup={popup}
-            closeTooltip={closeTooltip}
-            onClose={onClose}
-            onOpen={onOpen}
+    <>
+      <form
+        style={{
+          position: "relative",
+        }}
+      >
+        {!!files && files?.length !== 0 && <UploadDisplay />}
+        <InputGroup alignItems={"center"} p={2}>
+          {icons.map(({ action, icon }) => (
+            <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
+          ))}
+          <Input
+            flex={1}
+            placeholder="Type a message"
+            margin={"0 8px"}
+            value={content}
+            onChange={(e) => setContent(replaceEmojis(e.target.value))}
           />
-        </InputRightElement>
-        <IconWrapper
-          label={ACTIONS.SEND}
-          icon={<IoSendSharp style={iconStyle} />}
-        />
-      </InputGroup>
-    </form>
+          <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
+            <EmojiMsgBtn
+              popup={popup}
+              closeTooltip={closeTooltip}
+              onClose={onClose}
+              onOpen={onOpen}
+            />
+          </InputRightElement>
+          <IconWrapper
+            label={ACTIONS.SEND}
+            icon={
+              !!content.trim() ? (
+                <IoSendSharp style={iconStyle} />
+              ) : (
+                <MdThumbUp style={iconStyle} />
+              )
+            }
+          />
+        </InputGroup>
+      </form>
+    </>
   );
 };
 

@@ -8,7 +8,6 @@ import {
   ModalFooter,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -48,7 +47,7 @@ const PostPopup = () => {
     usePopupCancel();
 
   const [content, setContent] = useState("");
-  const debounceContent = useDebounce(content);
+  const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
   const init = useRef(true);
 
@@ -111,7 +110,6 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
-
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
@@ -123,6 +121,11 @@ const PostPopup = () => {
           payload.parentPost = postSelected._id;
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
+        }
+        if (payload.usersTag?.length) {
+          let usersId = payload.usersTag.map(({ userId }) => userId);
+          usersId = new Set(usersId);
+          payload.usersTag = [...usersId];
         }
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
@@ -159,6 +162,10 @@ const PostPopup = () => {
         ? dispatch(selectPostReply(null))
         : dispatch(selectPost(null));
     }
+  };
+
+  const handleContent = (value) => {
+    setContent(replaceEmojis(value));
   };
 
   return (
@@ -201,7 +208,8 @@ const PostPopup = () => {
               </Text>
               <TextArea
                 text={content}
-                setText={(value) => setContent(replaceEmojis(value))}
+                setText={(value) => handleContent(value)}
+                tagUsers={true}
               />
               <MediaDisplay post={postInfo} />
               {!closePostAction && <PostPopupAction />}

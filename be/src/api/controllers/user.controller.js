@@ -267,7 +267,7 @@ export const getUserToFollows = async (req, res) => {
     const invalidToFollow = [...userFollowed, userId];
     const matchQuery = {
       _id: { $nin: invalidToFollow },
-      username: { $regex: searchValue },
+      username: { $regex: searchValue, $options: "i" },
     };
     const data = await getUsersByPage({
       page,
@@ -346,9 +346,13 @@ export const getUsersToTag = async (req, res) => {
       limit = 20;
     }
     const matchQuery = {
-      username: { $regex: searchValue },
+      $or: [
+        { username: { $regex: searchValue, $options: "i" } },
+        { name: { $regex: searchValue, $options: "i" } },
+      ],
     };
     const data = await getUsersByPage({ page, limit, matchQuery });
+    res.status(HTTPStatus.OK).json(data);
     return data;
   } catch (err) {
     console.log("getUsersToTag: ", err);

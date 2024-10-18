@@ -16,8 +16,16 @@ export const createPost = async (req, res) => {
   try {
     const payload = req.body;
     const action = req.query.action;
-    const { authorId, content, media, parentPost, survey, quote, type } =
-      payload;
+    const {
+      authorId,
+      content,
+      media,
+      parentPost,
+      survey,
+      quote,
+      type,
+      usersTag,
+    } = payload;
     const user = await User.findById(authorId);
     if (!user) {
       return res.status(HTTPStatus.NOT_FOUND).json({ error: "User not found" });
@@ -70,6 +78,7 @@ export const createPost = async (req, res) => {
       }
     }
     const optionsId = newSurvey.map((option) => option?._id);
+    const newUsersTag = usersTag.map((userId) => ObjectId(userId));
     const newPostPayload = {
       authorId,
       content,
@@ -77,6 +86,7 @@ export const createPost = async (req, res) => {
       survey: optionsId,
       quote,
       type: type,
+      usersTag: newUsersTag,
     };
     if (action === "repost") {
       newPostPayload.parentPost = parentPost;

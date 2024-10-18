@@ -40,7 +40,6 @@ const FOLLOW_TAB = {
 };
 
 const UserHeader = ({ user, usersFollow }) => {
-
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
@@ -200,7 +199,7 @@ const UserHeader = ({ user, usersFollow }) => {
         }}
       >
         <ModalOverlay />
-        <ModalContent overflow={"hidden"} >
+        <ModalContent overflow={"hidden"}>
           <Tabs>
             <TabList width={"100%"} maxWidth={"100%"}>
               <Tab width={"50%"} textTransform={"capitalize"}>
@@ -224,11 +223,11 @@ const UserHeader = ({ user, usersFollow }) => {
             <TabPanels padding={0} maxHeight={"85vh"} overflowY={"auto"}>
               <TabPanel padding={0}>
                 {usersFollow.followed?.length > 0 ? (
-                  usersFollow.followed?.map((userInfo) => (
+                  usersFollow.followed?.map((user) => (
                     <UserFollowBox
                       user={user}
-                      userInfo={userInfo}
-                      key={userInfo?._id}
+                      userInfo={user}
+                      key={user?._id}
                       inFollowBox={true}
                     />
                   ))
@@ -240,10 +239,10 @@ const UserHeader = ({ user, usersFollow }) => {
               </TabPanel>
               <TabPanel padding={0}>
                 {usersFollow.following?.length > 0 ? (
-                  usersFollow.following?.map((userInfo) => (
+                  usersFollow.following?.map((user) => (
                     <UserFollowBox
-                      userInfo={userInfo}
-                      key={userInfo?._id}
+                      user={user}
+                      key={user?._id}
                       inFollowBox={true}
                     />
                   ))

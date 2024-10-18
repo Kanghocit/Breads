@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 const InfiniteScroll = ({
   queryFc,
@@ -7,10 +8,10 @@ const InfiniteScroll = ({
   deps = [],
   condition = true,
   skeletonCpn,
-  canScrollMore = true,
+  reloadPageDeps = null,
 }) => {
+  const hasMoreData = useSelector((state) => state.util.hasMoreData);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const observer = useRef();
 
@@ -18,23 +19,36 @@ const InfiniteScroll = ({
     (node) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0].isIntersecting && hasMoreData) {
           setPage((prevPage) => prevPage + 1);
+          // setIsLoading(true);
         }
       });
       if (node) observer.current.observe(node);
     },
-    [hasMore]
+    [hasMoreData]
   );
 
   useEffect(
     () => {
       if (condition) {
-        queryFc && queryFc(page, setHasMore);
+        queryFc && queryFc(page);
       }
       setIsLoading(false);
     },
     deps ? [...deps, page] : [page]
+  );
+
+  useEffect(
+    () => {
+      if (!!reloadPageDeps) {
+        if (page !== 1) {
+          setPage(1);
+          setIsLoading(true);
+        }
+      }
+    },
+    reloadPageDeps ? reloadPageDeps : []
   );
 
   return (
@@ -48,13 +62,17 @@ const InfiniteScroll = ({
       ) : (
         <>
           {data?.map((ele, index) => {
-            if (index === data.length - 5) {
+            if (
+              data.length >= 5
+                ? index === data.length - 5
+                : index === data.length - 1
+            ) {
               return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;
             } else if (index === data.length - 1) {
               return (
                 <>
                   {cpnFc(ele)}
-                  {canScrollMore && (
+                  {hasMoreData && (
                     <>
                       {[1, 2, 3, 4, 5].map((num) => (
                         <div key={`skeleton-${num}`}>{skeletonCpn}</div>
@@ -73,4 +91,4 @@ const InfiniteScroll = ({
   );
 };
 
-export default InfiniteScroll;
+export default memo(InfiniteScroll);

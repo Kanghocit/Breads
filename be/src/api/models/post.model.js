@@ -53,6 +53,13 @@ const postSchema = mongoose.Schema(
       type: Object,
       required: false,
     },
+    usersTag: [
+      {
+        type: ObjectId,
+        ref: "users",
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,
