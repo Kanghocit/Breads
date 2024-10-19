@@ -12,20 +12,24 @@ import {
 } from "@chakra-ui/react";
 import MessageContainer from "../components/Message/MessageContainer";
 import Conversations from "../components/Message/Conversations";
+import MessageRightBar from "../components/Message/MessageRightBar";
+import { useState } from "react";
 const ChatPage = () => {
+  const [showRightBar, setShowRightBar] = useState(false);
+  const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   return (
     <Box
       position={"absolute"}
-      left={"50%"}
+      left={"55%"}
       w={{
         base: "100%",
         md: "80%",
         lg: "90%",
       }}
-      pl={"100px"}
-      pr={4}
-      
-      
+      // pl={"100px"}
+      pl={4}
+      // pr={4}
+
       transform={"translateX(-50%)"}
     >
       <Flex
@@ -41,8 +45,11 @@ const ChatPage = () => {
         mx={"auto"}
       >
         <Flex
-          flex={30}
+          flex={25}
           gap={2}
+          p={3}
+          bg={bgColor}
+          borderRadius={"10px"}
           flexDirection={"column"}
           maxW={{
             sm: "250px",
@@ -100,7 +107,12 @@ const ChatPage = () => {
           <GiConversation size={100} />
           <Text fontSize={20}> Select a Conversation to start messaing</Text>
         </Flex> */}
-        <MessageContainer />
+        <MessageContainer setShowRightBar={setShowRightBar} />
+        {showRightBar && (
+          <Flex flex={25} >
+            <MessageRightBar />
+          </Flex>
+        )}
       </Flex>
     </Box>
   );

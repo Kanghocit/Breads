@@ -2,16 +2,18 @@ import {
   Avatar,
   Divider,
   Flex,
+  IconButton,
   Image,
   Skeleton,
   SkeletonCircle,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { BsThreeDots } from "react-icons/bs";
 import Message from "./Message";
 import MessageInput from "./MessageBar";
 
-const MessageContainer = () => {
+const MessageContainer = ({ setShowRightBar }) => {
   return (
     <Flex
       flex={70}
@@ -19,12 +21,30 @@ const MessageContainer = () => {
       borderRadius={"md"}
       flexDirection={"column"}
       overflow={"hidden"}
+      mr={3}
     >
-      <Flex w={"full"} h={12} alignItems={"center"} gap={2} p={2}>
-        <Avatar src="" size={"sm"} />
-        <Text display={"flex"} alignItems={"center"}>
-          Khang <Image src="/verified.png" w={4} h={4} ml={1} />
-        </Text>
+      <Flex
+        w={"full"}
+        h={12}
+        
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Flex gap={2} p={2} >
+          <Avatar src="" size={"sm"} />
+          <Text display={"flex"} alignItems={"center"}>
+            Khang <Image src="/verified.png" w={4} h={4} ml={1} />
+          </Text>
+        </Flex>
+        <Flex pr={1}>
+          <IconButton
+            icon={<BsThreeDots />}
+            bg={"none"}
+            onClick={() => setShowRightBar((prev) => !prev)} 
+            aria-label="Options"
+            borderRadius={"50%"}
+          />
+        </Flex>
       </Flex>
       <Divider />
       <Flex
@@ -60,6 +80,7 @@ const MessageContainer = () => {
         ))}
       </Flex>
       <MessageInput />
+     
     </Flex>
   );
 };
