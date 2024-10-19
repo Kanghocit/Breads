@@ -12,10 +12,10 @@ export const defaulMessageInfo = {
   icon: "",
 };
 const initialState = {
-  usersMsg: [], //List user message
+  conversations: [], //List user message
   userSelected: null,
   messages: [], //List message in a conversation
-  selectedMsg: null,
+  selectedConversation: null,
   msgInfo: defaulMessageInfo,
 };
 
@@ -23,12 +23,19 @@ const msgSlice = createSlice({
   name: "message",
   initialState,
   reducers: {
+    getConversations: (state, action) => {
+      state.conversations = action.payload;
+    },
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;
+    },
+    selectConversation: (state, action) => {
+      state.selectedConversation = action.payload;
     },
   },
   extraReducers: (builder) => {},
 });
 
-export const { updateMsgInfo } = msgSlice.actions;
+export const { getConversations, updateMsgInfo, selectConversation } =
+  msgSlice.actions;
 export default msgSlice.reducer;

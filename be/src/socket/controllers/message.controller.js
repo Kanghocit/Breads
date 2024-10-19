@@ -1,4 +1,4 @@
-import { ObjectId, getCollection } from "../../util/index.js";
+import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import Conversation from "../../api/models/conversation.model.js";
 import Message from "../../api/models/message.model.js";
@@ -18,12 +18,26 @@ export default class MessageController {
           lastMsgId: msgId,
         });
         await conversation.save();
+      } else {
+        await Conversation.updateOne(
+          {
+            _id: ObjectId(conversation._id),
+          },
+          {
+            $push: {
+              msgIds: msgId,
+            },
+            $set: {
+              lastMsgId: msgId,
+            },
+          }
+        );
       }
       const newMessage = new Message({
         _id: msgId,
         conversationId: conversation._id,
         sender: senderId,
-        text: message,
+        ...message,
       });
       await newMessage.save();
     } catch (error) {
@@ -66,23 +80,60 @@ export default class MessageController {
     }
   }
 
-  static async getConversations(req, res) {
-    const userId = req.user._id;
+  static async getConversations(payload, cb) {
+    const { userId } = payload;
     try {
-      const conversations = await getCollection(Model.CONVERSATION)
-        .findOne({
+      const conversations = await Conversation.find(
+        {
           participants: ObjectId(userId),
-        })
+        },
+        {
+          createdAt: 0,
+          msgIds: 0,
+        }
+      )
         .populate({
           path: "participants",
-          select: "username avatar",
-        });
-
-      conversations.forEach((conversation) => {
-        conversation.participants = conversation.participants.filter(
-          (participant) => participant._id.toString() !== userId.toString()
+          select: "_id username avatar",
+        })
+        .populate({
+          path: "lastMsgId",
+          select: "_id content media files sender createdAt",
+        })
+        .lean();
+      const result = conversations.map((conversation) => {
+        const participant = conversation.participants.filter(
+          ({ _id }) => destructObjectId(_id) !== userId
         );
+        conversation.lastMsg = conversation.lastMsgId;
+        delete conversation.participants;
+        delete conversation.lastMsgId;
+        return {
+          ...conversation,
+          participant: participant[0],
+        };
       });
+      cb({ status: "success", data: result });
+    } catch (error) {
+      console.error("getConversations: ", error);
+    }
+  }
+  static async getMessages(payload, cb) {
+    const { conversationId } = payload;
+    try {
+      const messages = await Conversation.findOne({
+        _id: ObjectId(conversationId),
+      }).populate({
+        path: "msgIds",
+        select: "_id media files sender createdAt",
+      });
+
+      // conversations.forEach((conversation) => {
+      //   conversation.participants = conversation.participants.filter(
+      //     (participant) => participant._id.toString() !== userId.toString()
+      //   );
+      // });
+      cb({ status: "success", message: messages });
     } catch (error) {
       console.error("getConversations: ", error);
     }

@@ -6,13 +6,13 @@ const notificationSchema = mongoose.Schema(
   {
     fromUser: {
       type: ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
     },
     toUser: [
       {
         type: ObjectId,
-        ref: "users",
+        ref: "User",
         required: true,
       },
     ],
@@ -22,7 +22,7 @@ const notificationSchema = mongoose.Schema(
     },
     target: {
       type: ObjectId,
-      ref: "posts",
+      ref: "Post",
       required: false,
     },
   },
