@@ -9,7 +9,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 
-const Conversation = () => {
+const Conversation = ({user}) => {
   
   return (
     <Flex
@@ -26,14 +26,14 @@ const Conversation = () => {
       <WrapItem>
         <Avatar
           size={{ base: "xs", sm: "sm", md: "md" }}
-          src="https://bit.ly/broken-link"
+          src={user.avatar}
         >
           <AvatarBadge boxSize={"1em"} bg={"green.500"} />
         </Avatar>
       </WrapItem>
       <Stack direction={"column"} fontSize={"sm"}>
         <Text fontWeight={"700"} display={"flex"} alignItems={"center"}>
-          khang
+          {user.username}
           <Image src="/verified.png" w={4} h={4} ml={1} />
         </Text>
         <Text

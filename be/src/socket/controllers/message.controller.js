@@ -66,23 +66,24 @@ export default class MessageController {
     }
   }
 
-  static async getConversations(req, res) {
-    const userId = req.user._id;
+  static async getConversations(payload) {
+    const userId = payload.userId; 
     try {
-      const conversations = await getCollection(Model.CONVERSATION)
-        .findOne({
-          participants: ObjectId(userId),
-        })
-        .populate({
-          path: "participants",
-          select: "username avatar",
-        });
+      const conversations = await Conversation.find({
+        participants: { $in: [ObjectId(userId)] }, 
+      }).populate({
+        path: "participants",
+        select: "username avatar",
+      });
 
+      
       conversations.forEach((conversation) => {
         conversation.participants = conversation.participants.filter(
           (participant) => participant._id.toString() !== userId.toString()
         );
       });
+
+      return conversations; 
     } catch (error) {
       console.error("getConversations: ", error);
     }

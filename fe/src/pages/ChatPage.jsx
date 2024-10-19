@@ -12,11 +12,62 @@ import {
 } from "@chakra-ui/react";
 import MessageContainer from "../components/Message/MessageContainer";
 import Conversations from "../components/Message/Conversations";
-import MessageRightBar from "../components/Message/MessageRightBar";
-import { useState } from "react";
+import MessageRightBar from "../components/Message/MessageRightBar";  
+import { useEffect, useRef, useState } from "react";
+import { GET } from "../config/API"; // Assuming you have a GET method defined to fetch users
+import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
+import { useSelector } from "react-redux";
+
 const ChatPage = () => {
-  const [showRightBar, setShowRightBar] = useState(false);
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const [users, setUsers] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const init = useRef(true);
+  const [showRightBar, setShowRightBar] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    if (!init.current && searchValue) {
+      handleGetUsers({
+        page: 1,
+        searchValue,
+        isFetchMore: false,
+      });
+    }
+    init.current = false;
+  }, [searchValue]);
+
+  const handleGetUsers = async ({
+    page,
+    searchValue,
+    isFetchMore,
+    setHasMore = null,
+  }) => {
+    try {
+      const data = await GET({
+        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
+        params: {
+          userId: userInfo._id,
+          page: page,
+          limit: 8,
+          searchValue,
+        },
+      });
+      if (data.length > 0) {
+        if (isFetchMore) {
+          setUsers((prevUsers) => [...prevUsers, ...data]);
+        } else {
+          setUsers(data);
+        }
+      } else {
+        // setHasMore && setHasMore(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
   return (
     <Box
       position={"absolute"}
@@ -66,13 +117,22 @@ const ChatPage = () => {
           </Text>
           <form>
             <Flex alignItems={"center"} gap={2}>
-              <Input placeholder="Search for a user" />
-              <Button size={"sm"}>
-                {" "}
-                <SearchIcon />{" "}
-              </Button>
+              <Input
+                placeholder="Search for a user"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
             </Flex>
           </form>
+
+          {searchValue.length > 0 && users.length > 0 ? (
+            users.map((user) => (
+              <Conversations key={user._id} user={user} />
+            ))
+          ) : searchValue.length > 0 ? (
+            <Text>No users found</Text>
+          ) : null}
+
           {false &&
             [0, 1, 2, 3, 4].map((_, i) => (
               <Flex
@@ -91,9 +151,11 @@ const ChatPage = () => {
                 </Flex>
               </Flex>
             ))}
+             {}
+
+          {/* <Conversations />
           <Conversations />
-          <Conversations />
-          <Conversations />
+          <Conversations /> */}
         </Flex>
         {/* <Flex
           flex={70}
@@ -109,7 +171,7 @@ const ChatPage = () => {
         </Flex> */}
         <MessageContainer setShowRightBar={setShowRightBar} />
         {showRightBar && (
-          <Flex flex={25} >
+          <Flex flex={25}>
             <MessageRightBar />
           </Flex>
         )}
