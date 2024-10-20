@@ -24,11 +24,19 @@ const ConversationBar = ({ conversation }) => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
     const userPrefix = isCurrentUser ? "You" : participant?.username;
     return (
-      userPrefix +
-      ": " +
-      lastMsg?.content +
-      " • " +
-      moment(updatedAt).fromNow(true)
+      <>
+        <span
+          style={{
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            maxWidth: "100px",
+          }}
+        >
+          {userPrefix + ": " + lastMsg?.content}
+        </span>
+        <span>{" • " + moment(updatedAt).fromNow(true)}</span>
+      </>
     );
   };
 

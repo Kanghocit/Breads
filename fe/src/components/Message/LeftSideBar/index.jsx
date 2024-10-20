@@ -1,8 +1,11 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
 import Conversations from "./Conversations";
+import { useState } from "react";
 
 const LeftSideBarMsg = () => {
+  const [searchValue, setSearchValue] = useState("");
+
   return (
     <Flex
       gap={4}
@@ -14,7 +17,10 @@ const LeftSideBarMsg = () => {
         sm: "440px",
         md: "full",
       }}
+      pr={3}
       mx={"auto"}
+      maxHeight={`85vh`}
+      overflowY={"scroll"}
     >
       <Flex
         flex={30}
@@ -35,14 +41,21 @@ const LeftSideBarMsg = () => {
         </Text>
         <form>
           <Flex alignItems={"center"} gap={2}>
-            <Input placeholder="Search for a user" />
+            <Input
+              placeholder="Search for a user"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
             <Button size={"sm"}>
               {" "}
               <SearchIcon />{" "}
             </Button>
           </Flex>
         </form>
-        <Conversations />
+        <Conversations
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+        />
       </Flex>
     </Flex>
   );

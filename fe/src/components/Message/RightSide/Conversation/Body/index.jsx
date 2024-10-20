@@ -1,6 +1,38 @@
 import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import Socket from "../../../../../socket";
+import Message from "./Message";
 
 const ConversationBody = () => {
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const selectedConversation = useSelector(
+    (state) => state.message.selectedConversation
+  );
+  const [msgs, setMsgs] = useState([]);
+
+  useEffect(() => {
+    if (selectedConversation?._id && userInfo?._id) {
+      handleGetMsgs();
+    }
+  }, [selectedConversation, userInfo]);
+
+  const handleGetMsgs = async () => {
+    const socket = Socket.getInstant();
+    socket.emit(
+      Route.MESSAGE + MESSAGE_PATH.GET_MESSAGES,
+      {
+        userId: userInfo._id,
+        conversationId: selectedConversation?._id,
+      },
+      (res) => {
+        const { data } = res;
+        setMsgs(data);
+      }
+    );
+  };
+
   return (
     <Flex
       flexDir={"column"}
@@ -30,9 +62,8 @@ const ConversationBody = () => {
             {i % 2 !== 0 && <SkeletonCircle size={7} />}
           </Flex>
         ))}
-      {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, index) => (
-          <Message ownMessage={index % 2 == 0} />
-        ))} */}
+      {msgs?.length !== 0 &&
+        msgs?.map((msg) => <Message key={msg?._id} msg={msg} />)}
     </Flex>
   );
 };

@@ -81,8 +81,9 @@ export default class MessageController {
   }
 
   static async getConversations(payload, cb) {
-    const { userId } = payload;
+    const { userId, page, limit } = payload;
     try {
+      const skip = (page - 1) * limit;
       const conversations = await Conversation.find(
         {
           participants: ObjectId(userId),
@@ -92,6 +93,11 @@ export default class MessageController {
           msgIds: 0,
         }
       )
+        .skip(skip)
+        .limit(limit)
+        .sort({
+          updatedAt: -1,
+        })
         .populate({
           path: "participants",
           select: "_id username avatar",
@@ -119,21 +125,25 @@ export default class MessageController {
     }
   }
   static async getMessages(payload, cb) {
-    const { conversationId } = payload;
+    const { userId, conversationId } = payload;
     try {
-      const messages = await Conversation.findOne({
-        _id: ObjectId(conversationId),
-      }).populate({
-        path: "msgIds",
-        select: "_id media files sender createdAt",
+      if (!userId) {
+        cb({ status: "error", data: [] });
+        return;
+      }
+      const conversation = await Conversation.findOne(
+        {
+          _id: ObjectId(conversationId),
+        },
+        {
+          msgIds: 1,
+        }
+      );
+      const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
+      const msgs = await Message.find({
+        _id: { $in: msgIds },
       });
-
-      // conversations.forEach((conversation) => {
-      //   conversation.participants = conversation.participants.filter(
-      //     (participant) => participant._id.toString() !== userId.toString()
-      //   );
-      // });
-      cb({ status: "success", message: messages });
+      cb({ status: "success", data: msgs });
     } catch (error) {
       console.error("getConversations: ", error);
     }

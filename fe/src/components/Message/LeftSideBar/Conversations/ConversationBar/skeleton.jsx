@@ -2,7 +2,7 @@ import { Box, Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
 
 const ConversationSkeleton = () => {
   return (
-    <Flex key={i} gap={4} alignItems={"center"} p={"1"} borderRadius={"md"}>
+    <Flex gap={4} alignItems={"center"} p={"1"} borderRadius={"md"}>
       <Box>
         <SkeletonCircle size={10} />
       </Box>
