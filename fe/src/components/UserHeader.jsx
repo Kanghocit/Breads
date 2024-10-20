@@ -19,7 +19,7 @@ import { CgMoreO } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
-import { updateSeeMedia } from "../store/UtilSlice";
+import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
 import FollowBtn from "./FollowBtn";
 import { EmptyContentSvg } from "../assests/icons";
 
@@ -33,13 +33,22 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import UserFollowBox from "./UserFollowBox";
+import ListPost from "../components/ListPost";
+import PostReplied from "./PostPopup/PostReplied";
+import PostConstants from "../util/PostConstants";
 
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",
 };
 
-const UserHeader = ({ user, usersFollow }) => {
+const TABS = {
+  Bread: "",
+  Replies: PostConstants.ACTIONS.REPLY,
+  Reposts: PostConstants.ACTIONS.REPOST,
+};
+
+const UserHeader = ({ user, usersFollow, userPosts, post }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
@@ -167,27 +176,34 @@ const UserHeader = ({ user, usersFollow }) => {
           </Flex>
         </Flex>
 
-        <Flex w={"full"}>
-          <Flex
-            flex={1}
-            borderBottom={"1.5px solid white"}
-            justifyContent={"center"}
-            pb={3}
-            cursor={"pointer"}
-          >
-            <Text fontWeight={"bold"}>Bread</Text>
-          </Flex>
-          <Flex
-            flex={1}
-            borderBottom={"1px solid gray"}
-            justifyContent={"center"}
-            color={"gray.light"}
-            pb="3"
-            cursor={"pointer"}
-          >
-            <Text fontWeight={"bold"}>Replies</Text>
-          </Flex>
-        </Flex>
+        <Tabs w={"full"}>
+          <TabList w={"full"}>
+            {Object.keys(TABS).map((key) => (
+              <Tab
+                flex={1}
+                borderBottom={"1.5px solid white"}
+                justifyContent={"center"}
+                pb={3}
+                cursor={"pointer"}
+                onClick={() => dispatch(changeDisplayPageData(TABS[key]))}
+              >
+                <Text fontWeight={"bold"}>{key}</Text>
+              </Tab>
+            ))}
+          </TabList>
+
+          <TabPanels>
+            <TabPanel p={0} mt={4}>
+              <ListPost posts={userPosts} />
+            </TabPanel>
+            <TabPanel p={0} mt={4}>
+              <ListPost posts={userPosts} />
+            </TabPanel>
+            <TabPanel p={0} mt={4}>
+              <ListPost posts={userPosts} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </VStack>
       <Modal
         isOpen={followBox.open}

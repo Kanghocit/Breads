@@ -25,7 +25,7 @@ const HomePage = () => {
     if (currentPage === PageConstant.HOME) {
       dispatch(
         getPosts({
-          filter: displayPageData,
+          filter: {page: displayPageData},
           userId: localStorage.getItem("userId"),
           isNewPage: true,
         })

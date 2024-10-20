@@ -140,8 +140,9 @@ export const getPostsIdByFilter = async (payload) => {
     if (!limit) {
       limit = 20;
     }
+    console.log("filter: ", filter);
     const skip = (page - 1) * limit;
-    switch (filter) {
+    switch (filter.page) {
       case PageConstant.SAVED:
         data = (
           await Collection.findOne({ userId: ObjectId(userId) })
@@ -150,15 +151,29 @@ export const getPostsIdByFilter = async (payload) => {
         )?.postsId;
         break;
       case PageConstant.USER:
-        data = await Post.find(
-          { authorId: ObjectId(userId), type: { $ne: "reply" } },
-          { _id: 1 }
-        )
-          .skip(skip)
-          .limit(limit)
-          .sort({
-            createdAt: -1,
-          });
+        const value = filter.value;
+        if (!!value) {
+          data = await Post.find(
+            { authorId: ObjectId(userId), type: value },
+            { _id: 1 }
+          )
+            .skip(skip)
+            .limit(limit)
+            .sort({
+              createdAt: -1,
+            });
+        } else {
+          data = await Post.find(
+            { authorId: ObjectId(userId), type: { $nin: ["reply", "repost"] } },
+            { _id: 1 }
+          )
+            .skip(skip)
+            .limit(limit)
+            .sort({
+              createdAt: -1,
+            });
+        }
+        console.log(data);
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });

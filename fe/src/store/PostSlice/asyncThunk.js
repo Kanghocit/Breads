@@ -27,7 +27,7 @@ export const createPost = createAsyncThunk(
       if (currerntPage !== PageConstant.USER) {
         dispatch(
           getPosts({
-            filter: currerntPage,
+            filter: { page: currerntPage },
             userId: userInfo._id,
           })
         );
@@ -128,11 +128,13 @@ export const getUserPosts = createAsyncThunk(
   "post/getUserPosts",
   async (userId, thunkApi) => {
     try {
+      const rootState = thunkApi.getState();
+      const displayPageData = rootState.util.displayPageData;
       const data = await GET({
         path: Route.POST + POST_PATH.USER,
         params: {
           userId: userId,
-          filter: PageConstant.USER,
+          filter: { page: PageConstant.USER, value: displayPageData },
         },
       });
       return data;
