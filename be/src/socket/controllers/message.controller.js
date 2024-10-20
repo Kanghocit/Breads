@@ -1,4 +1,4 @@
-import { ObjectId, getCollection } from "../../util/index.js";
+import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import Conversation from "../../api/models/conversation.model.js";
 import Message from "../../api/models/message.model.js";
@@ -18,12 +18,26 @@ export default class MessageController {
           lastMsgId: msgId,
         });
         await conversation.save();
+      } else {
+        await Conversation.updateOne(
+          {
+            _id: ObjectId(conversation._id),
+          },
+          {
+            $push: {
+              msgIds: msgId,
+            },
+            $set: {
+              lastMsgId: msgId,
+            },
+          }
+        );
       }
       const newMessage = new Message({
         _id: msgId,
         conversationId: conversation._id,
         sender: senderId,
-        text: message,
+        ...message,
       });
       await newMessage.save();
     } catch (error) {
@@ -66,24 +80,70 @@ export default class MessageController {
     }
   }
 
-  static async getConversations(payload) {
-    const userId = payload.userId; 
+  static async getConversations(payload, cb) {
+    const { userId, page, limit } = payload;
     try {
-      const conversations = await Conversation.find({
-        participants: { $in: [ObjectId(userId)] }, 
-      }).populate({
-        path: "participants",
-        select: "username avatar",
-      });
-
-      
-      conversations.forEach((conversation) => {
-        conversation.participants = conversation.participants.filter(
-          (participant) => participant._id.toString() !== userId.toString()
+      const skip = (page - 1) * limit;
+      const conversations = await Conversation.find(
+        {
+          participants: ObjectId(userId),
+        },
+        {
+          createdAt: 0,
+          msgIds: 0,
+        }
+      )
+        .skip(skip)
+        .limit(limit)
+        .sort({
+          updatedAt: -1,
+        })
+        .populate({
+          path: "participants",
+          select: "_id username avatar",
+        })
+        .populate({
+          path: "lastMsgId",
+          select: "_id content media files sender createdAt",
+        })
+        .lean();
+      const result = conversations.map((conversation) => {
+        const participant = conversation.participants.filter(
+          ({ _id }) => destructObjectId(_id) !== userId
         );
+        conversation.lastMsg = conversation.lastMsgId;
+        delete conversation.participants;
+        delete conversation.lastMsgId;
+        return {
+          ...conversation,
+          participant: participant[0],
+        };
       });
-
-      return conversations; 
+      cb({ status: "success", data: result });
+    } catch (error) {
+      console.error("getConversations: ", error);
+    }
+  }
+  static async getMessages(payload, cb) {
+    const { userId, conversationId } = payload;
+    try {
+      if (!userId) {
+        cb({ status: "error", data: [] });
+        return;
+      }
+      const conversation = await Conversation.findOne(
+        {
+          _id: ObjectId(conversationId),
+        },
+        {
+          msgIds: 1,
+        }
+      );
+      const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
+      const msgs = await Message.find({
+        _id: { $in: msgIds },
+      });
+      cb({ status: "success", data: msgs });
     } catch (error) {
       console.error("getConversations: ", error);
     }

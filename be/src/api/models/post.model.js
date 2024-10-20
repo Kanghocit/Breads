@@ -6,7 +6,7 @@ const postSchema = mongoose.Schema(
   {
     authorId: {
       type: ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
     },
     content: {
@@ -20,27 +20,27 @@ const postSchema = mongoose.Schema(
     usersLike: [
       {
         type: ObjectId,
-        ref: "users",
+        ref: "User",
         default: [],
       },
     ],
     replies: [
       {
         type: ObjectId,
-        ref: "posts",
+        ref: "Post",
         default: [],
       },
     ],
     parentPost: {
       type: ObjectId,
-      ref: "posts",
+      ref: "Post",
       required: false,
       default: null,
     },
     survey: [
       {
         type: ObjectId,
-        ref: "surveyoptions",
+        ref: "SurveyOption",
         required: false,
       },
     ],
@@ -56,7 +56,7 @@ const postSchema = mongoose.Schema(
     usersTag: [
       {
         type: ObjectId,
-        ref: "users",
+        ref: "User",
         required: false,
       },
     ],

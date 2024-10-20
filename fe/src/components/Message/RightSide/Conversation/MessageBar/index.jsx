@@ -1,20 +1,19 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { AiFillAudio } from "react-icons/ai";
 import { IoSendSharp } from "react-icons/io5";
+import { MdThumbUp } from "react-icons/md";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import useDebounce from "../../../../../hooks/useDebounce";
+import Socket from "../../../../../socket";
+import { updateMsgInfo } from "../../../../../store/MessageSlice";
+import { replaceEmojis } from "../../../../../util";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import UploadDisplay from "./UploadDisplay";
-import { MdThumbUp } from "react-icons/md";
-import useDebounce from "../../../hooks/useDebounce";
-import { updateMsgInfo } from "../../../store/MessageSlice";
-import { replaceEmojis } from "../../../util";
-import Socket from "../../../socket";
-import { MESSAGE_PATH, Route } from "../../../Breads-Shared/APIConfig";
 
 export const ACTIONS = {
   FILES: "Files",

@@ -4,9 +4,12 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const messageSchema = new mongoose.Schema(
   {
-    conversationId: { type: ObjectId, ref: "conversations", required: true },
-    sender: { type: ObjectId, ref: "users", required: true },
-    content: String,
+    conversationId: { type: ObjectId, ref: "Conversation", required: true },
+    sender: { type: ObjectId, ref: "User", required: true },
+    content: {
+      type: String,
+      required: false,
+    },
     media: {
       type: Array,
       required: false,
@@ -14,7 +17,7 @@ const messageSchema = new mongoose.Schema(
     files: [
       {
         type: ObjectId,
-        ref: "files",
+        ref: "File",
         required: false,
       },
     ],

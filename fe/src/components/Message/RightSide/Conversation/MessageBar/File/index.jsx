@@ -3,8 +3,8 @@ import { Input } from "@chakra-ui/react";
 import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { iconStyle } from "..";
-import useShowToast from "../../../../hooks/useShowToast";
-import { updateMsgInfo } from "../../../../store/MessageSlice";
+import useShowToast from "../../../../../../hooks/useShowToast";
+import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 
 export const fileTypes = {
   word: [
@@ -26,7 +26,6 @@ export const fileTypes = {
 const FileUpload = ({ setFilesData }) => {
   const dispatch = useDispatch();
   const msgInfo = useSelector((state) => state.message.msgInfo);
-  const files = msgInfo.files;
   const showToast = useShowToast();
   const fileRef = useRef();
 
@@ -68,16 +67,6 @@ const FileUpload = ({ setFilesData }) => {
       showToast("", "Invalid file's type", "error");
     }
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (file) {
-  //     // Implement the upload logic (e.g., send the file to a server)
-  //     console.log("Uploading:", file);
-
-  //     // Reset the file input after submission
-  //   }
-  // };
 
   return (
     <>

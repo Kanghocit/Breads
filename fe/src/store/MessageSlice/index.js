@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getConversations } from "./asyncThunk";
 
 export const defaulMessageInfo = {
   content: "",
@@ -12,11 +13,12 @@ export const defaulMessageInfo = {
   icon: "",
 };
 const initialState = {
-  usersMsg: [], //List user message
+  conversations: [], //List user message
   userSelected: null,
   messages: [], //List message in a conversation
-  selectedMsg: null,
+  selectedConversation: null,
   msgInfo: defaulMessageInfo,
+  isLoading: false,
 };
 
 const msgSlice = createSlice({
@@ -26,9 +28,21 @@ const msgSlice = createSlice({
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;
     },
+    selectConversation: (state, action) => {
+      state.selectedConversation = action.payload;
+    },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(getConversations.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getConversations.fulfilled, (state, action) => {
+      const newConversations = action.payload;
+      state.conversations = [...state.conversations, ...newConversations];
+      state.isLoading = false;
+    });
+  },
 });
 
-export const { updateMsgInfo } = msgSlice.actions;
+export const { updateMsgInfo, selectConversation } = msgSlice.actions;
 export default msgSlice.reducer;

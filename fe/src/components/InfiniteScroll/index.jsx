@@ -9,6 +9,7 @@ const InfiniteScroll = ({
   condition = true,
   skeletonCpn,
   reloadPageDeps = null,
+  preloadIndex = 5,
 }) => {
   const hasMoreData = useSelector((state) => state.util.hasMoreData);
   const [page, setPage] = useState(1);
@@ -63,8 +64,8 @@ const InfiniteScroll = ({
         <>
           {data?.map((ele, index) => {
             if (
-              data.length >= 5
-                ? index === data.length - 5
+              data.length >= preloadIndex
+                ? index === data.length - preloadIndex
                 : index === data.length - 1
             ) {
               return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;

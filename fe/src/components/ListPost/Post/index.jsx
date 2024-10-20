@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { POST_PATH } from "../../../Breads-Shared/APIConfig";
 import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
+import { updatePostLike } from "../../../store/PostSlice";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import PopupCancel from "../../../util/PopupCancel";
 import PostConstants from "../../../util/PostConstants";
@@ -29,7 +30,6 @@ import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import { updatePostLike } from "../../../store/PostSlice";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
