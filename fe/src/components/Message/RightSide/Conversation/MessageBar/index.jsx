@@ -1,18 +1,19 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { AiFillAudio } from "react-icons/ai";
 import { IoSendSharp } from "react-icons/io5";
+import { MdThumbUp } from "react-icons/md";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import useDebounce from "../../../../../hooks/useDebounce";
+import Socket from "../../../../../socket";
+import { updateMsgInfo } from "../../../../../store/MessageSlice";
+import { replaceEmojis } from "../../../../../util";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import UploadDisplay from "./UploadDisplay";
-import { MdThumbUp } from "react-icons/md";
-import useDebounce from "../../../hooks/useDebounce";
-import { updateMsgInfo } from "../../../store/MessageSlice";
-import { replaceEmojis } from "../../../util";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -32,6 +33,7 @@ export const iconStyle = {
 
 const MessageInput = () => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
   const msgInfo = useSelector((state) => state.message.msgInfo);
   const files = msgInfo.files;
   const [popup, setPopup] = useState("");
@@ -91,11 +93,21 @@ const MessageInput = () => {
       action: ACTIONS.GIF,
       icon: <GifMsgBtn popup={popup} onClose={onClose} onOpen={onOpen} />,
     },
-    {
-      action: ACTIONS.AUDIO,
-      icon: <AiFillAudio style={iconStyle} />,
-    },
+    // {
+    //   action: ACTIONS.AUDIO,
+    //   icon: <AiFillAudio style={iconStyle} />,
+    // },
   ];
+
+  const handleSendMsg = () => {
+    const socket = Socket.getInstant();
+    const payload = {
+      recipientId: "66e66070f27cd4c9a4287fa0",
+      senderId: userInfo._id,
+      message: msgInfo,
+    };
+    socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, payload);
+  };
 
   return (
     <>
@@ -128,7 +140,10 @@ const MessageInput = () => {
             label={ACTIONS.SEND}
             icon={
               !!content.trim() ? (
-                <IoSendSharp style={iconStyle} />
+                <IoSendSharp
+                  style={iconStyle}
+                  onClick={() => handleSendMsg()}
+                />
               ) : (
                 <MdThumbUp style={iconStyle} />
               )

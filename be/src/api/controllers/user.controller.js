@@ -65,7 +65,7 @@ export const signupUser = async (req, res) => {
         email: newUser.email,
         username: newUser.username,
         bio: newUser.bio,
-        profilePicture: newUser.profilePicture,
+        avatar: newUser?.avatar,
       });
     } else {
       res.status(HTTPStatus.BAD_REQUEST).json({ error: "Invalid user data" });
@@ -94,7 +94,6 @@ export const loginUser = async (req, res) => {
     }
 
     // generateTokenAndSetCookie(user._id, res);
-
     const result = await getUserInfo(user._id);
 
     res.status(HTTPStatus.OK).json(result);

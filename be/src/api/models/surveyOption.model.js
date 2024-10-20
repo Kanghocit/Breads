@@ -12,7 +12,7 @@ const surveyOptionShema = mongoose.Schema({
   usersId: [
     {
       type: ObjectId,
-      ref: "users",
+      ref: "User",
     },
   ],
 });

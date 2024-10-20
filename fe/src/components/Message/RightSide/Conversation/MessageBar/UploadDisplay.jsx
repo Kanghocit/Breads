@@ -2,7 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Button, Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { fileTypes } from "./File";
-import { updateMsgInfo } from "../../../store/MessageSlice";
+import { updateMsgInfo } from "../../../../../store/MessageSlice";
 
 const FILE_TYPES = {
   word: "word",
@@ -29,15 +29,15 @@ const UploadDisplay = () => {
     const { word, excel, powerpoint, pdf, text } = FILE_TYPES;
     switch (fileType) {
       case word:
-        return "../../../../public/FileImgs/word.svg";
+        return "../../../../FileImgs/word.svg";
       case excel:
-        return "../../../../public/FileImgs/excel.svg";
+        return "../../../../FileImgs/excel.svg";
       case powerpoint:
-        return "../../../../public/FileImgs/powerpoint.svg";
+        return "../../../../FileImgs/powerpoint.svg";
       case pdf:
-        return "../../../../public/FileImgs/pdf.png";
+        return "../../../../FileImgs/pdf.png";
       case text:
-        return "../../../../public/FileImgs/text.png";
+        return "../../../../FileImgs/text.png";
     }
     return "";
   };

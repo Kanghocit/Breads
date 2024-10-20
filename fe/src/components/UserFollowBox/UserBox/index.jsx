@@ -46,7 +46,7 @@ const UserBox = ({
 
   return (
     <Flex
-      bg={bgColor}
+      bg={isTagBox ? bgColor : ""}
       alignItems={"center"}
       padding={isTagBox ? "2px 8px" : ""}
       borderRadius={isTagBox ? "6px" : ""}

@@ -1,6 +1,6 @@
 import { Container, Flex, Text } from "@chakra-ui/react";
 import { memo, useMemo } from "react";
-import { emojiMap } from "../../../../util";
+import { emojiMap } from "../../../../../../util";
 import IconWrapper from "../IconWrapper";
 
 const EmojiBox = ({ searchValue }) => {

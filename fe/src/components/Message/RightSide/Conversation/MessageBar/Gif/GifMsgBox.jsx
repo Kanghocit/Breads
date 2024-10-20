@@ -1,5 +1,5 @@
 import { Container, Flex, Image } from "@chakra-ui/react";
-import { gif } from "../../../../Breads-Shared/Constants/index";
+import { gif } from "../../../../../../Breads-Shared/Constants/index";
 import { memo } from "react";
 
 const GifMsgBox = () => {
