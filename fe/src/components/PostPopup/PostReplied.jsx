@@ -1,10 +1,20 @@
-import { Avatar, Container, Flex, Image, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Container,
+  Flex,
+  Image,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
 import Survey from "../ListPost/Post/Survey";
+import MediaDisplay from "./mediaDisplay";
 
 const PostReplied = () => {
   const postReply = useSelector((state) => state.post.postReply);
+  const textColor = useColorModeValue("ccl.dark", "ccl.light");
+
   return (
     <>
       <Flex>
@@ -14,34 +24,11 @@ const PostReplied = () => {
           height={"40px"}
         />
         <Container margin="0" paddingRight={0}>
-          <Text color="black" fontWeight={"600"}>
+          <Text color={textColor} fontWeight={"600"}>
             {postReply.authorInfo.username}
           </Text>
           <Text>{postReply.content}</Text>
-          {postReply.media[0]?.url && (
-            <>
-              {postReply.media[0].type === Constants.MEDIA_TYPE.VIDEO ? (
-                <video
-                  src={postReply.media[0].url}
-                  alt="postReply Media"
-                  controls
-                  style={{
-                    height: "250px",
-                    maxHeight: "300px",
-                    width: "100%",
-                  }}
-                />
-              ) : (
-                <Image
-                  src={postReply.media[0].url}
-                  alt="postReply Media"
-                  height={"250px"}
-                  maxHeight={"300px"}
-                  width={"100%"}
-                />
-              )}
-            </>
-          )}
+          <MediaDisplay post={postReply} />
           {postReply.survey.length !== 0 && <Survey post={postReply} />}
         </Container>
       </Flex>

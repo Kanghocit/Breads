@@ -42,6 +42,11 @@ const MessageInput = () => {
   const [content, setContent] = useState("");
   const debouceContent = useDebounce(content);
   const mediaRef = useRef();
+  const ableToSend =
+    !!content.trim() ||
+    msgInfo.files?.length !== 0 ||
+    msgInfo.media?.length !== 0 ||
+    msgInfo.icon;
 
   useEffect(() => {
     dispatch(
@@ -99,14 +104,29 @@ const MessageInput = () => {
     // },
   ];
 
-  const handleSendMsg = () => {
-    const socket = Socket.getInstant();
-    const payload = {
-      recipientId: "66e66070f27cd4c9a4287fa0",
-      senderId: userInfo._id,
-      message: msgInfo,
-    };
-    socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, payload);
+  const handleSendMsg = async () => {
+    if (msgInfo.files?.length) {
+      const filesBase64 = await Promise.all(
+        Array.from(filesData).map(async (file, index) => {
+          const base64 = await convertToBase64(file);
+          const { name, type } = msgInfo.files[index];
+          return {
+            base64: base64,
+            name: name,
+            type: type,
+          };
+        })
+      );
+      console.log(filesBase64);
+      msgInfo.files = filesBase64;
+    }
+    // const socket = Socket.getInstant();
+    // const payload = {
+    //   recipientId: "66e66070f27cd4c9a4287fa0",
+    //   senderId: userInfo._id,
+    //   message: msgInfo,
+    // };
+    // socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, payload);
   };
 
   return (
@@ -139,7 +159,7 @@ const MessageInput = () => {
           <IconWrapper
             label={ACTIONS.SEND}
             icon={
-              !!content.trim() ? (
+              ableToSend ? (
                 <IoSendSharp
                   style={iconStyle}
                   onClick={() => handleSendMsg()}

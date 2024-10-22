@@ -216,7 +216,13 @@ const PostPopup = () => {
               {postInfo.survey.length !== 0 && <PostSurvey />}
               {postSelected?._id &&
                 postAction === PostConstants.ACTIONS.REPOST && (
-                  <Post post={postSelected} isParentPost={true} />
+                  <div
+                    style={{
+                      margin: "12px 0",
+                    }}
+                  >
+                    <Post post={postSelected} isParentPost={true} />
+                  </div>
                 )}
             </Container>
           </Flex>
