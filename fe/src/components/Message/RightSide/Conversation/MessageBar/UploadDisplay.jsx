@@ -105,7 +105,7 @@ const UploadDisplay = () => {
               onClick={() => handleRemoveFile(index)}
             />
             <Image
-              src={getImgByType(file.type)}
+              src={getImgByType(file.contentType)}
               width={"100%"}
               maxHeight={"calc(100% - 16px)"}
               objectFit={"contain"}

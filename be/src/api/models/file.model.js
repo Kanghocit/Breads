@@ -2,9 +2,18 @@ import mongoose from "mongoose";
 
 const fileSchema = new mongoose.Schema(
   {
-    name: String,
-    url: String,
-    contentType: String,
+    name: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+    contentType: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

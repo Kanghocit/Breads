@@ -7,7 +7,7 @@ import User from "../models/user.model.js";
 import { getUserInfo, getUsersByPage, updateFollow } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 import Collection from "../models/collection.model.js";
-import { uploadFile } from "../utils/index.js";
+import { uploadFileFromBase64 } from "../utils/index.js";
 import { crawlUser } from "../crawl.js";
 
 export const getAdminAccount = async (req, res) => {
@@ -167,7 +167,7 @@ export const updateUser = async (req, res) => {
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     if (avatar.match(urlRegex)?.length === 0) {
-      const avatarUrl = await uploadFile({
+      const avatarUrl = await uploadFileFromBase64({
         base64: avatar,
       });
       user.avatar = avatarUrl;

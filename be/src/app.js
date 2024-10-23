@@ -4,11 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
-import {
-  uploadFileToDrive,
-  uploadFolderToDrive,
-} from "./api/utils/driveUpload.js";
-import path, { dirname } from "path";
+import { uploadFileFromBase64ToDrive } from "./api/utils/driveUpload.js";
 
 // Connect to MongoDB
 await connectDB();
@@ -25,16 +21,12 @@ const corOption = {
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
-app.use("/test", (req, res) => {
-  res.send("OK");
-});
 app.use(cors(corOption));
-app.use("/api", router);
 
 app.use("/upload-to-drive", async (req, res) => {
   try {
     const userId = "123";
-    const data = await uploadFileToDrive(
+    const data = await uploadFileFromBase64ToDrive(
       `C:\\Users\\Admin\\Desktop\\IT\\JS\\Breads\\be\\src\\test.docx`,
       userId
     );
@@ -44,5 +36,7 @@ app.use("/upload-to-drive", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+app.use("/api", router);
 
 export default app;

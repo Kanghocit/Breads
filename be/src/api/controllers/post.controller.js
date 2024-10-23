@@ -9,7 +9,7 @@ import {
   getPostsIdByFilter,
   handleReplyForParentPost,
 } from "../services/post.js";
-import { uploadFile } from "../utils/index.js";
+import { uploadFileFromBase64 } from "../utils/index.js";
 
 //create post
 export const createPost = async (req, res) => {
@@ -55,7 +55,7 @@ export const createPost = async (req, res) => {
           ? fileInfo.url.match(urlRegex)?.length > 0
           : false;
         if (!isUrl) {
-          const mediaUrl = await uploadFile({
+          const mediaUrl = await uploadFileFromBase64({
             base64: fileInfo.url,
           });
           fileInfo.url = mediaUrl;

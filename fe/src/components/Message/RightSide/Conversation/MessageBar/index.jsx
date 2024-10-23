@@ -7,13 +7,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
 import Socket from "../../../../../socket";
-import { updateMsgInfo } from "../../../../../store/MessageSlice";
+import {
+  defaulMessageInfo,
+  updateMsgInfo,
+} from "../../../../../store/MessageSlice";
 import { replaceEmojis } from "../../../../../util";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import UploadDisplay from "./UploadDisplay";
+import { convertToBase64 } from "../../../../../util";
+import { POST } from "../../../../../config/API";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -105,28 +110,47 @@ const MessageInput = () => {
   ];
 
   const handleSendMsg = async () => {
-    if (msgInfo.files?.length) {
-      const filesBase64 = await Promise.all(
-        Array.from(filesData).map(async (file, index) => {
-          const base64 = await convertToBase64(file);
-          const { name, type } = msgInfo.files[index];
-          return {
-            base64: base64,
-            name: name,
-            type: type,
-          };
-        })
-      );
-      console.log(filesBase64);
-      msgInfo.files = filesBase64;
+    let payload = JSON.parse(JSON.stringify(msgInfo));
+    if (payload.files?.length) {
+      // const filesBase64 = await Promise.all(
+      //   Array.from(filesData).map(async (file, index) => {
+      //     const base64 = await convertToBase64(file);
+      //     const { name, contentType } = payload.files[index];
+      //     return {
+      //       base64: base64,
+      //       name: name,
+      //       contentType: contentType,
+      //     };
+      //   })
+      // );
+      const filesBase64 = filesData.map((file, index) => {
+        const { name, contentType } = payload.files[index];
+        return {
+          file: file,
+          name: name,
+          contentType: contentType,
+        };
+      });
+      payload.files = filesBase64;
     }
+    const formData = new FormData();
+    for (let i = 0; i < filesData.length; i++) {
+      formData.append("files", filesData[i]);
+    }
+    console.log("filesData: ", filesData);
+    await POST({
+      path: "/util/upload" + `?userId=${userInfo?._id}`,
+      payload: formData,
+    });
     // const socket = Socket.getInstant();
-    // const payload = {
+    // const msgPayload = {
     //   recipientId: "66e66070f27cd4c9a4287fa0",
     //   senderId: userInfo._id,
-    //   message: msgInfo,
+    //   message: payload,
     // };
-    // socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, payload);
+    // console.log("payload: ", payload);
+    // socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload);
+    // dispatch(updateMsgInfo(defaulMessageInfo));
   };
 
   return (

@@ -1,25 +1,85 @@
+import cloudinary from "cloudinary";
 import express from "express";
+import fs from "fs";
+import { ObjectId } from "../../util/index.js";
+import { getAllFiles, upload } from "../middlewares/upload.js";
 import File from "../models/file.model.js";
-import multer from "multer";
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const fileTypes = {
+  word: [
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ],
+  excel: [
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ],
+  powerpoint: [
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ],
+  text: ["text/plain"],
+  pdf: ["application/pdf"],
+};
+
+const getFileType = (inputType) => {
+  let fileType = "";
+  const types = Object.keys(fileTypes);
+  types.forEach((type) => {
+    if (fileTypes[type].includes(inputType)) {
+      fileType = type;
+    }
+  });
+  return fileType;
+};
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const router = express.Router();
 
-router.post("/test-upload-file", upload.single("file"), async (req, res) => {
+router.post("/upload", upload.array("files"), async (req, res) => {
   try {
-    const { originalname, buffer, mimetype } = req.file;
-
-    // Save the file to MongoDB
-    const newFile = new File({
-      name: originalname,
-      data: buffer,
-      contentType: mimetype,
+    const userId = req.query.userId;
+    const filesInfo = JSON.parse(JSON.stringify(req.files));
+    const dir = `../be/uploads/${userId}`;
+    const filesPath = await getAllFiles(dir);
+    const urls = [];
+    let i = 0;
+    for (let filePath of filesPath) {
+      await cloudinary.v2.uploader.upload(
+        filePath,
+        { resource_type: "raw" },
+        function (error, result) {
+          if (error) {
+            console.log("err: ", error);
+          }
+          console.log(result?.secure_url);
+          if (result?.secure_url) {
+            urls[i] = result.secure_url;
+            i++;
+          }
+        }
+      );
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+    //Save files to db
+    const filesId = [];
+    const files = filesInfo.map((file, index) => {
+      let _id = ObjectId();
+      filesId.push(_id);
+      return {
+        _id: _id,
+        name: file.originalname,
+        url: urls[index],
+        contentType: getFileType(file.mimetype),
+      };
     });
-
-    await newFile.save();
-    res.status(200).json("OK");
+    await File.insertMany(files, { ordered: false });
+    res.status(200).json(filesId);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);

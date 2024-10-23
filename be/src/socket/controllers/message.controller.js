@@ -2,6 +2,8 @@ import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import Conversation from "../../api/models/conversation.model.js";
 import Message from "../../api/models/message.model.js";
+import { uploadFile, uploadFileFromBase64 } from "../../api/utils/index.js";
+import File from "../../api/models/file.model.js";
 
 export default class MessageController {
   static async sendMessage(payload, socket, io) {
@@ -19,27 +21,41 @@ export default class MessageController {
         });
         await conversation.save();
       } else {
-        await Conversation.updateOne(
-          {
-            _id: ObjectId(conversation._id),
-          },
-          {
-            $push: {
-              msgIds: msgId,
-            },
-            $set: {
-              lastMsgId: msgId,
-            },
-          }
-        );
+        // await Conversation.updateOne(
+        //   {
+        //     _id: ObjectId(conversation._id),
+        //   },
+        //   {
+        //     $push: {
+        //       msgIds: msgId,
+        //     },
+        //     $set: {
+        //       lastMsgId: msgId,
+        //     },
+        //   }
+        // );
       }
-      const newMessage = new Message({
-        _id: msgId,
-        conversationId: conversation._id,
-        sender: senderId,
-        ...message,
-      });
-      await newMessage.save();
+      if (message?.files?.length) {
+        const urls = [];
+        for (let fileInfo of message.files) {
+          const { file, name, contentType } = fileInfo;
+          const fileUrl = await uploadFile({ file: file });
+          // const newFile = new File({
+          //   name: name,
+          //   url: fileUrl,
+          //   contentType: contentType,
+          // });
+          // const saveFile = await newFile.save();
+          // urls.push(saveFile._id);
+        }
+      }
+      // const newMessage = new Message({
+      //   _id: msgId,
+      //   conversationId: conversation._id,
+      //   sender: senderId,
+      //   ...message,
+      // });
+      // await newMessage.save();
     } catch (error) {
       console.error("sendMessage: ", error);
     }
