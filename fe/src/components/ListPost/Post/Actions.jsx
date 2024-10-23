@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Flex,
   Popover,
@@ -40,7 +41,7 @@ const Actions = ({ post }) => {
   const [openSubBox, setOpenSubBox] = useState(false);
   const { copyURL } = useCopyLink();
   const socket = Socket.getInstant();
-  console.log("haaaa ", post)
+  console.log("haaaa ", post);
 
   const handleLike = () => {
     const payload = {
@@ -82,6 +83,7 @@ const Actions = ({ post }) => {
     },
     {
       name: ACTIONS_NAME.REPLY,
+      statistic: post.replies?.length,
       icon: <ReplyIcon />,
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPLY));
@@ -90,6 +92,7 @@ const Actions = ({ post }) => {
     },
     {
       name: ACTIONS_NAME.REPOST,
+      statistic: post?.repostNum,
       icon: <RepostIcon />,
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPOST));
@@ -98,7 +101,8 @@ const Actions = ({ post }) => {
     },
     {
       name: ACTIONS_NAME.SHARE,
-      icon: <ShareIcon />,
+      statistic: post?.share?.length,
+      icon: <ShareIcon size={10}/>,
       onClick: () => {
         setOpenSubBox(!openSubBox);
       },
@@ -145,6 +149,7 @@ const Actions = ({ post }) => {
                     onClick={() => {
                       copyURL(post);
                       setOpenSubBox(false);
+          
                     }}
                   >
                     Copy Link
@@ -156,15 +161,6 @@ const Actions = ({ post }) => {
           } else {
             return (
               <>
-                {!!statistic && (
-                  <Flex
-                    alignItems={"center"}
-                    fontSize={"14px"}
-                    fontWeight={500}
-                  >
-                    {statistic}
-                  </Flex>
-                )}
                 <Button
                   key={name}
                   onClick={onClick}
@@ -173,8 +169,26 @@ const Actions = ({ post }) => {
                   padding={"6px 10px"}
                   bg={"transparent"}
                   borderRadius={"16px"}
+                  _active={{
+                    bg: "rgba(0, 0, 0, 0.1)", 
+                    boxShadow: "none", 
+                    transform: "none", 
+                  }}
                 >
-                  {icon}
+                  <Box
+                    width={"20px"}
+                    height={"20px"}
+                    display={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    {icon}
+                  </Box>
+                  {!!statistic && (
+                    <Flex alignItems={"center"} fontSize={"14px"} pl={1}>
+                      {statistic}
+                    </Flex>
+                  )}
                 </Button>
               </>
             );
