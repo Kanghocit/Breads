@@ -8,6 +8,7 @@ import {
   Divider,
   Flex,
   Text,
+  Link,
   useColorMode,
 } from "@chakra-ui/react";
 import moment from "moment";
@@ -41,6 +42,8 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const dispatch = useDispatch();
   const postAction = useSelector((state) => state.post.postAction);
   const [openPostBox, setOpenPostBox] = useState(false);
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const usernameRegex = /(@[\w.]+)/g;
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
 
@@ -150,7 +153,38 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               }
             }}
           >
-            {post?.content}
+            {post?.content
+              ?.split(/(https?:\/\/[^\s]+|@[\w.]+)/g)
+              .map((part, index) => {
+                if (part.match(urlRegex)) {
+                  return (
+                    <Link
+                      key={index}
+                      href={part}
+                      color="blue.500"
+                      isExternal
+                      _hover={{ textDecoration: "underline" }}
+                      _focus={{ boxShadow: "none" }}
+                    >
+                      {part}
+                    </Link>
+                  );
+                } else if (part.match(usernameRegex)) {
+          
+                  return (
+                    <Link
+                      key={index}
+                      href={`/users/66eb9ec0d2857ebbd4ab4c5b`} 
+                      color="blue.500"
+                      _hover={{ textDecoration: "underline" }}
+                      _focus={{ boxShadow: "none" }}
+                    >
+                      {part}
+                    </Link>
+                  );
+                }
+                return <span key={index}>{part}</span>;
+              })}
           </Text>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text

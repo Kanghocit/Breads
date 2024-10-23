@@ -40,6 +40,7 @@ const Actions = ({ post }) => {
   const [openSubBox, setOpenSubBox] = useState(false);
   const { copyURL } = useCopyLink();
   const socket = Socket.getInstant();
+  console.log("haaaa ", post)
 
   const handleLike = () => {
     const payload = {

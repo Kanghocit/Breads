@@ -140,7 +140,7 @@ export const getPostsIdByFilter = async (payload) => {
     if (!limit) {
       limit = 20;
     }
-    console.log("filter: ", filter);
+
     const skip = (page - 1) * limit;
     switch (filter.page) {
       case PageConstant.SAVED:
@@ -173,7 +173,7 @@ export const getPostsIdByFilter = async (payload) => {
               createdAt: -1,
             });
         }
-        console.log(data);
+        // console.log(data);
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });
