@@ -47,6 +47,9 @@ const PostPopup = () => {
     usePopupCancel();
 
   const [content, setContent] = useState("");
+
+  const MAX_CONTENT_LENGTH = 500;
+
   const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
   const init = useRef(true);
@@ -221,6 +224,16 @@ const PostPopup = () => {
             </Container>
           </Flex>
           <ModalFooter padding="0">
+            {/* đếm ngược */}
+            <Text
+              color={content.length > MAX_CONTENT_LENGTH ? "red" : textColor}
+              fontSize="12px"
+              mt="6px"
+              mr="16px"
+            >
+              {content.length >= 450 &&
+                `${MAX_CONTENT_LENGTH - content.length}`}
+            </Text>
             <Button
               isLoading={clickPost}
               loadingText={isEditing ? "Saving" : "Posting"}
@@ -237,6 +250,7 @@ const PostPopup = () => {
                 setClickPost(true);
                 handleUploadPost();
               }}
+              isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
               {isEditing ? "Save" : "Post"}
             </Button>
