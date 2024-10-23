@@ -5,10 +5,13 @@ export const defaulMessageInfo = {
   content: "",
   files: null,
   folder: null,
-  media: {
+  media: [],
+  /*
+  {
     url: "",
     type: "",
-  },
+  }
+  */
   audio: null,
   icon: "",
 };

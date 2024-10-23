@@ -88,6 +88,7 @@ const Actions = ({ post }) => {
       onClick: () => {
         dispatch(updatePostAction(PostConstants.ACTIONS.REPLY));
         dispatch(selectPostReply(post));
+        dispatch(selectPost(post));
       },
     },
     {
@@ -115,7 +116,11 @@ const Actions = ({ post }) => {
         {listActions.map(({ name, statistic, icon, onClick }, index) => {
           if (name === ACTIONS_NAME.SHARE) {
             return (
-              <Popover isOpen={openSubBox} key={name}>
+              <Popover
+                isOpen={openSubBox}
+                key={name}
+                onClose={() => setOpenSubBox(!openSubBox)}
+              >
                 <PopoverTrigger>
                   <Button
                     onClick={onClick}
@@ -125,6 +130,7 @@ const Actions = ({ post }) => {
                     bg={"transparent"}
                     borderRadius={"16px"}
                     position={"relative"}
+                    zIndex={0}
                   >
                     {icon}
                   </Button>
@@ -174,6 +180,7 @@ const Actions = ({ post }) => {
                     boxShadow: "none", 
                     transform: "none", 
                   }}
+                  zIndex={0}
                 >
                   <Box
                     width={"20px"}

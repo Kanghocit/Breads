@@ -95,10 +95,17 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
       });
     }
     let result = (await Post.aggregate(agg))?.[0];
+    if (result?.usersTag?.length > 0) {
+      const usersTagInfo = await getUsersTagInfo({
+        usersTagId: result?.usersTag,
+      });
+      result.usersTagInfo = usersTagInfo;
+    }
     if (result?.parentPostInfo?.length > 0) {
       result.parentPostInfo = result.parentPostInfo[0];
+      const parentPostInfo = result.parentPostInfo;
       const userInfo = await User.findOne(
-        { _id: result.parentPostInfo.authorId },
+        { _id: parentPostInfo.authorId },
         {
           _id: 1,
           avatar: 1,
@@ -107,13 +114,19 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           bio: 1,
         }
       );
-      if (result.parentPostInfo?.survey.length) {
+      if (parentPostInfo?.survey.length) {
         const surveyOptions = await SurveyOption.find({
-          _id: { $in: result.parentPostInfo.survey },
+          _id: { $in: parentPostInfo.survey },
         });
-        result.parentPostInfo.survey = surveyOptions;
+        parentPostInfo.survey = surveyOptions;
       }
-      result.parentPostInfo.authorInfo = userInfo;
+      if (parentPostInfo?.usersTag?.length > 0) {
+        const usersTagInfo = await getUsersTagInfo({
+          usersTagId: parentPostInfo?.usersTag,
+        });
+        parentPostInfo.usersTagInfo = usersTagInfo;
+      }
+      parentPostInfo.authorInfo = userInfo;
     } else {
       if (result?.parentPostInfo) {
         delete result.parentPostInfo;
@@ -262,5 +275,25 @@ export const handleReplyForParentPost = async ({
     }
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const getUsersTagInfo = async ({ usersTagId }) => {
+  try {
+    const usersTagInfo = await User.find(
+      {
+        _id: { $in: usersTagId },
+      },
+      {
+        _id: 1,
+        avatar: 1,
+        name: 1,
+        username: 1,
+        bio: 1,
+      }
+    );
+    return usersTagInfo;
+  } catch (err) {
+    console.log("getUsersTagInfo: ", err);
   }
 };

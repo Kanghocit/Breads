@@ -92,7 +92,7 @@ export const createPost = async (req, res) => {
       newPostPayload.parentPost = parentPost;
     }
     const newPost = new Post(newPostPayload);
-    await newPost.save();
+    const postSaved = await newPost.save();
     if (parentPost && action === "reply") {
       await handleReplyForParentPost({
         parentId: parentPost,
@@ -100,20 +100,7 @@ export const createPost = async (req, res) => {
         addNew: true,
       });
     }
-    const result = JSON.parse(JSON.stringify(newPost));
-    const authorInfo = await User.findOne(
-      {
-        _id: ObjectId(authorId),
-      },
-      {
-        _id: 1,
-        avatar: 1,
-        name: 1,
-        username: 1,
-        bio: 1,
-      }
-    );
-    result.authorInfo = authorInfo;
+    const result = await getPostDetail({ postId: postSaved._id });
     res.status(HTTPStatus.CREATED).json(result);
   } catch (err) {
     console.log("createPost: ", err);

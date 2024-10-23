@@ -100,7 +100,10 @@ const postSlice = createSlice({
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
       if (state.postAction === PostConstants.ACTIONS.REPLY) {
-        state.postSelected.replies = [...state.postSelected.replies, newPost];
+        state.postSelected.replies = [
+          ...state.postSelected.replies,
+          newPost._id,
+        ];
       } else {
         state.listPost = [newPost, ...state.listPost];
       }
