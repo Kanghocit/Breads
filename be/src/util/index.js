@@ -26,15 +26,20 @@ export const getAllSockets = async (io) => {
   return sockets;
 };
 
-export const getFriendsSocketId = async (io, friendsId) => {
+export const getFriendsSocketInfo = async (io, friendsId) => {
   const listSocket = await getAllSockets(io);
   const socketsData = listSocket.map((sk) => sk.data);
   const friendsSocket = socketsData.filter((socket) =>
     friendsId?.includes(socket.userId)
   );
   if (!!friendsSocket?.length) {
-    const friendsSocketId = friendsSocket.map((socket) => socket.id);
-    return friendsSocketId;
+    const friendsSocketInfo = friendsSocket.map((socket) => {
+      return {
+        socketId: socket.id,
+        userId: socket.userId,
+      };
+    });
+    return friendsSocketInfo;
   }
   return [];
 };

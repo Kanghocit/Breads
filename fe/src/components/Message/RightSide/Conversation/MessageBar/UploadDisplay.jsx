@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fileTypes } from "./File";
 import { updateMsgInfo } from "../../../../../store/MessageSlice";
 
-const FILE_TYPES = {
+export const FILE_TYPES = {
   word: "word",
   excel: "excel",
   powerpoint: "powerpoint",

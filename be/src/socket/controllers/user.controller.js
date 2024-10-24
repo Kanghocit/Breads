@@ -1,4 +1,4 @@
-import { getAllSockets, getFriendsSocketId } from "../../util/index.js";
+import { getAllSockets, getFriendsSocketInfo } from "../../util/index.js";
 
 export default class UserController {
   static connect = async (payload, socket, io) => {
@@ -13,7 +13,7 @@ export default class UserController {
       userFollowing?.includes(userId)
     );
     if (!!friendsId?.length) {
-      const friendsSocketId = await getFriendsSocketId(io, friendsId);
+      const friendsSocketInfo = await getFriendsSocketInfo(io, friendsId);
     }
   };
 }

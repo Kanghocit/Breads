@@ -44,6 +44,7 @@ const router = express.Router();
 router.post("/upload", upload.array("files"), async (req, res) => {
   try {
     const userId = req.query.userId;
+    const filesName = req.body.filesName.split(",");
     const filesInfo = JSON.parse(JSON.stringify(req.files));
     const dir = `../be/uploads/${userId}`;
     const filesPath = await getAllFiles(dir);
@@ -66,14 +67,14 @@ router.post("/upload", upload.array("files"), async (req, res) => {
       );
     }
     fs.rmSync(dir, { recursive: true, force: true });
-    //Save files to db
+    // Save files to db
     const filesId = [];
     const files = filesInfo.map((file, index) => {
       let _id = ObjectId();
       filesId.push(_id);
       return {
         _id: _id,
-        name: file.originalname,
+        name: filesName[index],
         url: urls[index],
         contentType: getFileType(file.mimetype),
       };

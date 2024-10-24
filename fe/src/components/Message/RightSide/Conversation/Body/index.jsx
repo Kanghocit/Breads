@@ -28,6 +28,7 @@ const ConversationBody = () => {
       },
       (res) => {
         const { data } = res;
+        console.log("data: ", data);
         setMsgs(data);
       }
     );
@@ -38,10 +39,10 @@ const ConversationBody = () => {
       flexDir={"column"}
       gap={4}
       my={4}
-      px={2}
       height={"460px"}
       overflowY={"auto"}
       p={2}
+      px={3}
     >
       {false &&
         [...Array(5)].map((_, i) => (

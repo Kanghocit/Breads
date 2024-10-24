@@ -4,7 +4,11 @@ import { IoSendSharp } from "react-icons/io5";
 import { MdThumbUp } from "react-icons/md";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import {
+  MESSAGE_PATH,
+  Route,
+  UTIL_PATH,
+} from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
 import Socket from "../../../../../socket";
 import {
@@ -17,7 +21,6 @@ import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import UploadDisplay from "./UploadDisplay";
-import { convertToBase64 } from "../../../../../util";
 import { POST } from "../../../../../config/API";
 
 export const ACTIONS = {
@@ -40,6 +43,9 @@ const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const msgInfo = useSelector((state) => state.message.msgInfo);
+  const participant = useSelector(
+    (state) => state.message.selectedConversation?.participant
+  );
   const files = msgInfo.files;
   const [popup, setPopup] = useState("");
   const [closeTooltip, setCloseTooltip] = useState(false);
@@ -112,45 +118,27 @@ const MessageInput = () => {
   const handleSendMsg = async () => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
     if (payload.files?.length) {
-      // const filesBase64 = await Promise.all(
-      //   Array.from(filesData).map(async (file, index) => {
-      //     const base64 = await convertToBase64(file);
-      //     const { name, contentType } = payload.files[index];
-      //     return {
-      //       base64: base64,
-      //       name: name,
-      //       contentType: contentType,
-      //     };
-      //   })
-      // );
-      const filesBase64 = filesData.map((file, index) => {
-        const { name, contentType } = payload.files[index];
-        return {
-          file: file,
-          name: name,
-          contentType: contentType,
-        };
+      const formData = new FormData();
+      const filesName = [];
+      for (let i = 0; i < filesData.length; i++) {
+        filesName.push(filesData[i].name);
+        formData.append("files", filesData[i]);
+      }
+      formData.append("filesName", filesName);
+      const filesId = await POST({
+        path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userInfo?._id}`,
+        payload: formData,
       });
-      payload.files = filesBase64;
+      payload.files = filesId;
     }
-    const formData = new FormData();
-    for (let i = 0; i < filesData.length; i++) {
-      formData.append("files", filesData[i]);
-    }
-    console.log("filesData: ", filesData);
-    await POST({
-      path: "/util/upload" + `?userId=${userInfo?._id}`,
-      payload: formData,
-    });
-    // const socket = Socket.getInstant();
-    // const msgPayload = {
-    //   recipientId: "66e66070f27cd4c9a4287fa0",
-    //   senderId: userInfo._id,
-    //   message: payload,
-    // };
-    // console.log("payload: ", payload);
-    // socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload);
-    // dispatch(updateMsgInfo(defaulMessageInfo));
+    const socket = Socket.getInstant();
+    const msgPayload = {
+      recipientId: participant?._id,
+      senderId: userInfo._id,
+      message: payload,
+    };
+    socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload);
+    dispatch(updateMsgInfo(defaulMessageInfo));
   };
 
   return (

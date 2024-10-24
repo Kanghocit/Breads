@@ -21,41 +21,27 @@ export default class MessageController {
         });
         await conversation.save();
       } else {
-        // await Conversation.updateOne(
-        //   {
-        //     _id: ObjectId(conversation._id),
-        //   },
-        //   {
-        //     $push: {
-        //       msgIds: msgId,
-        //     },
-        //     $set: {
-        //       lastMsgId: msgId,
-        //     },
-        //   }
-        // );
+        await Conversation.updateOne(
+          {
+            _id: ObjectId(conversation._id),
+          },
+          {
+            $push: {
+              msgIds: msgId,
+            },
+            $set: {
+              lastMsgId: msgId,
+            },
+          }
+        );
       }
-      if (message?.files?.length) {
-        const urls = [];
-        for (let fileInfo of message.files) {
-          const { file, name, contentType } = fileInfo;
-          const fileUrl = await uploadFile({ file: file });
-          // const newFile = new File({
-          //   name: name,
-          //   url: fileUrl,
-          //   contentType: contentType,
-          // });
-          // const saveFile = await newFile.save();
-          // urls.push(saveFile._id);
-        }
-      }
-      // const newMessage = new Message({
-      //   _id: msgId,
-      //   conversationId: conversation._id,
-      //   sender: senderId,
-      //   ...message,
-      // });
-      // await newMessage.save();
+      const newMessage = new Message({
+        _id: msgId,
+        conversationId: conversation._id,
+        sender: senderId,
+        ...message,
+      });
+      await newMessage.save();
     } catch (error) {
       console.error("sendMessage: ", error);
     }
@@ -158,6 +144,8 @@ export default class MessageController {
       const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
       const msgs = await Message.find({
         _id: { $in: msgIds },
+      }).populate({
+        path: "files",
       });
       cb({ status: "success", data: msgs });
     } catch (error) {
