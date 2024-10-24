@@ -44,7 +44,7 @@ const FollowBtn = ({ user }) => {
       >
         {isFollowing
           ? "Unfollow"
-          : userInfo.followed?.includes(user._id)
+          : userInfo.followed?.includes(user?._id)
           ? "Follow Back"
           : "Follow"}
       </Button>

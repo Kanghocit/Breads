@@ -64,7 +64,7 @@ export const removePostFromCollection = async (req, res) => {
     );
     const result = [];
     const postsId = await getPostsIdByFilter({
-      filter: PageConstant.SAVED,
+      filter: {page: PageConstant.SAVED},
       userId,
     });
     for (const id of postsId) {
