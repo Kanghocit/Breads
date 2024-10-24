@@ -7,7 +7,7 @@ const Message = ({ msg }) => {
   const participant = useSelector(
     (state) => state.message.selectedConversation?.participant
   );
-  const ownMessage = userInfo?._id !== participant?._id;
+  const ownMessage = msg?.sender === userInfo?._id;
   const { content, createdAt, files, media } = msg;
 
   return (
@@ -30,16 +30,19 @@ const Message = ({ msg }) => {
       ) : (
         <Flex gap={2}>
           <Avatar src={participant?.avatar} w={7} h={7} />
-          <Text
-            maxW={"350px"}
-            bg={"gray.400"}
-            p={2}
-            ml={2}
-            borderRadius={"md"}
-            color={"black"}
-          >
-            {content}
-          </Text>
+          {content && (
+            <Text
+              maxW={"350px"}
+              bg={"gray.400"}
+              p={2}
+              ml={2}
+              borderRadius={"md"}
+              color={"black"}
+            >
+              {content}
+            </Text>
+          )}
+          {files?.length > 0 && <FilesMsg files={files} />}
         </Flex>
       )}
     </>

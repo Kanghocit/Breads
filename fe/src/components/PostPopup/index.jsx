@@ -34,6 +34,7 @@ import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
+  const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useDispatch();
@@ -45,13 +46,9 @@ const PostPopup = () => {
   const showToast = useShowToast();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
-
   const [content, setContent] = useState("");
-
-  const MAX_CONTENT_LENGTH = 500;
-
-  const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
+  const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
 
   useEffect(() => {
@@ -230,16 +227,16 @@ const PostPopup = () => {
             </Container>
           </Flex>
           <ModalFooter padding="0">
-            {/* đếm ngược */}
-            <Text
-              color={content.length > MAX_CONTENT_LENGTH ? "red" : textColor}
-              fontSize="12px"
-              mt="6px"
-              mr="16px"
-            >
-              {content.length >= 450 &&
-                `${MAX_CONTENT_LENGTH - content.length}`}
-            </Text>
+            {content.length >= 450 && (
+              <Text
+                color={content.length > MAX_CONTENT_LENGTH ? "red" : textColor}
+                fontSize="12px"
+                mt="6px"
+                mr="16px"
+              >
+                {MAX_CONTENT_LENGTH - content.length}
+              </Text>
+            )}
             <Button
               isLoading={clickPost}
               loadingText={isEditing ? "Saving" : "Posting"}

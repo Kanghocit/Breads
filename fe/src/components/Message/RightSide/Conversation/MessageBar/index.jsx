@@ -9,9 +9,11 @@ import {
   Route,
   UTIL_PATH,
 } from "../../../../../Breads-Shared/APIConfig";
+import { POST } from "../../../../../config/API";
 import useDebounce from "../../../../../hooks/useDebounce";
 import Socket from "../../../../../socket";
 import {
+  addNewMsg,
   defaulMessageInfo,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
@@ -21,7 +23,6 @@ import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import UploadDisplay from "./UploadDisplay";
-import { POST } from "../../../../../config/API";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -137,8 +138,11 @@ const MessageInput = () => {
       senderId: userInfo._id,
       message: payload,
     };
-    socket.emitWithAck(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload);
+    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, (newMsg) => {
+      dispatch(addNewMsg(newMsg));
+    });
     dispatch(updateMsgInfo(defaulMessageInfo));
+    setContent("");
   };
 
   return (

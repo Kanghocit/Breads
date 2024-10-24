@@ -1,22 +1,47 @@
 import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
+import { addNewMsg, getMsgs } from "../../../../../store/MessageSlice";
 import Message from "./Message";
 
 const ConversationBody = () => {
+  const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const selectedConversation = useSelector(
-    (state) => state.message.selectedConversation
+  const { selectedConversation, messages } = useSelector(
+    (state) => state.message
   );
-  const [msgs, setMsgs] = useState([]);
+  const conversationScreenRef = useRef(null);
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
       handleGetMsgs();
     }
-  }, [selectedConversation, userInfo]);
+  }, [selectedConversation?._id, userInfo]);
+
+  useSocket((socket) => {
+    socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (payload) => {
+      if (payload) {
+        dispatch(addNewMsg(payload));
+        scrollToBottom();
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages.length]);
+
+  const scrollToBottom = () => {
+    if (conversationScreenRef?.current) {
+      conversationScreenRef.current.scrollTo({
+        top: conversationScreenRef?.current?.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleGetMsgs = async () => {
     const socket = Socket.getInstant();
@@ -28,44 +53,55 @@ const ConversationBody = () => {
       },
       (res) => {
         const { data } = res;
-        console.log("data: ", data);
-        setMsgs(data);
+        dispatch(
+          getMsgs({
+            isNew: true,
+            msgs: data,
+          })
+        );
       }
     );
   };
 
   return (
-    <Flex
-      flexDir={"column"}
-      gap={4}
-      my={4}
-      height={"460px"}
-      overflowY={"auto"}
-      p={2}
-      px={3}
+    <div
+      ref={conversationScreenRef}
+      style={{
+        height: "460px",
+        overflowY: "auto",
+      }}
     >
-      {false &&
-        [...Array(5)].map((_, i) => (
-          <Flex
-            key={i}
-            gap={2}
-            alignItems={"center"}
-            p={1}
-            borderRadius={"md"}
-            alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
-          >
-            {i % 2 === 0 && <SkeletonCircle size={7} />}
-            <Flex flexDir={"column"} gap={2}>
-              <Skeleton h={"8px"} w={"250px"} />
-              <Skeleton h={"8px"} w={"250px"} />
-              <Skeleton h={"8px"} w={"250px"} />
+      <Flex
+        flexDir={"column"}
+        gap={4}
+        my={4}
+        height={"fit-content"}
+        py={2}
+        px={3}
+      >
+        {false &&
+          [...Array(5)].map((_, i) => (
+            <Flex
+              key={i}
+              gap={2}
+              alignItems={"center"}
+              p={1}
+              borderRadius={"md"}
+              alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
+            >
+              {i % 2 === 0 && <SkeletonCircle size={7} />}
+              <Flex flexDir={"column"} gap={2}>
+                <Skeleton h={"8px"} w={"250px"} />
+                <Skeleton h={"8px"} w={"250px"} />
+                <Skeleton h={"8px"} w={"250px"} />
+              </Flex>
+              {i % 2 !== 0 && <SkeletonCircle size={7} />}
             </Flex>
-            {i % 2 !== 0 && <SkeletonCircle size={7} />}
-          </Flex>
-        ))}
-      {msgs?.length !== 0 &&
-        msgs?.map((msg) => <Message key={msg?._id} msg={msg} />)}
-    </Flex>
+          ))}
+        {messages?.length !== 0 &&
+          messages?.map((msg) => <Message key={msg?._id} msg={msg} />)}
+      </Flex>
+    </div>
   );
 };
 
