@@ -38,7 +38,7 @@ const findOrCreateUserFolder = async (userId) => {
   }
 };
 
-export const uploadFileToDrive = async (filePath, userId) => {
+export const uploadFileFromBase64ToDrive = async (filePath, userId) => {
   try {
     const userFolderId = await findOrCreateUserFolder(userId); // Get user folder ID
 
@@ -81,7 +81,7 @@ export const uploadFolderToDrive = async (localFolderPath, userId) => {
     if (fs.statSync(itemPath).isDirectory()) {
       await uploadFolder(itemPath, userId);
     } else {
-      await uploadFile(itemPath, userId);
+      await uploadFileFromBase64(itemPath, userId);
     }
   }
 };

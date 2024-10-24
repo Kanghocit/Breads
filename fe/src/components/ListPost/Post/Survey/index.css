@@ -23,6 +23,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      z-index: 200;
     }
     .opt-bg {
       position: absolute;

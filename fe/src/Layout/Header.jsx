@@ -8,7 +8,7 @@ import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
 
-export const HeaderHeight = 72;
+export const HeaderHeight = 60;
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const Header = () => {
     REPOSTS,
     SEARCH,
     USER,
+    POST_DETAIL,
   } = PageConstant;
 
   const getBoxItems = () => {
@@ -58,6 +59,8 @@ const Header = () => {
       return "Search";
     } else if (currentPage === USER) {
       return "User profile";
+    } else if (currentPage === POST_DETAIL) {
+      return "Bread";
     }
   };
 
@@ -99,6 +102,7 @@ const Header = () => {
           gap={"12px"}
           position={"relative"}
           fontWeight={600}
+          fontSize={"17px"}
         >
           {getHeaderContent()}
           {[HOME, ACTIVITY].includes(currentPage) && (
@@ -133,7 +137,9 @@ const Header = () => {
                       padding="8px 12px"
                       cursor={"pointer"}
                       borderRadius={"8px"}
-                      _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+                      _hover={{
+                        bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleNavigate(item);

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fileTypes } from "./File";
 import { updateMsgInfo } from "../../../../../store/MessageSlice";
 
-const FILE_TYPES = {
+export const FILE_TYPES = {
   word: "word",
   excel: "excel",
   powerpoint: "powerpoint",
@@ -105,7 +105,7 @@ const UploadDisplay = () => {
               onClick={() => handleRemoveFile(index)}
             />
             <Image
-              src={getImgByType(file.type)}
+              src={getImgByType(file.contentType)}
               width={"100%"}
               maxHeight={"calc(100% - 16px)"}
               objectFit={"contain"}

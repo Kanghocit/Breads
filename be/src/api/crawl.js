@@ -1,12 +1,11 @@
 import axios from "axios";
-import { getImgUnsplash, randomAvatar } from "./utils/index.js";
-import User from "./models/user.model.js";
-import { Constants, gif } from "../Breads-Shared/Constants/index.js";
 import fs from "fs";
 import path from "path";
-import { ObjectId } from "../util/index.js";
-import SurveyOption from "./models/surveyOption.model.js";
+import { Constants, gif } from "../Breads-Shared/Constants/index.js";
 import Post from "./models/post.model.js";
+import SurveyOption from "./models/surveyOption.model.js";
+import User from "./models/user.model.js";
+import { getImgUnsplash, randomAvatar } from "./utils/index.js";
 
 const getListFakeUserId = async () => {
   try {

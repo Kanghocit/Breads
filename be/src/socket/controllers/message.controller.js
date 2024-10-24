@@ -1,10 +1,12 @@
-import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
-import Model from "../../util/ModelName.js";
 import Conversation from "../../api/models/conversation.model.js";
 import Message from "../../api/models/message.model.js";
+import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
+import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
+import Model from "../../util/ModelName.js";
+import { getFriendSocketId } from "../services/user.js";
 
 export default class MessageController {
-  static async sendMessage(payload, socket, io) {
+  static async sendMessage(payload, cb, socket, io) {
     try {
       const { recipientId, senderId, message } = payload;
       let conversation = await Conversation.findOne({
@@ -40,6 +42,30 @@ export default class MessageController {
         ...message,
       });
       await newMessage.save();
+      const friendOnline = socket.friendsInfo?.find(
+        (socketInfo) => socketInfo?.userId === recipientId
+      );
+      if (!friendOnline) {
+        const recipientSocketId = await getFriendSocketId(
+          recipientId,
+          io,
+          socket
+        );
+        if (recipientSocketId) {
+          socket.data.friendsInfo = [
+            ...socket.data.friendsInfo,
+            {
+              socketId: recipientSocketId,
+              userId: recipientId,
+            },
+          ];
+          io.to(recipientSocketId).emit(
+            Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+            newMessage
+          );
+        }
+      }
+      cb && cb(newMessage);
     } catch (error) {
       console.error("sendMessage: ", error);
     }
@@ -142,6 +168,8 @@ export default class MessageController {
       const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
       const msgs = await Message.find({
         _id: { $in: msgIds },
+      }).populate({
+        path: "files",
       });
       cb({ status: "success", data: msgs });
     } catch (error) {

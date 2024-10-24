@@ -96,7 +96,7 @@ const MediaDisplay = ({ post }) => {
         // border="1px solid gray"
         borderRadius="8px"
         overflowX={post.media?.length > 2 ? "auto" : "hidden"}
-        padding="10px"
+        padding="6px 0"
         ref={mediaContainerRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -120,13 +120,6 @@ const MediaDisplay = ({ post }) => {
             flexShrink={0}
             gap="10px"
             objectFit={post.media?.length === 1 ? "contain" : "cover"}
-            onClick={() => handleSeeFullMedia(post.media, index)}
-            
-            // style={{
-            //   width: post.media.length === 1 ? "100%" : "calc(50% - 5px)",
-
-            //   maxWidth: post.media.length > 2 ? "200px" : "none",
-            // }}
           >
             {media.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
@@ -140,7 +133,11 @@ const MediaDisplay = ({ post }) => {
                   objectFit: "cover",
                   borderRadius: "8px",
                 }}
-                onClick={() => handleSeeFullMedia(post.media, index)}
+                onClick={() => {
+                  if (!postAction) {
+                    handleSeeFullMedia(post.media, index);
+                  }
+                }}
               />
             ) : (
               <Image
@@ -149,14 +146,15 @@ const MediaDisplay = ({ post }) => {
                 alt={`Post Media ${index}`}
                 width="auto"
                 height="250px"
-                
                 maxHeight="300px"
                 borderRadius="8px"
                 onDragStart={(e) => e.preventDefault()}
                 onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handleSeeFullMedia(post.media, index);
+                  if (!postAction) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleSeeFullMedia(post.media, index);
+                  }
                 }}
               />
             )}

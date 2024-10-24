@@ -87,6 +87,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 <UserInfoPopover
                   user={post?.authorInfo}
                   content={post?.content}
+                  isParentPost={isParentPost}
                 />
               </Flex>
             </Flex>
@@ -168,7 +169,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             </Text>
           )}
           <MediaDisplay post={post} />
-          {post.survey?.length > 0 && <Survey post={post} />}
+          {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
               {post?.quote?._id && isParentPost ? (

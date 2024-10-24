@@ -53,7 +53,7 @@ const FileUpload = ({ setFilesData }) => {
       const fileMetaData = selectedFiles.map((file) => {
         return {
           name: file.name,
-          type: file.type,
+          contentType: file.type,
         };
       });
       setFilesData(selectedFiles);

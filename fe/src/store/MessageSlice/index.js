@@ -5,10 +5,13 @@ export const defaulMessageInfo = {
   content: "",
   files: null,
   folder: null,
-  media: {
+  media: [],
+  /*
+  {
     url: "",
     type: "",
-  },
+  }
+  */
   audio: null,
   icon: "",
 };
@@ -31,6 +34,31 @@ const msgSlice = createSlice({
     selectConversation: (state, action) => {
       state.selectedConversation = action.payload;
     },
+    getMsgs: (state, action) => {
+      const { msgs, isNew } = action.payload;
+      if (isNew) {
+        state.messages = msgs;
+      } else {
+        state.messages = [...msgs, state.messages];
+      }
+    },
+    addNewMsg: (state, action) => {
+      const msgInfo = action.payload;
+      state.messages = [...state.messages, msgInfo];
+      //Update last message
+      if (state.selectedConversation?._id === msgInfo.conversationId) {
+        state.selectedConversation.lastMsg = msgInfo;
+      }
+      const conversationIndex = state.conversations.findIndex(
+        (item) => item._id === msgInfo.conversationId
+      );
+      if (conversationIndex !== -1) {
+        state.conversations[conversationIndex] = {
+          ...state.conversations[conversationIndex],
+          lastMsg: msgInfo,
+        };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getConversations.pending, (state, action) => {
@@ -44,5 +72,6 @@ const msgSlice = createSlice({
   },
 });
 
-export const { updateMsgInfo, selectConversation } = msgSlice.actions;
+export const { updateMsgInfo, selectConversation, getMsgs, addNewMsg } =
+  msgSlice.actions;
 export default msgSlice.reducer;

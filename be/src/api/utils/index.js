@@ -1,7 +1,7 @@
 import cloudinary from "cloudinary";
 import axios from "axios";
 
-export const uploadFile = async ({ base64, style = null }) => {
+export const uploadFileFromBase64 = async ({ base64, style = null }) => {
   try {
     if (!base64) {
       return "";
@@ -23,15 +23,51 @@ export const uploadFile = async ({ base64, style = null }) => {
     dataForm.append("cloud_name", cloud_name);
     dataForm.append("signature", signature);
     dataForm.append("timestamp", timestamp);
-    const url = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
+    const url = `https://api.cloudinary.com/v1_1/${cloud_name}/raw/upload`;
     const { data } = await axios.post(url, dataForm);
     if (style) {
       return `https://res.cloudinary.com/${cloud_name}/image/upload/${style}/${data.public_id}.png`;
     }
-    console.log("imgUrl: ", data.url);
+    console.log("fileUrl: ", data.url);
     return data.url;
   } catch (err) {
-    console.error(err);
+    console.error("uploadFileFromBase64: ", err?.message);
+  }
+};
+
+export const uploadFile = async ({ file }) => {
+  try {
+    console.log("file: ", file);
+    if (!file) {
+      return "";
+    }
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const cloud_name = process.env.CLOUDINARY_CLOUD_NAME ?? "";
+    const api_key = process.env.CLOUDINARY_API_KEY ?? "";
+    const api_secret = process.env.CLOUDINARY_API_SECRET ?? "";
+    const signature = await cloudinary.utils.api_sign_request(
+      {
+        timestamp: timestamp,
+      },
+      api_secret
+    );
+
+    const dataForm = new FormData();
+    dataForm.append("file", file);
+    dataForm.append("api_key", api_key);
+    dataForm.append("cloud_name", cloud_name);
+    dataForm.append("signature", signature);
+    dataForm.append("timestamp", timestamp);
+    const url = `https://api.cloudinary.com/v1_1/${cloud_name}/raw/upload`;
+    try {
+      const { data } = await axios.post(url, dataForm);
+    } catch (err) {
+      console.log("cloudinary err: ", err.message);
+    }
+    console.log("fileUrl: ", data.url);
+    return data.url;
+  } catch (err) {
+    console.error("uploadFileFromBase64: ", err?.message);
   }
 };
 

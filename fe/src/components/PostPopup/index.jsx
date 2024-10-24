@@ -34,6 +34,7 @@ import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 
 const PostPopup = () => {
+  const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useDispatch();
@@ -45,10 +46,9 @@ const PostPopup = () => {
   const showToast = useShowToast();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
-
   const [content, setContent] = useState("");
-  const debounceContent = useDebounce(content, 500);
   const [clickPost, setClickPost] = useState(false);
+  const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
 
   useEffect(() => {
@@ -216,11 +216,27 @@ const PostPopup = () => {
               {postInfo.survey.length !== 0 && <PostSurvey />}
               {postSelected?._id &&
                 postAction === PostConstants.ACTIONS.REPOST && (
-                  <Post post={postSelected} isParentPost={true} />
+                  <div
+                    style={{
+                      margin: "12px 0",
+                    }}
+                  >
+                    <Post post={postSelected} isParentPost={true} />
+                  </div>
                 )}
             </Container>
           </Flex>
           <ModalFooter padding="0">
+            {content.length >= 450 && (
+              <Text
+                color={content.length > MAX_CONTENT_LENGTH ? "red" : textColor}
+                fontSize="12px"
+                mt="6px"
+                mr="16px"
+              >
+                {MAX_CONTENT_LENGTH - content.length}
+              </Text>
+            )}
             <Button
               isLoading={clickPost}
               loadingText={isEditing ? "Saving" : "Posting"}
@@ -237,6 +253,7 @@ const PostPopup = () => {
                 setClickPost(true);
                 handleUploadPost();
               }}
+              isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
               {isEditing ? "Save" : "Post"}
             </Button>

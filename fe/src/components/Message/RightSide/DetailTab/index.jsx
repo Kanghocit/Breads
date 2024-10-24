@@ -117,7 +117,7 @@ const DetailConversationTab = () => {
                   <AccordionIcon />
                 </AccordionButton>
               </h2>
-              <AccordionPanel pb={3} px={3}>
+              <AccordionPanel pb={3} px={4}>
                 {subItems.map(({ name, icon }) => (
                   <Flex
                     py={2}
