@@ -13,37 +13,44 @@ import { changePage } from "../store/UtilSlice";
 import ErrorPage from "./ErrorPage";
 
 const UserPage = () => {
-  const dispatch = useDispatch();
-  const userSelected = useSelector((state) => state.user.userSelected);
-  
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { userSelected, userInfo } = useSelector((state) => state.user);
+  const displayPageData = useSelector((state) => state.util.displayPageData);
   const [usersFollow, setUsersFollow] = useState({
     followed: [],
     following: [],
   });
   const { userId } = useParams();
 
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const result = await dispatch(getUserInfo({ userId, getCurrentUser: false })).unwrap();
-        
-        if (!result || result.error) {
-          navigate("/error");
-        } else {
-          dispatch(getUserPosts(userId));
-          dispatch(changePage({ nextPage: PageConstant.USER }));
-          handleGetUsersFollow();
-        }
-      } catch (error) {
-        navigate("/error");
-      }
-    };
-
+  useEffect(async () => {
     fetchUserData();
     window.scrollTo(0, 0);
-  }, [userId, dispatch, navigate]);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!!userId) {
+      dispatch(getUserPosts(userId));
+    }
+  }, [displayPageData]);
+
+  const fetchUserData = async () => {
+    try {
+      const result = await dispatch(
+        getUserInfo({ userId, getCurrentUser: false })
+      ).unwrap();
+      if (!result || result.error) {
+        navigate("/error");
+      } else {
+        dispatch(getUserPosts(userId));
+        dispatch(changePage({ nextPage: PageConstant.USER }));
+        handleGetUsersFollow();
+      }
+    } catch (err) {
+      console.error("fetchUserData: ", err);
+      navigate("/error");
+    }
+  };
 
   const handleGetUsersFollow = async () => {
     try {
@@ -66,13 +73,6 @@ const UserPage = () => {
     <>
       <ContainerLayout>
         <UserHeader user={userSelected} usersFollow={usersFollow} />
-        <div
-          style={{
-            marginTop: "24px",
-          }}
-        >
-          <ListPost />
-        </div>
       </ContainerLayout>
     </>
   );

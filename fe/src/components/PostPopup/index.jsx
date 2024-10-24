@@ -78,7 +78,7 @@ const PostPopup = () => {
     let checkResult = true;
     let msg = "";
 
-    //Check condition for survey
+
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
@@ -206,11 +206,11 @@ const PostPopup = () => {
               <Text color={textColor} fontWeight="600">
                 {userInfo.username}
               </Text>
-              <TextArea
-                text={content}
-                setText={(value) => handleContent(value)}
-                tagUsers={true}
-              />
+                <TextArea
+                  text={content}
+                  setText={(value) => handleContent(value)}
+                  tagUsers={true}
+                />
               <MediaDisplay post={postInfo} />
               {!closePostAction && <PostPopupAction />}
               {postInfo.survey.length !== 0 && <PostSurvey />}

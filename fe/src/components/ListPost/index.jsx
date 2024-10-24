@@ -16,11 +16,11 @@ const ListPost = () => {
 
   const handleGetPosts = async ({ page }) => {
     try {
-      if (currentPage === PageConstant.USER) {
+      if (currentPage === PageConstant.USER) {         
       } else {
         dispatch(
           getPosts({
-            filter: displayPageData,
+            filter: {page: displayPageData},
             userId: userInfo?._id,
             page: page,
           })
