@@ -41,7 +41,6 @@ const Actions = ({ post }) => {
   const [openSubBox, setOpenSubBox] = useState(false);
   const { copyURL } = useCopyLink();
   const socket = Socket.getInstant();
-  console.log("haaaa ", post);
 
   const handleLike = () => {
     const payload = {
@@ -103,7 +102,7 @@ const Actions = ({ post }) => {
     {
       name: ACTIONS_NAME.SHARE,
       statistic: post?.share?.length,
-      icon: <ShareIcon size={10}/>,
+      icon: <ShareIcon size={10} />,
       onClick: () => {
         setOpenSubBox(!openSubBox);
       },
@@ -155,7 +154,6 @@ const Actions = ({ post }) => {
                     onClick={() => {
                       copyURL(post);
                       setOpenSubBox(false);
-          
                     }}
                   >
                     Copy Link
@@ -176,9 +174,9 @@ const Actions = ({ post }) => {
                   bg={"transparent"}
                   borderRadius={"16px"}
                   _active={{
-                    bg: "rgba(0, 0, 0, 0.1)", 
-                    boxShadow: "none", 
-                    transform: "none", 
+                    bg: "rgba(0, 0, 0, 0.1)",
+                    boxShadow: "none",
+                    transform: "none",
                   }}
                   zIndex={0}
                 >

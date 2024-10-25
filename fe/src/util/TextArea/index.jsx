@@ -1,8 +1,8 @@
 import { Container, useColorModeValue } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import UsersTagBox from "../../components/UsersTagBox";
 import "./index.css";
-import { useSelector } from "react-redux";
 
 const getCaretCoordinates = (input) => {
   const { selectionStart } = input;

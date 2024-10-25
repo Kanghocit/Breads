@@ -16,6 +16,7 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
       p={1}
       alignItems={"center"}
       justifyContent={"space-between"}
+      height={"56px"}
     >
       <Flex
         width={"fit-content"}

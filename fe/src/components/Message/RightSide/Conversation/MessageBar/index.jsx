@@ -15,9 +15,10 @@ import Socket from "../../../../../socket";
 import {
   addNewMsg,
   defaulMessageInfo,
+  updateLoadingUpload,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
-import { replaceEmojis } from "../../../../../util";
+import { handleUploadFiles, replaceEmojis } from "../../../../../util";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
@@ -51,6 +52,7 @@ const MessageInput = () => {
   const [popup, setPopup] = useState("");
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
+  const [uploadFilesId, setUploadFilesId] = useState([]);
   const [content, setContent] = useState("");
   const debouceContent = useDebounce(content);
   const mediaRef = useRef();
@@ -68,6 +70,16 @@ const MessageInput = () => {
       })
     );
   }, [debouceContent]);
+
+  useEffect(() => {
+    if (uploadFilesId?.length) {
+      setTimeout(() => {
+        handleSendMsg();
+        setUploadFilesId([]);
+        dispatch(updateLoadingUpload(false));
+      }, 1000);
+    }
+  }, [uploadFilesId.length]);
 
   const onClose = () => {
     setPopup("");
@@ -118,19 +130,16 @@ const MessageInput = () => {
 
   const handleSendMsg = async () => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
-    if (payload.files?.length) {
-      const formData = new FormData();
-      const filesName = [];
-      for (let i = 0; i < filesData.length; i++) {
-        filesName.push(filesData[i].name);
-        formData.append("files", filesData[i]);
-      }
-      formData.append("filesName", filesName);
-      const filesId = await POST({
-        path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userInfo?._id}`,
-        payload: formData,
+    if (payload.files?.length && uploadFilesId.length === 0) {
+      const filesId = await handleUploadFiles({
+        files: filesData,
+        userId: userInfo._id,
       });
-      payload.files = filesId;
+      setUploadFilesId(filesId);
+      dispatch(updateLoadingUpload(true));
+      return;
+    } else if (uploadFilesId?.length) {
+      payload.files = uploadFilesId;
     }
     const socket = Socket.getInstant();
     const msgPayload = {
@@ -146,48 +155,43 @@ const MessageInput = () => {
   };
 
   return (
-    <>
-      <form
-        style={{
-          position: "relative",
-        }}
-      >
-        {!!files && files?.length !== 0 && <UploadDisplay />}
-        <InputGroup alignItems={"center"} p={2}>
-          {icons.map(({ action, icon }) => (
-            <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
-          ))}
-          <Input
-            flex={1}
-            placeholder="Type a message"
-            margin={"0 8px"}
-            value={content}
-            onChange={(e) => setContent(replaceEmojis(e.target.value))}
+    <form
+      style={{
+        position: "relative",
+      }}
+    >
+      {!!files && files?.length !== 0 && <UploadDisplay />}
+      <InputGroup alignItems={"center"} p={2} width={"100%"}>
+        {icons.map(({ action, icon }) => (
+          <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
+        ))}
+        <Input
+          flex={1}
+          placeholder="Type a message"
+          margin={"0 8px"}
+          value={content}
+          onChange={(e) => setContent(replaceEmojis(e.target.value))}
+        />
+        <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
+          <EmojiMsgBtn
+            popup={popup}
+            closeTooltip={closeTooltip}
+            onClose={onClose}
+            onOpen={onOpen}
           />
-          <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
-            <EmojiMsgBtn
-              popup={popup}
-              closeTooltip={closeTooltip}
-              onClose={onClose}
-              onOpen={onOpen}
-            />
-          </InputRightElement>
-          <IconWrapper
-            label={ACTIONS.SEND}
-            icon={
-              ableToSend ? (
-                <IoSendSharp
-                  style={iconStyle}
-                  onClick={() => handleSendMsg()}
-                />
-              ) : (
-                <MdThumbUp style={iconStyle} />
-              )
-            }
-          />
-        </InputGroup>
-      </form>
-    </>
+        </InputRightElement>
+        <IconWrapper
+          label={ACTIONS.SEND}
+          icon={
+            ableToSend ? (
+              <IoSendSharp style={iconStyle} onClick={() => handleSendMsg()} />
+            ) : (
+              <MdThumbUp style={iconStyle} />
+            )
+          }
+        />
+      </InputGroup>
+    </form>
   );
 };
 

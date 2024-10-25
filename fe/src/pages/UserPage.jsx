@@ -23,7 +23,7 @@ const UserPage = () => {
   });
   const { userId } = useParams();
 
-  useEffect(async () => {
+  useEffect(() => {
     fetchUserData();
     window.scrollTo(0, 0);
   }, [userId]);

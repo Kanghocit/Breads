@@ -60,6 +60,19 @@ const postSchema = mongoose.Schema(
         required: false,
       },
     ],
+    links: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+    files: [
+      {
+        type: ObjectId,
+        ref: "File",
+        required: false,
+      },
+    ],
   },
   {
     timestamps: true,

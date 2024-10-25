@@ -10,14 +10,36 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    media: {
-      type: Array,
+    media: [
+      {
+        type: Object,
+        required: false,
+      },
+    ],
+    file: {
+      type: ObjectId,
+      ref: "File",
       required: false,
     },
-    files: [
+    postShared: {
+      type: ObjectId,
+      ref: "Post",
+      required: false,
+    },
+    links: [
       {
-        type: ObjectId,
-        ref: "File",
+        type: String,
+        required: false,
+      },
+    ],
+    respondTo: {
+      type: ObjectId,
+      ref: "Message",
+      required: false,
+    },
+    react: [
+      {
+        type: Object,
         required: false,
       },
     ],

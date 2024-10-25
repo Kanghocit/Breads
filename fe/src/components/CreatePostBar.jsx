@@ -31,7 +31,8 @@ const CreatePostBar = () => {
           placeholder="What's new"
           padding={"12px"}
           border={"none"}
-          value={""}
+          defaultValue={""}
+          onChange={(e) => {}}
           onClick={() => handleOpenPostPopup()}
         />
         <Button onClick={() => handleOpenPostPopup()}>Post</Button>

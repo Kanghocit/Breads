@@ -1,19 +1,28 @@
-import { Flex, Skeleton, SkeletonCircle } from "@chakra-ui/react";
-import { useEffect, useRef } from "react";
+import { Button, Flex, Text } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
-import { addNewMsg, getMsgs } from "../../../../../store/MessageSlice";
+import { addNewMsg } from "../../../../../store/MessageSlice";
+import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
+import { formatDateToDDMMYYYY } from "../../../../../util";
 import Message from "./Message";
+import MessagesSkeleton from "./Message/skeleton";
+import { FaAngleDown } from "react-icons/fa";
 
 const ConversationBody = () => {
+  const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { selectedConversation, messages } = useSelector(
     (state) => state.message
   );
+  const lastMsg = selectedConversation?.lastMsg;
+  const [scrollText, setScrollText] = useState("Move to current");
+  const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
   const conversationScreenRef = useRef(null);
+  const init = useRef(true);
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
@@ -25,14 +34,38 @@ const ConversationBody = () => {
     socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (payload) => {
       if (payload) {
         dispatch(addNewMsg(payload));
-        scrollToBottom();
+        setScrollText("New message");
       }
     });
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages.length]);
+    const conversationTag = document.getElementById("conversation-body");
+    if (conversationTag) {
+      const listener = () => {
+        const { scrollTop, clientHeight, scrollHeight } = conversationTag;
+        if (scrollTop + clientHeight < scrollHeight) {
+          setNoticeNewMsgBox(true);
+        } else {
+          setNoticeNewMsgBox(false);
+        }
+      };
+      conversationTag.addEventListener("scroll", listener);
+      return () => {
+        conversationTag.removeEventListener("scroll", listener);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      (init.current && Object.keys(messages)?.length > 0) ||
+      (!!lastMsg && lastMsg?.sender === userInfo?._id)
+    ) {
+      scrollToBottom();
+      init.current = false;
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {
@@ -64,44 +97,69 @@ const ConversationBody = () => {
   };
 
   return (
-    <div
-      ref={conversationScreenRef}
-      style={{
-        height: "460px",
-        overflowY: "auto",
-      }}
-    >
-      <Flex
-        flexDir={"column"}
-        gap={4}
-        my={4}
-        height={"fit-content"}
-        py={2}
-        px={3}
+    <>
+      <div
+        id="conversation-body"
+        ref={conversationScreenRef}
+        style={{
+          overflowY: "auto",
+          flex: 1,
+          maxHeight: "calc(100% - 112px)",
+          position: "relative",
+        }}
       >
-        {false &&
-          [...Array(5)].map((_, i) => (
-            <Flex
-              key={i}
-              gap={2}
-              alignItems={"center"}
-              p={1}
-              borderRadius={"md"}
-              alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
-            >
-              {i % 2 === 0 && <SkeletonCircle size={7} />}
-              <Flex flexDir={"column"} gap={2}>
-                <Skeleton h={"8px"} w={"250px"} />
-                <Skeleton h={"8px"} w={"250px"} />
-                <Skeleton h={"8px"} w={"250px"} />
-              </Flex>
-              {i % 2 !== 0 && <SkeletonCircle size={7} />}
-            </Flex>
-          ))}
-        {messages?.length !== 0 &&
-          messages?.map((msg) => <Message key={msg?._id} msg={msg} />)}
-      </Flex>
-    </div>
+        <Flex
+          flexDir={"column"}
+          gap={4}
+          my={2}
+          height={"fit-content"}
+          py={2}
+          px={3}
+        >
+          {false && <MessagesSkeleton />}
+          {Object.keys(messages)?.length !== 0 &&
+            Object.keys(messages).map((date) => {
+              const msgs = messages[date];
+              const brStyle = {
+                height: "2px",
+                backgroundColor: "gray",
+                flex: 1,
+              };
+              return (
+                <>
+                  <Flex alignItems={"center"} justifyContent={"center"}>
+                    <div style={brStyle} />
+                    <Text px={2}>
+                      {date === currentDateFormat ? "Today" : date}
+                    </Text>
+                    <div style={brStyle} />
+                  </Flex>
+                  {msgs.map((msg) => (
+                    <Message key={msg?._id} msg={msg} />
+                  ))}
+                </>
+              );
+            })}
+        </Flex>
+      </div>
+      {noticeNewMsgBox && (
+        <Button
+          position={"fixed"}
+          right={"30px"}
+          bottom={"72px"}
+          onClick={() => {
+            scrollToBottom();
+            setNoticeNewMsgBox(false);
+            setScrollText("Move to current");
+          }}
+        >
+          <Flex alignItems={"center"} gap={2}>
+            {scrollText}
+            <FaAngleDown />
+          </Flex>
+        </Button>
+      )}
+    </>
   );
 };
 

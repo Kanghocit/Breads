@@ -1,3 +1,6 @@
+import { POST } from "../config/API";
+import { Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
+
 export const emojiMap = {
   ":)": {
     icon: "😊",
@@ -347,3 +350,58 @@ export const convertToBase64 = (file) =>
     reader.onloadend = () => resolve(reader.result);
     reader.onerror = reject;
   });
+
+export const handleUploadFiles = async ({ files, userId }) => {
+  try {
+    if (!!files && files?.length > 0 && !userId) {
+      return [];
+    }
+    const formData = new FormData();
+    const filesName = [];
+    for (let i = 0; i < files.length; i++) {
+      filesName.push(files[i].name);
+      formData.append("files", files[i]);
+    }
+    formData.append("filesName", filesName);
+    const filesId = await POST({
+      path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userId}`,
+      payload: formData,
+    });
+    return filesId;
+  } catch (err) {
+    console.error("handleUploadFiles: ", err);
+    return [];
+  }
+};
+
+export const getUserTimezoneOffset = () => {
+  const offsetInMinutes = new Date().getTimezoneOffset();
+  const offsetInHours = -offsetInMinutes / 60;
+  const sign = offsetInHours >= 0 ? "+" : "-";
+  return `${sign}${Math.abs(offsetInHours)}`;
+};
+
+export const convertUTCToLocalTime = (utcDateString) => {
+  const timeZoneOffset = getUserTimezoneOffset();
+  const utcDate = new Date(utcDateString);
+  const offsetHours = parseInt(timeZoneOffset, 10);
+  const localTime = new Date(utcDate.getTime() + offsetHours * 60 * 60 * 1000);
+  return localTime;
+};
+
+export const isDifferentDate = (date1, date2) => {
+  return (
+    date1.getFullYear() !== date2.getFullYear() ||
+    date1.getMonth() !== date2.getMonth() ||
+    date1.getDate() !== date2.getDate()
+  );
+};
+
+export const formatDateToDDMMYYYY = (date) => {
+  let dateValue = date ?? new Date();
+  const day = String(dateValue.getDate()).padStart(2, "0");
+  const month = String(dateValue.getMonth() + 1).padStart(2, "0");
+  const year = dateValue.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
