@@ -7,12 +7,11 @@ import { updatePostInfo } from "../../store/PostSlice";
 import PostConstants from "../../util/PostConstants";
 import { updateSeeMedia } from "../../store/UtilSlice";
 
-const MediaDisplay = ({ post }) => {
+const MediaDisplay = ({ post, isDetail, isParentPost }) => {
   const postAction = useSelector((state) => state.post.postAction);
   const dispatch = useDispatch();
   const mediaContainerRef = useRef(null);
   const isDragging = useRef(false);
-  const { colorMode } = useColorMode();
   const startPosition = useRef(0);
   const scrollPosition = useRef(0);
   const velocity = useRef(0);
@@ -84,19 +83,30 @@ const MediaDisplay = ({ post }) => {
       }, 16);
     }
   };
+  const handleSeeDetail = () => {
+    window.open(`/posts/${post._id}`, "_self");
+  };
   return (
     post.media?.length > 0 && (
       <Flex
         gap="10px"
         mt="10px"
+        zIndex={1}
         // bg={colorMode === "dark" ? "#181818" : "#fafafa"}
         wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
         maxWidth="100%"
-        // border="1px solid gray"
         borderRadius="8px"
         overflowX={post.media?.length > 2 ? "auto" : "hidden"}
         padding="6px 0"
+        onClick={() => {
+          if (
+            !isDetail &&
+            !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
+          ) {
+            handleSeeDetail();
+          }
+        }}
         ref={mediaContainerRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

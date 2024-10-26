@@ -37,23 +37,19 @@ import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 import UserTagPopup from "../../UserTagPopup";
 
-
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
-  console.log("khang", post)
   const [isOpen, setIsOpen] = useState(false);
   const { colorMode } = useColorMode();
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const navigate = useNavigate();
-  const userInfo = useSelector((state) => state.user.userInfo);
+
   const dispatch = useDispatch();
   const postAction = useSelector((state) => state.post.postAction);
   const [openPostBox, setOpenPostBox] = useState(false);
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const usernameRegex = /(@[\w.]+)/g;
+
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
-  
 
   useSocket((socket) => {
     socket.on(POST_PATH.GET_ONE, ({ usersLike, postId }) => {
@@ -179,7 +175,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay post={post} />
+          <MediaDisplay post={post} isDetail={isDetail} isParentPost={isParentPost}/>
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
