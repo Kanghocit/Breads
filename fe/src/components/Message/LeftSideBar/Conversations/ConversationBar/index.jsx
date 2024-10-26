@@ -23,6 +23,13 @@ const ConversationBar = ({ conversation }) => {
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
     const userPrefix = isCurrentUser ? "You" : participant?.username;
+    const msgContent = lastMsg.content?.trim()
+      ? lastMsg.content?.trim()
+      : lastMsg?.file?._id
+      ? "Send a file to you"
+      : lastMsg?.media?.length
+      ? "Send media to you"
+      : "";
     return (
       <>
         <span
@@ -33,7 +40,7 @@ const ConversationBar = ({ conversation }) => {
             maxWidth: "100px",
           }}
         >
-          {userPrefix + ": " + lastMsg?.content}
+          {userPrefix + ": " + msgContent}
         </span>
         <span>{" • " + moment(updatedAt).fromNow(true)}</span>
       </>

@@ -14,9 +14,8 @@ const Conversations = ({ searchValue, setSearchValue }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
-  const { conversations, selectedConversation, isLoading } = useSelector(
-    (state) => state.message
-  );
+  const { conversations, selectedConversation, loadingConversations } =
+    useSelector((state) => state.message);
   const [init, setInit] = useState(true);
 
   useEffect(() => {
@@ -67,7 +66,7 @@ const Conversations = ({ searchValue, setSearchValue }) => {
         </>
       ) : (
         <>
-          {isLoading ? (
+          {loadingConversations ? (
             <Flex
               gap={"12px"}
               flexDirection={"column"}

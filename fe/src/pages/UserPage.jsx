@@ -9,7 +9,7 @@ import UserHeader from "../components/UserHeader";
 import { GET } from "../config/API";
 import { getUserPosts } from "../store/PostSlice/asyncThunk";
 import { getUserInfo } from "../store/UserSlice/asyncThunk";
-import { changePage } from "../store/UtilSlice";
+import { changeDisplayPageData, changePage } from "../store/UtilSlice";
 import ErrorPage from "./ErrorPage";
 
 const UserPage = () => {
@@ -23,10 +23,11 @@ const UserPage = () => {
   });
   const { userId } = useParams();
 
-  useEffect(async () => {
+  useEffect(() => {
     fetchUserData();
     window.scrollTo(0, 0);
-  }, [userId]);
+    dispatch(changeDisplayPageData(""));
+  }, []);
 
   useEffect(() => {
     if (!!userId) {
@@ -42,7 +43,6 @@ const UserPage = () => {
       if (!result || result.error) {
         navigate("/error");
       } else {
-        dispatch(getUserPosts(userId));
         dispatch(changePage({ nextPage: PageConstant.USER }));
         handleGetUsersFollow();
       }

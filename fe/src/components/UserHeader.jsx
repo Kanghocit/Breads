@@ -7,35 +7,28 @@ import {
   MenuItem,
   MenuList,
   Portal,
-  Tabs,
-  TabList,
-  TabPanels,
   Tab,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
+import { EmptyContentSvg } from "../assests/icons";
 import useShowToast from "../hooks/useShowToast";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
 import FollowBtn from "./FollowBtn";
-import { EmptyContentSvg } from "../assests/icons";
 
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} from "@chakra-ui/react";
-import UserFollowBox from "./UserFollowBox";
+import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import ListPost from "../components/ListPost";
-import PostReplied from "./PostPopup/PostReplied";
+import UserFollowBox from "./UserFollowBox";
+
 import PostConstants from "../util/PostConstants";
+import SkeletonPost from "./ListPost/Post/skeleton";
 
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
@@ -48,9 +41,10 @@ const TABS = {
   Reposts: PostConstants.ACTIONS.REPOST,
 };
 
-const UserHeader = ({ user, usersFollow, userPosts, post }) => {
+const UserHeader = ({ user, usersFollow, userPosts }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const { isLoading } = useSelector((state) => state.post);
   const showToast = useShowToast();
   const [followBox, setFollowBox] = useState({
     open: false,
@@ -193,15 +187,40 @@ const UserHeader = ({ user, usersFollow, userPosts, post }) => {
           </TabList>
 
           <TabPanels>
-            <TabPanel p={0} mt={4}>
-              <ListPost posts={userPosts} />
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              <ListPost posts={userPosts} />
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              <ListPost posts={userPosts} />
-            </TabPanel>
+              <TabPanel  p={0} mt={4}>
+                {isLoading ? (
+                  <Flex direction="column" gap={2}>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={num} />
+                    ))}
+                  </Flex>
+                ) : (
+                  <ListPost posts={userPosts} />
+                )}
+              </TabPanel>
+              <TabPanel  p={0} mt={4}>
+                {isLoading ? (
+                  <Flex direction="column" gap={2}>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={num} />
+                    ))}
+                  </Flex>
+                ) : (
+                  <ListPost posts={userPosts} />
+                )}
+              </TabPanel>
+              <TabPanel  p={0} mt={4}>
+                {isLoading ? (
+                  <Flex direction="column" gap={2}>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={num} />
+                    ))}
+                  </Flex>
+                ) : (
+                  <ListPost posts={userPosts} />
+                )}
+              </TabPanel>
+            
           </TabPanels>
         </Tabs>
       </VStack>

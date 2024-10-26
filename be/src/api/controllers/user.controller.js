@@ -45,7 +45,7 @@ export const signupUser = async (req, res) => {
     if (user?._id) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "User already exists!" });
+        .json({ error: "Tài khoản đã tồn tại" });
     }
 
     // const salt = await bcrypt.genSalt(10);
@@ -59,19 +59,14 @@ export const signupUser = async (req, res) => {
     await newUser.save();
     if (newUser) {
       // generateTokenAndSetCookie(newUser._id, res);
-      res.status(201).json({
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        username: newUser.username,
-        bio: newUser.bio,
-        avatar: newUser?.avatar,
-      });
+      res.status(HTTPStatus.CREATED).json({ message: "Tạo mới thành công" });
     } else {
-      res.status(HTTPStatus.BAD_REQUEST).json({ error: "Invalid user data" });
+      res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ error: "Tạo mới không thành công" });
     }
   } catch (err) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: "Server lỗi" });
     console.log("Error in Signup User", err.message);
   }
 };
@@ -81,16 +76,21 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
-    const isPasswordCorrect = true;
+    const isPasswordCorrect = password == user?.password;
     // await bcrypt.compare(
     //   password,
     //   user?.password || ""
     // );
 
-    if (!user || !isPasswordCorrect) {
+    if (!user) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "Invalid username or password" });
+        .json({ error: "Tài khoản không tồn tại" });
+    }
+    if (!isPasswordCorrect) {
+      return res
+        .status(HTTPStatus.UNAUTHORIZED)
+        .json({ error: "Mật khẩu sai" });
     }
 
     // generateTokenAndSetCookie(user._id, res);
@@ -98,7 +98,7 @@ export const loginUser = async (req, res) => {
 
     res.status(HTTPStatus.OK).json(result);
   } catch (err) {
-    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+    res.status(HTTPStatus.SERVER_ERR).json({ error: "Server lỗi" });
     console.log("Error in loginUser", err.message);
   }
 };
