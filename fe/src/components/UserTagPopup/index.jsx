@@ -10,12 +10,8 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-<<<<<<< HEAD
-// import CustomLinkPreview from "../../util/CustomLinkPreview";
-=======
-import { useColorMode } from "@chakra-ui/react";
+
 import { Fragment, useState } from "react";
->>>>>>> fa1540c5de6f822f36e99770040b57df6553d048
 
 const UserTagPopup = ({ post, content }) => {
   const tagInfo = post.usersTagInfo || [];
@@ -53,7 +49,6 @@ const UserTagPopup = ({ post, content }) => {
             );
           }
           return (
-<<<<<<< HEAD
             <>
               <span key={index} style={{ marginRight: "5px" }}>
                 <Link
@@ -66,8 +61,7 @@ const UserTagPopup = ({ post, content }) => {
                   {part}
                 </Link>
               </span>
-            </>
-=======
+           
             <Fragment key={"tag-popup-" + index}>
               <Link
                 key={index}
@@ -124,8 +118,9 @@ const UserTagPopup = ({ post, content }) => {
                 </div>
               </div>
             </Fragment>
->>>>>>> fa1540c5de6f822f36e99770040b57df6553d048
+            </>
           );
+
         } else if (part.match(usernameRegex)) {
           const matchedUser = tagInfo.find(
             (user) => `@${user.username}` === part
