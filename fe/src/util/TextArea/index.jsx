@@ -6,12 +6,9 @@ import "./index.css";
 
 const getCaretCoordinates = (input) => {
   const { selectionStart } = input;
-
-  // Create a temporary span to mirror the input's content up to the cursor
   const tempDiv = document.createElement("div");
   const inputStyle = window.getComputedStyle(input);
 
-  // Copy relevant styles from input to temporary div
   Object.assign(tempDiv.style, {
     position: "absolute",
     whiteSpace: "pre-wrap",
@@ -24,59 +21,67 @@ const getCaretCoordinates = (input) => {
     width: `${input.offsetWidth}px`,
   });
 
-  // Insert the text up to the caret's position
   tempDiv.textContent = input.value.slice(0, selectionStart);
-
-  // Add a marker span to identify the exact caret position
   const markerSpan = document.createElement("span");
-  markerSpan.textContent = "|"; // A temporary marker
+  markerSpan.textContent = "|";
   tempDiv.appendChild(markerSpan);
 
   document.body.appendChild(tempDiv);
-
-  // Get the marker's position relative to the viewport
   const { top, left } = markerSpan.getBoundingClientRect();
   document.body.removeChild(tempDiv);
 
   return { left, top };
 };
 
+const extractDomain = (url) => {
+  const match = url.match(/https?:\/\/(?:www\.)?([^\/]+)/i);
+  return match ? match[1] : ""; // Return the full domain
+};
+
 const TextArea = ({ text, setText, tagUsers = false }) => {
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const postInfo = useSelector((state) => state.post.postInfo);
-  const usersTag = postInfo?.usersTag;
+  const usersTag = postInfo?.usersTag || [];
   const textAreaRef = useRef(null);
   const popupRef = useRef(null);
   const [searchValue, setSearchValue] = useState("");
   const [openTagBox, setOpenTagBox] = useState(false);
+  const [urls, setUrls] = useState([]);
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
 
   const handleChange = (e) => {
     const value = e.target.value;
+
     if (tagUsers) {
-      if (!value[value.length - 1]?.trim() && !!searchValue?.trim()) {
+      if (!value[value.length - 1]?.trim() && searchValue?.trim()) {
         setSearchValue("");
       } else {
         const tagRegex = /@(\w+)/g;
         const tagNames = [...value.matchAll(tagRegex)].map((arr) => arr[1]);
         const latestTagValue = tagNames[tagNames.length - 1];
-        if (searchValue !== tagNames[tagNames.length - 1]) {
+        if (searchValue !== latestTagValue) {
           setSearchValue(latestTagValue);
         }
       }
     }
+
+    const extractedUrls = value.match(urlRegex) || [];
+    setUrls(extractedUrls);
+
     setText(value);
   };
 
   useEffect(() => {
     if (textAreaRef.current) {
-      textAreaRef.current.style.height = "auto"; // Reset the height
-      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`; // Adjust based on scrollHeight
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
     }
   }, [text]);
 
   useEffect(() => {
-    if (usersTag?.length && tagUsers) {
+    if (usersTag.length && tagUsers) {
       const splitText = text.split(" ");
       for (const textIndex in splitText) {
         const tagIndex = usersTag.findIndex(
@@ -93,7 +98,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
   }, [usersTag]);
 
   useEffect(() => {
-    if (!!searchValue?.trim()) {
+    if (searchValue?.trim()) {
       const splitStr = text.split(" ");
       if (splitStr[splitStr.length - 1]?.includes("@")) {
         const { left, top } = getCaretCoordinates(textAreaRef.current);
@@ -111,7 +116,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
   return (
     <div className="text-area-container">
       <textarea
-        color={textColor}
+        style={{ color: textColor }}
         ref={textAreaRef}
         value={text}
         onChange={handleChange}
@@ -119,6 +124,67 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         placeholder="Type something..."
         className="auto-expand-textarea"
       />
+
+      {urls.length > 0 && (
+        <div
+          style={{
+            border: "1px solid #e0e0e0",
+            height: "80px",
+            borderRadius: "8px",
+            backgroundColor: bgColor,
+            padding: "10px",
+            marginTop: "8px",
+            maxWidth: "100%",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            transition: "box-shadow 0.2s ease-in-out",
+            position: "relative",
+            cursor: "pointer",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div>{extractDomain(urls[0])}</div>
+              <div
+                style={{
+                  color: "gray",
+                  fontSize: "10px",
+                  marginRight: "5px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {extractDomain(urls[0])} {/* Show the full URL */}
+              </div>
+            </div>
+
+            <button
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                fontSize: "24px",
+                position: "absolute",
+                top: -5,
+                right: 5,
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setUrls([]);
+              }}
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
       {tagUsers && (
         <Container
           ref={popupRef}
