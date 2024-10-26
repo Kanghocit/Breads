@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -29,24 +30,51 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState({});
   const showToast = useShowToast();
 
   useEffect(() => {
-    //Login as admin
     if (countClick === 5) {
       handleLogin(true);
     }
   }, [countClick]);
 
+  const validateInputs = () => {
+    const newErrors = {};
+    const { email, password } = inputs;
+
+    // Kiểm tra email
+    if (!email) {
+      newErrors.email = "Email là bắt buộc.";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email không hợp lệ.";
+    }
+
+    // Kiểm tra mật khẩu
+    if (!password) {
+      newErrors.password = "Mật khẩu là bắt buộc.";
+    } else if (password.length < 6) {
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+    } else if (!/[A-Z]/.test(password)) {
+      newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; 
+  };
+
   const handleLogin = async (isAdmin = false) => {
+    if (!validateInputs()) return; 
     try {
       let payload = inputs;
-      if (isAdmin) {
-        payload.loginAsAdmin = true;
-      }
-      dispatch(login(payload));
+      // if (isAdmin) {
+      //   payload.loginAsAdmin = true;
+      // }
+      await dispatch(login(payload));
     } catch (error) {
-      showToast("Error", error, "error");
+      showToast("Lỗi", error.message || "Đã xảy ra lỗi", "error");
     }
   };
 
@@ -59,7 +87,7 @@ export default function Login() {
             textAlign={"center"}
             onClick={() => setCountClick((prev) => prev + 1)}
           >
-            Login
+            Đăng Nhập
           </Heading>
         </Stack>
         <Box
@@ -73,30 +101,33 @@ export default function Login() {
           }}
         >
           <Stack spacing={4}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={!!errors.email}>
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
-                onChange={(e) =>
+                onChange={(e) => {
                   setInputs((inputs) => ({
                     ...inputs,
                     email: e.target.value,
-                  }))
-                }
+                  }));
+                  validateInputs();
+                }}
                 value={inputs.email}
               />
+              <FormErrorMessage>{errors.email}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
+            <FormControl isRequired isInvalid={!!errors.password}>
+              <FormLabel>Mật Khẩu</FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setInputs((inputs) => ({
                       ...inputs,
                       password: e.target.value,
-                    }))
-                  }
+                    }));
+                    validateInputs();
+                  }}
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>
@@ -110,10 +141,11 @@ export default function Login() {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
             <Stack spacing={10} pt={2}>
               <Button
-                loadingText="Submitting"
+                loadingText="Đang gửi"
                 size="lg"
                 bg={useColorModeValue("gray.600", "gray.700")}
                 color={"white"}
@@ -122,24 +154,19 @@ export default function Login() {
                 }}
                 onClick={handleLogin}
               >
-                Login
+                Đăng Nhập
               </Button>
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
-                Don't have an account?{" "}
+                Bạn chưa có tài khoản?{" "}
                 <Link
                   color={"blue.400"}
-                  onClick={() =>
-                    dispatch(
-                      changePage({
-                        nextPage: PageConstant.SIGNUP,
-                        currentPage: PageConstant.LOGIN,
-                      })
-                    )
-                  }
+                  onClick={() => {
+                    dispatch(changePage({ nextPage: PageConstant.SIGNUP, currentPage: PageConstant.LOGIN }));
+                  }}
                 >
-                  Sign up
+                  Đăng Ký
                 </Link>
               </Text>
             </Stack>
