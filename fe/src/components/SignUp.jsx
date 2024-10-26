@@ -22,7 +22,7 @@ import { signUp } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 
-export default function Signup() {
+const Signup = () => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -153,4 +153,6 @@ export default function Signup() {
       </Stack>
     </Flex>
   );
-}
+};
+
+export default Signup;

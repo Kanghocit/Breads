@@ -21,7 +21,7 @@ import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice";
 
-export default function Login() {
+const Login = () => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [countClick, setCountClick] = useState(0);
@@ -120,7 +120,7 @@ export default function Login() {
                 _hover={{
                   bg: useColorModeValue("gray.700", "gray.800"),
                 }}
-                onClick={handleLogin}
+                onClick={() => handleLogin()}
               >
                 Login
               </Button>
@@ -148,4 +148,6 @@ export default function Login() {
       </Stack>
     </Flex>
   );
-}
+};
+
+export default Login;
