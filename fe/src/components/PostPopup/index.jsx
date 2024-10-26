@@ -217,7 +217,6 @@ const PostPopup = () => {
               {!containsLink(content) && (
                 <>
                   <MediaDisplay post={postInfo} />
-
                   {!closePostAction && <PostPopupAction />}
                   {postInfo.survey.length !== 0 && <PostSurvey />}
                   {postSelected?._id &&

@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
-import { changePage } from "../../store/UtilSlice";
+import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { handleFlow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 

@@ -166,7 +166,7 @@ export const updateUser = async (req, res) => {
     // }
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    if (avatar.match(urlRegex)?.length === 0) {
+    if (avatar !== user.avatar) {
       const avatarUrl = await uploadFileFromBase64({
         base64: avatar,
       });
@@ -185,7 +185,8 @@ export const updateUser = async (req, res) => {
     user.bio = bio || user.bio;
 
     user = await user.save();
-    const result = JSON.parse(JSON.stringify(user));
+    const result = await getUserInfo(userId);
+    console.log("userUpdated: ", result);
     delete result.password;
 
     res.status(HTTPStatus.OK).json(result);

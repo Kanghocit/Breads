@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changePage } from "../store/UtilSlice";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ContainerLayout from "../components/MainBoxLayout";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const ActivityPage = () => {
   const dispatch = useDispatch();

@@ -1,8 +1,7 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoSendSharp } from "react-icons/io5";
 import { MdThumbUp } from "react-icons/md";
-import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
@@ -18,6 +17,7 @@ import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
+import MediaUpload from "./Media";
 import UploadDisplay from "./UploadDisplay";
 
 export const ACTIONS = {
@@ -49,7 +49,6 @@ const MessageInput = () => {
   const [filesData, setFilesData] = useState([]);
   const [content, setContent] = useState("");
   const debouceContent = useDebounce(content);
-  const mediaRef = useRef();
   const ableToSend =
     !!content.trim() ||
     msgInfo.files?.length !== 0 ||
@@ -85,29 +84,11 @@ const MessageInput = () => {
   const icons = [
     {
       action: ACTIONS.FILES,
-      icon: (
-        <>
-          <FileUpload setFilesData={setFilesData} />
-        </>
-      ),
+      icon: <FileUpload setFilesData={setFilesData} />,
     },
     {
       action: ACTIONS.MEDIA,
-      icon: (
-        <>
-          <Input
-            type="file"
-            accept="image/*"
-            style={iconStyle}
-            hidden
-            ref={mediaRef}
-          />
-          <TbLibraryPhoto
-            style={iconStyle}
-            onClick={() => mediaRef.current.click()}
-          />
-        </>
-      ),
+      icon: <MediaUpload />,
     },
     {
       action: ACTIONS.GIF,
@@ -151,7 +132,8 @@ const MessageInput = () => {
         position: "relative",
       }}
     >
-      {!!files && files?.length !== 0 && <UploadDisplay />}
+      {(!!files && files?.length !== 0) ||
+        (msgInfo.media?.length !== 0 && <UploadDisplay />)}
       <InputGroup alignItems={"center"} p={2} width={"100%"}>
         {icons.map(({ action, icon }) => (
           <IconWrapper label={closeTooltip ? "" : action} icon={icon} />

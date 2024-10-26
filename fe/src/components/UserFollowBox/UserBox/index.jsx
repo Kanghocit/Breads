@@ -9,12 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { updatePostInfo } from "../../../store/PostSlice";
 import UserInfoPopover from "../../UserInfoPopover";
+import { changePage } from "../../../store/UtilSlice/asyncThunk";
 
 const UserBox = ({
   user,
   isTagBox = false,
   setOpenTagBox = null,
   searchValue = "",
+  inFollowBox = false,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,10 +74,24 @@ const UserBox = ({
         }}
       />
       <Container>
-        {!isTagBox ? (
+        {!isTagBox && !inFollowBox ? (
           <UserInfoPopover user={user} />
         ) : (
-          <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
+          <Text
+            fontSize={"sm"}
+            fontWeight={"bold"}
+            cursor={"pointer"}
+            _hover={{
+              textTransform: inFollowBox ? "underlined" : "",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (inFollowBox) {
+                window.location.href =
+                  window.location.origin + `/users/${user?._id}`;
+              }
+            }}
+          >
             {user?.username}
           </Text>
         )}

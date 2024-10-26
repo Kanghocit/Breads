@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useShowToast from "../hooks/useShowToast";
 import { signUp } from "../store/UserSlice/asyncThunk";
-import { changePage } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 
 const Signup = () => {
