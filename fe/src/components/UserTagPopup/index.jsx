@@ -10,7 +10,12 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
+<<<<<<< HEAD
 // import CustomLinkPreview from "../../util/CustomLinkPreview";
+=======
+import { useColorMode } from "@chakra-ui/react";
+import { Fragment, useState } from "react";
+>>>>>>> fa1540c5de6f822f36e99770040b57df6553d048
 
 const UserTagPopup = ({ post, content }) => {
   const tagInfo = post.usersTagInfo || [];
@@ -48,6 +53,7 @@ const UserTagPopup = ({ post, content }) => {
             );
           }
           return (
+<<<<<<< HEAD
             <>
               <span key={index} style={{ marginRight: "5px" }}>
                 <Link
@@ -61,6 +67,64 @@ const UserTagPopup = ({ post, content }) => {
                 </Link>
               </span>
             </>
+=======
+            <Fragment key={"tag-popup-" + index}>
+              <Link
+                key={index}
+                href={part}
+                color="blue.500"
+                isExternal
+                _hover={{ textDecoration: "underline" }}
+                _focus={{ boxShadow: "none" }}
+              >
+                {part}
+              </Link>
+              <div
+                style={{
+                  border: "1px solid #e0e0e0",
+                  height: "80px",
+                  borderRadius: "8px",
+                  backgroundColor: bgColor,
+                  padding: "10px",
+                  marginTop: "8px",
+                  maxWidth: "100%",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                  transition: "box-shadow 0.2s ease-in-out",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        color: "gray",
+                        fontSize: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {extractDomain1(part)}
+                    </div>
+                    <div
+                      style={{
+                        color: "white",
+                        fontSize: "20px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {extractDomain2(part)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Fragment>
+>>>>>>> fa1540c5de6f822f36e99770040b57df6553d048
           );
         } else if (part.match(usernameRegex)) {
           const matchedUser = tagInfo.find(

@@ -50,7 +50,7 @@ const GifMsgBtn = ({ popup, onClose, onOpen }) => {
         </PopoverHeader>
         <PopoverArrow />
         <PopoverBody padding={"8px 4px"}>
-          <GifMsgBox />
+          <GifMsgBox onClose={onClose} />
         </PopoverBody>
       </PopoverContent>
     </Popover>

@@ -74,7 +74,7 @@ export default function Login() {
         >
           <Stack spacing={4}>
             <FormControl isRequired>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <Input
                 type="email"
                 onChange={(e) =>

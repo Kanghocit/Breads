@@ -13,10 +13,25 @@ export default class MessageController {
         participants: { $all: [senderId, recipientId] },
       });
       const msgId = ObjectId();
+      const listMsgId = [];
+      const listMsg = [];
+      const { files, media, content } = message;
+      console.log({
+        files: files,
+        media: media,
+        content: content,
+      });
+      const numberNewMsg =
+        files?.length + (media?.length > 0 ? 1 : 0) + (content ? 1 : 0);
+      console.log("numberNewMsg: ", numberNewMsg);
+      [...Array(numberNewMsg)].map((_) => {
+        listMsgId.push(ObjectId());
+      });
+      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
-          msgIds: [msgId],
+          msgIds: listMsgId,
           lastMsgId: msgId,
         });
         await conversation.save();
@@ -27,21 +42,56 @@ export default class MessageController {
           },
           {
             $push: {
-              msgIds: msgId,
+              msgIds: {
+                $each: listMsgId,
+              },
             },
             $set: {
-              lastMsgId: msgId,
+              lastMsgId: listMsgId[listMsgId.length - 1],
             },
           }
         );
       }
-      const newMessage = new Message({
-        _id: msgId,
-        conversationId: conversation._id,
-        sender: senderId,
-        ...message,
+      let currentFileIndex = 0;
+      let addMedia = false;
+      listMsgId.forEach((_id, index) => {
+        let newMsg = null;
+        const msgInfo = {
+          _id: _id,
+          conversationId: conversation._id,
+          sender: senderId,
+        };
+        if (content?.trim() && index === 0) {
+          newMsg = new Message({
+            ...msgInfo,
+            content: content,
+          });
+        } else if (media?.length !== 0 && !addMedia) {
+          newMsg = new Message({
+            ...msgInfo,
+            media: media,
+          });
+          addMedia = true;
+        } else if (
+          files?.length !== 0 &&
+          (files?.length > 1
+            ? currentFileIndex < files?.length - 1
+            : currentFileIndex < files?.length)
+        ) {
+          newMsg = new Message({
+            ...msgInfo,
+            file: files[currentFileIndex],
+          });
+          currentFileIndex += 1;
+        }
+        listMsg.push(newMsg);
       });
-      await newMessage.save();
+      await Message.insertMany(listMsg, { ordered: false });
+      const newMessages = await Message.find({
+        _id: { $in: listMsgId },
+      }).populate({
+        path: "file",
+      });
       const friendOnline = socket.friendsInfo?.find(
         (socketInfo) => socketInfo?.userId === recipientId
       );
@@ -61,11 +111,11 @@ export default class MessageController {
           ];
           io.to(recipientSocketId).emit(
             Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-            newMessage
+            newMessages
           );
         }
       }
-      cb && cb(newMessage);
+      !!cb && cb(newMessages);
     } catch (error) {
       console.error("sendMessage: ", error);
     }
@@ -168,9 +218,13 @@ export default class MessageController {
       const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
       const msgs = await Message.find({
         _id: { $in: msgIds },
-      }).populate({
-        path: "files",
-      });
+      })
+        .sort({
+          createdAt: 1,
+        })
+        .populate({
+          path: "file",
+        });
       cb({ status: "success", data: msgs });
     } catch (error) {
       console.error("getConversations: ", error);
