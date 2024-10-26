@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fileTypes } from "../File";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import LoadingUploadMsg from "./loading";
+import ItemUploadDisplay from "./ItemUploadDisplay";
 
 export const FILE_TYPES = {
   word: "word",
@@ -66,7 +67,7 @@ const UploadDisplay = () => {
     <Flex
       position={"absolute"}
       left={0}
-      bottom={"100%"}
+      bottom={"calc(100% - 2px)"}
       width={"100%"}
       height={"100px"}
       px={2}
@@ -77,61 +78,26 @@ const UploadDisplay = () => {
       alignItems={"center"}
       bg={useColorModeValue("gray.200", "#181818")}
     >
-      {loadingUploadMsg ? (
-        <LoadingUploadMsg />
-      ) : (
-        <>
-          <>
-            {files?.map((file, index) => (
-              <Flex
-                key={file.name}
-                height={"100%"}
-                width={"fit-content"}
-                padding={"6px"}
-                border={"1px solid gray"}
-                margin={0}
-                flexDirection={"column"}
-                justifyContent={"space-between"}
-                position={"relative"}
-              >
-                <CloseIcon
-                  position={"absolute"}
-                  top={"-7px"}
-                  right={"-7px"}
-                  width={"14px"}
-                  height={"14px"}
-                  borderRadius={"50%"}
-                  bg={"gray"}
-                  p={"2px"}
-                  cursor={"pointer"}
-                  _hover={{
-                    opacity: 0.8,
-                  }}
-                  onClick={() => handleRemoveFile(index)}
-                />
-                <Image
-                  src={getImgByType(file.contentType)}
-                  width={"100%"}
-                  maxHeight={"calc(100% - 16px)"}
-                  objectFit={"contain"}
-                />
-                <Text
-                  maxWidth={"50px"}
-                  fontSize={"11px"}
-                  textOverflow={"ellipsis"}
-                  overflow={"hidden"}
-                  whiteSpace={"nowrap"}
-                >
-                  {file.name}
-                </Text>
-              </Flex>
-            ))}
-          </>
-          <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
-            Clear all
-          </Button>
-        </>
-      )}
+      <>
+        {media?.map((item, index) => (
+          <ItemUploadDisplay
+            item={item}
+            imgSrc={item?.url}
+            onClick={() => {}}
+          />
+        ))}
+        {files?.map((file, index) => (
+          <ItemUploadDisplay
+            item={file}
+            imgSrc={getImgByType(file.contentType)}
+            onClick={() => handleRemoveFile(index)}
+          />
+        ))}
+      </>
+      <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
+        Clear all
+      </Button>
+      {loadingUploadMsg && <LoadingUploadMsg />}
     </Flex>
   );
 };

@@ -4,12 +4,7 @@ import { IoSendSharp } from "react-icons/io5";
 import { MdThumbUp } from "react-icons/md";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  MESSAGE_PATH,
-  Route,
-  UTIL_PATH,
-} from "../../../../../Breads-Shared/APIConfig";
-import { POST } from "../../../../../config/API";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
 import Socket from "../../../../../socket";
 import {
@@ -44,7 +39,7 @@ export const iconStyle = {
 const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const msgInfo = useSelector((state) => state.message.msgInfo);
+  const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
   const participant = useSelector(
     (state) => state.message.selectedConversation?.participant
   );
@@ -52,7 +47,6 @@ const MessageInput = () => {
   const [popup, setPopup] = useState("");
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
-  const [uploadFilesId, setUploadFilesId] = useState([]);
   const [content, setContent] = useState("");
   const debouceContent = useDebounce(content);
   const mediaRef = useRef();
@@ -72,14 +66,11 @@ const MessageInput = () => {
   }, [debouceContent]);
 
   useEffect(() => {
-    if (uploadFilesId?.length) {
-      setTimeout(() => {
-        handleSendMsg();
-        setUploadFilesId([]);
-        dispatch(updateLoadingUpload(false));
-      }, 1000);
+    if (loadingUploadMsg) {
+      handleSendMsg(false);
+      dispatch(updateLoadingUpload(false));
     }
-  }, [uploadFilesId.length]);
+  }, [loadingUploadMsg]);
 
   const onClose = () => {
     setPopup("");
@@ -128,18 +119,18 @@ const MessageInput = () => {
     // },
   ];
 
-  const handleSendMsg = async () => {
+  const handleSendMsg = async (clickUpload) => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
-    if (payload.files?.length && uploadFilesId.length === 0) {
+    if (payload.files?.length) {
+      if (clickUpload) {
+        dispatch(updateLoadingUpload(true));
+        return;
+      }
       const filesId = await handleUploadFiles({
         files: filesData,
         userId: userInfo._id,
       });
-      setUploadFilesId(filesId);
-      dispatch(updateLoadingUpload(true));
-      return;
-    } else if (uploadFilesId?.length) {
-      payload.files = uploadFilesId;
+      payload.files = filesId;
     }
     const socket = Socket.getInstant();
     const msgPayload = {
@@ -170,7 +161,13 @@ const MessageInput = () => {
           placeholder="Type a message"
           margin={"0 8px"}
           value={content}
-          onChange={(e) => setContent(replaceEmojis(e.target.value))}
+          onChange={(e) => {
+            if (!loadingUploadMsg) {
+              setContent(replaceEmojis(e.target.value));
+            }
+          }}
+          opacity={loadingUploadMsg ? 0.4 : 1}
+          bg={loadingUploadMsg ? "gray" : ""}
         />
         <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
           <EmojiMsgBtn
@@ -184,7 +181,14 @@ const MessageInput = () => {
           label={ACTIONS.SEND}
           icon={
             ableToSend ? (
-              <IoSendSharp style={iconStyle} onClick={() => handleSendMsg()} />
+              <IoSendSharp
+                style={iconStyle}
+                onClick={() => {
+                  if (!loadingUploadMsg) {
+                    handleSendMsg(true);
+                  }
+                }}
+              />
             ) : (
               <MdThumbUp style={iconStyle} />
             )

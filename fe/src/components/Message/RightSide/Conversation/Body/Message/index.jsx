@@ -1,8 +1,9 @@
-import { Avatar, Flex, Text, Tooltip } from "@chakra-ui/react";
+import { Avatar, Flex, Text, Tooltip, Image } from "@chakra-ui/react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
 import FileMsg from "./Files";
+import { Constants } from "../../../../../../Breads-Shared/Constants";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -26,45 +27,54 @@ const Message = ({ msg }) => {
     return moment(createdAt).format(format);
   };
 
+  const msgContent = () => {
+    console.log(media);
+    return (
+      <>
+        {!ownMessage && (
+          <Avatar src={participant?.avatar} w={"32px"} h={"32px"} />
+        )}
+        {content?.trim() && (
+          <Text
+            maxW={"350px"}
+            bg={ownMessage ? "blue.400" : "gray.400"}
+            py={ownMessage ? 2 : 1}
+            px={2}
+            ml={ownMessage ? 0 : 1}
+            borderRadius={"md"}
+            color={ownMessage ? "white" : "black"}
+          >
+            {content}
+          </Text>
+        )}
+        {media?.length === 1 && media[0]?.type === Constants.MEDIA_TYPE.GIF && (
+          <Image
+            src={media[0].url}
+            height={"auto"}
+            maxHeight={"200px"}
+            objectFit={"cover"}
+          />
+        )}
+        {file?._id && <FileMsg file={file} />}
+      </>
+    );
+  };
+
   return (
     <>
-      {ownMessage ? (
-        <Tooltip label={getTooltipTime()} placement={"left"}>
-          <Flex
-            flexDir={"column"}
-            gap={2}
-            alignSelf={"flex-end"}
-            width={"fit-content"}
-          >
-            {content && (
-              <Text maxW={"350px"} bg={"blue.400"} p={2} borderRadius={"md"}>
-                {content}
-              </Text>
-            )}
-            {file?._id && <FileMsg file={file} />}
-          </Flex>
-        </Tooltip>
-      ) : (
-        <Tooltip label={getTooltipTime()} placement={"right"}>
-          <Flex gap={2} width={"fit-content"}>
-            <Avatar src={participant?.avatar} w={"32px"} h={"32px"} />
-            {content && (
-              <Text
-                maxW={"350px"}
-                bg={"gray.400"}
-                py={1}
-                px={2}
-                ml={1}
-                borderRadius={"md"}
-                color={"black"}
-              >
-                {content}
-              </Text>
-            )}
-            {file?._id && <FileMsg file={file} />}
-          </Flex>
-        </Tooltip>
-      )}
+      <Tooltip
+        label={getTooltipTime()}
+        placement={ownMessage ? "left" : "right"}
+      >
+        <Flex
+          flexDir={ownMessage ? "column" : ""}
+          gap={2}
+          alignSelf={ownMessage ? "flex-end" : "flex-start"}
+          width={"fit-content"}
+        >
+          {msgContent()}
+        </Flex>
+      </Tooltip>
     </>
   );
 };

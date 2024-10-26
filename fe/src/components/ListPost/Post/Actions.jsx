@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { memo, useState } from "react";
+import { Fragment, memo, useState } from "react";
 import { IoIosLink } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -164,9 +164,8 @@ const Actions = ({ post }) => {
             );
           } else {
             return (
-              <>
+              <Fragment key={name}>
                 <Button
-                  key={name}
                   onClick={onClick}
                   width={"32px"}
                   height={"32px"}
@@ -195,7 +194,7 @@ const Actions = ({ post }) => {
                     </Flex>
                   )}
                 </Button>
-              </>
+              </Fragment>
             );
           }
         })}
