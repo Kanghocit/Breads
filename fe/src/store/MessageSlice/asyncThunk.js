@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { updateHasMoreData } from "../UtilSlice";
+import { formatDateToDDMMYYYY } from "../../util";
 
 export const getConversations = createAsyncThunk(
   "message/getConversations",
@@ -15,3 +16,20 @@ export const getConversations = createAsyncThunk(
     }
   }
 );
+
+export const getMsgs = createAsyncThunk("message/getMsgs", (data, thunkApi) => {
+  const { msgs, isNew } = data;
+  const dateSet = [
+    ...new Set(
+      msgs.map((msg) => formatDateToDDMMYYYY(new Date(msg?.createdAt)))
+    ),
+  ];
+  const splitMsgsByDate = {};
+  dateSet.forEach((date) => {
+    const msgsByDate = msgs.filter(
+      (msg) => formatDateToDDMMYYYY(new Date(msg?.createdAt)) === date
+    );
+    splitMsgsByDate[date] = msgsByDate;
+  });
+  return { msgs: splitMsgsByDate, isNew: isNew };
+});

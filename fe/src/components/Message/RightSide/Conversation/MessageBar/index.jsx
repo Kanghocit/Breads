@@ -4,20 +4,16 @@ import { IoSendSharp } from "react-icons/io5";
 import { MdThumbUp } from "react-icons/md";
 import { TbLibraryPhoto } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  MESSAGE_PATH,
-  Route,
-  UTIL_PATH,
-} from "../../../../../Breads-Shared/APIConfig";
-import { POST } from "../../../../../config/API";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
 import Socket from "../../../../../socket";
 import {
   addNewMsg,
   defaulMessageInfo,
+  updateLoadingUpload,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
-import { replaceEmojis } from "../../../../../util";
+import { handleUploadFiles, replaceEmojis } from "../../../../../util";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
@@ -43,7 +39,7 @@ export const iconStyle = {
 const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const msgInfo = useSelector((state) => state.message.msgInfo);
+  const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
   const participant = useSelector(
     (state) => state.message.selectedConversation?.participant
   );
@@ -68,6 +64,13 @@ const MessageInput = () => {
       })
     );
   }, [debouceContent]);
+
+  useEffect(() => {
+    if (loadingUploadMsg) {
+      handleSendMsg(false);
+      dispatch(updateLoadingUpload(false));
+    }
+  }, [loadingUploadMsg]);
 
   const onClose = () => {
     setPopup("");
@@ -116,19 +119,16 @@ const MessageInput = () => {
     // },
   ];
 
-  const handleSendMsg = async () => {
+  const handleSendMsg = async (clickUpload) => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
     if (payload.files?.length) {
-      const formData = new FormData();
-      const filesName = [];
-      for (let i = 0; i < filesData.length; i++) {
-        filesName.push(filesData[i].name);
-        formData.append("files", filesData[i]);
+      if (clickUpload) {
+        dispatch(updateLoadingUpload(true));
+        return;
       }
-      formData.append("filesName", filesName);
-      const filesId = await POST({
-        path: Route.UTIL + UTIL_PATH.UPLOAD + `?userId=${userInfo?._id}`,
-        payload: formData,
+      const filesId = await handleUploadFiles({
+        files: filesData,
+        userId: userInfo._id,
       });
       payload.files = filesId;
     }
@@ -146,48 +146,56 @@ const MessageInput = () => {
   };
 
   return (
-    <>
-      <form
-        style={{
-          position: "relative",
-        }}
-      >
-        {!!files && files?.length !== 0 && <UploadDisplay />}
-        <InputGroup alignItems={"center"} p={2}>
-          {icons.map(({ action, icon }) => (
-            <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
-          ))}
-          <Input
-            flex={1}
-            placeholder="Type a message"
-            margin={"0 8px"}
-            value={content}
-            onChange={(e) => setContent(replaceEmojis(e.target.value))}
-          />
-          <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
-            <EmojiMsgBtn
-              popup={popup}
-              closeTooltip={closeTooltip}
-              onClose={onClose}
-              onOpen={onOpen}
-            />
-          </InputRightElement>
-          <IconWrapper
-            label={ACTIONS.SEND}
-            icon={
-              ableToSend ? (
-                <IoSendSharp
-                  style={iconStyle}
-                  onClick={() => handleSendMsg()}
-                />
-              ) : (
-                <MdThumbUp style={iconStyle} />
-              )
+    <form
+      style={{
+        position: "relative",
+      }}
+    >
+      {!!files && files?.length !== 0 && <UploadDisplay />}
+      <InputGroup alignItems={"center"} p={2} width={"100%"}>
+        {icons.map(({ action, icon }) => (
+          <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
+        ))}
+        <Input
+          flex={1}
+          placeholder="Type a message"
+          margin={"0 8px"}
+          value={content}
+          onChange={(e) => {
+            if (!loadingUploadMsg) {
+              setContent(replaceEmojis(e.target.value));
             }
+          }}
+          opacity={loadingUploadMsg ? 0.4 : 1}
+          bg={loadingUploadMsg ? "gray" : ""}
+        />
+        <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
+          <EmojiMsgBtn
+            popup={popup}
+            closeTooltip={closeTooltip}
+            onClose={onClose}
+            onOpen={onOpen}
           />
-        </InputGroup>
-      </form>
-    </>
+        </InputRightElement>
+        <IconWrapper
+          label={ACTIONS.SEND}
+          icon={
+            ableToSend ? (
+              <IoSendSharp
+                style={iconStyle}
+                onClick={() => {
+                  if (!loadingUploadMsg) {
+                    handleSendMsg(true);
+                  }
+                }}
+              />
+            ) : (
+              <MdThumbUp style={iconStyle} />
+            )
+          }
+        />
+      </InputGroup>
+    </form>
   );
 };
 

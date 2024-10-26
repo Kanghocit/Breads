@@ -50,7 +50,10 @@ const PostPopup = () => {
   const [clickPost, setClickPost] = useState(false);
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
-
+  const containsLink = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return urlRegex.test(text);
+  };
   useEffect(() => {
     if (debounceContent !== postInfo.content) {
       dispatch(
@@ -77,7 +80,6 @@ const PostPopup = () => {
   const checkUploadCondition = useCallback(() => {
     let checkResult = true;
     let msg = "";
-
 
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
@@ -206,24 +208,26 @@ const PostPopup = () => {
               <Text color={textColor} fontWeight="600">
                 {userInfo.username}
               </Text>
-                <TextArea
-                  text={content}
-                  setText={(value) => handleContent(value)}
-                  tagUsers={true}
-                />
-              <MediaDisplay post={postInfo} />
-              {!closePostAction && <PostPopupAction />}
-              {postInfo.survey.length !== 0 && <PostSurvey />}
-              {postSelected?._id &&
-                postAction === PostConstants.ACTIONS.REPOST && (
-                  <div
-                    style={{
-                      margin: "12px 0",
-                    }}
-                  >
-                    <Post post={postSelected} isParentPost={true} />
-                  </div>
-                )}
+
+              <TextArea
+                text={content}
+                setText={(value) => handleContent(value)}
+                tagUsers={true}
+              />
+              {!containsLink(content) && (
+                <>
+                  <MediaDisplay post={postInfo} />
+
+                  {!closePostAction && <PostPopupAction />}
+                  {postInfo.survey.length !== 0 && <PostSurvey />}
+                  {postSelected?._id &&
+                    postAction === PostConstants.ACTIONS.REPOST && (
+                      <div style={{ margin: "12px 0" }}>
+                        <Post post={postSelected} isParentPost={true} />
+                      </div>
+                    )}
+                </>
+              )}
             </Container>
           </Flex>
           <ModalFooter padding="0">

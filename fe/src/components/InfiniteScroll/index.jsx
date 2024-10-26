@@ -1,4 +1,11 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useSelector } from "react-redux";
 
 const InfiniteScroll = ({
@@ -57,7 +64,7 @@ const InfiniteScroll = ({
       {isLoading ? (
         <>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-            <div key={`skeleton-${num}`}>{skeletonCpn}</div>
+            <div key={`skeleton-loading-${num}`}>{skeletonCpn}</div>
           ))}
         </>
       ) : (
@@ -68,10 +75,14 @@ const InfiniteScroll = ({
                 ? index === data.length - preloadIndex
                 : index === data.length - 1
             ) {
-              return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;
+              return (
+                <div ref={lastUserElementRef} key={ele?._id + index}>
+                  {cpnFc(ele)}
+                </div>
+              );
             } else if (index === data.length - 1) {
               return (
-                <>
+                <Fragment key={ele?._id + index}>
                   {cpnFc(ele)}
                   {hasMoreData && (
                     <>
@@ -80,10 +91,10 @@ const InfiniteScroll = ({
                       ))}
                     </>
                   )}
-                </>
+                </Fragment>
               );
             } else {
-              return <>{cpnFc(ele)}</>;
+              return <Fragment key={ele?._id + index}>{cpnFc(ele)}</Fragment>;
             }
           })}
         </>

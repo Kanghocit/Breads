@@ -1,4 +1,5 @@
-import { Divider, Flex, useColorModeValue } from "@chakra-ui/react";
+import { Container, Divider, Flex, useColorModeValue } from "@chakra-ui/react";
+import { HeaderHeight } from "../../../../Layout/Header";
 import ConversationBody from "./Body";
 import ConversationHeader from "./Header";
 import MessageInput from "./MessageBar";
@@ -11,6 +12,8 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab }) => {
       borderRadius={"md"}
       flexDirection={"column"}
       overflow={"hidden"}
+      position={"relative"}
+      height={`calc(100vh - ${HeaderHeight}px - 24px)`}
     >
       <ConversationHeader
         openDetailTab={openDetailTab}
@@ -18,7 +21,17 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab }) => {
       />
       <Divider />
       <ConversationBody />
-      <MessageInput />
+      <Container
+        position={"absolute"}
+        bottom={0}
+        left={0}
+        width={"100%"}
+        maxWidth={"100%"}
+        padding={0}
+        height={"56px"}
+      >
+        <MessageInput />
+      </Container>
     </Flex>
   );
 };

@@ -7,7 +7,7 @@ export const getFriendsSocketInfo = async (io, socket) => {
   const socketData = socket.data;
   const userFollowed = socketData?.userFollowed;
   const userFollowing = socketData?.userFollowing;
-  const friendsId = userFollowed.filter((userId) =>
+  const friendsId = userFollowed?.filter((userId) =>
     userFollowing?.includes(userId)
   );
   if (friendsId?.length) {
