@@ -69,15 +69,21 @@ const Signup = () => {
     if (Object.keys(validationErrors).length > 0) {
       return; 
     }
-
+  
     try {
-      await dispatch(signUp(inputs));
-      showToast("Success", "Đăng ký thành công", "success");
-      dispatch(changePage({ nextPage: PageConstant.LOGIN, currentPage: PageConstant.SIGNUP }));
+      const result = await dispatch(signUp(inputs));
+      if (result?.meta?.requestStatus === "fulfilled") {
+        showToast("Success", "Đăng ký thành công", "success");
+        dispatch(changePage({ nextPage: PageConstant.LOGIN, currentPage: PageConstant.SIGNUP }));
+      } else {
+        throw new Error(result.payload?.error || "Tài khoản đã tồn tại!");
+      }
     } catch (error) {
+      console.error("Error in handleSignup:", error); 
       showToast("Error", error.message || "Đăng ký không thành công!", "error");
     }
   };
+
 
   const handleKeyDown = (e, nextField) => {
     if (e.key === 'Enter') {
@@ -188,7 +194,7 @@ const Signup = () => {
                 _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={handleSignup}
               >
-                Đăng ký
+                Đăng Ký
               </Button>
             </Stack>
             <Stack pt={6}>

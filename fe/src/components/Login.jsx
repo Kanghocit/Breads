@@ -43,14 +43,12 @@ const Login = () => {
     const newErrors = {};
     const { email, password } = inputs;
 
-    // Kiểm tra email
     if (!email) {
       newErrors.email = "Email là bắt buộc.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email không hợp lệ.";
     }
 
-    // Kiểm tra mật khẩu
     if (!password) {
       newErrors.password = "Mật khẩu là bắt buộc.";
     } else if (password.length < 6) {
@@ -62,19 +60,19 @@ const Login = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; 
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async (isAdmin = false) => {
-    if (!validateInputs()) return; 
+  const handleLogin = async () => {
+    if (!validateInputs()) return;
+  
     try {
       let payload = inputs;
-      // if (isAdmin) {
-      //   payload.loginAsAdmin = true;
-      // }
-      await dispatch(login(payload));
+      const result = await dispatch(login(payload)).unwrap();
+      showToast("Thành công", "Đăng nhập thành công", "success");
+      
     } catch (error) {
-      showToast("Lỗi", error.message || "Đã xảy ra lỗi", "error");
+      showToast("Không thành công!", error?.error || "Vui lòng xem lại email hoặc mật khẩu!!", "error"); 
     }
   };
 
@@ -163,7 +161,12 @@ const Login = () => {
                 <Link
                   color={"blue.400"}
                   onClick={() => {
-                    dispatch(changePage({ nextPage: PageConstant.SIGNUP, currentPage: PageConstant.LOGIN }));
+                    dispatch(
+                      changePage({
+                        nextPage: PageConstant.SIGNUP,
+                        currentPage: PageConstant.LOGIN,
+                      })
+                    );
                   }}
                 >
                   Đăng Ký
