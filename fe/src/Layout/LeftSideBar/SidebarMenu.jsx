@@ -20,6 +20,7 @@ import { BsBrightnessHigh } from "react-icons/bs";
 import { MdOutlineBrightness2 } from "react-icons/md";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import ClickOutsideComponent from "../../util/ClickoutCPN";
+import { changePage } from "../../store/UtilSlice";
 
 const SidebarMenu = () => {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ const SidebarMenu = () => {
   const handleLogout = async () => {
     try {
       dispatch(logout());
+      dispatch(changePage({ nextPage: PageConstant.LOGIN }));
       navigate("/auth");
     } catch (error) {
       showToast("Error", error.message, "error");
