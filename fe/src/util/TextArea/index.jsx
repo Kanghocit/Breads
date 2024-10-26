@@ -1,8 +1,10 @@
+// TextArea.jsx
 import { Container, useColorModeValue } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import UsersTagBox from "../../components/UsersTagBox";
-import "./index.css";
+import CustomLinkPreview from "../CustomLinkPreview";
 import { useSelector } from "react-redux";
+import "./index.css";
 
 const getCaretCoordinates = (input) => {
   const { selectionStart } = input;
@@ -35,7 +37,7 @@ const getCaretCoordinates = (input) => {
 
 const extractDomain = (url) => {
   const match = url.match(/https?:\/\/(?:www\.)?([^\/]+)/i);
-  return match ? match[1] : ""; // Return the full domain
+  return match ? match[1] : "";
 };
 
 const TextArea = ({ text, setText, tagUsers = false }) => {
@@ -125,65 +127,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         className="auto-expand-textarea"
       />
 
-      {urls.length > 0 && (
-        <div
-          style={{
-            border: "1px solid #e0e0e0",
-            height: "80px",
-            borderRadius: "8px",
-            backgroundColor: bgColor,
-            padding: "10px",
-            marginTop: "8px",
-            maxWidth: "100%",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            transition: "box-shadow 0.2s ease-in-out",
-            position: "relative",
-            cursor: "pointer",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <div>{extractDomain(urls[0])}</div>
-              <div
-                style={{
-                  color: "gray",
-                  fontSize: "10px",
-                  marginRight: "5px",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {extractDomain(urls[0])} {/* Show the full URL */}
-              </div>
-            </div>
-
-            <button
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "white",
-                cursor: "pointer",
-                fontSize: "24px",
-                position: "absolute",
-                top: -5,
-                right: 5,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setUrls([]);
-              }}
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
+      {urls.length > 0 && <CustomLinkPreview url={urls[0]} bgColor={bgColor} />}
 
       {tagUsers && (
         <Container

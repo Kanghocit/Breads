@@ -36,6 +36,7 @@ import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
 import UserTagPopup from "../../UserTagPopup";
+import CustomLinkPreview from "../../../util/CustomLinkPreview";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -159,6 +160,23 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             }}
           >
             <UserTagPopup post={post} content={post?.content} />
+            {(() => {
+              let isFirstLinkDisplayed = false;
+              return post.content
+                ?.split(/(https?:\/\/[^\s]+|@[\w.]+)/g)
+                .map((part, index) => {
+                  if (part.match(/https?:\/\/[^\s]+/)) {
+                    if (!isFirstLinkDisplayed) {
+                      isFirstLinkDisplayed = true;
+                      return (
+                        <span key={index}>
+                          <CustomLinkPreview url={part} />
+                        </span>
+                      );
+                    }
+                  }
+                });
+            })()}
           </Text>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text
@@ -175,7 +193,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay post={post} isDetail={isDetail} isParentPost={isParentPost}/>
+          <MediaDisplay
+            post={post}
+            isDetail={isDetail}
+            isParentPost={isParentPost}
+          />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
