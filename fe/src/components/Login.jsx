@@ -58,7 +58,7 @@ const Login = () => {
         newErrors.password = "Mật khẩu là bắt buộc.";
       } else if (password.length < 6) {
         newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
-      } 
+      }
       // else if (!/[A-Z]/.test(password)) {
       //   newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
       // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
@@ -73,14 +73,23 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
+    let payload = inputs;
+    if (loginAsAdmin) {
+      payload.loginAsAdmin = true;
+      dispatch(login(payload));
+      return;
+    }
     if (!validateField("email") || !validateField("password")) return;
 
     try {
-      let payload = inputs;
       const result = await dispatch(login(payload)).unwrap();
       showToast("Thành công", "Đăng nhập thành công", "success");
     } catch (error) {
-      showToast("Không thành công!", error?.error || "Vui lòng xem lại email hoặc mật khẩu!!", "error");
+      showToast(
+        "Không thành công!",
+        error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
+        "error"
+      );
     }
   };
 
@@ -108,8 +117,10 @@ const Login = () => {
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
-                onChange={(e) => setInputs((prev) => ({ ...prev, email: e.target.value }))}
-                onBlur={() => validateField("email")}  
+                onChange={(e) =>
+                  setInputs((prev) => ({ ...prev, email: e.target.value }))
+                }
+                onBlur={() => validateField("email")}
                 value={inputs.email}
               />
               <FormErrorMessage>{errors.email}</FormErrorMessage>
@@ -119,14 +130,18 @@ const Login = () => {
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
-                  onChange={(e) => setInputs((prev) => ({ ...prev, password: e.target.value }))}
-                  // onBlur={() => validateField("password")}  
+                  onChange={(e) =>
+                    setInputs((prev) => ({ ...prev, password: e.target.value }))
+                  }
+                  // onBlur={() => validateField("password")}
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
-                    onClick={() => setShowPassword((showPassword) => !showPassword)}
+                    onClick={() =>
+                      setShowPassword((showPassword) => !showPassword)
+                    }
                   >
                     {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                   </Button>
@@ -151,7 +166,14 @@ const Login = () => {
                 Bạn chưa có tài khoản?{" "}
                 <Link
                   color={"blue.400"}
-                  onClick={() => dispatch(changePage({ nextPage: PageConstant.SIGNUP, currentPage: PageConstant.LOGIN }))}
+                  onClick={() =>
+                    dispatch(
+                      changePage({
+                        nextPage: PageConstant.SIGNUP,
+                        currentPage: PageConstant.LOGIN,
+                      })
+                    )
+                  }
                 >
                   Đăng Ký
                 </Link>
