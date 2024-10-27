@@ -58,13 +58,14 @@ const Login = () => {
         newErrors.password = "Mật khẩu là bắt buộc.";
       } else if (password.length < 6) {
         newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
-      } else if (!/[A-Z]/.test(password)) {
-        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
-      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
-      } else {
-        delete newErrors.password;
-      }
+      } 
+      // else if (!/[A-Z]/.test(password)) {
+      //   newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
+      // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      //   newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      // } else {
+      //   delete newErrors.password;
+      // }
     }
 
     setErrors(newErrors);
@@ -119,7 +120,7 @@ const Login = () => {
                 <Input
                   type={showPassword ? "text" : "password"}
                   onChange={(e) => setInputs((prev) => ({ ...prev, password: e.target.value }))}
-                  onBlur={() => validateField("password")}  
+                  // onBlur={() => validateField("password")}  
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>
