@@ -84,6 +84,9 @@ const LeftSideBar = () => {
           dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
+        // window.location.replace(
+        //   window.location.origin + "/" + PageConstant.USER + `/${userInfo._id}`
+        // );
       },
       color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
@@ -157,7 +160,6 @@ const LeftSideBar = () => {
                     borderRadius="md"
                     onClick={(e) => {
                       e.stopPropagation();
-
                       if (item.linkTo) {
                         e.preventDefault();
                         item.onClick && item.onClick();

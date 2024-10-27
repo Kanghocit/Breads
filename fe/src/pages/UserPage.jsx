@@ -26,13 +26,13 @@ const UserPage = () => {
     fetchUserData();
     window.scrollTo(0, 0);
     dispatch(changeDisplayPageData(""));
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (!!userId) {
       dispatch(getUserPosts(userId));
     }
-  }, [displayPageData]);
+  }, [displayPageData, userId]);
 
   const fetchUserData = async () => {
     try {
@@ -42,7 +42,14 @@ const UserPage = () => {
       if (!result || result.error) {
         navigate("/error");
       } else {
-        dispatch(changePage({ nextPage: PageConstant.USER }));
+        dispatch(
+          changePage({
+            nextPage:
+              userId === userInfo?._id
+                ? PageConstant.USER
+                : PageConstant.FRIEND,
+          })
+        );
         handleGetUsersFollow();
       }
     } catch (err) {

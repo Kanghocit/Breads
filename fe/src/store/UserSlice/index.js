@@ -81,6 +81,17 @@ const userSlice = createSlice({
       } else {
         newFollowList = [...userInfo.following, userFlId];
       }
+      if (state.userSelected?._id) {
+        let newFlList = [];
+        if (state.userSelected?.followed?.includes(userFlId)) {
+          newFlList = state.userSelected.followed.filter(
+            (_id) => _id !== userFlId
+          );
+        } else {
+          newFlList = [...state.userSelected.followed, userFlId];
+        }
+        state.userSelected.followed = newFlList;
+      }
       state.userInfo.following = newFollowList;
     });
   },

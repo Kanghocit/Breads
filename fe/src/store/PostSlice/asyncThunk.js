@@ -130,6 +130,7 @@ export const getUserPosts = createAsyncThunk(
     try {
       const rootState = thunkApi.getState();
       const displayPageData = rootState.util.displayPageData;
+      const currentPage = rootState.util.currentPage;
       const data = await GET({
         path: Route.POST + POST_PATH.USER,
         params: {

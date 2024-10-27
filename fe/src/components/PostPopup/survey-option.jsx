@@ -1,4 +1,4 @@
-import { Input } from "@chakra-ui/react";
+import { Input, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useDebounce from "../../hooks/useDebounce";
@@ -6,6 +6,7 @@ import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { replaceEmojis } from "../../util";
 
 const SurveyOption = ({ option, index, selectedOption, setSelectedOption }) => {
+  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const [optionContent, setOptionContent] = useState(option?.value ?? "");
@@ -58,7 +59,7 @@ const SurveyOption = ({ option, index, selectedOption, setSelectedOption }) => {
       id={`option-${index}`}
       border={"1px solid gray"}
       margin={"6px 0"}
-      color={"black"}
+      color={textColor}
       fontWeight={600}
       outline={"1px solid gray"}
       _placeholder={{

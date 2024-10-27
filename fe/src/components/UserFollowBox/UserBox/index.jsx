@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { updatePostInfo } from "../../../store/PostSlice";
 import UserInfoPopover from "../../UserInfoPopover";
-import { changePage } from "../../../store/UtilSlice/asyncThunk";
 
 const UserBox = ({
   user,
@@ -26,7 +25,6 @@ const UserBox = ({
 
   const getToUserPage = () => {
     navigate(`/users/${userInfo._id}`);
-    dispatch(changePage({ nextPage: PageConstant.USER }));
   };
 
   const tagUser = () => {
