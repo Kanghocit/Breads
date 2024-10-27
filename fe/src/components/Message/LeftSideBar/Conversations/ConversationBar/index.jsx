@@ -23,13 +23,17 @@ const ConversationBar = ({ conversation }) => {
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
     const userPrefix = isCurrentUser ? "You" : participant?.username;
-    const msgContent = lastMsg.content?.trim()
+    const msgContent = lastMsg?.content?.trim()
       ? lastMsg.content?.trim()
       : lastMsg?.file?._id
       ? "Send a file to you"
       : lastMsg?.media?.length
       ? "Send media to you"
       : "";
+
+    if (!msgContent) {
+      return <></>;
+    }
     return (
       <>
         <span
@@ -57,6 +61,11 @@ const ConversationBar = ({ conversation }) => {
         bg: useColorModeValue("gray.600", "gray.600"),
         color: "white",
       }}
+      bg={
+        _id == selectedConversation?._id
+          ? useColorModeValue("gray.600", "gray.600")
+          : ""
+      }
       borderRadius={"md"}
       onClick={() => {
         if (_id && selectedConversation?._id !== _id) {

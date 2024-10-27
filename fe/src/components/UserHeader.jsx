@@ -29,6 +29,7 @@ import UserFollowBox from "./UserFollowBox";
 
 import PostConstants from "../util/PostConstants";
 import SkeletonPost from "./ListPost/Post/skeleton";
+import ConversationBtn from "./ConversationBtn";
 
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
@@ -125,9 +126,10 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
           </Link>
         )}
         {userInfo._id !== user?._id && (
-          <Link as={RouterLink}>
+          <Flex width={"100%"} gap={4}>
             <FollowBtn user={user} />
-          </Link>
+            <ConversationBtn user={user} />
+          </Flex>
         )}
         <Flex w={"full"} justifyContent={"space-between"}>
           <Flex gap={2} alignItems={"center"}>
@@ -146,8 +148,6 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             >
               {user?.followed.length} followed
             </Text>
-            <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
-            <Link color={"gray.light"}>instagram.com</Link>
           </Flex>
           <Flex>
             {/* <Box className="icon-container">

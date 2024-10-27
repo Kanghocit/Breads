@@ -108,11 +108,12 @@ function App() {
         <Layout />
       )}
       <Container maxW="620px">
-        {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && location.pathname !== "/chat" &&(
-          <CreatePostBtn />
-        )}
+        {!!userId &&
+          !seeMediaInfo.open &&
+          location.pathname !== "/error" &&
+          location.pathname !== "/chat" && <CreatePostBtn />}
       </Container>
-      
+
       <Routes>
         {HomeRoute()}
         <Route
@@ -134,8 +135,8 @@ function App() {
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
-
         <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="*" element={<ErrorPage />} />
         {ActivityRoute()}
       </Routes>
