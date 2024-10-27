@@ -16,7 +16,6 @@ export const signUp = createAsyncThunk(
         path: Route.USER + USER_PATH.SIGN_UP,
         payload,
       });
-      console.log("khang",data)
       if (data) {
         // localStorage.setItem("userId", data?._id);
         return data;

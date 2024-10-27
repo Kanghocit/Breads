@@ -1,17 +1,22 @@
 import { Avatar } from "@chakra-ui/avatar";
-import { Box, Flex, Link, Text, VStack } from "@chakra-ui/layout";
+import { Box, Divider, Flex, Link, Text, VStack } from "@chakra-ui/layout";
 import {
   Button,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
   Portal,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsInstagram } from "react-icons/bs";
@@ -29,7 +34,10 @@ import UserFollowBox from "./UserFollowBox";
 
 import PostConstants from "../util/PostConstants";
 import SkeletonPost from "./ListPost/Post/skeleton";
+import ConversationBtn from "./ConversationBtn";
 
+import { FaLink } from "react-icons/fa";
+import { CgDanger } from "react-icons/cg";
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",
@@ -42,6 +50,7 @@ const TABS = {
 };
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
+  console.log("user", user);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { isLoading } = useSelector((state) => state.post);
@@ -57,7 +66,9 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
       showToast("", "Profile link copied", "success");
     });
   };
-
+  const hoverColor = useColorModeValue("cbg.light", "cbg.dark");
+  const bgColor = useColorModeValue("cuse.light", "cuse.dark");
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const handleSeeAvatar = () => {
     dispatch(
       updateSeeMedia({
@@ -72,6 +83,12 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
       })
     );
   };
+  const date = new Date(user.createdAt);
+  const monthOptions = { month: "long" };
+  const yearOptions = { year: "numeric" };
+
+  const month = date.toLocaleString("vi-VN", monthOptions);
+  const year = date.toLocaleString("vi-VN", yearOptions);
 
   return (
     <>
@@ -125,9 +142,10 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
           </Link>
         )}
         {userInfo._id !== user?._id && (
-          <Link as={RouterLink}>
+          <Flex width={"100%"} gap={4}>
             <FollowBtn user={user} />
-          </Link>
+            <ConversationBtn user={user} />
+          </Flex>
         )}
         <Flex w={"full"} justifyContent={"space-between"}>
           <Flex gap={2} alignItems={"center"}>
@@ -146,8 +164,6 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             >
               {user?.followed.length} followed
             </Text>
-            <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
-            <Link color={"gray.light"}>instagram.com</Link>
           </Flex>
           <Flex>
             {/* <Box className="icon-container">
@@ -160,9 +176,84 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                     <CgMoreO size={24} cursor={"pointer"} />
                   </MenuButton>
                   <Portal>
-                    <MenuList bg={"gray.dark"}>
-                      <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                    <MenuList
+                      bg="gray.dark"
+                      boxShadow="md"
+                      py={2}
+                      borderRadius={"10px"}
+                    >
+                      <MenuItem
+                        bg="gray.dark"
+                        color="white"
+                        _hover={{ bg: hoverColor }}
+                        py={3}
+                        px={4}
+                        display="flex"
+                        borderRadius={"10px"}
+                        alignItems="center"
+                        gap={2}
+                        onClick={copyURL}
+                      >
+                        <FaLink />
                         Copy link
+                      </MenuItem>
+                      <MenuItem
+                        bg="gray.dark"
+                        color="white"
+                        _hover={{ bg: hoverColor }}
+                        py={3}
+                        px={4}
+                        display="flex"
+                        borderRadius={"10px"}
+                        alignItems="center"
+                        gap={2}
+                      >
+                        <Box
+                          onClick={onOpen}
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                        >
+                          <CgDanger />
+                          Giới thiệu về trang cá nhân này
+                        </Box>
+
+                        <Modal
+                          closeOnOverlayClick={true}
+                          isOpen={isOpen}
+                          onClose={onClose}
+                        >
+                          <ModalOverlay />
+                          <ModalContent
+                            w={"400px"}
+                            bg={bgColor}
+                            borderRadius={"10px"}
+                          >
+                            <ModalBody pb={6}>
+                              <Flex justifyContent={"space-between"} mt={2}>
+                                <Flex direction={"column"}>
+                                  <Text>Tên</Text>
+                                  <Box>{`${user.name}(@${user.username})`}</Box>
+                                </Flex>
+                                <Avatar src={user.avatar} size="lg" />
+                              </Flex>
+                              <Divider width={"270px"} borderWidth="1px" />
+                              <Flex justifyContent={"space-between"} my={2}>
+                                <Flex direction={"column"}>
+                                  <Text>Ngày Tham Gia</Text>
+                                  <Box>{`${month} năm ${year} • 100 triệu +`}</Box>
+                                </Flex>
+                              </Flex>
+                              <Divider borderWidth="1px" />
+                              <Flex justifyContent={"space-between"} mt={2}>
+                                <Flex direction={"column"}>
+                                  <Text>Tên người dùng cũ </Text>
+                                  <Box>{`Đã đổi tên n lần trên instagram`}</Box>
+                                </Flex>
+                              </Flex>
+                            </ModalBody>
+                          </ModalContent>
+                        </Modal>
                       </MenuItem>
                     </MenuList>
                   </Portal>

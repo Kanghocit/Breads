@@ -220,12 +220,17 @@ export const getPostsIdByFilter = async (payload) => {
           {
             $addFields: {
               interactionCount: {
-                $add: [{ $size: "$usersLike" }, { $size: "$replies" }],
+                $add: [
+                  { $size: "$usersLike" },
+                  { $size: "$replies" },
+                  { $size: "$media" },
+                  { $size: "$survey" },
+                ],
               },
             },
           },
           {
-            $sort: { interactionCount: -1, createdAt: -1 },
+            $sort: { interactionCount: -1 },
           },
           {
             $skip: skip,
