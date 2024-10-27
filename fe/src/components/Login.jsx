@@ -34,7 +34,7 @@ const Login = () => {
   const showToast = useShowToast();
 
   useEffect(() => {
-    if (countClick === 5) {
+    if (countClick >= 5) {
       handleLogin(true);
     }
   }, [countClick]);
@@ -72,11 +72,12 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (loginAsAdmin) => {
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
-      dispatch(login(payload));
+      await dispatch(login(payload));
+      showToast("Thành công", "Đăng nhập bằng Admin thành công", "success");
       return;
     }
     if (!validateField("email") || !validateField("password")) return;
