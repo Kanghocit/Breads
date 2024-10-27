@@ -1,15 +1,16 @@
 import {
-  Link,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
+  Avatar,
   Box,
   Flex,
+  Link,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
   Text,
-  Avatar,
+  useColorMode,
 } from "@chakra-ui/react";
-import { useColorMode } from "@chakra-ui/react";
+
 import { Fragment, useState } from "react";
 
 const UserTagPopup = ({ post, content }) => {
@@ -20,11 +21,47 @@ const UserTagPopup = ({ post, content }) => {
 
   const bgColor = colorMode === "dark" ? "#0a0a0a" : "#fafafa";
 
+  let firstUrlPreviewDisplayed = false;
+
   return (
     <>
       {content?.split(/(https?:\/\/[^\s]+|@[\w.]+)/g).map((part, index) => {
         if (part.match(urlRegex)) {
+          if (!firstUrlPreviewDisplayed) {
+            firstUrlPreviewDisplayed = true;
+            return (
+              <>
+                <div
+                  key={index}
+                  style={{ marginBottom: "10px", display: "inline" }}
+                >
+                  <Link
+                    href={part}
+                    color="blue.500"
+                    isExternal
+                    _hover={{ textDecoration: "underline" }}
+                    _focus={{ boxShadow: "none" }}
+                  >
+                    {part}
+                  </Link>
+                </div>
+              </>
+            );
+          }
           return (
+            <>
+              <span key={index} style={{ marginRight: "5px" }}>
+                <Link
+                  href={part}
+                  color="blue.500"
+                  isExternal
+                  _hover={{ textDecoration: "underline" }}
+                  _focus={{ boxShadow: "none" }}
+                >
+                  {part}
+                </Link>
+              </span>
+           
             <Fragment key={"tag-popup-" + index}>
               <Link
                 key={index}
@@ -81,7 +118,9 @@ const UserTagPopup = ({ post, content }) => {
                 </div>
               </div>
             </Fragment>
+            </>
           );
+
         } else if (part.match(usernameRegex)) {
           const matchedUser = tagInfo.find(
             (user) => `@${user.username}` === part
@@ -143,17 +182,3 @@ const UserTagPopup = ({ post, content }) => {
 };
 
 export default UserTagPopup;
-
-const extractDomain1 = (url) => {
-  const match = url.match(/https?:\/\/(?:www\.)?([^\/]+)/i);
-  return match ? match[1] : ""; // Return the full domain
-};
-const extractDomain2 = (url) => {
-  const match = url.match(/https?:\/\/(?:www\.)?([^\/]+)/i);
-  if (match) {
-    const domain = match[1];
-    // Tách tên miền theo dấu chấm và lấy phần đầu tiên
-    return domain.split(".")[0];
-  }
-  return ""; // Trả về chuỗi rỗng nếu không có kết quả
-};
