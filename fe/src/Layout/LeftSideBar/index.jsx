@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
-import { FaRegHeart } from "react-icons/fa";
+import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import { GrHomeRounded } from "react-icons/gr";
@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { updatePostAction } from "../../store/PostSlice";
-import { changeDisplayPageData, changePage } from "../../store/UtilSlice";
-import { FaFacebookMessenger } from "react-icons/fa";
+import { changeDisplayPageData } from "../../store/UtilSlice";
+import { changePage } from "../../store/UtilSlice/asyncThunk";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
 
@@ -84,6 +84,9 @@ const LeftSideBar = () => {
           dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
+        // window.location.replace(
+        //   window.location.origin + "/" + PageConstant.USER + `/${userInfo._id}`
+        // );
       },
       color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
@@ -157,7 +160,6 @@ const LeftSideBar = () => {
                     borderRadius="md"
                     onClick={(e) => {
                       e.stopPropagation();
-
                       if (item.linkTo) {
                         e.preventDefault();
                         item.onClick && item.onClick();

@@ -28,7 +28,6 @@ const Message = ({ msg }) => {
   };
 
   const msgContent = () => {
-    console.log(media);
     return (
       <>
         {!ownMessage && (

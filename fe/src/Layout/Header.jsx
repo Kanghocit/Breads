@@ -14,6 +14,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentPage = useSelector((state) => state.util.currentPage);
+  const userSelected = useSelector((state) => state.user.userSelected);
   const { colorMode } = useColorMode();
   const [openBox, setOpenBox] = useState(false);
   const {
@@ -31,6 +32,7 @@ const Header = () => {
     SEARCH,
     USER,
     POST_DETAIL,
+    FRIEND,
   } = PageConstant;
 
   const getBoxItems = () => {
@@ -59,6 +61,8 @@ const Header = () => {
       return "Search";
     } else if (currentPage === USER) {
       return "User profile";
+    } else if (currentPage === FRIEND) {
+      return userSelected?.username ?? "Friend";
     } else if (currentPage === POST_DETAIL) {
       return "Bread";
     }

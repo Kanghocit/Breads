@@ -19,6 +19,7 @@ const UploadDisplay = () => {
   const dispatch = useDispatch();
   const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
   const files = msgInfo.files;
+  const media = msgInfo.media;
 
   const getImgByType = (inputType) => {
     let fileType = "";
@@ -54,11 +55,22 @@ const UploadDisplay = () => {
     );
   };
 
+  const handleRemoveMedia = (mediaIndex) => {
+    const newMedia = media.filter((_, index) => index !== mediaIndex);
+    dispatch(
+      updateMsgInfo({
+        ...msgInfo,
+        media: newMedia,
+      })
+    );
+  };
+
   const handleRemoveAllFiles = () => {
     dispatch(
       updateMsgInfo({
         ...msgInfo,
         files: [],
+        media: [],
       })
     );
   };
@@ -83,7 +95,9 @@ const UploadDisplay = () => {
           <ItemUploadDisplay
             item={item}
             imgSrc={item?.url}
-            onClick={() => {}}
+            onClick={() => {
+              handleRemoveMedia(index);
+            }}
           />
         ))}
         {files?.map((file, index) => (

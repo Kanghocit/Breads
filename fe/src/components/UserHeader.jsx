@@ -150,23 +150,25 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             <Link color={"gray.light"}>instagram.com</Link>
           </Flex>
           <Flex>
-            <Box className="icon-container">
+            {/* <Box className="icon-container">
               <BsInstagram size={24} cursor={"pointer"} />
-            </Box>
-            <Box className="icon-container">
-              <Menu>
-                <MenuButton>
-                  <CgMoreO size={24} cursor={"pointer"} />
-                </MenuButton>
-                <Portal>
-                  <MenuList bg={"gray.dark"}>
-                    <MenuItem bg={"gray.dark"} onClick={copyURL}>
-                      Copy link
-                    </MenuItem>
-                  </MenuList>
-                </Portal>
-              </Menu>
-            </Box>
+            </Box> */}
+            {user?._id !== userInfo?._id && (
+              <Box className="icon-container">
+                <Menu>
+                  <MenuButton>
+                    <CgMoreO size={24} cursor={"pointer"} />
+                  </MenuButton>
+                  <Portal>
+                    <MenuList bg={"gray.dark"}>
+                      <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                        Copy link
+                      </MenuItem>
+                    </MenuList>
+                  </Portal>
+                </Menu>
+              </Box>
+            )}
           </Flex>
         </Flex>
 
@@ -187,40 +189,39 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
           </TabList>
 
           <TabPanels>
-              <TabPanel  p={0} mt={4}>
-                {isLoading ? (
-                  <Flex direction="column" gap={2}>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <SkeletonPost key={num} />
-                    ))}
-                  </Flex>
-                ) : (
-                  <ListPost posts={userPosts} />
-                )}
-              </TabPanel>
-              <TabPanel  p={0} mt={4}>
-                {isLoading ? (
-                  <Flex direction="column" gap={2}>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <SkeletonPost key={num} />
-                    ))}
-                  </Flex>
-                ) : (
-                  <ListPost posts={userPosts} />
-                )}
-              </TabPanel>
-              <TabPanel  p={0} mt={4}>
-                {isLoading ? (
-                  <Flex direction="column" gap={2}>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <SkeletonPost key={num} />
-                    ))}
-                  </Flex>
-                ) : (
-                  <ListPost posts={userPosts} />
-                )}
-              </TabPanel>
-            
+            <TabPanel p={0} mt={4}>
+              {isLoading ? (
+                <Flex direction="column" gap={2}>
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <SkeletonPost key={num} />
+                  ))}
+                </Flex>
+              ) : (
+                <ListPost posts={userPosts} />
+              )}
+            </TabPanel>
+            <TabPanel p={0} mt={4}>
+              {isLoading ? (
+                <Flex direction="column" gap={2}>
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <SkeletonPost key={num} />
+                  ))}
+                </Flex>
+              ) : (
+                <ListPost posts={userPosts} />
+              )}
+            </TabPanel>
+            <TabPanel p={0} mt={4}>
+              {isLoading ? (
+                <Flex direction="column" gap={2}>
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <SkeletonPost key={num} />
+                  ))}
+                </Flex>
+              ) : (
+                <ListPost posts={userPosts} />
+              )}
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </VStack>

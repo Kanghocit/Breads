@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";
 import UserHeader from "../components/UserHeader";
 import { GET } from "../config/API";
 import { getUserPosts } from "../store/PostSlice/asyncThunk";
 import { getUserInfo } from "../store/UserSlice/asyncThunk";
-import { changeDisplayPageData, changePage } from "../store/UtilSlice";
-import ErrorPage from "./ErrorPage";
+import { changeDisplayPageData } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -27,13 +26,13 @@ const UserPage = () => {
     fetchUserData();
     window.scrollTo(0, 0);
     dispatch(changeDisplayPageData(""));
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (!!userId) {
       dispatch(getUserPosts(userId));
     }
-  }, [displayPageData]);
+  }, [displayPageData, userId]);
 
   const fetchUserData = async () => {
     try {
@@ -43,7 +42,14 @@ const UserPage = () => {
       if (!result || result.error) {
         navigate("/error");
       } else {
-        dispatch(changePage({ nextPage: PageConstant.USER }));
+        dispatch(
+          changePage({
+            nextPage:
+              userId === userInfo?._id
+                ? PageConstant.USER
+                : PageConstant.FRIEND,
+          })
+        );
         handleGetUsersFollow();
       }
     } catch (err) {

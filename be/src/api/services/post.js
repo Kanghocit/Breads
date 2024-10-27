@@ -163,7 +163,7 @@ export const getPostsIdByFilter = async (payload) => {
             .limit(limit)
         )?.postsId;
         break;
-      case PageConstant.USER:
+      case PageConstant.USER || PageConstant.FRIEND:
         const value = filter.value;
         if (!!value) {
           data = await Post.find(

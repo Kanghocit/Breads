@@ -23,6 +23,7 @@ export const defaultPostInfo = {
   media: [],
   survey: [],
   usersTag: [],
+  files: [],
 };
 
 const initialState = {
@@ -70,6 +71,10 @@ const postSlice = createSlice({
           };
         }
       }
+    },
+    reloadListPost: (state, action) => {
+      state.listPost = [];
+      state.isLoading = true;
     },
   },
   extraReducers: (builder) => {
@@ -203,5 +208,6 @@ export const {
   updateListPost,
   selectPostReply,
   updatePostLike,
+  reloadListPost,
 } = postSlice.actions;
 export default postSlice.reducer;

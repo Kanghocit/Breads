@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { iconStyle } from "..";
 import useShowToast from "../../../../../../hooks/useShowToast";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
+import { updatePostInfo } from "../../../../../../store/PostSlice";
 
 export const fileTypes = {
   word: [
@@ -23,9 +24,10 @@ export const fileTypes = {
   pdf: ["application/pdf"],
 };
 
-const FileUpload = ({ setFilesData }) => {
+const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useDispatch();
   const msgInfo = useSelector((state) => state.message.msgInfo);
+  const postInfo = useSelector((state) => state.post.postInfo);
   const showToast = useShowToast();
   const fileRef = useRef();
 
@@ -57,12 +59,21 @@ const FileUpload = ({ setFilesData }) => {
         };
       });
       setFilesData(selectedFiles);
-      dispatch(
-        updateMsgInfo({
-          ...msgInfo,
-          files: fileMetaData,
-        })
-      );
+      if (!isPost) {
+        dispatch(
+          updateMsgInfo({
+            ...msgInfo,
+            files: fileMetaData,
+          })
+        );
+      } else {
+        dispatch(
+          updatePostInfo({
+            ...postInfo,
+            files: fileMetaData,
+          })
+        );
+      }
     } else {
       showToast("", "Invalid file's type", "error");
     }
