@@ -1,15 +1,18 @@
 import { Container, Text, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import InfiniteScroll from "../components/InfiniteScroll";
 import ContainerLayout from "../components/MainBoxLayout";
 import SearchBar from "../components/SearchBar";
 import UserFollowBox from "../components/UserFollowBox";
 import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
 import { GET } from "../config/API";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const SearchPage = () => {
+  const dispatch = useDispatch();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -24,6 +27,9 @@ const SearchPage = () => {
         searchValue,
         isFetchMore: false,
       });
+    }
+    if (init.current) {
+      dispatch(changePage({ nextPage: PageConstant.SEARCH }));
     }
     init.current = false;
   }, [searchValue]);

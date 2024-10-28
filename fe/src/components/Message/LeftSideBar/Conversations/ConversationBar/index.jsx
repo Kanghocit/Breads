@@ -31,9 +31,6 @@ const ConversationBar = ({ conversation }) => {
       ? "Send media to you"
       : "";
 
-    if (!msgContent) {
-      return <></>;
-    }
     return (
       <>
         <span

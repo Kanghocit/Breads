@@ -17,6 +17,7 @@ export const createPost = async (req, res) => {
     const payload = req.body;
     const action = req.query.action;
     const {
+      _id,
       authorId,
       content,
       media,
@@ -80,6 +81,7 @@ export const createPost = async (req, res) => {
     const optionsId = newSurvey.map((option) => option?._id);
     const newUsersTag = usersTag.map((userId) => ObjectId(userId));
     const newPostPayload = {
+      _id: ObjectId(_id),
       authorId,
       content,
       media: newMedia,

@@ -23,7 +23,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { replaceEmojis } from "../../util";
+import { generateObjectId, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
@@ -44,6 +44,7 @@ const PostPopup = () => {
   const isEditing = postAction === PostConstants.ACTIONS.EDIT;
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
+  const showActionToast = useToastWithAction();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
   const [content, setContent] = useState("");
@@ -141,6 +142,8 @@ const PostPopup = () => {
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
         }
+        payload._id = generateObjectId();
+        console.log("_id: ", payload._id);
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
     } catch (err) {

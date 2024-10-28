@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { DELETE, GET, POST, PUT } from "../../config/API";
+import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { Route, POST_PATH } from "../../../../be/src/Breads-Shared/APIConfig";
+import { DELETE, GET, POST, PUT } from "../../config/API";
 import { updateHasMoreData } from "../UtilSlice";
 
 export const createPost = createAsyncThunk(
@@ -24,7 +24,10 @@ export const createPost = createAsyncThunk(
           action: action,
         },
       });
-      if (currerntPage !== PageConstant.USER) {
+      if (
+        currerntPage !== PageConstant.USER &&
+        currerntPage !== PageConstant.FRIEND
+      ) {
         dispatch(
           getPosts({
             filter: { page: currerntPage },
@@ -32,7 +35,10 @@ export const createPost = createAsyncThunk(
           })
         );
       }
-      return data;
+      if (currerntPage === PageConstant.USER) {
+        return data;
+      }
+      return null;
     } catch (err) {
       return thunkApi.rejectWithValue(err.response.data);
     }

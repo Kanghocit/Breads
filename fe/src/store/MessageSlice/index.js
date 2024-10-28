@@ -14,7 +14,7 @@ export const defaulMessageInfo = {
   */
   icon: "",
 };
-const initialState = {
+export const initialMsgState = {
   conversations: [], //List user message
   userSelected: null,
   messages: {}, //List message in a conversation
@@ -28,7 +28,7 @@ const initialState = {
 
 const msgSlice = createSlice({
   name: "message",
-  initialState,
+  initialState: initialMsgState,
   reducers: {
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;

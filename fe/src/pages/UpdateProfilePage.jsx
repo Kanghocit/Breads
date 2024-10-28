@@ -221,7 +221,7 @@ const UpdateProfilePage = () => {
             <FormControl>
               <FormLabel>FullName</FormLabel>
               <Input
-                placeholder="An Khang"
+                placeholder="Your name..."
                 onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
                 value={inputs.name}
                 _placeholder={{ color: "gray.500" }}
