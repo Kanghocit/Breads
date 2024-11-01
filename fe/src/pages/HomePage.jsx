@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NOTIFICATION_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
 import ListPost from "../components/ListPost";
 import ContainerLayout from "../components/MainBoxLayout";
-import { getPosts } from "../store/PostSlice/asyncThunk";
-import { changeDisplayPageData, changePage } from "../store/UtilSlice";
 import useSocket from "../hooks/useSocket";
-import { NOTIFICATION_PATH } from "../Breads-Shared/APIConfig";
+import { getPosts } from "../store/PostSlice/asyncThunk";
+import { changeDisplayPageData } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ const HomePage = () => {
     if (currentPage === PageConstant.HOME) {
       dispatch(
         getPosts({
-          filter: {page: displayPageData},
+          filter: { page: displayPageData },
           userId: localStorage.getItem("userId"),
           isNewPage: true,
         })

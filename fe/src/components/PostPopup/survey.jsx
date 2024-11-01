@@ -1,8 +1,8 @@
 import { Collapse, Container, Flex, Text } from "@chakra-ui/react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import SurveyOption from "./survey-option";
-import { useState } from "react";
 
 const PostSurvey = () => {
   const dispatch = useDispatch();

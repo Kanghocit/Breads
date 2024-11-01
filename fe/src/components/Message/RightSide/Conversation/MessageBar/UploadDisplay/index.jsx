@@ -10,6 +10,8 @@ const UploadDisplay = (isPost = false) => {
   const dispatch = useDispatch();
   const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
   const { postInfo } = useSelector((state) => state.post);
+  // const files = msgInfo.files;
+  const media = msgInfo.media;
 
   const files = isPost ? postInfo.files : msgInfo.files;
   const getImgByType = (inputType) => {
@@ -56,6 +58,16 @@ const UploadDisplay = (isPost = false) => {
     }
   };
 
+  const handleRemoveMedia = (mediaIndex) => {
+    const newMedia = media.filter((_, index) => index !== mediaIndex);
+    dispatch(
+      updateMsgInfo({
+        ...msgInfo,
+        media: newMedia,
+      })
+    );
+  };
+
   const handleRemoveAllFiles = () => {
     if (!isPost) {
       dispatch(
@@ -73,66 +85,66 @@ const UploadDisplay = (isPost = false) => {
         })
       );
     }
-  };
 
-  const baseStyles = {
-    width: "100%",
-    px: 2,
-    py: 3,
-    gap: "10px",
-    justifyContent: "start",
-    bg: useColorModeValue("gray.200", "#181818"),
-  };
-  const postStyles = {
-    position: "relative",
-    height: "100px",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    flexDirection: "column",
-  };
+    const baseStyles = {
+      width: "100%",
+      px: 2,
+      py: 3,
+      gap: "10px",
+      justifyContent: "start",
+      bg: useColorModeValue("gray.200", "#181818"),
+    };
+    const postStyles = {
+      position: "relative",
+      height: "100px",
+      justifyContent: "center",
+      alignItems: "flex-start",
+      flexDirection: "column",
+    };
 
-  const nonPostStyles = {
-    borderTop: "1px solid gray",
-    position: "absolute",
-    left: 0,
-    bottom: "calc(100% - 2px)",
-    height: "100px",
-    justifyContent: "start",
-    alignItems: "center",
-    flexDirection: "row",
-  };
-  return (
-    <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
-      <>
-        {!isPost &&
-          media?.map((item, index) => (
+    const nonPostStyles = {
+      borderTop: "1px solid gray",
+      position: "absolute",
+      left: 0,
+      bottom: "calc(100% - 2px)",
+      height: "100px",
+      justifyContent: "start",
+      alignItems: "center",
+      flexDirection: "row",
+    };
+    return (
+      <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
+        <>
+          {!isPost &&
+            media?.map((item, index) => (
+              <ItemUploadDisplay
+                item={item}
+                imgSrc={item?.url}
+                onClick={() => { handleRemoveMedia(index)}}
+                key={index}
+              />
+            ))}
+
+          {files?.map((file, index) => (
             <ItemUploadDisplay
-              item={item}
-              imgSrc={item?.url}
-              onClick={() => {}}
+              item={file}
+              imgSrc={getImgByType(file.contentType)}
+              onClick={() => handleRemoveFile(index)}
               key={index}
+              isPost={isPost}
             />
           ))}
-        {files?.map((file, index) => (
-          <ItemUploadDisplay
-            item={file}
-            imgSrc={getImgByType(file.contentType)}
-            onClick={() => handleRemoveFile(index)}
-            key={index}
-            isPost={isPost}
-          />
-        ))}
-      </>
-      {!isPost ? (
-        <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
-          Clear all
-        </Button>
-      ) : (
-        <></>
-      )}
-      {loadingUploadMsg && <LoadingUploadMsg />}
-    </Flex>
-  );
+        </>
+        {!isPost ? (
+          <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
+            Clear all
+          </Button>
+        ) : (
+          <></>
+        )}
+        {loadingUploadMsg && <LoadingUploadMsg />}
+      </Flex>
+    );
+  };
 };
-
 export default UploadDisplay;

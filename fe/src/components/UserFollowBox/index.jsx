@@ -1,8 +1,10 @@
 import { Flex, useColorModeValue } from "@chakra-ui/react";
 import FollowBtn from "../FollowBtn";
 import UserBox from "./UserBox";
+import { useSelector } from "react-redux";
 
 const UserFollowBox = ({ user, inFollowBox = false }) => {
+  const userInfo = useSelector((state) => state.user.userInfo);
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
 
@@ -19,8 +21,8 @@ const UserFollowBox = ({ user, inFollowBox = false }) => {
         mb={inFollowBox ? "" : "10px"}
         borderBottom={inFollowBox ? "1px solid gray" : ""}
       >
-        <UserBox user={user} />
-        <FollowBtn user={user} />
+        <UserBox user={user} inFollowBox={inFollowBox} />
+        {userInfo?._id !== user?._id && <FollowBtn user={user} />}
       </Flex>
     </>
   );

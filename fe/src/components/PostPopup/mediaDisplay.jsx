@@ -51,15 +51,15 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
     mediaContainerRef.current.scrollLeft = scrollPosition.current - distance;
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
     isDragging.current = false;
-    startMomentumScroll();
+    startMomentumScroll(e);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e) => {
     if (isDragging.current) {
       isDragging.current = false;
-      startMomentumScroll();
+      startMomentumScroll(e);
     }
   };
 
@@ -92,6 +92,7 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
         gap="10px"
         mt="10px"
         zIndex={1}
+        // bg={"red"}
         // bg={colorMode === "dark" ? "#181818" : "#fafafa"}
         wrap={post.media?.length <= 2 ? "wrap" : "nowrap"}
         justifyContent="flex-start"
@@ -102,7 +103,8 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
         onClick={() => {
           if (
             !isDetail &&
-            !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
+            !(postAction === PostConstants.ACTIONS.REPOST && isParentPost) &&
+            !(postAction === PostConstants.ACTIONS.CREATE)
           ) {
             handleSeeDetail();
           }

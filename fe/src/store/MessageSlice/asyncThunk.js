@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { updateHasMoreData } from "../UtilSlice";
 import { formatDateToDDMMYYYY } from "../../util";
+import { GET } from "../../config/API";
+import { Route } from "../../Breads-Shared/APIConfig";
 
 export const getConversations = createAsyncThunk(
   "message/getConversations",
@@ -33,3 +35,18 @@ export const getMsgs = createAsyncThunk("message/getMsgs", (data, thunkApi) => {
   });
   return { msgs: splitMsgsByDate, isNew: isNew };
 });
+
+export const getConversationById = createAsyncThunk(
+  "message/getConversation",
+  async (data, thunkApi) => {
+    try {
+      const conversationId = data;
+      const conversation = await GET({
+        path: Route.MESSAGE + `/conversation/${conversationId}`,
+      });
+      return conversation;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);

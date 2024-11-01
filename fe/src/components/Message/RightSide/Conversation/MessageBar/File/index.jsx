@@ -29,7 +29,6 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useDispatch();
   const msgInfo = useSelector((state) => state.message.msgInfo);
   const postInfo = useSelector((state) => state.post.postInfo);
-  const files =  isPost ? postInfo.files : msgInfo.files;
   const showToast = useShowToast();
   const fileRef = useRef();
 

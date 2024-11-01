@@ -10,6 +10,7 @@ import { convertToBase64 } from "../../util";
 import FileUpload from "../Message/RightSide/Conversation/MessageBar/File";
 
 import GifBox from "./gif";
+import { TbLibraryPhoto } from "react-icons/tb";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
@@ -87,6 +88,10 @@ const PostPopupAction = () => {
             setFilesData={setFilesData}
             isPost={true}
             cursor="pointer"
+          />
+          <TbLibraryPhoto
+            cursor="pointer"
+            onClick={() => imageRef.current.click()}
           />
           <RiFileGifLine cursor="pointer" onClick={onOpen} />
           <VscListSelection

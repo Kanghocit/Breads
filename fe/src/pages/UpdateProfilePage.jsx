@@ -17,13 +17,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ChangePWModal from "../components/UpdateUser/changePWModal";
 import LinksModal from "../components/UpdateUser/linksModal";
 import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
-import { changePage, updateSeeMedia } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 import { convertToBase64 } from "../util/index";
-import PageConstant from "../Breads-Shared/Constants/PageConstants";
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -59,6 +59,15 @@ const UpdateProfilePage = () => {
     }
   }, [userInfo._id]);
 
+  useEffect(() => {
+    if (updating && userInfo?._id) {
+      showToast("Success", "Profile updated successfully", "success");
+      dispatch(changePage({ nextPage: PageConstant.USER }));
+      navigate(`/users/${userInfo._id}`);
+      setUpdating(false);
+    }
+  }, [userInfo]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = JSON.parse(JSON.stringify(inputs));
@@ -83,26 +92,22 @@ const UpdateProfilePage = () => {
       }
     }
     try {
-      if (typeof payload.avatar === "object") {
-        payload.avatar = await convertToBase64(payload.avatar);
-      }
       dispatch(updateProfile(payload));
-      showToast("Success", "Profile updated successfully", "success");
-      dispatch(changePage({ nextPage: PageConstant.USER }));
-      navigate(`/users/${userInfo._id}`);
+      setUpdating(true);
     } catch (error) {
       showToast(
         "Error",
         error.message || "An unexpected error occurred",
         "error"
       );
-    } finally {
-      setUpdating(false);
     }
   };
 
   const compareUpdateValue = (payload) => {
     let needUpdate = false;
+    if (payload.avatar !== userInfo.avatar) {
+      needUpdate = true;
+    }
     if (payload.name !== userInfo.name) {
       needUpdate = true;
     } else if (payload.bio !== userInfo.bio) {
@@ -164,6 +169,15 @@ const UpdateProfilePage = () => {
     });
   };
 
+  const handleChangeAvatar = async (file) => {
+    try {
+      const base64 = await convertToBase64(file);
+      setInputs({ ...inputs, avatar: base64 });
+    } catch (err) {
+      console.log("handleChangeAvatar: ", err);
+    }
+  };
+
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -186,20 +200,8 @@ const UpdateProfilePage = () => {
                   <Avatar
                     size="xl"
                     boxShadow={"md"}
-                    src={
-                      typeof inputs.avatar === "string"
-                        ? inputs.avatar
-                        : URL.createObjectURL(inputs.avatar)
-                    }
+                    src={inputs.avatar}
                     cursor={"pointer"}
-                    onClick={() => {
-                      dispatch(
-                        updateSeeMedia({
-                          open: true,
-                          img: userInfo.avatar,
-                        })
-                      );
-                    }}
                   />
                 </Center>
                 <Center w="full">
@@ -211,9 +213,7 @@ const UpdateProfilePage = () => {
                     hidden
                     ref={fileRef}
                     accept="image/*"
-                    onChange={(e) =>
-                      setInputs({ ...inputs, avatar: e.target.files[0] })
-                    }
+                    onChange={(e) => handleChangeAvatar(e.target.files[0])}
                   />
                 </Center>
               </Stack>
@@ -322,6 +322,7 @@ const UpdateProfilePage = () => {
                 }}
                 type="submit"
                 isLoading={updating}
+                disabled={updating}
               >
                 Submit
               </Button>

@@ -30,6 +30,10 @@ const ConversationBar = ({ conversation }) => {
       : lastMsg?.media?.length
       ? "Send media to you"
       : "";
+
+    if (!msgContent) {
+      return <></>;
+    }
     return (
       <>
         <span
@@ -57,6 +61,11 @@ const ConversationBar = ({ conversation }) => {
         bg: useColorModeValue("gray.600", "gray.600"),
         color: "white",
       }}
+      bg={
+        _id == selectedConversation?._id
+          ? useColorModeValue("gray.600", "gray.600")
+          : ""
+      }
       borderRadius={"md"}
       onClick={() => {
         if (_id && selectedConversation?._id !== _id) {

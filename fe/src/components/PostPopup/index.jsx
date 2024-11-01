@@ -82,6 +82,11 @@ const PostPopup = () => {
     let checkResult = true;
     let msg = "";
 
+    if (content.length > MAX_CONTENT_LENGTH) {
+      checkResult = false;
+      msg = "Maximum characters for a post";
+    }
+
     if (postInfo.survey.length) {
       const optionsValue = postInfo.survey.map(({ value }) => value);
       const setValue = new Set(optionsValue);
@@ -92,6 +97,13 @@ const PostPopup = () => {
       if ([...setValue].length < postSurvey.length) {
         checkResult = false;
         msg = "Each option should be a unique value";
+      }
+      if (
+        !postInfo.survey[0].value.trim() ||
+        !postInfo.survey[1].value.trim()
+      ) {
+        checkResult = false;
+        msg = "Option can't not be empty";
       }
     }
     if (
@@ -168,12 +180,16 @@ const PostPopup = () => {
   };
 
   const handleContent = (value) => {
-    setContent(replaceEmojis(value));
+    if (value.length <= 600) {
+      setContent(replaceEmojis(value));
+    } else {
+      showToast("", "Maximum characters for a post", "error");
+    }
   };
 
   const files = postInfo.files;
   console.log(files);
-  
+
   return (
     <>
       <Modal isOpen={true} onClose={handleClose}>
@@ -189,54 +205,63 @@ const PostPopup = () => {
           borderRadius="16px"
           zIndex={3000}
         >
-          {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
-            <div style={{ marginBottom: "12px" }}>
-              <PostReplied />
-            </div>
-          )}
-          <Text
-            position="absolute"
-            top="-36px"
-            left="50%"
-            transform="translateX(-50%)"
-            color={textColor}
-            textTransform="capitalize"
-            fontWeight={600}
-            fontSize="18px"
+          <div
+            style={{
+              maxHeight: "70vh",
+              overflowY: "auto",
+            }}
           >
-            {postAction + " Bread"}
-          </Text>
-          <Flex>
-            <Avatar src={userInfo.avatar} width="40px" height="40px" />
-            <Container margin="0" paddingRight={0}>
-              <Text color={textColor} fontWeight="600">
-                {userInfo.username}
-              </Text>
+            {postReply?._id && postAction === PostConstants.ACTIONS.REPLY && (
+              <div style={{ marginBottom: "12px" }}>
+                <PostReplied />
+              </div>
+            )}
+            <Text
+              position="absolute"
+              top="-36px"
+              left="50%"
+              transform="translateX(-50%)"
+              color={textColor}
+              textTransform="capitalize"
+              fontWeight={600}
+              fontSize="18px"
+            >
+              {postAction + " Bread"}
+            </Text>
+            <Flex>
+              <Avatar src={userInfo.avatar} width="40px" height="40px" />
+              <Container margin="0" paddingRight={0}>
+                <Text color={textColor} fontWeight="600">
+                  {userInfo.username}
+                </Text>
 
-              <TextArea
-                text={content}
-                setText={(value) => handleContent(value)}
-                tagUsers={true}
-              />
+                <TextArea
+                  text={content}
+                  setText={(value) => handleContent(value)}
+                  tagUsers={true}
+                />
 
-              {!!files && files?.length !== 0 && <UploadDisplay isPost={true} />}
+                {!!files && files?.length !== 0 && (
+                  <UploadDisplay isPost={true} />
+                )}
 
-              {!containsLink(content) && (
-                <>
-                  <MediaDisplay post={postInfo} />
+                {!containsLink(content) && (
+                  <>
+                    <MediaDisplay post={postInfo} />
 
-                  {!closePostAction && <PostPopupAction />}
-                  {postInfo.survey.length !== 0 && <PostSurvey />}
-                  {postSelected?._id &&
-                    postAction === PostConstants.ACTIONS.REPOST && (
-                      <div style={{ margin: "12px 0" }}>
-                        <Post post={postSelected} isParentPost={true} />
-                      </div>
-                    )}
-                </>
-              )}
-            </Container>
-          </Flex>
+                    {!closePostAction && <PostPopupAction />}
+                    {postInfo.survey.length !== 0 && <PostSurvey />}
+                    {postSelected?._id &&
+                      postAction === PostConstants.ACTIONS.REPOST && (
+                        <div style={{ margin: "12px 0" }}>
+                          <Post post={postSelected} isParentPost={true} />
+                        </div>
+                      )}
+                  </>
+                )}
+              </Container>
+            </Flex>
+          </div>
           <ModalFooter padding="0">
             {content.length >= 450 && (
               <Text
@@ -257,6 +282,10 @@ const PostPopup = () => {
               borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
+                console.log({
+                  checkCondition,
+                  msg,
+                });
                 if (!checkCondition) {
                   showToast("Error", msg, "error");
                   return;
@@ -264,7 +293,7 @@ const PostPopup = () => {
                 setClickPost(true);
                 handleUploadPost();
               }}
-              isDisabled={content.length > MAX_CONTENT_LENGTH}
+              // isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
               {isEditing ? "Save" : "Post"}
             </Button>

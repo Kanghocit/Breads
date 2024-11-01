@@ -13,13 +13,14 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
-import { changePage } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -29,24 +30,67 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [errors, setErrors] = useState({});
   const showToast = useShowToast();
 
   useEffect(() => {
-    //Login as admin
-    if (countClick === 5) {
+    if (countClick >= 5) {
       handleLogin(true);
     }
   }, [countClick]);
 
-  const handleLogin = async (isAdmin = false) => {
-    try {
-      let payload = inputs;
-      if (isAdmin) {
-        payload.loginAsAdmin = true;
+  const validateField = (fieldName) => {
+    const newErrors = { ...errors };
+    const { email, password } = inputs;
+
+    if (fieldName === "email") {
+      if (!email) {
+        newErrors.email = "Email là bắt buộc.";
+      } else if (!/\S+@\S+\.\S+/.test(email)) {
+        newErrors.email = "Email không hợp lệ.";
+      } else {
+        delete newErrors.email;
       }
-      dispatch(login(payload));
+    }
+
+    if (fieldName === "password") {
+      if (!password) {
+        newErrors.password = "Mật khẩu là bắt buộc.";
+      } else if (password.length < 6) {
+        newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+      }
+      // else if (!/[A-Z]/.test(password)) {
+      //   newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
+      // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      //   newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      // } else {
+      //   delete newErrors.password;
+      // }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async (loginAsAdmin) => {
+    let payload = inputs;
+    if (loginAsAdmin) {
+      payload.loginAsAdmin = true;
+      await dispatch(login(payload));
+      showToast("Thành công", "Đăng nhập bằng Admin thành công", "success");
+      return;
+    }
+    if (!validateField("email") || !validateField("password")) return;
+
+    try {
+      const result = await dispatch(login(payload)).unwrap();
+      showToast("Thành công", "Đăng nhập thành công", "success");
     } catch (error) {
-      showToast("Error", error, "error");
+      showToast(
+        "Không thành công!",
+        error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
+        "error"
+      );
     }
   };
 
@@ -59,7 +103,7 @@ const Login = () => {
             textAlign={"center"}
             onClick={() => setCountClick((prev) => prev + 1)}
           >
-            Login
+            Đăng Nhập
           </Heading>
         </Stack>
         <Box
@@ -67,36 +111,30 @@ const Login = () => {
           bg={useColorModeValue("white", "gray.dark")}
           boxShadow={"lg"}
           p={8}
-          w={{
-            base: "full",
-            sm: "400px",
-          }}
+          w={{ base: "full", sm: "400px" }}
         >
           <Stack spacing={4}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={!!errors.email}>
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
                 onChange={(e) =>
-                  setInputs((inputs) => ({
-                    ...inputs,
-                    email: e.target.value,
-                  }))
+                  setInputs((prev) => ({ ...prev, email: e.target.value }))
                 }
+                onBlur={() => validateField("email")}
                 value={inputs.email}
               />
+              <FormErrorMessage>{errors.email}</FormErrorMessage>
             </FormControl>
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
+            <FormControl isRequired isInvalid={!!errors.password}>
+              <FormLabel>Mật Khẩu</FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
                   onChange={(e) =>
-                    setInputs((inputs) => ({
-                      ...inputs,
-                      password: e.target.value,
-                    }))
+                    setInputs((prev) => ({ ...prev, password: e.target.value }))
                   }
+                  // onBlur={() => validateField("password")}
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>
@@ -110,24 +148,23 @@ const Login = () => {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
             <Stack spacing={10} pt={2}>
               <Button
-                loadingText="Submitting"
+                loadingText="Đang gửi"
                 size="lg"
                 bg={useColorModeValue("gray.600", "gray.700")}
                 color={"white"}
-                _hover={{
-                  bg: useColorModeValue("gray.700", "gray.800"),
-                }}
+                _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={() => handleLogin()}
               >
-                Login
+                Đăng Nhập
               </Button>
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
-                Don't have an account?{" "}
+                Bạn chưa có tài khoản?{" "}
                 <Link
                   color={"blue.400"}
                   onClick={() =>
@@ -139,7 +176,7 @@ const Login = () => {
                     )
                   }
                 >
-                  Sign up
+                  Đăng Ký
                 </Link>
               </Text>
             </Stack>

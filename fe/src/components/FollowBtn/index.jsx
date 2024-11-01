@@ -4,6 +4,7 @@ import useShowToast from "../../hooks/useShowToast";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import { useState } from "react";
 import UnFollowPopup from "./UnfollowPopup";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   if (!userInfo?._id) {
@@ -23,16 +24,21 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
 };
 
 const FollowBtn = ({ user }) => {
-  
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const currentPage = useSelector((state) => state.util.currentPage);
   const isFollowing = userInfo?.following?.includes(user?._id);
   const showToast = useShowToast();
   const [openCancelPopup, setOpenCancelPopup] = useState(false);
 
   return (
-    <>
+    <div
+      style={{
+        flex: currentPage === PageConstant.FRIEND ? 1 : "",
+      }}
+    >
       <Button
+        width={currentPage === PageConstant.FRIEND ? "100%" : ""}
         size={"md"}
         onClick={() => {
           if (isFollowing) {
@@ -57,7 +63,7 @@ const FollowBtn = ({ user }) => {
           setOpenCancelPopup(false);
         }}
       />
-    </>
+    </div>
   );
 };
 

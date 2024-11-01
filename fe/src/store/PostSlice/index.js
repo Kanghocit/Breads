@@ -72,6 +72,10 @@ const postSlice = createSlice({
         }
       }
     },
+    reloadListPost: (state, action) => {
+      state.listPost = [];
+      state.isLoading = true;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPost.pending, (state) => {
@@ -204,5 +208,6 @@ export const {
   updateListPost,
   selectPostReply,
   updatePostLike,
+  reloadListPost,
 } = postSlice.actions;
 export default postSlice.reducer;

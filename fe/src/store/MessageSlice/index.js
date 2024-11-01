@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getConversations, getMsgs } from "./asyncThunk";
+import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
 
 export const defaulMessageInfo = {
@@ -85,6 +85,10 @@ const msgSlice = createSlice({
       } else {
         state.messages = [...msgs, state.messages];
       }
+    });
+    builder.addCase(getConversationById.fulfilled, (state, action) => {
+      const conversation = action.payload;
+      state.selectedConversation = conversation;
     });
   },
 });

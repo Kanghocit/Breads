@@ -17,7 +17,7 @@ export const signUp = createAsyncThunk(
         payload,
       });
       if (data) {
-        localStorage.setItem("userId", data?._id);
+        // localStorage.setItem("userId", data?._id);
         return data;
       }
       return null;
@@ -96,6 +96,7 @@ export const updateProfile = createAsyncThunk(
         path: Route.USER + USER_PATH.UPDATE + userInfo._id,
         payload,
       });
+      console.log("updatedUser: ", data);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

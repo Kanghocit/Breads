@@ -31,6 +31,7 @@ export const POST = async ({ path, payload, params, showToast = null }) => {
       params: params,
     });
     return data;
+  
   } catch (err) {
     if (showToast && err.response.data) {
       const errorMsg = err.response.data;

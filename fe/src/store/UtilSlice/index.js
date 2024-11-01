@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { changePage } from "./asyncThunk";
 
 const initialState = {
   currentPage: "",
@@ -15,15 +16,6 @@ const utilSlice = createSlice({
   name: "util",
   initialState,
   reducers: {
-    changePage: (state, action) => {
-      const { nextPage, currentPage } = action.payload;
-      if (!currentPage) {
-        state.prevPage = "";
-      } else {
-        state.prevPage = currentPage;
-      }
-      state.currentPage = nextPage;
-    },
     updateSeeMedia: (state, action) => {
       state.seeMediaInfo = action.payload;
     },
@@ -34,12 +26,15 @@ const utilSlice = createSlice({
       state.hasMoreData = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(changePage.fulfilled, (state, action) => {
+      const { nextPage, currentPage } = action.payload;
+      state.prevPage = currentPage;
+      state.currentPage = nextPage;
+    });
+  },
 });
 
-export const {
-  changePage,
-  updateSeeMedia,
-  changeDisplayPageData,
-  updateHasMoreData,
-} = utilSlice.actions;
+export const { updateSeeMedia, changeDisplayPageData, updateHasMoreData } =
+  utilSlice.actions;
 export default utilSlice.reducer;

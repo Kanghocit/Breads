@@ -13,15 +13,16 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
-import { changePage } from "../../store/UtilSlice";
+import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { handleFlow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
 const UserInfoPopover = ({ user, content = "", isParentPost = false }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
 
   const isFollowing = userInfo?.following?.includes(user?._id);
@@ -29,7 +30,13 @@ const UserInfoPopover = ({ user, content = "", isParentPost = false }) => {
   const [openCancelPopup, setOpenCancelPopup] = useState(false);
   const { colorMode } = useColorMode();
   const handleGoToUserPage = () => {
-    dispatch(changePage({ nextPage: PageConstant.USER }));
+    navigate(`/users/${user._id}`);
+    dispatch(
+      changePage({
+        nextPage:
+          user?._id === userInfo?._id ? PageConstant.USER : PageConstant.FRIEND,
+      })
+    );
   };
 
   return (

@@ -15,6 +15,7 @@ const UserBox = ({
   isTagBox = false,
   setOpenTagBox = null,
   searchValue = "",
+  inFollowBox = false,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,7 +25,6 @@ const UserBox = ({
 
   const getToUserPage = () => {
     navigate(`/users/${userInfo._id}`);
-    dispatch(changePage({ nextPage: PageConstant.USER }));
   };
 
   const tagUser = () => {
@@ -72,10 +72,24 @@ const UserBox = ({
         }}
       />
       <Container>
-        {!isTagBox ? (
+        {!isTagBox && !inFollowBox ? (
           <UserInfoPopover user={user} />
         ) : (
-          <Text fontSize={"sm"} fontWeight={"bold"} cursor={"pointer"}>
+          <Text
+            fontSize={"sm"}
+            fontWeight={"bold"}
+            cursor={"pointer"}
+            _hover={{
+              textTransform: inFollowBox ? "underlined" : "",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (inFollowBox) {
+                window.location.href =
+                  window.location.origin + `/users/${user?._id}`;
+              }
+            }}
+          >
             {user?.username}
           </Text>
         )}

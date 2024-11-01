@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import ContainerLayout from "../components/MainBoxLayout";
 import Post from "../components/ListPost/Post";
+import ContainerLayout from "../components/MainBoxLayout";
 import { getPost } from "../store/PostSlice/asyncThunk";
-import { changePage } from "../store/UtilSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const PostDetail = () => {
   const dispatch = useDispatch();
