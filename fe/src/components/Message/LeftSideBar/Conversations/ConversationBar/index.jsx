@@ -23,7 +23,7 @@ const ConversationBar = ({ conversation }) => {
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
     const userPrefix = isCurrentUser ? "You" : participant?.username;
-    const msgContent = lastMsg.content?.trim()
+    const msgContent = lastMsg?.content?.trim()
       ? lastMsg.content?.trim()
       : lastMsg?.file?._id
       ? "Send a file to you"

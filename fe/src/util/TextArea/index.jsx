@@ -124,7 +124,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         value={text}
         onChange={handleChange}
         rows="1"
-        placeholder="Type something..."
+        placeholder="Có gì mới..."
         className="auto-expand-textarea"
       />
 

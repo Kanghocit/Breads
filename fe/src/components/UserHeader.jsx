@@ -136,7 +136,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
 
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
-            <Button size={"sm"}> Update Profile</Button>
+            <Button size={"sm"} w={'full'}> Chỉnh sửa trang cá nhân</Button>
           </Link>
         )}
         {userInfo._id !== user?._id && (
@@ -159,7 +159,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} followed
+              {user?.followed.length} người theo dõi
             </Text>
             <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
             <Link color={"gray.light"}>instagram.com</Link>

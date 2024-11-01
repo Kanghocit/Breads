@@ -192,7 +192,7 @@ const UpdateProfilePage = () => {
             p={6}
           >
             <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-              User Profile Edit
+              Cập nhật thông tin cá nhân
             </Heading>
             <FormControl id="userName">
               <Stack direction={["column", "row"]} spacing={6}>
@@ -206,7 +206,7 @@ const UpdateProfilePage = () => {
                 </Center>
                 <Center w="full">
                   <Button w="full" onClick={() => fileRef.current.click()}>
-                    Change Avatar
+                    Đổi avatar
                   </Button>
                   <Input
                     type="file"
@@ -219,7 +219,7 @@ const UpdateProfilePage = () => {
               </Stack>
             </FormControl>
             <FormControl>
-              <FormLabel>FullName</FormLabel>
+              <FormLabel>Họ và Tên</FormLabel>
               <Input
                 placeholder="An Khang"
                 onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
@@ -229,7 +229,7 @@ const UpdateProfilePage = () => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>Giới thiệu về bản thân</FormLabel>
               <Input
                 placeholder="Your bio..."
                 onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
@@ -296,7 +296,7 @@ const UpdateProfilePage = () => {
                   })
                 }
               >
-                Change Password
+                Đổi mật khẩu
               </Button>
             </FormControl>
             <Stack spacing={6} direction={["column", "row"]}>
@@ -311,7 +311,7 @@ const UpdateProfilePage = () => {
                   navigate(-1);
                 }}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 bg={"green.400"}
@@ -324,7 +324,7 @@ const UpdateProfilePage = () => {
                 isLoading={updating}
                 disabled={updating}
               >
-                Submit
+                Xác nhận
               </Button>
             </Stack>
           </Stack>

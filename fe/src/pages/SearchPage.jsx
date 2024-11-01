@@ -74,7 +74,7 @@ const SearchPage = () => {
           <SearchBar
             value={searchValue}
             setValue={setSearchValue}
-            placeholder={"Search"}
+            placeholder={"Tìm kiếm"}
           />
         </Container>
         <Text
@@ -84,7 +84,7 @@ const SearchPage = () => {
           position={"relative"}
           left={"4px"}
         >
-          Suggested to follow
+          Gợi ý theo dõi
         </Text>
         <InfiniteScroll
           queryFc={(page, setHasMore) => {

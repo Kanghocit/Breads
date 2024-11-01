@@ -38,7 +38,7 @@ const Header = () => {
   const getBoxItems = () => {
     switch (currentPage) {
       case HOME:
-        return ["For you", FOLLOWING, LIKED, SAVED];
+        return ["Dành cho bạn", "Đang theo dõi", "Đã thích", "Đã lưu"];
       case ACTIVITY:
         return ["All", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS];
     }
@@ -50,7 +50,13 @@ const Header = () => {
       pathname = pathname.slice(1, pathname.length);
       let result = "";
       if (!pathname || pathname === FOR_YOU) {
-        result = "For you";
+        result = "Dành cho bạn";
+      } else if (!pathname || pathname === FOLLOWING) {
+        result = "Đang theo dõi";
+      } else if (!pathname || pathname === LIKED) {
+        result = "Đã thích";
+      } else if (!pathname || pathname === SAVED) {
+        result = "Đã lưu";
       } else if (currentPage === HOME) {
         result = pathname;
       } else if (currentPage === ACTIVITY) {
@@ -58,9 +64,9 @@ const Header = () => {
       }
       return result[0]?.toUpperCase() + result.slice(1, result.length);
     } else if (currentPage === SEARCH) {
-      return "Search";
+      return "Tìm kiếm";
     } else if (currentPage === USER) {
-      return "User profile";
+      return "Trang cá nhân";
     } else if (currentPage === FRIEND) {
       return userSelected?.username ?? "Friend";
     } else if (currentPage === POST_DETAIL) {
@@ -73,9 +79,18 @@ const Header = () => {
       navigate(ACTIVITY + "/" + item);
       dispatch(changeDisplayPageData(item));
     } else {
-      if (item === "For you") {
+      if (item === "Dành cho bạn") {
         navigate("/" + FOR_YOU);
         dispatch(changeDisplayPageData(FOR_YOU));
+      } else if (item === "Đang theo dõi") {
+        navigate("/" + FOLLOWING);
+        dispatch(changeDisplayPageData(FOLLOWING));
+      } else if (item === "Đã thích") {
+        navigate("/" + LIKED);
+        dispatch(changeDisplayPageData(LIKED));
+      } else if (item === "Đã lưu") {
+        navigate("/" + SAVED);
+        dispatch(changeDisplayPageData(SAVED));
       } else {
         navigate("/" + item);
         dispatch(changeDisplayPageData(item));

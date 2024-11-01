@@ -28,14 +28,14 @@ const CreatePostBar = () => {
           <Avatar src={userInfo?.avatar} alt="user-avatar" />
         </a>
         <Input
-          placeholder="What's new"
+          placeholder="Có gì mới?"
           padding={"12px"}
           border={"none"}
           defaultValue={""}
           onChange={(e) => {}}
           onClick={() => handleOpenPostPopup()}
         />
-        <Button onClick={() => handleOpenPostPopup()}>Post</Button>
+        <Button onClick={() => handleOpenPostPopup()}>Đăng</Button>
       </Flex>
     </Card>
   );

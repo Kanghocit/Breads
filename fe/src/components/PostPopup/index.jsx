@@ -285,7 +285,7 @@ const PostPopup = () => {
               }}
               // isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
-              {isEditing ? "Save" : "Post"}
+              {isEditing ? "Lưu" : "Đăng"}
             </Button>
           </ModalFooter>
         </ModalContent>
