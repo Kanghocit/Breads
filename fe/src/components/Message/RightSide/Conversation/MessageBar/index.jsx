@@ -1,5 +1,5 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { IoSendSharp } from "react-icons/io5";
 import { MdThumbUp } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -132,11 +132,14 @@ const MessageInput = () => {
         position: "relative",
       }}
     >
-      {(!!files && files?.length !== 0) ||
-        (msgInfo.media?.length !== 0 && <UploadDisplay />)}
+      {((!!files && files?.length !== 0) || msgInfo.media?.length !== 0) && (
+        <UploadDisplay />
+      )}
       <InputGroup alignItems={"center"} p={2} width={"100%"}>
         {icons.map(({ action, icon }) => (
-          <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
+          <Fragment key={action}>
+            <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
+          </Fragment>
         ))}
         <Input
           flex={1}

@@ -24,15 +24,26 @@ const Conversations = ({ searchValue, setSearchValue }) => {
     }
   }, [userInfo._id]);
 
+  useEffect(() => {
+    if (!init) {
+      handleGetConversations({ page: 1 });
+    }
+  }, [searchValue]);
+
   const handleGetConversations = async ({ page }) => {
     const socket = Socket.getInstant();
     socket.emit(
       Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATIONS,
-      { userId: userInfo._id, page: page, limit: 15 },
+      { userId: userInfo._id, page: page, limit: 15, searchValue },
       (res) => {
         const { data } = res;
         if (data) {
-          dispatch(getConversations(data));
+          dispatch(
+            getConversations({
+              data: data,
+              isLoadNew: page === 1 ? true : false,
+            })
+          );
           if (!selectedConversation) {
             dispatch(selectConversation(data[0]));
           }

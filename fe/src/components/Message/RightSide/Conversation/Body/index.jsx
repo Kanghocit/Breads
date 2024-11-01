@@ -1,5 +1,5 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useSocket from "../../../../../hooks/useSocket";
@@ -126,7 +126,7 @@ const ConversationBody = () => {
                 flex: 1,
               };
               return (
-                <>
+                <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
                     <div style={brStyle} />
                     <Text px={2}>
@@ -137,7 +137,7 @@ const ConversationBody = () => {
                   {msgs.map((msg) => (
                     <Message key={msg?._id} msg={msg} />
                   ))}
-                </>
+                </Fragment>
               );
             })}
         </Flex>

@@ -16,18 +16,11 @@ export default class MessageController {
       const listMsgId = [];
       const listMsg = [];
       const { files, media, content } = message;
-      console.log({
-        files: files,
-        media: media,
-        content: content,
-      });
       const numberNewMsg =
         files?.length + (media?.length > 0 ? 1 : 0) + (content ? 1 : 0);
-      console.log("numberNewMsg: ", numberNewMsg);
       [...Array(numberNewMsg)].map((_) => {
         listMsgId.push(ObjectId());
       });
-      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
@@ -157,43 +150,89 @@ export default class MessageController {
   }
 
   static async getConversations(payload, cb) {
-    const { userId, page, limit } = payload;
+    const { userId, page, limit, searchValue } = payload;
     try {
       const skip = (page - 1) * limit;
-      const conversations = await Conversation.find(
+      const agg = [
         {
-          participants: ObjectId(userId),
+          $match: {
+            participants: ObjectId(userId),
+          },
         },
         {
-          createdAt: 0,
-          msgIds: 0,
-        }
-      )
-        .skip(skip)
-        .limit(limit)
-        .sort({
-          updatedAt: -1,
-        })
-        .populate({
-          path: "participants",
-          select: "_id username avatar",
-        })
-        .populate({
-          path: "lastMsgId",
-          select: "_id content media files sender createdAt",
-        })
-        .lean();
+          $project: {
+            otherParticipant: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: "$participants",
+                    cond: { $ne: ["$$this", ObjectId(userId)] }, // Exclude userId
+                  },
+                },
+                0,
+              ],
+            },
+            theme: 1,
+            emoji: 1,
+            lastMsgId: 1,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+        {
+          $sort: {
+            updatedAt: -1,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "otherParticipant",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  username: 1,
+                  avatar: 1,
+                },
+              },
+            ],
+            as: "participant",
+          },
+        },
+        {
+          $match: {
+            "participant.username": {
+              $regex: searchValue,
+              $options: "i",
+            },
+          },
+        },
+        {
+          $unwind: "$participant",
+        },
+        {
+          $lookup: {
+            from: "messages",
+            localField: "lastMsgId",
+            foreignField: "_id",
+            as: "lastMsg",
+          },
+        },
+        {
+          $unwind: "$lastMsg",
+        },
+      ];
+      const conversations = await Conversation.aggregate(agg);
       const result = conversations.map((conversation) => {
-        const participant = conversation.participants.filter(
-          ({ _id }) => destructObjectId(_id) !== userId
-        );
-        conversation.lastMsg = conversation.lastMsgId;
-        delete conversation.participants;
+        delete conversation.otherParticipant;
         delete conversation.lastMsgId;
-        return {
-          ...conversation,
-          participant: participant[0],
-        };
+        return conversation;
       });
       cb({ status: "success", data: result });
     } catch (error) {

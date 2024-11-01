@@ -1,6 +1,7 @@
 import { ObjectId, destructObjectId } from "../../util/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import Conversation from "../models/conversation.model.js";
+import Message from "../models/message.model.js";
 
 export const getConversationByUsersId = async (req, res) => {
   try {
@@ -42,7 +43,7 @@ export const getConversationByUsersId = async (req, res) => {
 
 export const getConversationById = async (req, res) => {
   try {
-    const { conversationId } = req.query;
+    const { conversationId, userId } = req.query;
     if (!conversationId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
     }
@@ -73,6 +74,90 @@ export const getConversationById = async (req, res) => {
     }
   } catch (err) {
     console.log("getConversationById: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getConversationMedia = async (req, res) => {
+  try {
+    const { conversationId } = req.body;
+    if (!conversationId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
+    }
+    const msgs = await Message.find({
+      conversationId: ObjectId(conversationId),
+      media: {
+        $gt: {
+          $size: 0,
+        },
+      },
+    });
+    const media = [];
+    msgs?.forEach((msg) => {
+      media.push(...msg?.media);
+    });
+    res.status(HTTPStatus.OK).json(media);
+  } catch (err) {
+    console.log("getConversationMedia: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getConversationFiles = async (req, res) => {
+  try {
+    const { conversationId } = req.body;
+    if (!conversationId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
+    }
+    const files = await Message.aggregate([
+      {
+        $match: {
+          file: {
+            $exists: true,
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "files",
+          localField: "file",
+          foreignField: "_id",
+          as: "fileInfo",
+        },
+      },
+      {
+        $unwind: "$fileInfo",
+      },
+      {
+        $project: {
+          fileInfo: 1,
+        },
+      },
+    ]);
+    res.status(HTTPStatus.OK).json(files);
+  } catch (err) {
+    console.log("getConversationFiles: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getConversationLinks = async (req, res) => {
+  try {
+    const { conversationId } = req.body;
+    if (!conversationId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
+    }
+    const links = await Message.find(
+      {
+        conversationId: ObjectId(conversationId),
+      },
+      {
+        links: 1,
+      }
+    );
+    res.status(HTTPStatus.OK).json(links);
+  } catch (err) {
+    console.log("getConversationLinks: ", err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };

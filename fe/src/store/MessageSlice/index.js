@@ -74,8 +74,13 @@ const msgSlice = createSlice({
       state.loadingConversations = true;
     });
     builder.addCase(getConversations.fulfilled, (state, action) => {
-      const newConversations = action.payload;
-      state.conversations = [...state.conversations, ...newConversations];
+      const newConversations = action.payload.data;
+      const isLoadNew = action.payload.isLoadNew;
+      if (!isLoadNew) {
+        state.conversations.push(...newConversations);
+      } else {
+        state.conversations = newConversations;
+      }
       state.loadingConversations = false;
     });
     builder.addCase(getMsgs.fulfilled, (state, action) => {

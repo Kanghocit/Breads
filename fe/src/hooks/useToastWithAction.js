@@ -1,25 +1,32 @@
-// import { toaster } from "@/components/ui/toaster";
-// import { useCallback } from "react";
+import { useState } from "react";
 
-// export const TOAST_TYPES = {
-//   SUCCESS: "success",
-//   ERROR: "error",
-//   WARNING: "warning",
-//   INFO: "info",
-// };
+const useToastWithAction = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [message, setMessage] = useState("");
+  const [onAction, setOnAction] = useState(null);
 
-// const useToastWithAction = () => {
-//   const showActionToast = useCallback(({ type, title, action = null }) => {
-//     toaster.create({
-//       title: title,
-//       type: type,
-//       action: {
-//         label: action?.label,
-//         onClick: () => action?.onClick && action?.onClick(),
-//       },
-//     });
-//   });
-//   return showActionToast;
-// };
+  const showToast = (msg, actionCallback) => {
+    setMessage(msg);
+    setOnAction(() => actionCallback);
+    setIsVisible(true);
 
-// export default useToastWithAction;
+    // Auto-hide toast after 5 seconds
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 5000);
+  };
+
+  const hideToast = () => {
+    setIsVisible(false);
+  };
+
+  return {
+    isVisible,
+    message,
+    onAction,
+    showToast,
+    hideToast,
+  };
+};
+
+export default useToastWithAction;
