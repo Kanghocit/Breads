@@ -1,10 +1,12 @@
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
 import { useRef } from "react";
+import { AiOutlineFileAdd } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { iconStyle } from "..";
 import useShowToast from "../../../../../../hooks/useShowToast";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
+import { updatePostInfo } from "../../../../../../store/PostSlice";
 
 export const fileTypes = {
   word: [
@@ -23,14 +25,17 @@ export const fileTypes = {
   pdf: ["application/pdf"],
 };
 
-const FileUpload = ({ setFilesData }) => {
+const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useDispatch();
   const msgInfo = useSelector((state) => state.message.msgInfo);
+  const postInfo = useSelector((state) => state.post.postInfo);
+  const files =  isPost ? postInfo.files : msgInfo.files;
   const showToast = useShowToast();
   const fileRef = useRef();
 
   const handleFileChange = (e) => {
     const selectedFiles = Object.values(e.target.files);
+
     if (selectedFiles?.length > 5) {
       showToast("", "You can only upload a maximum of 5 files", "info");
       return;
@@ -57,12 +62,21 @@ const FileUpload = ({ setFilesData }) => {
         };
       });
       setFilesData(selectedFiles);
-      dispatch(
-        updateMsgInfo({
-          ...msgInfo,
-          files: fileMetaData,
-        })
-      );
+      if (!isPost) {
+        dispatch(
+          updateMsgInfo({
+            ...msgInfo,
+            files: fileMetaData,
+          })
+        );
+      } else {
+        dispatch(
+          updatePostInfo({
+            ...postInfo,
+            files: fileMetaData,
+          })
+        );
+      }
     } else {
       showToast("", "Invalid file's type", "error");
     }
@@ -78,8 +92,14 @@ const FileUpload = ({ setFilesData }) => {
         ref={fileRef}
         onChange={handleFileChange}
       />
-      <SmallAddIcon style={iconStyle} onClick={() => fileRef.current.click()} />
-
+      {isPost ? (
+        <AiOutlineFileAdd onClick={() => fileRef.current.click()} />
+      ) : (
+        <SmallAddIcon
+          style={iconStyle}
+          onClick={() => fileRef.current.click()}
+        />
+      )}
       {/* {files && (
         <div style={{ marginTop: "10px" }}>
           <strong>Selected File:</strong> {file.name} (

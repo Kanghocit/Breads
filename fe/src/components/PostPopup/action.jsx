@@ -1,12 +1,14 @@
 import { Flex, Input, useDisclosure } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { RiFileGifLine } from "react-icons/ri";
-import { TbLibraryPhoto } from "react-icons/tb";
+
 import { VscListSelection } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
+import FileUpload from "../Message/RightSide/Conversation/MessageBar/File";
+
 import GifBox from "./gif";
 
 const PostPopupAction = () => {
@@ -48,9 +50,20 @@ const PostPopupAction = () => {
       })
     );
   };
+  const [filesData, setFilesData] = useState([]);
 
+  const fileUploadRef = useRef(null);
   return (
     <>
+      <Input
+        type="file"
+        multiple
+        hidden
+        ref={fileUploadRef}
+        onChange={(e) => {
+          setFilesData(e.target.files);
+        }}
+      />
       <Input
         type="file"
         multiple
@@ -62,9 +75,18 @@ const PostPopupAction = () => {
       />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
         <Flex maxWidth="100%" gap="10px">
-          <TbLibraryPhoto
+          {/* ẩn smallicon ở fileUpload
+          <div style={{ display: "none" }}>
+            <FileUpload setFilesData={setFilesData} />
+          </div>
+          <AiOutlineFileAdd
             cursor="pointer"
-            onClick={() => imageRef.current.click()}
+            onClick={() => fileUploadRef.current.click()} 
+          /> */}
+          <FileUpload
+            setFilesData={setFilesData}
+            isPost={true}
+            cursor="pointer"
           />
           <RiFileGifLine cursor="pointer" onClick={onOpen} />
           <VscListSelection
@@ -73,6 +95,7 @@ const PostPopupAction = () => {
           />
         </Flex>
       </Flex>
+
       <GifBox isOpen={isOpen} onClose={onClose} />
     </>
   );

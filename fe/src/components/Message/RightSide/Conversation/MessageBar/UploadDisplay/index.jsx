@@ -1,25 +1,17 @@
-import { CloseIcon } from "@chakra-ui/icons";
-import { Button, Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import { Button, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { fileTypes } from "../File";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
-import LoadingUploadMsg from "./loading";
+import { updatePostInfo } from "../../../../../../store/PostSlice";
+import { FILE_TYPES, fileTypes } from "../../../../../../util";
 import ItemUploadDisplay from "./ItemUploadDisplay";
-
-export const FILE_TYPES = {
-  word: "word",
-  excel: "excel",
-  powerpoint: "powerpoint",
-  pdf: "pdf",
-  text: "text",
-};
-
-const UploadDisplay = () => {
+import LoadingUploadMsg from "./loading";
+const UploadDisplay = (isPost = false) => {
   //Max 5 files / folders
   const dispatch = useDispatch();
   const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
-  const files = msgInfo.files;
+  const { postInfo } = useSelector((state) => state.post);
 
+  const files = isPost ? postInfo.files : msgInfo.files;
   const getImgByType = (inputType) => {
     let fileType = "";
     const types = Object.keys(fileTypes);
@@ -46,57 +38,98 @@ const UploadDisplay = () => {
 
   const handleRemoveFile = (fileIndex) => {
     const newFiles = files.filter((_, index) => index !== fileIndex);
-    dispatch(
-      updateMsgInfo({
-        ...msgInfo,
-        files: newFiles,
-      })
-    );
+    if (!isPost) {
+      dispatch(
+        updateMsgInfo({
+          ...msgInfo,
+          files: newFiles,
+        })
+      );
+    }
+    if (isPost) {
+      dispatch(
+        updatePostInfo({
+          ...postInfo,
+          files: newFiles,
+        })
+      );
+    }
   };
 
   const handleRemoveAllFiles = () => {
-    dispatch(
-      updateMsgInfo({
-        ...msgInfo,
-        files: [],
-      })
-    );
+    if (!isPost) {
+      dispatch(
+        updateMsgInfo({
+          ...msgInfo,
+          files: [],
+        })
+      );
+    }
+    if (isPost) {
+      dispatch(
+        updatePostInfo({
+          ...postInfo,
+          files: [],
+        })
+      );
+    }
   };
 
+  const baseStyles = {
+    width: "100%",
+    px: 2,
+    py: 3,
+    gap: "10px",
+    justifyContent: "start",
+    bg: useColorModeValue("gray.200", "#181818"),
+  };
+  const postStyles = {
+    position: "relative",
+    height: "100px",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flexDirection: "column",
+  };
+
+  const nonPostStyles = {
+    borderTop: "1px solid gray",
+    position: "absolute",
+    left: 0,
+    bottom: "calc(100% - 2px)",
+    height: "100px",
+    justifyContent: "start",
+    alignItems: "center",
+    flexDirection: "row",
+  };
   return (
-    <Flex
-      position={"absolute"}
-      left={0}
-      bottom={"calc(100% - 2px)"}
-      width={"100%"}
-      height={"100px"}
-      px={2}
-      py={3}
-      gap={"10px"}
-      borderTop={"1px solid gray"}
-      justifyContent={"start"}
-      alignItems={"center"}
-      bg={useColorModeValue("gray.200", "#181818")}
-    >
+    <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
       <>
-        {media?.map((item, index) => (
-          <ItemUploadDisplay
-            item={item}
-            imgSrc={item?.url}
-            onClick={() => {}}
-          />
-        ))}
+        {!isPost &&
+          media?.map((item, index) => (
+            <ItemUploadDisplay
+              item={item}
+              imgSrc={item?.url}
+              onClick={() => {}}
+              key={index}
+            />
+          ))}
         {files?.map((file, index) => (
           <ItemUploadDisplay
             item={file}
             imgSrc={getImgByType(file.contentType)}
             onClick={() => handleRemoveFile(index)}
+            key={index}
+            isPost={isPost}
           />
         ))}
       </>
-      <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
-        Clear all
-      </Button>
+      {!isPost ? (
+        <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
+          Clear all
+        </Button>
+      ) : (
+        <></>
+      )}
       {loadingUploadMsg && <LoadingUploadMsg />}
     </Flex>
   );

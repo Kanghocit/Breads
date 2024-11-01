@@ -1,6 +1,5 @@
 import { Container, Flex, Image, Text } from "@chakra-ui/react";
-import { FILE_TYPES } from "../../../MessageBar/UploadDisplay";
-
+import { FILE_TYPES } from "../../../../../../../util";
 const FileMsg = ({ file }) => {
   const { word, excel, powerpoint, pdf, text } = FILE_TYPES;
   const fileType = file.contentType;

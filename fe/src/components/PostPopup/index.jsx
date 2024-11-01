@@ -28,6 +28,7 @@ import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
+import UploadDisplay from "../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
@@ -170,6 +171,9 @@ const PostPopup = () => {
     setContent(replaceEmojis(value));
   };
 
+  const files = postInfo.files;
+  console.log(files);
+  
   return (
     <>
       <Modal isOpen={true} onClose={handleClose}>
@@ -214,6 +218,9 @@ const PostPopup = () => {
                 setText={(value) => handleContent(value)}
                 tagUsers={true}
               />
+
+              {!!files && files?.length !== 0 && <UploadDisplay isPost={true} />}
+
               {!containsLink(content) && (
                 <>
                   <MediaDisplay post={postInfo} />

@@ -23,6 +23,7 @@ export const defaultPostInfo = {
   media: [],
   survey: [],
   usersTag: [],
+  files: [],
 };
 
 const initialState = {
