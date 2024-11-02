@@ -132,7 +132,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
 
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
-            <Button size={"sm"}> Update Profile</Button>
+            <Button size={"sm"} w={'full'}> Chỉnh sửa trang cá nhân</Button>
           </Link>
         )}
         {userInfo._id !== user?._id && (
@@ -156,7 +156,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} followed
+              {user?.followed.length} người theo dõi
             </Text>
           </Flex>
           <Flex>

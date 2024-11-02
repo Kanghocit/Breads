@@ -40,7 +40,7 @@ const SidebarMenu = () => {
       onClick: () => {
         setIsSubMenuOpen(true);
       },
-      name: "Interface",
+      name: "Giao diện",
     },
     // {
     //   style: { ...bgk },
@@ -52,19 +52,19 @@ const SidebarMenu = () => {
       onClick: () => {
         navigate("/" + PageConstant.SETTING.DEFAULT);
       },
-      name: "Setting",
+      name: "Cài đặt",
     },
     {
       style: { ...bgk },
       onClick: () => {},
-      name: "Report a problem",
+      name: "Báo cáo sự cố",
     },
     {
       style: { ...bgk },
       onClick: () => {
         handleLogout();
       },
-      name: "Log out",
+      name: "Đăng xuất",
     },
   ];
 
@@ -82,7 +82,7 @@ const SidebarMenu = () => {
       onClick: () => setColorMode("dark"),
     },
     {
-      name: "Automatic",
+      name: "Tự động",
       boxShadowFocus: "0 0 0 3px rgba(229, 62, 62, 0.6)",
       onClick: () => {},
     },
@@ -135,7 +135,7 @@ const SidebarMenu = () => {
             >
               {menuItems.map((item) => (
                 <React.Fragment key={item.name}>
-                  {item.name === "Report a problem" && <MenuDivider />}
+                  {item.name === "Báo cáo sự cố" && <MenuDivider />}
                   <MenuItem
                     {...item.style}
                     onClick={item.onClick}
@@ -150,7 +150,7 @@ const SidebarMenu = () => {
                       borderRadius: "10px",
                     }}
                   >
-                    {item.name === "Interface" ? (
+                    {item.name === "Giao diện" ? (
                       <Box
                         display="flex"
                         justifyContent="space-between"
@@ -190,7 +190,7 @@ const SidebarMenu = () => {
               >
                 <FaChevronLeft />
                 <Box width={"100%"} textAlign={"center"}>
-                  InterFace
+                  Giao diện
                 </Box>
               </MenuItem>
               <ButtonGroup isAttached ml={1}>
