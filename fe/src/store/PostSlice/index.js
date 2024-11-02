@@ -24,6 +24,7 @@ export const defaultPostInfo = {
   survey: [],
   usersTag: [],
   files: [],
+  links: [],
 };
 
 export const initialPostState = {

@@ -4,6 +4,7 @@ import { ObjectId } from "../../util/index.js";
 import Post from "../models/post.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
+import Link from "../models/link.model.js";
 import {
   getPostDetail,
   getPostsIdByFilter,
@@ -26,6 +27,7 @@ export const createPost = async (req, res) => {
       quote,
       type,
       usersTag,
+      links,
     } = payload;
     const user = await User.findById(authorId);
     if (!user) {
@@ -78,6 +80,19 @@ export const createPost = async (req, res) => {
         await option.save();
       }
     }
+    const linksId = [];
+    if (links.length) {
+      for (let i = 0; i < links.length; i++) {
+        const newId = ObjectId();
+        const linkInfo = links[i];
+        const newLink = new Link({
+          _id: newId,
+          ...linkInfo,
+        });
+        await newLink.save();
+        linksId[i] = newId;
+      }
+    }
     const optionsId = newSurvey.map((option) => option?._id);
     const newUsersTag = usersTag.map((userId) => ObjectId(userId));
     const newPostPayload = {
@@ -89,6 +104,7 @@ export const createPost = async (req, res) => {
       quote,
       type: type,
       usersTag: newUsersTag,
+      links: linksId,
     };
     if (action === "repost") {
       newPostPayload.parentPost = parentPost;

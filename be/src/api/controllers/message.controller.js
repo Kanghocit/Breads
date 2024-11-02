@@ -109,7 +109,7 @@ export const getConversationFiles = async (req, res) => {
     if (!conversationId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
     }
-    const files = await Message.aggregate([
+    const msgs = await Message.aggregate([
       {
         $match: {
           file: {
@@ -134,6 +134,7 @@ export const getConversationFiles = async (req, res) => {
         },
       },
     ]);
+    const files = msgs?.map((msg) => msg?.fileInfo);
     res.status(HTTPStatus.OK).json(files);
   } catch (err) {
     console.log("getConversationFiles: ", err);

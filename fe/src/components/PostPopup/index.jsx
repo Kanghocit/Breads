@@ -44,7 +44,6 @@ const PostPopup = () => {
   const isEditing = postAction === PostConstants.ACTIONS.EDIT;
   const userInfo = useSelector((state) => state.user.userInfo);
   const showToast = useShowToast();
-  const showActionToast = useToastWithAction();
   const { popupCancelInfo, setPopupCancelInfo, closePopupCancel } =
     usePopupCancel();
   const [content, setContent] = useState("");
@@ -143,7 +142,6 @@ const PostPopup = () => {
           payload.usersTag = [...usersId];
         }
         payload._id = generateObjectId();
-        console.log("_id: ", payload._id);
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
     } catch (err) {

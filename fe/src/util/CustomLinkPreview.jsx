@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePostInfo } from "../store/PostSlice";
 
 const CustomLinkPreview = ({ url }) => {
+  const dispatch = useDispatch();
+  const postInfo = useSelector((state) => state.post.postInfo);
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
-  console.log(data);
   useEffect(() => {
     const fetchLinkData = async () => {
       try {
-        const response = await axios.get(
+        const { data } = await axios.get(
           `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
         );
-        setData(response.data);
+        setData(data);
+        dispatch(
+          updatePostInfo({
+            ...postInfo,
+            links: [...postInfo?.links, data],
+          })
+        );
       } catch {
         setError(true);
       }
@@ -35,7 +44,14 @@ const CustomLinkPreview = ({ url }) => {
         position: "relative",
       }}
     >
-      <h4 style={{ margin: "0 0 10px",fontWeight: "bold", fontSize: "16px", lineHeight: "1.2" }}>
+      <h4
+        style={{
+          margin: "0 0 10px",
+          fontWeight: "bold",
+          fontSize: "16px",
+          lineHeight: "1.2",
+        }}
+      >
         {data.title}
       </h4>
       <a href={url} target="_blank" rel="noopener noreferrer">
@@ -43,7 +59,6 @@ const CustomLinkPreview = ({ url }) => {
           <>
             <img
               src={data.image}
-              
               style={{
                 width: "100%",
                 maxHeight: "200px",

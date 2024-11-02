@@ -10,7 +10,7 @@ import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
 
-const Conversations = ({ searchValue, setSearchValue }) => {
+const Conversations = ({ searchValue }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -22,7 +22,18 @@ const Conversations = ({ searchValue, setSearchValue }) => {
     if (userInfo._id) {
       setInit(false);
     }
-  }, [userInfo._id]);
+    if (selectedConversation?._id) {
+      const timeout = setTimeout(() => {
+        const conversationHtml = document.getElementById(
+          `conversation_${selectedConversation?._id}`
+        );
+        conversationHtml?.scrollIntoView();
+      }, 500);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [userInfo._id, selectedConversation?._id]);
 
   useEffect(() => {
     if (!init) {

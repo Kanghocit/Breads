@@ -15,6 +15,7 @@ import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
 import { POST } from "../../../../../config/API";
 import ConversationTabHeader from "../tabHeader";
+import FileMsg from "../../Conversation/Body/Message/Files";
 
 const TABS = {
   MEDIA: "Media",
@@ -33,15 +34,20 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
 
   useEffect(() => {
     if (currentTab && selectedConversation?._id) {
-      handleGetDataByTab();
+      handleGetDataByTab(currentTab);
+      setTabIndex(
+        Object.values(TABS).findIndex((tabValue) => tabValue === currentTab)
+      );
     }
   }, [currentTab, selectedConversation?._id]);
 
-  const handleTabsChange = (index) => {
+  const handleTabsChange = async (index) => {
     setTabIndex(index);
+    const tab = Object.values(TABS)[index];
+    await handleGetDataByTab(tab);
   };
 
-  const handleGetDataByTab = async () => {
+  const handleGetDataByTab = async (tab) => {
     try {
       let data = [];
       const query = (subPath) => {
@@ -52,7 +58,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           },
         };
       };
-      switch (currentTab) {
+      switch (tab) {
         case TABS.MEDIA:
           data = await POST(query(MESSAGE_PATH.GET_CONVERSATION_MEDIA));
           break;
@@ -73,7 +79,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   };
 
   return (
-    <Container margin={0} padding={2} height={"70vh"} auto={"auto"}>
+    <Container margin={0} padding={2} height={"70vh"}>
       <ConversationTabHeader setItemSelected={setItemSelected} />
       <Tabs w={"full"} index={tabIndex} onChange={handleTabsChange}>
         <TabList w={"full"}>
@@ -85,7 +91,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
               pb={3}
               cursor={"pointer"}
               onClick={() => {
-                setItemSelected(key);
+                setItemSelected(value);
               }}
             >
               <Text fontWeight={"bold"} fontSize={"14px"}>
@@ -95,7 +101,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           ))}
         </TabList>
 
-        <TabPanels>
+        <TabPanels overflowY={"auto"} maxHeight={"calc(70vh - 120px)"} pr={2}>
           <TabPanel p={0} mt={4}>
             <Flex gap={2} wrap={"wrap"}>
               {tabData?.map((item) => {
@@ -119,10 +125,9 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           </TabPanel>
           <TabPanel p={0} mt={4}>
             <Flex gap={2} wrap={"wrap"}>
-              {tabData?.map((item) => {
-                const fileInfo = item.fileInfo;
-                const fileId = item._id;
-              })}
+              {tabData?.map((item) => (
+                <FileMsg file={item} inMsgTab={true} />
+              ))}
             </Flex>
           </TabPanel>
           <TabPanel p={0} mt={4}></TabPanel>
