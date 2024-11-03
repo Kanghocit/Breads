@@ -13,8 +13,10 @@ import PostConstants from "../util/PostConstants";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CreatePostBar = () => {
+  const { t } = useTranslation();
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const dispatch = useDispatch();
@@ -39,14 +41,14 @@ const CreatePostBar = () => {
           <Avatar src={userInfo?.avatar} alt="user-avatar" />
         </a>
         <Input
-          placeholder="Có gì mới?"
+          placeholder={t("whatnew")}
           padding={"12px"}
           border={"none"}
           defaultValue={""}
           onChange={(e) => {}}
           onClick={() => handleOpenPostPopup()}
         />
-        <Button onClick={() => handleOpenPostPopup()}>Đăng</Button>
+        <Button onClick={() => handleOpenPostPopup()}>{t("post")}</Button>
       </Flex>
     </Card>
   );

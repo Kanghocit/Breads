@@ -4,10 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import UsersTagBox from "../../components/UsersTagBox";
 import CustomLinkPreview from "../CustomLinkPreview";
-
+import { useTranslation } from "react-i18next";
 import "./index.css";
 
 const getCaretCoordinates = (input) => {
+  
   const { selectionStart } = input;
   const tempDiv = document.createElement("div");
   const inputStyle = window.getComputedStyle(input);
@@ -42,6 +43,7 @@ const extractDomain = (url) => {
 };
 
 const TextArea = ({ text, setText, tagUsers = false }) => {
+  const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const postInfo = useSelector((state) => state.post.postInfo);
@@ -124,7 +126,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         value={text}
         onChange={handleChange}
         rows="1"
-        placeholder="Có gì mới..."
+        placeholder={t('whatnew')}
         className="auto-expand-textarea"
       />
 

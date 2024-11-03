@@ -1,5 +1,6 @@
 import { Container, Text, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -13,6 +14,7 @@ import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const SearchPage = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -80,7 +82,7 @@ const SearchPage = () => {
           <SearchBar
             value={searchValue}
             setValue={setSearchValue}
-            placeholder={"Tìm kiếm"}
+            placeholder={t("search")}
           />
         </Container>
         <Text
@@ -90,7 +92,7 @@ const SearchPage = () => {
           position={"relative"}
           left={"4px"}
         >
-          Gợi ý theo dõi
+          {t("Suggested_follow_up")}
         </Text>
         <InfiniteScroll
           queryFc={(page, setHasMore) => {

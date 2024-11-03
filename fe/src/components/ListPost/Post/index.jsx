@@ -226,7 +226,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             <>
               <Divider />
               <Flex mt={4} justifyContent={"space-between"} m={1}>
-                <Text p={2}>Thread reply</Text>
+                <Text p={2}>Breads Bình Luận</Text>
                 <Flex
                   justifyContent={"space-between"}
                   alignItems={"center"}
@@ -238,7 +238,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                   }}
                   onClick={onOpen}
                 >
-                  <Text>View Activity</Text>
+                  <Text>Xem hoạt động</Text>
                   <ChevronRightIcon />
                 </Flex>
               </Flex>

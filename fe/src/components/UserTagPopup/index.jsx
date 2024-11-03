@@ -61,7 +61,6 @@ const UserTagPopup = ({ post, content }) => {
                   {part}
                 </Link>
               </span>
-
               <Fragment key={"tag-popup-" + index}>
                 <Link
                   key={index}

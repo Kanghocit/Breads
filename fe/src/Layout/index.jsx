@@ -1,5 +1,5 @@
 import Header from "./Header";
-import LeftSideBar from "./LeftSideBar";
+import LeftSideBar from "./LeftSideBar/index";
 
 const Layout = () => {
   return (
