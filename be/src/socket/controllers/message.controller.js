@@ -4,6 +4,8 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import { getFriendSocketId } from "../services/user.js";
+import axios from "axios";
+import Link from "../../api/models/link.model.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -47,7 +49,7 @@ export default class MessageController {
       }
       let currentFileIndex = 0;
       let addMedia = false;
-      listMsgId.forEach((_id, index) => {
+      listMsgId.forEach(async (_id, index) => {
         let newMsg = null;
         const msgInfo = {
           _id: _id,
@@ -55,10 +57,26 @@ export default class MessageController {
           sender: senderId,
         };
         if (content?.trim() && index === 0) {
-          newMsg = new Message({
+          const urlRegex = /(https?:\/\/[^\s]+)/g;
+          const urls = content.match(urlRegex);
+          const links = [];
+          for (let url of urls) {
+            const { data } = await axios.get(
+              `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
+            );
+            links.push({
+              _id: ObjectId(),
+              ...data,
+            });
+          }
+          if (links?.length > 0) {
+            await Link.insertMany(links, { ordered: false });
+          }
+          newMsg = {
             ...msgInfo,
             content: content,
-          });
+            links: links?.map((_id) => _id),
+          };
         } else if (media?.length !== 0 && !addMedia) {
           newMsg = new Message({
             ...msgInfo,

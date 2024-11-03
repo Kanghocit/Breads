@@ -73,50 +73,6 @@ const UserTagPopup = ({ post, content }) => {
                 >
                   {part}
                 </Link>
-                <div
-                  style={{
-                    border: "1px solid #e0e0e0",
-                    height: "80px",
-                    borderRadius: "8px",
-                    backgroundColor: bgColor,
-                    padding: "10px",
-                    marginTop: "8px",
-                    maxWidth: "100%",
-                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-                    transition: "box-shadow 0.2s ease-in-out",
-                    position: "relative",
-                    cursor: "pointer",
-                  }}
-                >
-                  {/* <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        color: "gray",
-                        fontSize: "10px",
-                        marginRight: "5px",
-                      }}
-                    >
-                      {extractDomain1(part)}
-                    </div>
-                    <div
-                      style={{
-                        color: "white",
-                        fontSize: "20px",
-                        marginRight: "5px",
-                      }}
-                    >
-                      {extractDomain2(part)}
-                    </div>
-                  </div>
-                </div> */}
-                </div>
               </Fragment>
             </>
           );
