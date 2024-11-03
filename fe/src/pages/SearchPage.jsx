@@ -8,8 +8,10 @@ import SearchBar from "../components/SearchBar";
 import UserFollowBox from "../components/UserFollowBox";
 import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
 import { GET } from "../config/API";
+import { useTranslation } from 'react-i18next';
 
 const SearchPage = () => {
+  const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -74,7 +76,7 @@ const SearchPage = () => {
           <SearchBar
             value={searchValue}
             setValue={setSearchValue}
-            placeholder={"Tìm kiếm"}
+            placeholder={t('search')}
           />
         </Container>
         <Text
@@ -84,7 +86,7 @@ const SearchPage = () => {
           position={"relative"}
           left={"4px"}
         >
-          Gợi ý theo dõi
+          {t('Suggested_follow_up')}
         </Text>
         <InfiniteScroll
           queryFc={(page, setHasMore) => {

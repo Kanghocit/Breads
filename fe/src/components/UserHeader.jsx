@@ -7,8 +7,6 @@ import {
   MenuItem,
   MenuList,
   ModalBody,
-  ModalCloseButton,
-  ModalFooter,
   Portal,
   Tab,
   TabList,
@@ -16,10 +14,9 @@ import {
   TabPanels,
   Tabs,
   useColorModeValue,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
@@ -32,10 +29,11 @@ import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import ListPost from "../components/ListPost";
 import UserFollowBox from "./UserFollowBox";
 
+import { CgDanger } from "react-icons/cg";
+import { FaLink } from "react-icons/fa";
 import PostConstants from "../util/PostConstants";
 import SkeletonPost from "./ListPost/Post/skeleton";
-import { FaLink } from "react-icons/fa";
-import { CgDanger } from "react-icons/cg";
+import { useTranslation } from 'react-i18next';
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",
@@ -49,6 +47,7 @@ const TABS = {
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
   console.log("user", user);
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { isLoading } = useSelector((state) => state.post);
@@ -136,7 +135,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
 
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
-            <Button size={"sm"} w={'full'}> Chỉnh sửa trang cá nhân</Button>
+            <Button size={"sm"} w={'full'}> {t('updateprofile')}</Button>
           </Link>
         )}
         {userInfo._id !== user?._id && (
@@ -159,7 +158,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} người theo dõi
+              {user?.followed.length} {t('followers')}
             </Text>
             <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
             <Link color={"gray.light"}>instagram.com</Link>
@@ -194,7 +193,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                         onClick={copyURL}
                       >
                         <FaLink />
-                        Copy link
+                        {t('copylink')}
                       </MenuItem>
                       <MenuItem
                         bg="gray.dark"
@@ -214,7 +213,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                           gap={2}
                         >
                           <CgDanger />
-                          Giới thiệu về trang cá nhân này
+                          {t('aboutthisprofile')}
                         </Box>
 
                         <Modal
@@ -231,7 +230,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                             <ModalBody pb={6}>
                               <Flex justifyContent={"space-between"} mt={2}>
                                 <Flex direction={"column"}>
-                                  <Text>Tên</Text>
+                                  <Text>{t('name')}</Text>
                                   <Box>{`${user.name}(@${user.username})`}</Box>
                                 </Flex>
                                 <Avatar src={user.avatar} size="lg" />
@@ -239,15 +238,15 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                               <Divider width={"270px"} borderWidth="1px" />
                               <Flex justifyContent={"space-between"} my={2}>
                                 <Flex direction={"column"}>
-                                  <Text>Ngày Tham Gia</Text>
-                                  <Box>{`${month} năm ${year} • 100 triệu +`}</Box>
+                                  <Text>{t('joindate')}</Text>
+                                  <Box>{`${month} ${t('year')} ${year} • 100 ${t('')} +`}</Box>
                                 </Flex>
                               </Flex>
                               <Divider borderWidth="1px" />
                               <Flex justifyContent={"space-between"} mt={2}>
                                 <Flex direction={"column"}>
-                                  <Text>Tên người dùng cũ </Text>
-                                  <Box>{`Đã đổi tên n lần trên instagram`}</Box>
+                                  <Text>{t('oldusername')}</Text>
+                                  <Box>{t('change_name_count')}</Box>
                                 </Flex>
                               </Flex>
                             </ModalBody>

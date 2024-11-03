@@ -1,11 +1,13 @@
-import { Container, Text, Button, Image, VStack } from "@chakra-ui/react";
+import { Container, Text, Button, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next'; // Nhập i18n
 
 const ErrorPage = () => {
+  const { t } = useTranslation(); // Khai báo hook i18n
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    navigate("/");
+    navigate("/"); // Quay lại trang chính
   };
 
   return (
@@ -17,15 +19,20 @@ const ErrorPage = () => {
       flexDirection="column"
       alignItems="center"
     >
-      
       <VStack spacing={4}>
         <Text fontSize="4xl" fontWeight="bold" color="red.500">
-          Oops! Something went wrong.
+          {t('error.oops')} 
         </Text>
         <Text fontSize="lg" color="gray.600">
-          The page you're looking for doesn't exist or an error occurred.
+          {t('error.message')} 
         </Text>
-        <Button onClick={handleGoBack}>Go Back</Button>
+        <Button 
+          onClick={handleGoBack} 
+          
+          
+        >
+          {t('error.goBack')} 
+        </Button>
       </VStack>
     </Container>
   );
