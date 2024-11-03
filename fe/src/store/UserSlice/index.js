@@ -23,7 +23,7 @@ const defaultUser = {
   links: [],
 };
 
-const initialState = {
+export const initialUserState = {
   userInfo: defaultUser,
   userSelected: defaultUser,
   isLoading: false,
@@ -31,7 +31,7 @@ const initialState = {
 
 const userSlice = createSlice({
   name: "user",
-  initialState,
+  initialState: initialUserState,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {

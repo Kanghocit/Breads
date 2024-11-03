@@ -1,10 +1,12 @@
 import { Flex } from "@chakra-ui/react";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import LeftSideBarMsg from "../components/Message/LeftSideBar";
 import RightSideMsg from "../components/Message/RightSide";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { getConversationById } from "../store/MessageSlice/asyncThunk";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const ChatPage = () => {
   const dispatch = useDispatch();
@@ -12,6 +14,7 @@ const ChatPage = () => {
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const init = useRef(true);
 
   useEffect(() => {
     if (!!conversationId) {
@@ -21,6 +24,10 @@ const ChatPage = () => {
       ) {
         dispatch(getConversationById(conversationId));
       }
+    }
+    if (init.current) {
+      dispatch(changePage({ nextPage: PageConstant.CHAT }));
+      init.current = false;
     }
   }, [conversationId]);
 

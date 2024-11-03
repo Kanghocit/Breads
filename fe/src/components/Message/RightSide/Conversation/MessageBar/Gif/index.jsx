@@ -44,7 +44,7 @@ const GifMsgBtn = ({ popup, onClose, onOpen }) => {
           padding={"12px 16px"}
         >
           <Flex alignItems={"center"} justifyContent={"space-between"}>
-            <Text>Choose a gif</Text>
+            <Text>Chọn file Gif</Text>
             <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
           </Flex>
         </PopoverHeader>

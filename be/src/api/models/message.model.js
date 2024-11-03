@@ -43,6 +43,13 @@ const messageSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    usersSeen: [
+      {
+        type: ObjectId,
+        ref: "User",
+        required: false,
+      },
+    ],
   },
   { timestamps: true }
 );

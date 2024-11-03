@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePostInfo } from "../store/PostSlice";
+import { updatePostInfo } from "../../store/PostSlice";
+import "./index.css";
 
 const CustomLinkPreview = ({ url }) => {
   const dispatch = useDispatch();
@@ -29,44 +30,16 @@ const CustomLinkPreview = ({ url }) => {
     if (url) fetchLinkData();
   }, [url]);
 
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <div></div>;
 
   return (
-    <div
-      style={{
-        zIndex: "10000",
-        border: "1px solid #e0e0e0",
-        borderRadius: "8px",
-        padding: "10px",
-        marginTop: "8px",
-        maxWidth: "400px",
-        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-        position: "relative",
-      }}
-    >
-      <h4
-        style={{
-          margin: "0 0 10px",
-          fontWeight: "bold",
-          fontSize: "16px",
-          lineHeight: "1.2",
-        }}
-      >
-        {data.title}
-      </h4>
+    <div className="preview-link-container">
+      <h4 className="link-title">{data.title}</h4>
       <a href={url} target="_blank" rel="noopener noreferrer">
         {data.image && (
           <>
-            <img
-              src={data.image}
-              style={{
-                width: "100%",
-                maxHeight: "200px",
-                borderRadius: "4px",
-                objectFit: "cover",
-              }}
-            />
-            <p style={{ margin: "10px 0", fontSize: "14px", color: "white" }}>
+            <img src={data.image} className="link-img" />
+            <p className="link-des">
               {data.description.length > 100
                 ? `${data.description.slice(0, 100)}...`
                 : data.description}

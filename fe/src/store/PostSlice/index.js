@@ -24,9 +24,10 @@ export const defaultPostInfo = {
   survey: [],
   usersTag: [],
   files: [],
+  links: [],
 };
 
-const initialState = {
+export const initialPostState = {
   listPost: [],
   postSelected: null,
   postInfo: defaultPostInfo,
@@ -37,7 +38,7 @@ const initialState = {
 
 const postSlice = createSlice({
   name: "post",
-  initialState,
+  initialState: initialPostState,
   reducers: {
     selectPost: (state, action) => {
       state.postSelected = action.payload;
@@ -93,7 +94,7 @@ const postSlice = createSlice({
       const isNewPage = action.payload.isNewPage;
       state.isLoading = false;
       if (!isNewPage) {
-        state.listPost = [...state.listPost, ...newPosts];
+        state.listPost.push(...newPosts);
       } else {
         state.listPost = newPosts;
       }
@@ -104,24 +105,21 @@ const postSlice = createSlice({
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
       const newPost = action.payload;
-      if (state.postAction === PostConstants.ACTIONS.REPLY) {
-        state.postSelected.replies = [
-          ...state.postSelected.replies,
-          newPost._id,
-        ];
-      } else {
-        state.listPost = [newPost, ...state.listPost];
+      if (!!newPost) {
+        if (state.postAction === PostConstants.ACTIONS.REPLY) {
+          state.postSelected.replies.push(newPost._id);
+        } else {
+          state.listPost.unshift(newPost);
+        }
       }
       state.isLoading = false;
       state.postAction = "";
     });
     builder.addCase(editPost.fulfilled, (state, action) => {
       const postUpdated = action.payload;
-      const postIndex = state.listPost.findIndex(
-        (post) => post._id === postUpdated._id
-      );
-      state.listPost[postIndex] = {
-        ...state.listPost[postIndex],
+      let post = state.listPost.find((post) => post._id === postUpdated._id);
+      post = {
+        ...post,
         ...postUpdated,
       };
       state.postSelected = state.postInfo;
@@ -168,10 +166,9 @@ const postSlice = createSlice({
           )
         );
         if (isAdd) {
-          state.listPost[postTickedIndex].survey[optionIndex].usersId = [
-            ...currentUsersId,
-            userId,
-          ];
+          state.listPost[postTickedIndex].survey[optionIndex].usersId.push(
+            userId
+          );
         } else {
           state.listPost[postTickedIndex].survey[optionIndex].usersId =
             currentUsersId.filter((id) => id !== userId);

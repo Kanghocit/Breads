@@ -62,7 +62,8 @@ const postSchema = mongoose.Schema(
     ],
     links: [
       {
-        type: String,
+        type: ObjectId,
+        ref: "Link",
         required: false,
       },
     ],

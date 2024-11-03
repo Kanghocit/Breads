@@ -7,8 +7,6 @@ import {
   MenuItem,
   MenuList,
   ModalBody,
-  ModalCloseButton,
-  ModalFooter,
   Portal,
   Tab,
   TabList,
@@ -19,7 +17,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
@@ -27,17 +24,15 @@ import { EmptyContentSvg } from "../assests/icons";
 import useShowToast from "../hooks/useShowToast";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
 import FollowBtn from "./FollowBtn";
-
 import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import ListPost from "../components/ListPost";
 import UserFollowBox from "./UserFollowBox";
-
 import PostConstants from "../util/PostConstants";
-import SkeletonPost from "./ListPost/Post/skeleton";
 import ConversationBtn from "./ConversationBtn";
-
-import { FaLink } from "react-icons/fa";
+import SkeletonPost from "./ListPost/Post/skeleton";
 import { CgDanger } from "react-icons/cg";
+import { FaLink } from "react-icons/fa";
+
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",
@@ -50,7 +45,6 @@ const TABS = {
 };
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
-  console.log("user", user);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { isLoading } = useSelector((state) => state.post);
@@ -138,7 +132,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
 
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
-            <Button size={"sm"}> Update Profile</Button>
+            <Button size={"sm"} w={'full'}> Chỉnh sửa trang cá nhân</Button>
           </Link>
         )}
         {userInfo._id !== user?._id && (
@@ -162,7 +156,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} followed
+              {user?.followed.length} người theo dõi
             </Text>
           </Flex>
           <Flex>

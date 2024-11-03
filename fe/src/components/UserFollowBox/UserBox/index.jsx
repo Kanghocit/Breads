@@ -24,7 +24,7 @@ const UserBox = ({
   const postInfo = useSelector((state) => state.post.postInfo);
 
   const getToUserPage = () => {
-    navigate(`/users/${userInfo._id}`);
+    navigate(`/users/${user._id}`);
   };
 
   const tagUser = () => {
