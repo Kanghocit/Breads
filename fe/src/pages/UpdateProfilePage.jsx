@@ -24,6 +24,7 @@ import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { convertToBase64 } from "../util/index";
+import { useTranslation } from 'react-i18next';
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -31,6 +32,7 @@ const POPUP_TYPE = {
 };
 
 const UpdateProfilePage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -192,7 +194,7 @@ const UpdateProfilePage = () => {
             p={6}
           >
             <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-              Cập nhật thông tin cá nhân
+            {t("updateProfile.title")}
             </Heading>
             <FormControl id="userName">
               <Stack direction={["column", "row"]} spacing={6}>
@@ -206,7 +208,7 @@ const UpdateProfilePage = () => {
                 </Center>
                 <Center w="full">
                   <Button w="full" onClick={() => fileRef.current.click()}>
-                    Đổi avatar
+                  {t("updateProfile.changeAvatar")}
                   </Button>
                   <Input
                     type="file"
@@ -219,7 +221,7 @@ const UpdateProfilePage = () => {
               </Stack>
             </FormControl>
             <FormControl>
-              <FormLabel>Họ và Tên</FormLabel>
+              <FormLabel>{t("updateProfile.name")}</FormLabel>
               <Input
                 placeholder="Your name..."
                 onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
@@ -229,9 +231,9 @@ const UpdateProfilePage = () => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Giới thiệu về bản thân</FormLabel>
+              <FormLabel>{t("updateProfile.bio")}</FormLabel>
               <Input
-                placeholder="Your bio..."
+                placeholder={t("updateProfile.bio")}
                 onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
                 value={inputs.bio}
                 _placeholder={{ color: "gray.500" }}
@@ -239,7 +241,7 @@ const UpdateProfilePage = () => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Links</FormLabel>
+              <FormLabel>{t("updateProfile.links")}</FormLabel>
               <Flex
                 width={"100%"}
                 height={"fit-content"}
@@ -258,7 +260,7 @@ const UpdateProfilePage = () => {
                 }
               >
                 {inputs.links.length === 1 && inputs.links[0] === "" ? (
-                  <Text>Your links</Text>
+                  <Text>{t("updateProfile.addLink")}</Text>
                 ) : (
                   <>
                     {inputs.links.map((link, index) => {
@@ -296,7 +298,7 @@ const UpdateProfilePage = () => {
                   })
                 }
               >
-                Đổi mật khẩu
+                {t("updateProfile.changePassword")}
               </Button>
             </FormControl>
             <Stack spacing={6} direction={["column", "row"]}>
@@ -311,7 +313,7 @@ const UpdateProfilePage = () => {
                   navigate(-1);
                 }}
               >
-                Hủy
+             {t("updateProfile.cancel")}
               </Button>
               <Button
                 bg={"green.400"}
@@ -324,7 +326,7 @@ const UpdateProfilePage = () => {
                 isLoading={updating}
                 disabled={updating}
               >
-                Xác nhận
+                 {t("updateProfile.confirm")}
               </Button>
             </Stack>
           </Stack>

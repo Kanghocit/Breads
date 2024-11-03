@@ -22,17 +22,17 @@ const ViewActivity = ({ post, isOpen, onClose }) => {
     {
       action: CiHeart,
       num: post.usersLike?.length,
-      name: "Likes",
+      name: "Lượt thích",
     },
     {
       action: TbMessageReply,
       num: post.replies?.length,
-      name: "Replies",
+      name: "Bình luận",
     },
     {
       action: BsChatRightQuote,
       num: post?.repostNum,
-      name: "Reposts",
+      name: "Lượt đăng lại",
     },
   ];
   return (
@@ -50,7 +50,7 @@ const ViewActivity = ({ post, isOpen, onClose }) => {
         id="modal"
       >
         <Box p={1}></Box>
-        <ModalHeader textAlign={"center"}>Activity Details</ModalHeader>
+        <ModalHeader textAlign={"center"}>Hoạt động đối với bài viết</ModalHeader>
 
         <ModalBody>
           <Flex

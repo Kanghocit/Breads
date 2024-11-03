@@ -32,8 +32,10 @@ import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
+import { useTranslation } from "react-i18next";
 
 const PostPopup = () => {
+  const { t } = useTranslation();
   const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
@@ -286,7 +288,7 @@ const PostPopup = () => {
               }}
               // isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
-              {isEditing ? "Lưu" : "Đăng"}
+              {isEditing ? t("save") : t("post")}
             </Button>
           </ModalFooter>
         </ModalContent>
