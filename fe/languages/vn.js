@@ -1,6 +1,6 @@
 // vn.js
 const vnTranslations = {
-  post: "",
+  post: "Đăng",
   interface: "Giao diện",
   language: "Ngôn ngữ",
   settings: "Cài đặt",
