@@ -5,7 +5,7 @@ import { updatePostInfo } from "../../../../../../store/PostSlice";
 import { FILE_TYPES, fileTypes } from "../../../../../../util";
 import ItemUploadDisplay from "./ItemUploadDisplay";
 import LoadingUploadMsg from "./loading";
-const UploadDisplay = (isPost = false) => {
+const UploadDisplay = ({isPost = false}) => {
   //Max 5 files / folders
   const dispatch = useDispatch();
   const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
@@ -112,18 +112,22 @@ const UploadDisplay = (isPost = false) => {
       alignItems: "center",
       flexDirection: "row",
     };
+    console.log("uploaddisplay nè");
+    
     return (
       <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
         <>
-          {!isPost &&
-            media?.map((item, index) => (
-              <ItemUploadDisplay
-                item={item}
-                imgSrc={item?.url}
-                onClick={() => { handleRemoveMedia(index)}}
-                key={index}
-              />
-            ))}
+          {media?.map((item, index) => (
+            <ItemUploadDisplay
+              item={item}
+              imgSrc={item?.url}
+              onClick={() => {
+                handleRemoveMedia(index);
+              }}
+              key={index}
+              // isPost={isPost}
+            />
+          ))}
 
           {files?.map((file, index) => (
             <ItemUploadDisplay

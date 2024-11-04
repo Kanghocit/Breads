@@ -187,7 +187,7 @@ const PostPopup = () => {
     }
   };
 
-  const files = postInfo.files;
+  let files = postInfo.files;
   console.log(files);
 
   return (
@@ -234,17 +234,14 @@ const PostPopup = () => {
                 <Text color={textColor} fontWeight="600">
                   {userInfo.username}
                 </Text>
-
                 <TextArea
                   text={content}
                   setText={(value) => handleContent(value)}
                   tagUsers={true}
                 />
-
-                {!!files && files?.length !== 0 && (
+                {files && files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
-
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />

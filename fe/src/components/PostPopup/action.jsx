@@ -16,6 +16,9 @@ const PostPopupAction = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const imageRef = useRef(null);
+  const [filesData, setFilesData] = useState([]);
+
+  const fileUploadRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = async (files) => {
@@ -51,9 +54,7 @@ const PostPopupAction = () => {
       })
     );
   };
-  const [filesData, setFilesData] = useState([]);
 
-  const fileUploadRef = useRef(null);
   return (
     <>
       <Input
@@ -76,19 +77,12 @@ const PostPopupAction = () => {
       />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
         <Flex maxWidth="100%" gap="10px">
-          {/* ẩn smallicon ở fileUpload
-          <div style={{ display: "none" }}>
-            <FileUpload setFilesData={setFilesData} />
-          </div>
-          <AiOutlineFileAdd
-            cursor="pointer"
-            onClick={() => fileUploadRef.current.click()} 
-          /> */}
           <FileUpload
             setFilesData={setFilesData}
             isPost={true}
             cursor="pointer"
           />
+
           <TbLibraryPhoto
             cursor="pointer"
             onClick={() => imageRef.current.click()}
