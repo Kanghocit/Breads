@@ -6,6 +6,8 @@ import Model from "../../util/ModelName.js";
 import { getFriendSocketId } from "../services/user.js";
 import axios from "axios";
 import Link from "../../api/models/link.model.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
+import { uploadFileFromBase64 } from "../../../src/api/utils/index.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -14,7 +16,6 @@ export default class MessageController {
       let conversation = await Conversation.findOne({
         participants: { $all: [senderId, recipientId] },
       });
-      const msgId = ObjectId();
       const listMsgId = [];
       const listMsg = [];
       const { files, media, content } = message;
@@ -23,11 +24,12 @@ export default class MessageController {
       [...Array(numberNewMsg)].map((_) => {
         listMsgId.push(ObjectId());
       });
+      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
           msgIds: listMsgId,
-          lastMsgId: msgId,
+          lastMsgId: listMsgId[listMsgId.length - 1],
         });
         await conversation.save();
       } else {
@@ -49,7 +51,8 @@ export default class MessageController {
       }
       let currentFileIndex = 0;
       let addMedia = false;
-      listMsgId.forEach(async (_id, index) => {
+      for (let index = 0; index < listMsgId.length; index++) {
+        const _id = listMsgId[index];
         let newMsg = null;
         const msgInfo = {
           _id: _id,
@@ -60,14 +63,16 @@ export default class MessageController {
           const urlRegex = /(https?:\/\/[^\s]+)/g;
           const urls = content.match(urlRegex);
           const links = [];
-          for (let url of urls) {
-            const { data } = await axios.get(
-              `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
-            );
-            links.push({
-              _id: ObjectId(),
-              ...data,
-            });
+          if (urls?.length) {
+            for (let url of urls) {
+              const { data } = await axios.get(
+                `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
+              );
+              links.push({
+                _id: ObjectId(),
+                ...data,
+              });
+            }
           }
           if (links?.length > 0) {
             await Link.insertMany(links, { ordered: false });
@@ -78,9 +83,24 @@ export default class MessageController {
             links: links?.map((_id) => _id),
           };
         } else if (media?.length !== 0 && !addMedia) {
+          const isAddGif =
+            media?.length === 1 && media[0].type === Constants.MEDIA_TYPE.GIF;
+          const uploadMedia = media;
+          if (!isAddGif) {
+            for (let i = 0; i < media.length; i++) {
+              const imgUrl = await uploadFileFromBase64({
+                base64: media[i].url,
+              });
+              uploadMedia[i] = {
+                url: imgUrl ?? media[i].url,
+                type: Constants.MEDIA_TYPE.IMAGE,
+              };
+            }
+          }
+          console.log("uploadMedia: ", uploadMedia);
           newMsg = new Message({
             ...msgInfo,
-            media: media,
+            media: uploadMedia,
           });
           addMedia = true;
         } else if (
@@ -95,8 +115,10 @@ export default class MessageController {
           });
           currentFileIndex += 1;
         }
+        console.log("newMsg: ", newMsg);
         listMsg.push(newMsg);
-      });
+      }
+      console.log("listMsg: ", listMsg);
       await Message.insertMany(listMsg, { ordered: false });
       const newMessages = await Message.find({
         _id: { $in: listMsgId },
