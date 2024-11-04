@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
 import FileMsg from "./Files";
 import { Constants } from "../../../../../../Breads-Shared/Constants";
+import MsgMediaLayout from "./MediaLayout";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -46,14 +47,7 @@ const Message = ({ msg }) => {
             {content}
           </Text>
         )}
-        {media?.length === 1 && media[0]?.type === Constants.MEDIA_TYPE.GIF && (
-          <Image
-            src={media[0].url}
-            height={"auto"}
-            maxHeight={"200px"}
-            objectFit={"cover"}
-          />
-        )}
+        {media?.length > 0 && <MsgMediaLayout media={media} />}
         {file?._id && <FileMsg file={file} />}
       </>
     );

@@ -6,7 +6,8 @@ export const initialUtilState = {
   prevPage: "",
   seeMediaInfo: {
     open: false,
-    img: "",
+    media: [],
+    currentMediaIndex: -1,
   },
   displayPageData: "",
   hasMoreData: false,

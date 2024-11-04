@@ -23,7 +23,7 @@ export const uploadFileFromBase64 = async ({ base64, style = null }) => {
     dataForm.append("cloud_name", cloud_name);
     dataForm.append("signature", signature);
     dataForm.append("timestamp", timestamp);
-    const url = `https://api.cloudinary.com/v1_1/${cloud_name}/raw/upload`;
+    const url = `https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`;
     const { data } = await axios.post(url, dataForm);
     if (style) {
       return `https://res.cloudinary.com/${cloud_name}/image/upload/${style}/${data.public_id}.png`;
