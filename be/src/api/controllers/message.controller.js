@@ -2,6 +2,7 @@ import { ObjectId, destructObjectId } from "../../util/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import Link from "../models/link.model.js";
 
 export const getConversationByUsersId = async (req, res) => {
   try {
@@ -112,6 +113,7 @@ export const getConversationFiles = async (req, res) => {
     const msgs = await Message.aggregate([
       {
         $match: {
+          conversationId: ObjectId(conversationId),
           file: {
             $exists: true,
           },
@@ -148,15 +150,24 @@ export const getConversationLinks = async (req, res) => {
     if (!conversationId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
     }
-    const links = await Message.find(
+    const msgWithLinks = await Message.aggregate([
       {
-        conversationId: ObjectId(conversationId),
+        $match: {
+          conversationId: ObjectId(conversationId),
+          "links.0": { $exists: true },
+        },
       },
-      {
-        links: 1,
-      }
-    );
-    res.status(HTTPStatus.OK).json(links);
+    ]);
+    const linksId = [];
+    msgWithLinks?.forEach((msg) => {
+      linksId.push(...msg?.links);
+    });
+    const linksInfo = await Link.find({
+      _id: {
+        $in: linksId,
+      },
+    });
+    res.status(HTTPStatus.OK).json(linksInfo);
   } catch (err) {
     console.log("getConversationLinks: ", err);
     res.status(HTTPStatus.SERVER_ERR).json(err);

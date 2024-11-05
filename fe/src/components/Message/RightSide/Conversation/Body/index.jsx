@@ -1,5 +1,6 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useSocket from "../../../../../hooks/useSocket";
@@ -9,9 +10,8 @@ import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
 import Message from "./Message";
 import MessagesSkeleton from "./Message/skeleton";
-import { FaAngleDown } from "react-icons/fa";
 
-const ConversationBody = () => {
+const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -145,7 +145,7 @@ const ConversationBody = () => {
       {noticeNewMsgBox && (
         <Button
           position={"fixed"}
-          right={"30px"}
+          right={openDetailTab ? "22vw" : "30px"}
           bottom={"72px"}
           onClick={() => {
             scrollToBottom();

@@ -16,6 +16,7 @@ import { Constants } from "../../../../../Breads-Shared/Constants";
 import { POST } from "../../../../../config/API";
 import ConversationTabHeader from "../tabHeader";
 import FileMsg from "../../Conversation/Body/Message/Files";
+import LinkBox from "../../Conversation/Body/Message/Links";
 
 const TABS = {
   MEDIA: "Media",
@@ -130,7 +131,13 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
               ))}
             </Flex>
           </TabPanel>
-          <TabPanel p={0} mt={4}></TabPanel>
+          <TabPanel p={0} mt={4}>
+            <Flex gap={2} wrap={"wrap"}>
+              {tabData?.map((item) => (
+                <LinkBox link={item} />
+              ))}
+            </Flex>
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Container>

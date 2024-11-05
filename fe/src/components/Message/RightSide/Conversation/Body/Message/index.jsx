@@ -1,4 +1,4 @@
-import { Avatar, Flex, Text, Tooltip, Image } from "@chakra-ui/react";
+import { Avatar, Flex, Text, Tooltip, Link } from "@chakra-ui/react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
@@ -29,6 +29,11 @@ const Message = ({ msg }) => {
   };
 
   const msgContent = () => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const contentArr = content
+      ?.split(urlRegex)
+      ?.filter((part) => !!part.trim());
+
     return (
       <>
         {!ownMessage && (
@@ -44,7 +49,27 @@ const Message = ({ msg }) => {
             borderRadius={"md"}
             color={ownMessage ? "white" : "black"}
           >
-            {content}
+            {contentArr.map((part, index) => {
+              if (part.match(urlRegex)) {
+                return (
+                  <span key={index} style={{ marginRight: "4px" }}>
+                    <Link
+                      href={part}
+                      color={ownMessage ? "white" : "black"}
+                      isExternal
+                      _hover={{ textDecoration: "underline" }}
+                      _focus={{ boxShadow: "none" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {part}
+                    </Link>
+                  </span>
+                );
+              }
+              return <span key={index}>{part}</span>;
+            })}
           </Text>
         )}
         {media?.length > 0 && <MsgMediaLayout media={media} />}
