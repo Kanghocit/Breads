@@ -1,13 +1,13 @@
+import axios from "axios";
+import { uploadFileFromBase64 } from "../../../src/api/utils/index.js";
 import Conversation from "../../api/models/conversation.model.js";
+import Link from "../../api/models/link.model.js";
 import Message from "../../api/models/message.model.js";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import { getFriendSocketId } from "../services/user.js";
-import axios from "axios";
-import Link from "../../api/models/link.model.js";
-import { Constants } from "../../Breads-Shared/Constants/index.js";
-import { uploadFileFromBase64 } from "../../../src/api/utils/index.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -62,6 +62,7 @@ export default class MessageController {
         if (content?.trim() && index === 0) {
           const urlRegex = /(https?:\/\/[^\s]+)/g;
           const urls = content.match(urlRegex);
+          console.log("urls: ", urls);
           const links = [];
           if (urls?.length) {
             for (let url of urls) {
@@ -75,6 +76,7 @@ export default class MessageController {
             }
           }
           if (links?.length > 0) {
+            console.log("links: ", links);
             await Link.insertMany(links, { ordered: false });
           }
           newMsg = {
