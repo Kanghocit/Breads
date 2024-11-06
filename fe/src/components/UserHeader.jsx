@@ -14,7 +14,7 @@ import {
   TabPanels,
   Tabs,
   useColorModeValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CgMoreO } from "react-icons/cg";
@@ -24,16 +24,15 @@ import { EmptyContentSvg } from "../assests/icons";
 import useShowToast from "../hooks/useShowToast";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
 import FollowBtn from "./FollowBtn";
-
 import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import ListPost from "../components/ListPost";
 import UserFollowBox from "./UserFollowBox";
-
 import { CgDanger } from "react-icons/cg";
 import { FaLink } from "react-icons/fa";
 import PostConstants from "../util/PostConstants";
+import ConversationBtn from "./ConversationBtn";
 import SkeletonPost from "./ListPost/Post/skeleton";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",
@@ -46,7 +45,6 @@ const TABS = {
 };
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -81,8 +79,8 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
     );
   };
   const date = new Date(user.createdAt);
-  const monthOptions = { month: "long" }; 
-  const yearOptions = { year: "numeric" }; 
+  const monthOptions = { month: "long" };
+  const yearOptions = { year: "numeric" };
 
   const month = date.toLocaleString("vi-VN", monthOptions);
   const year = date.toLocaleString("vi-VN", yearOptions);
@@ -135,13 +133,17 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
 
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
-            <Button size={"sm"} w={'full'}> {t('updateprofile')}</Button>
+            <Button size={"sm"} w={"full"}>
+              {" "}
+              {t("updateprofile")}
+            </Button>
           </Link>
         )}
         {userInfo._id !== user?._id && (
-          <Link as={RouterLink}>
+          <Flex width={"100%"} gap={4}>
             <FollowBtn user={user} />
-          </Link>
+            <ConversationBtn user={user} />
+          </Flex>
         )}
         <Flex w={"full"} justifyContent={"space-between"}>
           <Flex gap={2} alignItems={"center"}>
@@ -158,10 +160,8 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} {t('followers')}
+              {user?.followed.length} {t("followers")}
             </Text>
-            <Box w={1} h={1} borderRadius={"full"} bg="gray.light"></Box>
-            <Link color={"gray.light"}>instagram.com</Link>
           </Flex>
           <Flex>
             {/* <Box className="icon-container">
@@ -193,7 +193,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                         onClick={copyURL}
                       >
                         <FaLink />
-                        {t('copylink')}
+                        {t("copylink")}
                       </MenuItem>
                       <MenuItem
                         bg="gray.dark"
@@ -213,7 +213,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                           gap={2}
                         >
                           <CgDanger />
-                          {t('aboutthisprofile')}
+                          {t("aboutthisprofile")}
                         </Box>
 
                         <Modal
@@ -230,7 +230,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                             <ModalBody pb={6}>
                               <Flex justifyContent={"space-between"} mt={2}>
                                 <Flex direction={"column"}>
-                                  <Text>{t('name')}</Text>
+                                  <Text>{t("name")}</Text>
                                   <Box>{`${user.name}(@${user.username})`}</Box>
                                 </Flex>
                                 <Avatar src={user.avatar} size="lg" />
@@ -238,15 +238,17 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                               <Divider width={"270px"} borderWidth="1px" />
                               <Flex justifyContent={"space-between"} my={2}>
                                 <Flex direction={"column"}>
-                                  <Text>{t('joindate')}</Text>
-                                  <Box>{`${month} ${t('year')} ${year} • 100 ${t('')} +`}</Box>
+                                  <Text>{t("joindate")}</Text>
+                                  <Box>{`${month} ${t(
+                                    "year"
+                                  )} ${year} • 100 ${t("")} +`}</Box>
                                 </Flex>
                               </Flex>
                               <Divider borderWidth="1px" />
                               <Flex justifyContent={"space-between"} mt={2}>
                                 <Flex direction={"column"}>
-                                  <Text>{t('oldusername')}</Text>
-                                  <Box>{t('change_name_count')}</Box>
+                                  <Text>{t("oldusername")}</Text>
+                                  <Box>{t("change_name_count")}</Box>
                                 </Flex>
                               </Flex>
                             </ModalBody>

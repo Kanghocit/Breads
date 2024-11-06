@@ -12,6 +12,7 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
       margin={0}
       flexDirection={"column"}
       justifyContent={"space-between"}
+      alignItems={"center"}
       position={"relative"}
     >
       <CloseIcon
@@ -37,15 +38,17 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
         maxHeight={"calc(100% - 16px)"}
         objectFit={"contain"}
       />
-      <Text
-        maxWidth={"50px"}
-        fontSize={"11px"}
-        textOverflow={"ellipsis"}
-        overflow={"hidden"}
-        whiteSpace={"nowrap"}
-      >
-        {item?.name}
-      </Text>
+      {item?.name && (
+        <Text
+          maxWidth={"50px"}
+          fontSize={"11px"}
+          textOverflow={"ellipsis"}
+          overflow={"hidden"}
+          whiteSpace={"nowrap"}
+        >
+          {item?.name}
+        </Text>
+      )}
     </Flex>
   );
 };

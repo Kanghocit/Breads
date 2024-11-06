@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { changePage } from "./asyncThunk";
 
-const initialState = {
+export const initialUtilState = {
   currentPage: "",
   prevPage: "",
   seeMediaInfo: {
     open: false,
-    img: "",
+    media: [],
+    currentMediaIndex: -1,
   },
   displayPageData: "",
   hasMoreData: false,
@@ -14,7 +15,7 @@ const initialState = {
 
 const utilSlice = createSlice({
   name: "util",
-  initialState,
+  initialState: initialUtilState,
   reducers: {
     updateSeeMedia: (state, action) => {
       state.seeMediaInfo = action.payload;
@@ -29,7 +30,7 @@ const utilSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(changePage.fulfilled, (state, action) => {
       const { nextPage, currentPage } = action.payload;
-      state.prevPage = currentPage;
+      state.prevPage = currentPage ? currentPage : state.currentPage;
       state.currentPage = nextPage;
     });
   },

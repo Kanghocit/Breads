@@ -23,7 +23,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { replaceEmojis } from "../../util";
+import { generateObjectId, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
@@ -143,6 +143,7 @@ const PostPopup = () => {
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
         }
+        payload._id = generateObjectId();
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
     } catch (err) {

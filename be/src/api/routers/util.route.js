@@ -4,6 +4,7 @@ import fs from "fs";
 import { ObjectId } from "../../util/index.js";
 import { getAllFiles, upload } from "../middlewares/upload.js";
 import File from "../models/file.model.js";
+import { UTIL_PATH } from "../../Breads-Shared/APIConfig.js";
 
 const fileTypes = {
   word: [
@@ -41,7 +42,7 @@ cloudinary.config({
 
 const router = express.Router();
 
-router.post("/upload", upload.array("files"), async (req, res) => {
+router.post(UTIL_PATH.UPLOAD, upload.array("files"), async (req, res) => {
   try {
     const userId = req.query.userId;
     const filesName = req.body.filesName.split(",");

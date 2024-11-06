@@ -1,5 +1,6 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useSocket from "../../../../../hooks/useSocket";
@@ -9,9 +10,8 @@ import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
 import Message from "./Message";
 import MessagesSkeleton from "./Message/skeleton";
-import { FaAngleDown } from "react-icons/fa";
 
-const ConversationBody = () => {
+const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -126,7 +126,7 @@ const ConversationBody = () => {
                 flex: 1,
               };
               return (
-                <>
+                <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
                     <div style={brStyle} />
                     <Text px={2}>
@@ -137,7 +137,7 @@ const ConversationBody = () => {
                   {msgs.map((msg) => (
                     <Message key={msg?._id} msg={msg} />
                   ))}
-                </>
+                </Fragment>
               );
             })}
         </Flex>
@@ -145,7 +145,7 @@ const ConversationBody = () => {
       {noticeNewMsgBox && (
         <Button
           position={"fixed"}
-          right={"30px"}
+          right={openDetailTab ? "22vw" : "30px"}
           bottom={"72px"}
           onClick={() => {
             scrollToBottom();

@@ -28,7 +28,8 @@ const messageSchema = new mongoose.Schema(
     },
     links: [
       {
-        type: String,
+        type: ObjectId,
+        ref: "Link",
         required: false,
       },
     ],
@@ -40,6 +41,13 @@ const messageSchema = new mongoose.Schema(
     react: [
       {
         type: Object,
+        required: false,
+      },
+    ],
+    usersSeen: [
+      {
+        type: ObjectId,
+        ref: "User",
         required: false,
       },
     ],

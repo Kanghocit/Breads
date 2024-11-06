@@ -179,10 +179,12 @@ export const updateUser = async (req, res) => {
       if (checkLinks) {
         user.links = links;
       }
+    } else {
+      user.links = [];
     }
 
     user.name = name || user.name;
-    user.bio = bio || user.bio;
+    user.bio = bio;
 
     user = await user.save();
     const result = await getUserInfo(userId);

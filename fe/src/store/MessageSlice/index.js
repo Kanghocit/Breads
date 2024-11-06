@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getConversations, getMsgs } from "./asyncThunk";
+import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
 
 export const defaulMessageInfo = {
@@ -14,7 +14,7 @@ export const defaulMessageInfo = {
   */
   icon: "",
 };
-const initialState = {
+export const initialMsgState = {
   conversations: [], //List user message
   userSelected: null,
   messages: {}, //List message in a conversation
@@ -28,7 +28,7 @@ const initialState = {
 
 const msgSlice = createSlice({
   name: "message",
-  initialState,
+  initialState: initialMsgState,
   reducers: {
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;
@@ -74,8 +74,13 @@ const msgSlice = createSlice({
       state.loadingConversations = true;
     });
     builder.addCase(getConversations.fulfilled, (state, action) => {
-      const newConversations = action.payload;
-      state.conversations = [...state.conversations, ...newConversations];
+      const newConversations = action.payload.data;
+      const isLoadNew = action.payload.isLoadNew;
+      if (!isLoadNew) {
+        state.conversations.push(...newConversations);
+      } else {
+        state.conversations = newConversations;
+      }
       state.loadingConversations = false;
     });
     builder.addCase(getMsgs.fulfilled, (state, action) => {
@@ -85,6 +90,10 @@ const msgSlice = createSlice({
       } else {
         state.messages = [...msgs, state.messages];
       }
+    });
+    builder.addCase(getConversationById.fulfilled, (state, action) => {
+      const conversation = action.payload;
+      state.selectedConversation = conversation;
     });
   },
 });

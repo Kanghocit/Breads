@@ -1,12 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { GET, PATCH, POST, PUT } from "../../config/API";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import { updateListPost } from "../PostSlice";
+import { initialPostState, updateListPost } from "../PostSlice";
 import {
   COLLECTION_PATH,
   Route,
   USER_PATH,
 } from "../../Breads-Shared/APIConfig";
+import { initialUserState } from ".";
+import { initialUtilState } from "../UtilSlice";
+import { initialMsgState } from "../MessageSlice";
 
 export const signUp = createAsyncThunk(
   "user/signUp",
@@ -16,7 +19,6 @@ export const signUp = createAsyncThunk(
         path: Route.USER + USER_PATH.SIGN_UP,
         payload,
       });
-      console.log("khang",data)
       if (data) {
         // localStorage.setItem("userId", data?._id);
         return data;
@@ -53,20 +55,22 @@ export const login = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk(
-  "user/logout",
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await POST({
-        path: Route.USER + USER_PATH.LOGOUT,
-      });
-      localStorage.removeItem("userId");
-      return data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
+export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
+  try {
+    const rootState = thunkAPI.getState();
+    const data = await POST({
+      path: Route.USER + USER_PATH.LOGOUT,
+    });
+    localStorage.removeItem("userId");
+    rootState.user = initialUserState;
+    rootState.post = initialPostState;
+    rootState.util = initialUtilState;
+    rootState.message = initialMsgState;
+    return data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
   }
-);
+});
 
 export const getUserInfo = createAsyncThunk(
   "user/getUserInfo",

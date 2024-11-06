@@ -20,15 +20,75 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { handleFlow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
 
-const UserInfoPopover = ({ user, content = "", isParentPost = false }) => {
+export const UserInfoBox = ({ user }) => {
+  const dispatch = useDispatch();
+  const showToast = useShowToast();
+  const [openCancelPopup, setOpenCancelPopup] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const isFollowing = userInfo?.following?.includes(user?._id);
+  const { colorMode } = useColorMode();
+
+  return (
+    <PopoverBody
+      bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
+      color={colorMode === "dark" ? "white" : "black"}
+      borderRadius={"10px"}
+    >
+      <Box m={2}>
+        <Flex justifyContent={"space-between"} pb={4}>
+          <Box>
+            <Text fontWeight="bold">{user?.username}</Text>
+            <Text fontSize={"sm"}>{user?.name}</Text>
+          </Box>
+          <Avatar
+            src={user?.avatar}
+            size={"md"}
+            name={user?.username}
+            cursor={"pointer"}
+          />
+        </Flex>
+        <Text fontSize={"sm"}> {user?.bio}</Text>
+        <Text color={"gray.400"}>
+          {user?.followed?.length || 0} người theo dõi
+        </Text>
+        {user?._id !== userInfo?._id && (
+          <Button
+            w={"100%"}
+            bg={colorMode === "dark" ? "#fafafa" : "#0a0a0a"}
+            color={colorMode === "dark" ? "black" : "white"}
+            mt={"8px"}
+            _hover={{ opacity: 0.8 }}
+            _active={{ opacity: 0.6 }}
+            transition="opacity 0.2s"
+            onClick={() => {
+              if (isFollowing) {
+                setOpenCancelPopup(true);
+              } else {
+                handleFlow(userInfo, user, dispatch, showToast);
+              }
+            }}
+          >
+            {isFollowing ? "Unfollow" : "Follow"}
+          </Button>
+        )}
+      </Box>
+      <UnFollowPopup
+        user={user}
+        isOpen={openCancelPopup}
+        onClose={() => setOpenCancelPopup(false)}
+        onClick={() => {
+          handleFlow(userInfo, user, dispatch, showToast);
+          setOpenCancelPopup(false);
+        }}
+      />
+    </PopoverBody>
+  );
+};
+
+const UserInfoPopover = ({ user, isParentPost = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
-
-  const isFollowing = userInfo?.following?.includes(user?._id);
-  const showToast = useShowToast();
-  const [openCancelPopup, setOpenCancelPopup] = useState(false);
-  const { colorMode } = useColorMode();
   const handleGoToUserPage = () => {
     navigate(`/users/${user._id}`);
     dispatch(
@@ -66,62 +126,9 @@ const UserInfoPopover = ({ user, content = "", isParentPost = false }) => {
           borderRadius={"10px"}
           zIndex={10000}
         >
-          <PopoverBody
-            bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
-            color={colorMode === "dark" ? "white" : "black"}
-            borderRadius={"10px"}
-          >
-            <Box m={2}>
-              <Flex justifyContent={"space-between"} pb={4}>
-                <Box>
-                  <Text fontWeight="bold">{user?.username}</Text>
-                  <Text fontSize={"sm"}>{user?.name}</Text>
-                </Box>
-                <Avatar
-                  src={user?.avatar}
-                  size={"md"}
-                  name={user?.username}
-                  cursor={"pointer"}
-                />
-              </Flex>
-              <Text fontSize={"sm"}> {user?.bio}</Text>
-              <Text color={"gray.400"}>
-                {user?.followed?.length || 0} người theo dõi
-              </Text>
-              {user?._id !== userInfo?._id && (
-                <Button
-                  w={"100%"}
-                  bg={colorMode === "dark" ? "#fafafa" : "#0a0a0a"}
-                  color={colorMode === "dark" ? "black" : "white"}
-                  mt={"8px"}
-                  _hover={{ opacity: 0.8 }}
-                  _active={{ opacity: 0.6 }}
-                  transition="opacity 0.2s"
-                  onClick={() => {
-                    if (isFollowing) {
-                      setOpenCancelPopup(true);
-                    } else {
-                      handleFlow(userInfo, user, dispatch, showToast);
-                    }
-                  }}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </Button>
-              )}
-            </Box>
-          </PopoverBody>
+          <UserInfoBox user={user} />
         </PopoverContent>
       )}
-
-      <UnFollowPopup
-        user={user}
-        isOpen={openCancelPopup}
-        onClose={() => setOpenCancelPopup(false)}
-        onClick={() => {
-          handleFlow(userInfo, user, dispatch, showToast);
-          setOpenCancelPopup(false);
-        }}
-      />
     </Popover>
   );
 };

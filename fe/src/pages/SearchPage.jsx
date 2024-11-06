@@ -1,16 +1,19 @@
 import { Container, Text, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../Breads-Shared/APIConfig";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import InfiniteScroll from "../components/InfiniteScroll";
 import ContainerLayout from "../components/MainBoxLayout";
 import SearchBar from "../components/SearchBar";
 import UserFollowBox from "../components/UserFollowBox";
 import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
 import { GET } from "../config/API";
-import { useTranslation } from 'react-i18next';
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const SearchPage = () => {
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
@@ -26,6 +29,9 @@ const SearchPage = () => {
         searchValue,
         isFetchMore: false,
       });
+    }
+    if (init.current) {
+      dispatch(changePage({ nextPage: PageConstant.SEARCH }));
     }
     init.current = false;
   }, [searchValue]);
@@ -76,7 +82,7 @@ const SearchPage = () => {
           <SearchBar
             value={searchValue}
             setValue={setSearchValue}
-            placeholder={t('search')}
+            placeholder={t("search")}
           />
         </Container>
         <Text
@@ -86,7 +92,7 @@ const SearchPage = () => {
           position={"relative"}
           left={"4px"}
         >
-          {t('Suggested_follow_up')}
+          {t("Suggested_follow_up")}
         </Text>
         <InfiniteScroll
           queryFc={(page, setHasMore) => {

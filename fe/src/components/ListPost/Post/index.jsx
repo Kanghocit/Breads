@@ -8,12 +8,7 @@ import {
   Divider,
   Flex,
   Text,
-  Link,
   useColorMode,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
@@ -26,17 +21,17 @@ import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
 import { updatePostLike } from "../../../store/PostSlice";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
+import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
 import PostConstants from "../../../util/PostConstants";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
 import UserInfoPopover from "../../UserInfoPopover";
+import PostContent from "./Content";
 import Actions from "./Actions";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import UserTagPopup from "../../UserTagPopup";
-import CustomLinkPreview from "../../../util/CustomLinkPreview";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -159,7 +154,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               }
             }}
           >
-            <UserTagPopup post={post} content={post?.content} />
+            <PostContent post={post} content={post?.content} />
             {(() => {
               let isFirstLinkDisplayed = false;
               return post.content

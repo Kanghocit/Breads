@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NOTIFICATION_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
@@ -12,9 +12,7 @@ import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.user.userInfo);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
-  const initPage = useRef(true);
   const { FOR_YOU } = PageConstant;
 
   useEffect(() => {
