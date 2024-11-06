@@ -1,33 +1,35 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../store/PostSlice";
 
-const CustomLinkPreview = ({ url }) => {
+const CustomLinkPreview = ({ url = "", link = null }) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(link);
   const [error, setError] = useState(false);
   useEffect(() => {
-    const fetchLinkData = async () => {
-      try {
-        const { data } = await axios.get(
-          `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
-        );
-        setData(data);
-        dispatch(
-          updatePostInfo({
-            ...postInfo,
-            links: [...postInfo?.links, data],
-          })
-        );
-      } catch {
-        setError(true);
-      }
-    };
-
-    if (url) fetchLinkData();
+    if (url) {
+      fetchLinkData();
+    }
   }, [url]);
+
+  const fetchLinkData = async () => {
+    try {
+      const { data } = await axios.get(
+        `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
+      );
+      setData(data);
+      dispatch(
+        updatePostInfo({
+          ...postInfo,
+          links: [...postInfo?.links, data],
+        })
+      );
+    } catch {
+      setError(true);
+    }
+  };
 
   if (!data) return <div>Loading...</div>;
 

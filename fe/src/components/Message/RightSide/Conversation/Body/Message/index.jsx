@@ -1,9 +1,9 @@
-import { Avatar, Flex, Text, Tooltip, Link } from "@chakra-ui/react";
+import { Avatar, Flex, Link, Text, Tooltip } from "@chakra-ui/react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
+import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
 import FileMsg from "./Files";
-import { Constants } from "../../../../../../Breads-Shared/Constants";
 import MsgMediaLayout from "./MediaLayout";
 
 const Message = ({ msg }) => {
@@ -12,7 +12,7 @@ const Message = ({ msg }) => {
     (state) => state.message.selectedConversation?.participant
   );
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media } = msg;
+  const { content, createdAt, file, media, links } = msg;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -35,7 +35,11 @@ const Message = ({ msg }) => {
       ?.filter((part) => !!part.trim());
 
     return (
-      <>
+      <Flex
+        flexDir={ownMessage ? "column" : ""}
+        alignItems={ownMessage ? "flex-end" : "flex-start"}
+        width={"fit-content"}
+      >
         {!ownMessage && (
           <Avatar src={participant?.avatar} w={"32px"} h={"32px"} />
         )}
@@ -72,9 +76,12 @@ const Message = ({ msg }) => {
             })}
           </Text>
         )}
+        {links?.length > 0 && (
+          <CustomLinkPreview link={links[links?.length - 1]} />
+        )}
         {media?.length > 0 && <MsgMediaLayout media={media} />}
         {file?._id && <FileMsg file={file} />}
-      </>
+      </Flex>
     );
   };
 

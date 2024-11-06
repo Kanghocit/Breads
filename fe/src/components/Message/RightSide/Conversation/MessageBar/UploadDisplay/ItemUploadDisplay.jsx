@@ -2,6 +2,8 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
 const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
+  console.log("imgSrc: ", imgSrc);
+
   return (
     <Flex
       key={item?.name}
@@ -11,7 +13,7 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
       border={"1px solid gray"}
       margin={0}
       flexDirection={"column"}
-      justifyContent={"space-between"}
+      justifyContent={item?.name ? "space-between" : "center"}
       alignItems={"center"}
       position={"relative"}
     >
@@ -34,9 +36,9 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
       />
       <Image
         src={imgSrc}
-        width={"100%"}
-        maxHeight={"calc(100% - 16px)"}
-        objectFit={"contain"}
+        width={"60px"}
+        maxHeight={item?.name ? "calc(100% - 16px)" : "100%"}
+        objectFit={"cover"}
       />
       {item?.name && (
         <Text

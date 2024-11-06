@@ -57,3 +57,13 @@ export const getConversationById = createAsyncThunk(
     }
   }
 );
+
+export const getMsgsFromSearchValue = createAsyncThunk(
+  "message/getMsgsFromSearchValue",
+  async (payload, thunkApi) => {
+    try {
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);
