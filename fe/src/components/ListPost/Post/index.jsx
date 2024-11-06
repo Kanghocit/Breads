@@ -155,23 +155,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
             }}
           >
             <PostContent post={post} content={post?.content} />
-            {(() => {
-              let isFirstLinkDisplayed = false;
-              return post.content
-                ?.split(/(https?:\/\/[^\s]+|@[\w.]+)/g)
-                .map((part, index) => {
-                  if (part.match(/https?:\/\/[^\s]+/)) {
-                    if (!isFirstLinkDisplayed) {
-                      isFirstLinkDisplayed = true;
-                      return (
-                        <span key={index}>
-                          <CustomLinkPreview url={part} />
-                        </span>
-                      );
-                    }
-                  }
-                });
-            })()}
+            {post?.linksInfo?.length > 0 && (
+              <CustomLinkPreview
+                link={post?.linksInfo[post?.linksInfo?.length - 1]}
+              />
+            )}
           </Text>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text

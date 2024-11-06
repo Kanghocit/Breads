@@ -1,4 +1,5 @@
 import { Container, Flex, Image, Text } from "@chakra-ui/react";
+import { formatItemDate } from "../../../../../../../util";
 import { FILE_TYPES } from "../../../MessageBar/UploadDisplay";
 
 const FileMsg = ({ file, inMsgTab = false }) => {
@@ -40,6 +41,7 @@ const FileMsg = ({ file, inMsgTab = false }) => {
   const fileDisplay = () => {
     return (
       <Container
+        position={"relative"}
         border={"1px solid gray"}
         borderRadius={3}
         padding={3}
@@ -65,6 +67,16 @@ const FileMsg = ({ file, inMsgTab = false }) => {
             {file.name}
           </Text>
         </Flex>
+        {inMsgTab && (
+          <Text
+            position={"absolute"}
+            bottom={"8px"}
+            right={"12px"}
+            fontSize={"11px"}
+          >
+            {formatItemDate(file?.createdAt)}
+          </Text>
+        )}
       </Container>
     );
   };

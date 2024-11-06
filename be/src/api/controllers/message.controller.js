@@ -173,3 +173,20 @@ export const getConversationLinks = async (req, res) => {
     res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
+
+export const searchMsg = async (req, res) => {
+  try {
+    const { value, conversationId } = req.body;
+    if (!value || !conversationId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const msgsFind = await Message.find({
+      conversationId: ObjectId(conversationId),
+      content: { $regex: value, $options: "i" },
+    });
+    res.status(HTTPStatus.OK).json(msgsFind);
+  } catch (err) {
+    console.log("getConversationLinks: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};

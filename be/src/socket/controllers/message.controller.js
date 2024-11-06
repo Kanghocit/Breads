@@ -305,6 +305,9 @@ export default class MessageController {
         })
         .populate({
           path: "file",
+        })
+        .populate({
+          path: "links",
         });
       cb({ status: "success", data: msgs });
     } catch (error) {
