@@ -41,7 +41,12 @@ const Message = ({ msg }) => {
         width={"fit-content"}
       >
         {!ownMessage && (
-          <Avatar src={participant?.avatar} w={"32px"} h={"32px"} />
+          <Avatar
+            src={participant?.avatar}
+            w={"32px"}
+            h={"32px"}
+            mr={ownMessage ? 0 : 2}
+          />
         )}
         {content?.trim() && (
           <Text
@@ -49,7 +54,6 @@ const Message = ({ msg }) => {
             bg={ownMessage ? "blue.400" : "gray.400"}
             py={ownMessage ? 2 : 1}
             px={2}
-            ml={ownMessage ? 0 : 1}
             borderRadius={"md"}
             color={ownMessage ? "white" : "black"}
           >

@@ -10,6 +10,7 @@ import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
 import Message from "./Message";
 import MessagesSkeleton from "./Message/skeleton";
+import InfiniteScroll from "../../../../InfiniteScroll";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -23,10 +24,11 @@ const ConversationBody = ({ openDetailTab }) => {
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
   const conversationScreenRef = useRef(null);
   const init = useRef(true);
+  const [firstLoad, setFirstLoad] = useState(false);
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
-      handleGetMsgs();
+      handleGetMsgs({ page: 1 });
     }
   }, [selectedConversation?._id, userInfo]);
 
@@ -58,14 +60,10 @@ const ConversationBody = ({ openDetailTab }) => {
   }, []);
 
   useEffect(() => {
-    if (
-      (init.current && Object.keys(messages)?.length > 0) ||
-      (!!lastMsg && lastMsg?.sender === userInfo?._id)
-    ) {
+    if ((firstLoad && Object.keys(messages)?.length > 0) || !!lastMsg) {
       scrollToBottom();
-      init.current = false;
     }
-  }, [messages]);
+  }, [lastMsg?._id, firstLoad]);
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {
@@ -76,22 +74,30 @@ const ConversationBody = ({ openDetailTab }) => {
     }
   };
 
-  const handleGetMsgs = async () => {
+  const handleGetMsgs = async ({ page }) => {
     const socket = Socket.getInstant();
     socket.emit(
       Route.MESSAGE + MESSAGE_PATH.GET_MESSAGES,
       {
         userId: userInfo._id,
         conversationId: selectedConversation?._id,
+        page: page,
+        limit: 30,
       },
       (res) => {
+        const isNew = page === 1;
         const { data } = res;
         dispatch(
           getMsgs({
-            isNew: true,
+            isNew: isNew ? true : false,
             msgs: data,
           })
         );
+        if (isNew) {
+          setTimeout(() => {
+            setFirstLoad(true);
+          }, 500);
+        }
       }
     );
   };
@@ -116,9 +122,12 @@ const ConversationBody = ({ openDetailTab }) => {
           py={2}
           px={3}
         >
-          {false && <MessagesSkeleton />}
-          {Object.keys(messages)?.length !== 0 &&
-            Object.keys(messages).map((date) => {
+          <InfiniteScroll
+            queryFc={(page) => {
+              handleGetMsgs({ page });
+            }}
+            data={Object.keys(messages)}
+            cpnFc={(date) => {
               const msgs = messages[date];
               const brStyle = {
                 height: "2px",
@@ -139,7 +148,11 @@ const ConversationBody = ({ openDetailTab }) => {
                   ))}
                 </Fragment>
               );
-            })}
+            }}
+            condition={!!userInfo?._id && selectedConversation?._id}
+            reverseScroll={true}
+            elementId={"conversation-body"}
+          />
         </Flex>
       </div>
       {noticeNewMsgBox && (

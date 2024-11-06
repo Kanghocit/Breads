@@ -88,7 +88,22 @@ const msgSlice = createSlice({
       if (isNew) {
         state.messages = msgs;
       } else {
-        state.messages = [...msgs, state.messages];
+        let currentMsgState = JSON.parse(JSON.stringify(state.messages));
+        const listDate = Object.keys(msgs);
+        for (let i = listDate.length - 1; i >= 0; i--) {
+          let date = listDate[i];
+          if (date in currentMsgState) {
+            currentMsgState[date] = [...msgs[date], ...currentMsgState[date]];
+          } else {
+            const convertToEntries = Object.entries(currentMsgState);
+            convertToEntries.unshift([date, msgs[date]]);
+            currentMsgState = {};
+            convertToEntries.forEach(([key, value]) => {
+              currentMsgState[key] = value;
+            });
+          }
+        }
+        state.messages = currentMsgState;
       }
     });
     builder.addCase(getConversationById.fulfilled, (state, action) => {

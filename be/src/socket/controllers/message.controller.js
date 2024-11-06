@@ -282,7 +282,8 @@ export default class MessageController {
     }
   }
   static async getMessages(payload, cb) {
-    const { userId, conversationId } = payload;
+    const { userId, conversationId, page, limit } = payload;
+    const skip = (page - 1) * limit;
     try {
       if (!userId) {
         cb({ status: "error", data: [] });
@@ -296,20 +297,23 @@ export default class MessageController {
           msgIds: 1,
         }
       );
-      const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
+      const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
       const msgs = await Message.find({
         _id: { $in: msgIds },
       })
         .sort({
-          createdAt: 1,
+          createdAt: -1,
         })
+        .skip(skip)
+        .limit(limit)
         .populate({
           path: "file",
         })
         .populate({
           path: "links",
         });
-      cb({ status: "success", data: msgs });
+      const result = msgs?.sort((a, b) => -1);
+      cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
     }
