@@ -6,6 +6,9 @@ import Post from "./models/post.model.js";
 import SurveyOption from "./models/surveyOption.model.js";
 import User from "./models/user.model.js";
 import { getImgUnsplash, randomAvatar } from "./utils/index.js";
+import { ObjectId } from "../util/index.js";
+import Conversation from "./models/conversation.model.js";
+import Message from "./models/message.model.js";
 
 const getListFakeUserId = async () => {
   try {
@@ -20,10 +23,15 @@ const getListFakeUserId = async () => {
   }
 };
 
-const randomUserId = (fakeUserIds) => {
-  const randomUserIndex = Math.floor(Math.random() * fakeUserIds.length);
-  const randomUserId = fakeUserIds[randomUserIndex];
-  return randomUserId;
+const randomValueInArr = (arr) => {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  const randomValue = arr[randomIndex];
+  return randomValue;
+};
+
+const acceptValueByPercentage = (percentage) => {
+  const randomPercent = Math.random();
+  return randomPercent <= percentage;
 };
 
 export const crawlData = async () => {
@@ -66,7 +74,7 @@ const crawlPostsWithGif = async () => {
           type: Constants.MEDIA_TYPE.GIF,
         },
       ];
-      const userId = randomUserId(fakeUserIds);
+      const userId = randomValueInArr(fakeUserIds);
       const post = {
         authorId: userId,
         content: content,
@@ -156,7 +164,7 @@ const crawlPostsWithImg = async () => {
             type: Constants.MEDIA_TYPE.IMAGE,
           };
         });
-        const userId = randomUserId(fakeUserIds);
+        const userId = randomValueInArr(fakeUserIds);
         const post = {
           content: title,
           media: media,
@@ -211,7 +219,7 @@ const crawlPostsWithSurvey = async () => {
         const index = Math.floor(Math.random() * sortValues.length);
         return sortValues[index];
       });
-      const userId = randomUserId(fakeUserIds);
+      const userId = randomValueInArr(fakeUserIds);
       const options = await SurveyOption.insertMany(listOption, {
         ordered: false,
       });
@@ -266,5 +274,100 @@ export const crawlUser = async () => {
     console.log("crawl success");
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const genConversations = async (userId, numberConversations = 5) => {
+  try {
+    if (!userId) {
+      throw new Error("Empty userId");
+    }
+    const userInfo = await User.findOne({
+      _id: ObjectId(userId),
+    });
+    if (!userInfo) {
+      throw new Error("Invalid user");
+    }
+    const othersUser = await User.find({
+      _id: { $ne: userId },
+    }).limit(numberConversations);
+    console.log(othersUser);
+  } catch (err) {
+    console.log("genConversation: ", err);
+    throw new Error(err);
+  }
+};
+
+export const genMsgsInConversation = async (conversationId, numberMsg = 50) => {
+  try {
+    const conversationInfo = await Conversation.findOne({
+      _id: ObjectId(conversationId),
+    });
+    if (!conversationInfo) {
+      throw new Error("Cannot find conversation");
+    }
+    const participants = conversationInfo?.participants;
+    let fake_conversation = fs.readFileSync("conversation_sample.json", "utf8");
+    fake_conversation = JSON.parse(fake_conversation);
+    const listMsg = [];
+    const listId = [];
+    const startIndex = Math.floor(Math.random() * numberMsg);
+    const endIndex = startIndex + numberMsg;
+    fake_conversation.forEach((msg, index) => {
+      if (index >= startIndex && index <= endIndex) {
+        let _id = ObjectId();
+        const currentDate = new Date().getTime();
+        const numberOfDayBefore = 9 - parseInt(index.toString()[0]);
+        const msgDate = new Date(
+          currentDate - numberOfDayBefore * 24 * 60 * 60 * 1000
+        );
+        const userName = Object.keys(msg)[0];
+        const content = Object.values(msg)[0];
+        const isAddGif = acceptValueByPercentage(0.2);
+        let msgInfo = new Message({
+          _id: _id,
+          sender: participants[userName === "A" ? 0 : 1],
+          conversationId: conversationId,
+          content: content,
+          createdAt: msgDate,
+        });
+        listMsg.push(msgInfo);
+        listId.push(_id);
+        if (isAddGif) {
+          const media = [
+            {
+              url: randomValueInArr(gif),
+              type: Constants.MEDIA_TYPE.GIF,
+            },
+          ];
+          _id = ObjectId();
+          const mediaMsg = new Message({
+            _id: _id,
+            sender: randomValueInArr(participants),
+            conversationId: conversationId,
+            media: media,
+            createdAt: msgDate,
+          });
+          listMsg.push(mediaMsg);
+          listId.push(_id);
+        }
+      }
+    });
+    await Conversation.updateOne(
+      {
+        _id: ObjectId(conversationId),
+      },
+      {
+        $push: {
+          msgIds: listId,
+        },
+        lastMsgId: listId[listId.length - 1],
+      }
+    );
+    await Message.insertMany(listMsg, { ordered: false });
+    console.log("OK");
+  } catch (err) {
+    console.log("genMsgsInConversation: ", err);
+    throw new Error(err);
   }
 };
