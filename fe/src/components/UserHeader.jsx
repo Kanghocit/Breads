@@ -46,7 +46,7 @@ const TABS = {
 };
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
-  console.log("user", user);
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
