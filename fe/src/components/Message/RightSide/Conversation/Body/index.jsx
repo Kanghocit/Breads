@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
-import { addNewMsg } from "../../../../../store/MessageSlice";
+import {
+  addNewMsg,
+  updateCurrentPageMsg,
+} from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
 import Message from "./Message";
@@ -16,19 +19,25 @@ const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { selectedConversation, messages } = useSelector(
+  const { selectedConversation, messages, currentPageMsg } = useSelector(
     (state) => state.message
   );
   const lastMsg = selectedConversation?.lastMsg;
   const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
   const conversationScreenRef = useRef(null);
-  const init = useRef(true);
-  const [firstLoad, setFirstLoad] = useState(false);
+  const layerRef = useRef(null);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
       handleGetMsgs({ page: 1 });
+      if (layerRef?.current && conversationScreenRef?.current) {
+        layerRef.current.style.width =
+          conversationScreenRef.current.clientWidth - 4 + "px";
+        layerRef.current.style.height =
+          conversationScreenRef.current.clientHeight + "px";
+      }
     }
   }, [selectedConversation?._id, userInfo]);
 
@@ -67,10 +76,17 @@ const ConversationBody = ({ openDetailTab }) => {
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {
+      const listMsgEle = document.getElementById("list-msg");
       conversationScreenRef.current.scrollTo({
-        top: conversationScreenRef?.current?.scrollHeight,
+        top: listMsgEle.scrollHeight,
         behavior: "smooth",
       });
+      setTimeout(() => {
+        layerRef.current.style.opacity = 0;
+        layerRef.current.style.visibility = "hidden";
+        layerRef.current.style.transition =
+          "opacity 0.3s ease-out, visibility 0.2s linear";
+      }, 1500);
     }
   };
 
@@ -87,15 +103,16 @@ const ConversationBody = ({ openDetailTab }) => {
       (res) => {
         const isNew = page === 1;
         const { data } = res;
-        dispatch(
-          getMsgs({
-            isNew: isNew ? true : false,
-            msgs: data,
-          })
-        );
-        if (isNew) {
+        if (data.length) {
+          dispatch(
+            getMsgs({
+              isNew: isNew ? true : false,
+              msgs: data,
+            })
+          );
           setTimeout(() => {
-            setFirstLoad(true);
+            setFirstLoad(false);
+            dispatch(updateCurrentPageMsg(page));
           }, 500);
         }
       }
@@ -114,17 +131,26 @@ const ConversationBody = ({ openDetailTab }) => {
           position: "relative",
         }}
       >
+        <div
+          ref={layerRef}
+          style={{
+            position: "fixed",
+            backgroundColor: "#181818",
+            zIndex: 5000,
+          }}
+        ></div>
         <Flex
           flexDir={"column"}
-          gap={4}
+          gap={2}
           my={2}
           height={"fit-content"}
           py={2}
           px={3}
+          id="list-msg"
         >
           <InfiniteScroll
             queryFc={(page) => {
-              handleGetMsgs({ page });
+              handleGetMsgs({ page: page });
             }}
             data={Object.keys(messages)}
             cpnFc={(date) => {
@@ -144,7 +170,7 @@ const ConversationBody = ({ openDetailTab }) => {
                     <div style={brStyle} />
                   </Flex>
                   {msgs.map((msg) => (
-                    <Message key={msg?._id} msg={msg} />
+                    <Message msg={msg} />
                   ))}
                 </Fragment>
               );
@@ -152,6 +178,8 @@ const ConversationBody = ({ openDetailTab }) => {
             condition={!!userInfo?._id && selectedConversation?._id}
             reverseScroll={true}
             elementId={"conversation-body"}
+            prefixId="msg"
+            updatePageValue={currentPageMsg}
           />
         </Flex>
       </div>
@@ -165,6 +193,7 @@ const ConversationBody = ({ openDetailTab }) => {
             setNoticeNewMsgBox(false);
             setScrollText("Move to current");
           }}
+          zIndex={3000}
         >
           <Flex alignItems={"center"} gap={2}>
             {scrollText}

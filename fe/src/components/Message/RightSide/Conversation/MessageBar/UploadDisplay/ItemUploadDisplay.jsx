@@ -2,12 +2,11 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
 const ItemUploadDisplay = ({ item, imgSrc, onClick }) => {
-  console.log("imgSrc: ", imgSrc);
-
   return (
     <Flex
       key={item?.name}
       height={"100%"}
+      minWidth={"72px"}
       width={"fit-content"}
       padding={"6px"}
       border={"1px solid gray"}

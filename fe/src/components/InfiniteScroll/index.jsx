@@ -6,7 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateHasMoreData } from "../../store/UtilSlice";
 
 const InfiniteScroll = ({
   queryFc,
@@ -19,10 +20,15 @@ const InfiniteScroll = ({
   preloadIndex = 5,
   reverseScroll = false,
   elementId = null,
+  prefixId = "",
+  updatePageValue = null,
 }) => {
+  const dispatch = useDispatch();
   const hasMoreData = useSelector((state) => state.util.hasMoreData);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentScrollY, setCurrentScrollY] = useState(null);
+  const [updatePageWithoutLoad, setUpdatePageWithoutLoad] = useState(false);
   const observer = useRef();
 
   const lastUserElementRef = useCallback(
@@ -41,18 +47,18 @@ const InfiniteScroll = ({
 
   useEffect(
     () => {
-      if (condition) {
+      if (condition && !updatePageWithoutLoad) {
         queryFc && queryFc(page);
       }
       setIsLoading(false);
+      setUpdatePageWithoutLoad(false);
       if (reverseScroll) {
         const containerEle = document.getElementById(elementId);
         if (containerEle) {
-          let needLoadMore = true;
           const listenScroll = () => {
             if (containerEle.scrollTop === 0) {
               setPage((prev) => prev + 1);
-              needLoadMore = false;
+              setCurrentScrollY(containerEle.scrollHeight);
             }
           };
           containerEle.addEventListener("scroll", listenScroll);
@@ -71,18 +77,36 @@ const InfiniteScroll = ({
         if (page !== 1) {
           setPage(1);
           setIsLoading(true);
+          dispatch(updateHasMoreData(true));
         }
       }
     },
     reloadPageDeps ? reloadPageDeps : []
   );
 
+  useEffect(() => {
+    if (reverseScroll && currentScrollY) {
+      const containerEle = document.getElementById(elementId);
+      containerEle.scrollTo({
+        top: containerEle.scrollHeight - currentScrollY,
+      });
+      setCurrentScrollY(null);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (!!updatePageValue && updatePageValue !== page) {
+      setPage(updatePageValue);
+      setUpdatePageWithoutLoad(true);
+    }
+  }, [updatePageValue]);
+
   return (
     <>
       {isLoading ? (
         <>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-            <div key={`skeleton-loading-${num}`}>{skeletonCpn}</div>
+            <div>{skeletonCpn}</div>
           ))}
         </>
       ) : (
@@ -94,26 +118,22 @@ const InfiniteScroll = ({
                 : index === data.length - 1) &&
               !reverseScroll
             ) {
-              return (
-                <div ref={lastUserElementRef} key={ele?._id + index}>
-                  {cpnFc(ele)}
-                </div>
-              );
+              return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;
             } else if (index === data.length - 1) {
               return (
-                <Fragment key={ele?._id + index}>
+                <Fragment>
                   {cpnFc(ele)}
                   {hasMoreData && !reverseScroll && (
                     <>
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <div key={`skeleton-${num}`}>{skeletonCpn}</div>
+                        <div>{skeletonCpn}</div>
                       ))}
                     </>
                   )}
                 </Fragment>
               );
             } else {
-              return <Fragment key={ele?._id + index}>{cpnFc(ele)}</Fragment>;
+              return <Fragment>{cpnFc(ele)}</Fragment>;
             }
           })}
         </>

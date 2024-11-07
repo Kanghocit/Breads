@@ -1,13 +1,17 @@
 import { Container, Flex, Input } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { POST } from "../../../../../config/API";
 import useDebounce from "../../../../../hooks/useDebounce";
+import { updateHasMoreData } from "../../../../../store/UtilSlice";
+import InfiniteScroll from "../../../../InfiniteScroll";
 import ConversationTabHeader from "../tabHeader";
-import MessagesSearch from "./listMsg";
+import MessageSearchItem from "./msgSearch";
+import { EmptyContentSvg } from "../../../../../assests/icons";
 
 const ConversationSearchTab = ({ setItemSelected }) => {
+  const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
@@ -17,20 +21,30 @@ const ConversationSearchTab = ({ setItemSelected }) => {
 
   useEffect(() => {
     if (debounceValue.trim()) {
-      handleSearch();
+      handleSearch({ page: 1 });
     }
   }, [debounceValue]);
 
-  const handleSearch = async () => {
+  const handleSearch = async ({ page }) => {
     try {
       const data = await POST({
         path: Route.MESSAGE + MESSAGE_PATH.SEARCH,
         payload: {
           conversationId: selectedConversation?._id,
           value: debounceValue,
+          page: page,
+          limit: 15,
         },
       });
-      setData(data);
+      if (page === 1) {
+        setData(data);
+      } else {
+        if (data?.length) {
+          setData((prev) => [...prev, ...data]);
+        } else {
+          dispatch(updateHasMoreData(false));
+        }
+      }
     } catch (err) {
       console.error("handleSearch: ", err);
       setData([]);
@@ -46,11 +60,22 @@ const ConversationSearchTab = ({ setItemSelected }) => {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        <MessagesSearch msgs={data} />
-        {/* <Button size={"sm"}>
-          {" "}
-          <SearchIcon />{" "}
-        </Button> */}
+        {data?.length > 0 ? (
+          <Flex flexDir={"column"} gap={2} width={"100%"} overflowY={"hidden"}>
+            <InfiniteScroll
+              queryFc={(page) => {
+                handleSearch({ page: page });
+              }}
+              data={data}
+              cpnFc={(msg) => <MessageSearchItem msg={msg} />}
+              condition={debounceValue.trim()}
+              reloadPageDeps={[debounceValue]}
+              prefixId="search_msg"
+            />
+          </Flex>
+        ) : (
+          <EmptyContentSvg />
+        )}
       </Flex>
     </Container>
   );

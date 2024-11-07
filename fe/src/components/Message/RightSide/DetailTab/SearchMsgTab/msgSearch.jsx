@@ -1,18 +1,67 @@
 import { Avatar, Container, Flex, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import Socket from "../../../../../socket";
+import { updateCurrentPageMsg } from "../../../../../store/MessageSlice";
+import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatItemDate } from "../../../../../util";
 
 const MessageSearchItem = ({ msg }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const selectedConversation = useSelector(
-    (state) => state.message.selectedConversation
+  const { selectedConversation, currentPageMsg, loadingMsgs } = useSelector(
+    (state) => state.message
   );
   const participant = selectedConversation?.participant;
   const isOwnMsg = msg?.sender === userInfo?._id;
   const userData = isOwnMsg ? userInfo : participant;
   const currentYear = new Date().getFullYear();
   const msgYear = new Date(msg?.createdAt).getFullYear();
+  const [startScroll, setStartScroll] = useState(false);
+  const msgEle = document.getElementById(`msg_${msg?._id}`);
+
+  useEffect(() => {
+    if (startScroll && msgEle && !loadingMsgs) {
+      msgEle.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      setStartScroll(false);
+    }
+  }, [loadingMsgs, startScroll]);
+
+  const clickSeeDetailMsg = () => {
+    const socket = Socket.getInstant();
+    socket.emit(
+      Route.MESSAGE + MESSAGE_PATH.GET_MSGS_BY_SEARCH,
+      {
+        userId: userInfo._id,
+        conversationId: selectedConversation?._id,
+        limit: 30,
+        searchMsgId: msg._id,
+        currentPage: currentPageMsg,
+      },
+      ({ data, page }) => {
+        if (data?.length) {
+          dispatch(
+            getMsgs({
+              msgs: data,
+              isNew: false,
+            })
+          );
+          dispatch(updateCurrentPageMsg(page));
+        }
+      }
+    );
+    if (msgEle) {
+      setStartScroll(true);
+    } else {
+      setTimeout(() => {
+        setStartScroll(true);
+      }, 1500);
+    }
+  };
 
   return (
     <Container
@@ -27,6 +76,7 @@ const MessageSearchItem = ({ msg }) => {
         bg: "gray",
       }}
       overflowX={"hidden"}
+      onClick={() => clickSeeDetailMsg()}
     >
       <Flex gap={2} alignItems={"center"}>
         <Avatar src={userData?.avatar} size={"sm"} />
