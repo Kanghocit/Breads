@@ -24,12 +24,16 @@ export const initialMsgState = {
   loadingUploadMsg: false,
   loadingMsgs: false,
   isLoading: false,
+  currentPageMsg: 1,
 };
 
 const msgSlice = createSlice({
   name: "message",
   initialState: initialMsgState,
   reducers: {
+    updateCurrentPageMsg: (state, action) => {
+      state.currentPageMsg = action.payload;
+    },
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;
     },
@@ -83,6 +87,9 @@ const msgSlice = createSlice({
       }
       state.loadingConversations = false;
     });
+    builder.addCase(getMsgs.pending, (state) => {
+      state.loadingMsgs = true;
+    });
     builder.addCase(getMsgs.fulfilled, (state, action) => {
       const { msgs, isNew } = action.payload;
       if (isNew) {
@@ -104,6 +111,7 @@ const msgSlice = createSlice({
           }
         }
         state.messages = currentMsgState;
+        state.loadingMsgs = false;
       }
     });
     builder.addCase(getConversationById.fulfilled, (state, action) => {
@@ -118,5 +126,6 @@ export const {
   selectConversation,
   addNewMsg,
   updateLoadingUpload,
+  updateCurrentPageMsg,
 } = msgSlice.actions;
 export default msgSlice.reducer;

@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EmptyContentSvg } from "../../assests/icons";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";

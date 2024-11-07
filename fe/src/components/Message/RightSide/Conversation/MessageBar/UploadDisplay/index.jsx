@@ -80,7 +80,10 @@ const UploadDisplay = () => {
       position={"absolute"}
       left={0}
       bottom={"calc(100% - 2px)"}
-      width={"100%"}
+      minWidth={"100%"}
+      width={"fit-content"}
+      maxWidth={"fit-content"}
+      overflowX={"auto"}
       height={"100px"}
       px={2}
       py={3}
@@ -89,6 +92,7 @@ const UploadDisplay = () => {
       justifyContent={"start"}
       alignItems={"center"}
       bg={useColorModeValue("gray.200", "#181818")}
+      zIndex={200}
     >
       <>
         {media?.map((item, index) => (

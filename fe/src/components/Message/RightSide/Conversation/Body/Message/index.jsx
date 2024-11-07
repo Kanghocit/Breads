@@ -36,6 +36,7 @@ const Message = ({ msg }) => {
 
     return (
       <Flex
+        id={`msg_${msg?._id}`}
         flexDir={ownMessage ? "column" : ""}
         alignItems={ownMessage ? "flex-end" : "flex-start"}
         width={"fit-content"}

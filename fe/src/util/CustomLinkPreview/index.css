@@ -1,5 +1,5 @@
 .preview-link-container {
-  z-index: 2000;
+  z-index: 1;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 10px;

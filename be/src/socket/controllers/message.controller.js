@@ -297,9 +297,12 @@ export default class MessageController {
           msgIds: 1,
         }
       );
-      const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
+      if (!conversation) {
+        cb({ status: "error", data: [] });
+        return;
+      }
       const msgs = await Message.find({
-        _id: { $in: msgIds },
+        conversationId: ObjectId(conversationId),
       })
         .sort({
           createdAt: -1,
@@ -316,6 +319,50 @@ export default class MessageController {
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
+    }
+  }
+  static async getMsgsToSearchMsg(payload, cb) {
+    const { userId, conversationId, limit, searchMsgId, currentPage } = payload;
+    if (!userId) {
+      cb({ status: "error", data: [] });
+      return;
+    }
+    const conversation = await Conversation.findOne(
+      {
+        _id: ObjectId(conversationId),
+      },
+      {
+        msgIds: 1,
+      }
+    );
+    if (!conversation) {
+      cb({ status: "error", data: [] });
+      return;
+    }
+    const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
+    const searchMsgIndex = msgIds?.findIndex((id) => id === searchMsgId);
+    const page = Math.ceil((msgIds.length - searchMsgIndex) / limit);
+    if (page <= currentPage) {
+      cb({ status: "success", data: [] });
+    } else {
+      const skip = currentPage * limit;
+      const newLimit = (page - currentPage) * limit;
+      const msgs = await Message.find({
+        _id: { $in: msgIds },
+      })
+        .sort({
+          createdAt: -1,
+        })
+        .skip(skip)
+        .limit(newLimit)
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        });
+      const result = msgs?.sort((a, b) => -1);
+      cb({ status: "success", data: result, page: page });
     }
   }
 }
