@@ -23,6 +23,7 @@ const InfiniteScroll = ({
   const hasMoreData = useSelector((state) => state.util.hasMoreData);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentScrollY, setCurrentScrollY] = useState(null);
   const observer = useRef();
 
   const lastUserElementRef = useCallback(
@@ -48,11 +49,11 @@ const InfiniteScroll = ({
       if (reverseScroll) {
         const containerEle = document.getElementById(elementId);
         if (containerEle) {
-          let needLoadMore = true;
           const listenScroll = () => {
             if (containerEle.scrollTop === 0) {
+              console.log("stop listen");
               setPage((prev) => prev + 1);
-              needLoadMore = false;
+              setCurrentScrollY(containerEle.scrollHeight);
             }
           };
           containerEle.addEventListener("scroll", listenScroll);
@@ -77,6 +78,16 @@ const InfiniteScroll = ({
     reloadPageDeps ? reloadPageDeps : []
   );
 
+  useEffect(() => {
+    if (reverseScroll && currentScrollY) {
+      const containerEle = document.getElementById(elementId);
+      containerEle.scrollTo({
+        top: containerEle.scrollHeight - currentScrollY,
+      });
+      setCurrentScrollY(null);
+    }
+  }, [data]);
+
   return (
     <>
       {isLoading ? (
@@ -94,14 +105,10 @@ const InfiniteScroll = ({
                 : index === data.length - 1) &&
               !reverseScroll
             ) {
-              return (
-                <div ref={lastUserElementRef} key={ele?._id + index}>
-                  {cpnFc(ele)}
-                </div>
-              );
+              return <div ref={lastUserElementRef}>{cpnFc(ele)}</div>;
             } else if (index === data.length - 1) {
               return (
-                <Fragment key={ele?._id + index}>
+                <Fragment>
                   {cpnFc(ele)}
                   {hasMoreData && !reverseScroll && (
                     <>

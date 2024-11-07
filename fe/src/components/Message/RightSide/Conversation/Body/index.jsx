@@ -23,12 +23,18 @@ const ConversationBody = ({ openDetailTab }) => {
   const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
   const conversationScreenRef = useRef(null);
-  const init = useRef(true);
-  const [firstLoad, setFirstLoad] = useState(false);
+  const layerRef = useRef(null);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
       handleGetMsgs({ page: 1 });
+      if (layerRef?.current && conversationScreenRef?.current) {
+        layerRef.current.style.width =
+          conversationScreenRef.current.clientWidth + "px";
+        layerRef.current.style.height =
+          conversationScreenRef.current.clientHeight + "px";
+      }
     }
   }, [selectedConversation?._id, userInfo]);
 
@@ -67,10 +73,16 @@ const ConversationBody = ({ openDetailTab }) => {
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {
+      const listMsgEle = document.getElementById("list-msg");
       conversationScreenRef.current.scrollTo({
-        top: conversationScreenRef?.current?.scrollHeight,
+        top: listMsgEle.scrollHeight,
         behavior: "smooth",
       });
+      setTimeout(() => {
+        layerRef.current.style.opacity = 0;
+        layerRef.current.style.visibility = "hidden";
+        layerRef.current.style.transition = "opacity 0.3s ease-out";
+      }, 1500);
     }
   };
 
@@ -93,11 +105,9 @@ const ConversationBody = ({ openDetailTab }) => {
             msgs: data,
           })
         );
-        if (isNew) {
-          setTimeout(() => {
-            setFirstLoad(true);
-          }, 500);
-        }
+        setTimeout(() => {
+          setFirstLoad(false);
+        }, 500);
       }
     );
   };
@@ -114,6 +124,14 @@ const ConversationBody = ({ openDetailTab }) => {
           position: "relative",
         }}
       >
+        <div
+          ref={layerRef}
+          style={{
+            position: "fixed",
+            backgroundColor: "#0a0a0a",
+            zIndex: 5000,
+          }}
+        ></div>
         <Flex
           flexDir={"column"}
           gap={4}
@@ -121,10 +139,11 @@ const ConversationBody = ({ openDetailTab }) => {
           height={"fit-content"}
           py={2}
           px={3}
+          id="list-msg"
         >
           <InfiniteScroll
             queryFc={(page) => {
-              handleGetMsgs({ page });
+              handleGetMsgs({ page: page });
             }}
             data={Object.keys(messages)}
             cpnFc={(date) => {
@@ -143,7 +162,7 @@ const ConversationBody = ({ openDetailTab }) => {
                     </Text>
                     <div style={brStyle} />
                   </Flex>
-                  {msgs.map((msg) => (
+                  {msgs.map((msg, index) => (
                     <Message key={msg?._id} msg={msg} />
                   ))}
                 </Fragment>
