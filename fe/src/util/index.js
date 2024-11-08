@@ -436,3 +436,16 @@ export const FILE_TYPES = {
   text: "text",
 };
 
+export const generateObjectId = () => {
+  const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+  const randomValue = Array.from({ length: 5 }, () =>
+    Math.floor(Math.random() * 256)
+      .toString(16)
+      .padStart(2, "0")
+  ).join("");
+  const counter = Math.floor(Math.random() * 0xffffff)
+    .toString(16)
+    .padStart(6, "0");
+
+  return timestamp + randomValue + counter;
+};

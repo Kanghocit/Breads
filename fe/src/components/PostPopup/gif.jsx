@@ -59,7 +59,7 @@ const GifBox = ({ isOpen, onClose }) => {
             fontWeight={600}
             fontSize={"18px"}
           >
-            Choose a gif
+            Chọn file Gif
           </Text>
           <ModalCloseButton
             position={"absolute"}

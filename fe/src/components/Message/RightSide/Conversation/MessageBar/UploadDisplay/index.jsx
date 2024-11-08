@@ -125,7 +125,7 @@ const UploadDisplay = ({isPost = false}) => {
                 handleRemoveMedia(index);
               }}
               key={index}
-              // isPost={isPost}
+              isPost={isPost}
             />
           ))}
 

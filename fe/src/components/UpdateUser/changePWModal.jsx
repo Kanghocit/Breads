@@ -19,8 +19,10 @@ import { useSelector } from "react-redux";
 import { PUT } from "../../config/API";
 import useShowToast from "../../hooks/useShowToast";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
+import { useTranslation } from 'react-i18next';
 
 const ChangePWModal = ({ setPopup }) => {
+  const { t } = useTranslation();
   const showToast = useShowToast();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [passwordInfo, setPasswordInfo] = useState({
@@ -117,7 +119,7 @@ const ChangePWModal = ({ setPopup }) => {
           fontWeight={600}
           fontSize={"18px"}
         >
-          Change password
+          {t("updateProfile.changePassword")}
         </Text>
         <ModalCloseButton
           position={"absolute"}

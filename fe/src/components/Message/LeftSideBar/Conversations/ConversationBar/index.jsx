@@ -31,9 +31,6 @@ const ConversationBar = ({ conversation }) => {
       ? "Send media to you"
       : "";
 
-    if (!msgContent) {
-      return <></>;
-    }
     return (
       <>
         <span
@@ -53,6 +50,7 @@ const ConversationBar = ({ conversation }) => {
 
   return (
     <Flex
+      id={`conversation_${conversation?._id}`}
       gap={4}
       alignItems={"center"}
       p={2}

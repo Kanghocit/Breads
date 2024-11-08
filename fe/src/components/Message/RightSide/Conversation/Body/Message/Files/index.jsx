@@ -1,6 +1,7 @@
 import { Container, Flex, Image, Text } from "@chakra-ui/react";
 import { FILE_TYPES } from "../../../../../../../util";
-const FileMsg = ({ file }) => {
+
+const FileMsg = ({ file, inMsgTab = false }) => {
   const { word, excel, powerpoint, pdf, text } = FILE_TYPES;
   const fileType = file.contentType;
 
@@ -74,11 +75,26 @@ const FileMsg = ({ file }) => {
       case word:
       case excel:
       case powerpoint:
-        return <a href={linkType}>{fileDisplay()}</a>;
+        return (
+          <a
+            href={linkType}
+            style={{
+              width: inMsgTab ? "100%" : "",
+            }}
+          >
+            {fileDisplay()}
+          </a>
+        );
       case text:
       case pdf:
         return (
-          <a href={linkType} target="_blank">
+          <a
+            href={linkType}
+            target="_blank"
+            style={{
+              width: inMsgTab ? "100%" : "",
+            }}
+          >
             {fileDisplay()}
           </a>
         );

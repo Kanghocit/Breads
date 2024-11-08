@@ -111,7 +111,7 @@ function App() {
         {!!userId &&
           !seeMediaInfo.open &&
           location.pathname !== "/error" &&
-          location.pathname !== "/chat" && <CreatePostBtn />}
+          !location.pathname?.includes("chat") && <CreatePostBtn />}
       </Container>
 
       <Routes>

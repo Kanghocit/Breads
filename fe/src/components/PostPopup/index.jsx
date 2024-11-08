@@ -23,7 +23,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { replaceEmojis } from "../../util";
+import { generateObjectId, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
@@ -33,8 +33,10 @@ import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
+import { useTranslation } from "react-i18next";
 
 const PostPopup = () => {
+  const { t } = useTranslation();
   const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
   const textColor = useColorModeValue("ccl.dark", "ccl.light");
@@ -142,6 +144,7 @@ const PostPopup = () => {
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
         }
+        payload._id = generateObjectId();
         dispatch(createPost({ postPayload: payload, action: postAction }));
       }
     } catch (err) {
@@ -242,6 +245,12 @@ const PostPopup = () => {
                 {files && files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
+                {
+                  files && files?.length !== 0 && (
+                  console.log("đã chạy display upload")
+                  
+                  )
+                }
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
@@ -292,7 +301,7 @@ const PostPopup = () => {
               }}
               // isDisabled={content.length > MAX_CONTENT_LENGTH}
             >
-              {isEditing ? "Save" : "Post"}
+              {isEditing ? t("save") : t("post")}
             </Button>
           </ModalFooter>
         </ModalContent>

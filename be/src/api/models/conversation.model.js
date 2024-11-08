@@ -12,7 +12,10 @@ const conversationSchema = new mongoose.Schema(
         required: false,
       },
     ],
-    theme: String,
+    theme: {
+      type: String,
+      default: "default",
+    },
     emoji: {
       type: String,
       default: "like",

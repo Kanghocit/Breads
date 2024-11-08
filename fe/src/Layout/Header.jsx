@@ -7,159 +7,167 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
+import { useTranslation } from "react-i18next";
 
 export const HeaderHeight = 60;
 
 const Header = () => {
+  const { t } = useTranslation(); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentPage = useSelector((state) => state.util.currentPage);
   const userSelected = useSelector((state) => state.user.userSelected);
   const { colorMode } = useColorMode();
   const [openBox, setOpenBox] = useState(false);
-  const {
-    HOME,
-    FOR_YOU,
-    FOLLOWING,
-    LIKED,
-    SAVED,
-    ACTIVITY,
-    FOLLOWS,
-    REPLIES,
-    MENTIONS,
-    QUOTES,
-    REPOSTS,
-    SEARCH,
-    USER,
-    POST_DETAIL,
-    FRIEND,
-  } = PageConstant;
 
   const getBoxItems = () => {
     switch (currentPage) {
-      case HOME:
-        return ["For you", FOLLOWING, LIKED, SAVED];
-      case ACTIVITY:
-        return ["All", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS];
+      case PageConstant.HOME:
+        return [t("forYou"), t("following"), t("liked"), t("saved")];
+      case PageConstant.ACTIVITY:
+        return [
+          t("all"),
+          t("follows"),
+          t("replies"),
+          t("mentions"),
+          t("quotes"),
+          t("reposts"),
+        ];
+      default:
+        return [];
     }
   };
 
   const getHeaderContent = () => {
-    if ([HOME, ACTIVITY].includes(currentPage)) {
-      let pathname = window.location.pathname;
-      pathname = pathname.slice(1, pathname.length);
-      let result = "";
-      if (!pathname || pathname === FOR_YOU) {
-        result = "For you";
-      } else if (currentPage === HOME) {
-        result = pathname;
-      } else if (currentPage === ACTIVITY) {
-        result = pathname.replace(ACTIVITY + "/", "");
-      }
-      return result[0]?.toUpperCase() + result.slice(1, result.length);
-    } else if (currentPage === SEARCH) {
-      return "Search";
-    } else if (currentPage === USER) {
-      return "User profile";
-    } else if (currentPage === FRIEND) {
-      return userSelected?.username ?? "Friend";
-    } else if (currentPage === POST_DETAIL) {
-      return "Bread";
+    const headerContentMap = {
+      [PageConstant.HOME]: t("forYou"),
+      [PageConstant.ACTIVITY]: t("activity"),
+      [PageConstant.FOR_YOU]: t("forYou"),
+      [PageConstant.FOLLOWING]: t("following"),
+      [PageConstant.LIKED]: t("liked"),
+      [PageConstant.SAVED]: t("saved"),
+      [PageConstant.SEARCH]: t("search"),
+      [PageConstant.USER]: t("userProfile"),
+      [PageConstant.FRIEND]: userSelected?.username ?? t("friend"),
+      [PageConstant.POST_DETAIL]: t("bread"),
+    };
+
+    if (currentPage === PageConstant.HOME) {
+      return (
+        headerContentMap[PageConstant.HOME][0]?.toUpperCase() +
+        headerContentMap[PageConstant.HOME].slice(1)
+      );
+    } else if (currentPage === PageConstant.ACTIVITY) {
+      return (
+        headerContentMap[PageConstant.ACTIVITY][0]?.toUpperCase() +
+        headerContentMap[PageConstant.ACTIVITY].slice(1)
+      );
     }
+
+    return headerContentMap[currentPage] || t("forYou"); 
   };
 
   const handleNavigate = (item) => {
-    if (currentPage === ACTIVITY) {
-      navigate(ACTIVITY + "/" + item);
-      dispatch(changeDisplayPageData(item));
+    if (currentPage === PageConstant.ACTIVITY) {
+      const activityPageMap = {
+        [t("all")]: PageConstant.ACTIVITY, 
+        [t("follows")]: PageConstant.FOLLOWS,
+        [t("replies")]: PageConstant.REPLIES,
+        [t("mentions")]: PageConstant.MENTIONS,
+        [t("quotes")]: PageConstant.QUOTES,
+        [t("reposts")]: PageConstant.REPOSTS,
+      };
+      const targetPage = activityPageMap[item] || item;
+      navigate(PageConstant.ACTIVITY + "/" + targetPage);
+      dispatch(changeDisplayPageData(targetPage));
     } else {
-      if (item === "For you") {
-        navigate("/" + FOR_YOU);
-        dispatch(changeDisplayPageData(FOR_YOU));
-      } else {
-        navigate("/" + item);
-        dispatch(changeDisplayPageData(item));
-      }
+      const pageMap = {
+        [t("forYou")]: PageConstant.FOR_YOU,
+        [t("following")]: PageConstant.FOLLOWING,
+        [t("liked")]: PageConstant.LIKED,
+        [t("saved")]: PageConstant.SAVED,
+      };
+      const targetPage = pageMap[item] || item;
+      navigate("/" + targetPage);
+      dispatch(changeDisplayPageData(targetPage));
     }
   };
 
   return (
-    <>
+    <Flex
+      position={"fixed"}
+      left={0}
+      top={0}
+      width={"100vw"}
+      maxWidth={"100vw"}
+      height={`${HeaderHeight}px`}
+      zIndex={999}
+      justifyContent={"center"}
+      alignItems={"center"}
+      bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
+    >
       <Flex
-        position={"fixed"}
-        left={0}
-        top={0}
-        width={"100vw"}
-        maxWidth={"100vw"}
-        height={HeaderHeight + "px"}
-        zIndex={999}
+        width={containerBoxWidth}
+        maxWidth={containerBoxWidth}
+        height={"100%"}
         justifyContent={"center"}
         alignItems={"center"}
-        bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
+        gap={"12px"}
+        position={"relative"}
+        fontWeight={600}
+        fontSize={"17px"}
       >
-        <Flex
-          width={containerBoxWidth}
-          maxWidth={containerBoxWidth}
-          height={"100%"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          gap={"12px"}
-          position={"relative"}
-          fontWeight={600}
-          fontSize={"17px"}
-        >
-          {getHeaderContent()}
-          {[HOME, ACTIVITY].includes(currentPage) && (
-            <ClickOutsideComponent onClose={() => setOpenBox(false)}>
-              <ChevronDownIcon
-                width={"32px"}
-                height={"32px"}
-                padding={"4px"}
-                borderRadius={"50%"}
-                cursor={"pointer"}
-                transform={openBox ? "rotate(180deg)" : ""}
-                _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
-                onClick={() => setOpenBox(!openBox)}
-              />
-              {openBox && (
-                <Container
-                  position={"absolute"}
-                  top={"calc(100% - 12px)"}
-                  left={"50%"}
-                  width={"200px"}
-                  height={"fit-content"}
-                  borderRadius={"12px"}
-                  padding="8px 12px"
-                  overflow={"hidden"}
-                  bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
-                  boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
-                >
-                  {getBoxItems()?.map((item) => (
-                    <Text
-                      width={"100%"}
-                      key={item}
-                      padding="8px 12px"
-                      cursor={"pointer"}
-                      borderRadius={"8px"}
-                      _hover={{
-                        bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNavigate(item);
-                        setOpenBox(false);
-                      }}
-                    >
-                      {item[0].toUpperCase() + item.slice(1, item.length)}
-                    </Text>
-                  ))}
-                </Container>
-              )}
-            </ClickOutsideComponent>
-          )}
-        </Flex>
+        {getHeaderContent()}
+        {[PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
+          <ClickOutsideComponent onClose={() => setOpenBox(false)}>
+            <ChevronDownIcon
+              width={"32px"}
+              height={"32px"}
+              padding={"4px"}
+              borderRadius={"50%"}
+              cursor={"pointer"}
+              transform={openBox ? "rotate(180deg)" : ""}
+              _hover={{ bg: colorMode === "dark" ? "#171717" : "#f0f0f0" }}
+              onClick={() => setOpenBox(!openBox)}
+            />
+            {openBox && (
+              <Container
+                position={"absolute"}
+                top={"calc(100% - 12px)"}
+                left={"50%"}
+                width={"200px"}
+                height={"fit-content"}
+                borderRadius={"12px"}
+                padding="8px 12px"
+                overflow={"hidden"}
+                bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
+                boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
+              >
+                {getBoxItems()?.map((item) => (
+                  <Text
+                    width={"100%"}
+                    key={item}
+                    padding="8px 12px"
+                    cursor={"pointer"}
+                    borderRadius={"8px"}
+                    _hover={{
+                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNavigate(item);
+                      setOpenBox(false);
+                    }}
+                  >
+                    {item[0].toUpperCase() + item.slice(1)}
+                  </Text>
+                ))}
+              </Container>
+            )}
+          </ClickOutsideComponent>
+        )}
       </Flex>
-    </>
+    </Flex>
   );
 };
 
