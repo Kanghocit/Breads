@@ -176,14 +176,20 @@ export const getConversationLinks = async (req, res) => {
 
 export const searchMsg = async (req, res) => {
   try {
-    const { value, conversationId } = req.body;
+    const { value, conversationId, page, limit } = req.body;
     if (!value || !conversationId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
+    const skip = (page - 1) * limit;
     const msgsFind = await Message.find({
       conversationId: ObjectId(conversationId),
       content: { $regex: value, $options: "i" },
-    });
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .skip(skip)
+      .limit(limit);
     res.status(HTTPStatus.OK).json(msgsFind);
   } catch (err) {
     console.log("getConversationLinks: ", err);

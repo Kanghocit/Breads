@@ -24,12 +24,16 @@ export const initialMsgState = {
   loadingUploadMsg: false,
   loadingMsgs: false,
   isLoading: false,
+  currentPageMsg: 1,
 };
 
 const msgSlice = createSlice({
   name: "message",
   initialState: initialMsgState,
   reducers: {
+    updateCurrentPageMsg: (state, action) => {
+      state.currentPageMsg = action.payload;
+    },
     updateMsgInfo: (state, action) => {
       state.msgInfo = action.payload;
     },
@@ -83,12 +87,31 @@ const msgSlice = createSlice({
       }
       state.loadingConversations = false;
     });
+    builder.addCase(getMsgs.pending, (state) => {
+      state.loadingMsgs = true;
+    });
     builder.addCase(getMsgs.fulfilled, (state, action) => {
       const { msgs, isNew } = action.payload;
       if (isNew) {
         state.messages = msgs;
       } else {
-        state.messages = [...msgs, state.messages];
+        let currentMsgState = JSON.parse(JSON.stringify(state.messages));
+        const listDate = Object.keys(msgs);
+        for (let i = listDate.length - 1; i >= 0; i--) {
+          let date = listDate[i];
+          if (date in currentMsgState) {
+            currentMsgState[date] = [...msgs[date], ...currentMsgState[date]];
+          } else {
+            const convertToEntries = Object.entries(currentMsgState);
+            convertToEntries.unshift([date, msgs[date]]);
+            currentMsgState = {};
+            convertToEntries.forEach(([key, value]) => {
+              currentMsgState[key] = value;
+            });
+          }
+        }
+        state.messages = currentMsgState;
+        state.loadingMsgs = false;
       }
     });
     builder.addCase(getConversationById.fulfilled, (state, action) => {
@@ -103,5 +126,6 @@ export const {
   selectConversation,
   addNewMsg,
   updateLoadingUpload,
+  updateCurrentPageMsg,
 } = msgSlice.actions;
 export default msgSlice.reducer;

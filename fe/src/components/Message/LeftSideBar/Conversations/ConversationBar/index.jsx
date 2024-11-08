@@ -68,6 +68,8 @@ const ConversationBar = ({ conversation }) => {
       onClick={() => {
         if (_id && selectedConversation?._id !== _id) {
           dispatch(selectConversation(conversation));
+          const newPath = `/chat/${conversation?._id}`;
+          history.pushState(null, "", newPath);
         }
       }}
     >

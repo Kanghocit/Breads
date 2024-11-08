@@ -1,14 +1,13 @@
 // TextArea.jsx
 import { Container, useColorModeValue } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import UsersTagBox from "../../components/UsersTagBox";
 import CustomLinkPreview from "../CustomLinkPreview";
-import { useTranslation } from "react-i18next";
 import "./index.css";
 
 const getCaretCoordinates = (input) => {
-  
   const { selectionStart } = input;
   const tempDiv = document.createElement("div");
   const inputStyle = window.getComputedStyle(input);
@@ -126,7 +125,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         value={text}
         onChange={handleChange}
         rows="1"
-        placeholder={t('whatnew')}
+        placeholder={t("whatnew")}
         className="auto-expand-textarea"
       />
 
