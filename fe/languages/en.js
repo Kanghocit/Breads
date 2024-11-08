@@ -25,6 +25,7 @@ const enTranslations = {
   home: "Home",
   forYou: "For you",
   following: "Following",
+  followback: "Follow back",
   liked: "Liked",
   saved: "Saved",
   activity: "Activity",
@@ -59,6 +60,7 @@ const enTranslations = {
   whatnew: "What new....",
   save: "Save",
   create:"Create",
+  
 
   // thêm các từ khóa khác ở đây
 };
