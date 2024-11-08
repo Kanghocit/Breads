@@ -6,12 +6,14 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick, isPost = false }) => {
     <Flex
       key={item?.name}
       height={"100%"}
+      minWidth={"72px"}
       width={"fit-content"}
       padding={"6px"}
       border={"1px solid gray"}
       margin={0}
       flexDirection={"column"}
-      justifyContent={"space-between"}
+      justifyContent={item?.name ? "space-between" : "center"}
+      alignItems={"center"}
       position={"relative"}
     >
       <CloseIcon
@@ -33,19 +35,21 @@ const ItemUploadDisplay = ({ item, imgSrc, onClick, isPost = false }) => {
       />
       <Image
         src={imgSrc}
-        width={"100%"}
-        maxHeight={"calc(100% - 16px)"}
-        objectFit={"contain"}
+        width={"60px"}
+        maxHeight={item?.name ? "calc(100% - 16px)" : "100%"}
+        objectFit={"cover"}
       />
-      <Text
-        maxWidth={"50px"}
-        fontSize={"11px"}
-        textOverflow={"ellipsis"}
-        overflow={"hidden"}
-        whiteSpace={"nowrap"}
-      >
-        {item?.name}
-      </Text>
+      {item?.name && (
+        <Text
+          maxWidth={"50px"}
+          fontSize={"11px"}
+          textOverflow={"ellipsis"}
+          overflow={"hidden"}
+          whiteSpace={"nowrap"}
+        >
+          {item?.name}
+        </Text>
+      )}
     </Flex>
   ) : (
     <Flex

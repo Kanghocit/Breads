@@ -9,8 +9,10 @@ import { getConversations } from "../../../../store/MessageSlice/asyncThunk";
 import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
+import { useParams } from "react-router-dom";
 
 const Conversations = ({ searchValue }) => {
+  const { conversationId } = useParams();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -55,7 +57,7 @@ const Conversations = ({ searchValue }) => {
               isLoadNew: page === 1 ? true : false,
             })
           );
-          if (!selectedConversation) {
+          if (!selectedConversation && !conversationId) {
             dispatch(selectConversation(data[0]));
           }
         }

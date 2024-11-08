@@ -1,11 +1,13 @@
+import axios from "axios";
+import { uploadFileFromBase64 } from "../../../src/api/utils/index.js";
 import Conversation from "../../api/models/conversation.model.js";
+import Link from "../../api/models/link.model.js";
 import Message from "../../api/models/message.model.js";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import { getFriendSocketId } from "../services/user.js";
-import axios from "axios";
-import Link from "../../api/models/link.model.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -14,7 +16,6 @@ export default class MessageController {
       let conversation = await Conversation.findOne({
         participants: { $all: [senderId, recipientId] },
       });
-      const msgId = ObjectId();
       const listMsgId = [];
       const listMsg = [];
       const { files, media, content } = message;
@@ -23,11 +24,12 @@ export default class MessageController {
       [...Array(numberNewMsg)].map((_) => {
         listMsgId.push(ObjectId());
       });
+      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
           msgIds: listMsgId,
-          lastMsgId: msgId,
+          lastMsgId: listMsgId[listMsgId.length - 1],
         });
         await conversation.save();
       } else {
@@ -49,7 +51,8 @@ export default class MessageController {
       }
       let currentFileIndex = 0;
       let addMedia = false;
-      listMsgId.forEach(async (_id, index) => {
+      for (let index = 0; index < listMsgId.length; index++) {
+        const _id = listMsgId[index];
         let newMsg = null;
         const msgInfo = {
           _id: _id,
@@ -59,17 +62,21 @@ export default class MessageController {
         if (content?.trim() && index === 0) {
           const urlRegex = /(https?:\/\/[^\s]+)/g;
           const urls = content.match(urlRegex);
+          console.log("urls: ", urls);
           const links = [];
-          for (let url of urls) {
-            const { data } = await axios.get(
-              `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
-            );
-            links.push({
-              _id: ObjectId(),
-              ...data,
-            });
+          if (urls?.length) {
+            for (let url of urls) {
+              const { data } = await axios.get(
+                `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
+              );
+              links.push({
+                _id: ObjectId(),
+                ...data,
+              });
+            }
           }
           if (links?.length > 0) {
+            console.log("links: ", links);
             await Link.insertMany(links, { ordered: false });
           }
           newMsg = {
@@ -78,9 +85,24 @@ export default class MessageController {
             links: links?.map((_id) => _id),
           };
         } else if (media?.length !== 0 && !addMedia) {
+          const isAddGif =
+            media?.length === 1 && media[0].type === Constants.MEDIA_TYPE.GIF;
+          const uploadMedia = media;
+          if (!isAddGif) {
+            for (let i = 0; i < media.length; i++) {
+              const imgUrl = await uploadFileFromBase64({
+                base64: media[i].url,
+              });
+              uploadMedia[i] = {
+                url: imgUrl ?? media[i].url,
+                type: Constants.MEDIA_TYPE.IMAGE,
+              };
+            }
+          }
+          console.log("uploadMedia: ", uploadMedia);
           newMsg = new Message({
             ...msgInfo,
-            media: media,
+            media: uploadMedia,
           });
           addMedia = true;
         } else if (
@@ -95,8 +117,10 @@ export default class MessageController {
           });
           currentFileIndex += 1;
         }
+        console.log("newMsg: ", newMsg);
         listMsg.push(newMsg);
-      });
+      }
+      console.log("listMsg: ", listMsg);
       await Message.insertMany(listMsg, { ordered: false });
       const newMessages = await Message.find({
         _id: { $in: listMsgId },
@@ -258,7 +282,8 @@ export default class MessageController {
     }
   }
   static async getMessages(payload, cb) {
-    const { userId, conversationId } = payload;
+    const { userId, conversationId, page, limit } = payload;
+    const skip = (page - 1) * limit;
     try {
       if (!userId) {
         cb({ status: "error", data: [] });
@@ -272,19 +297,72 @@ export default class MessageController {
           msgIds: 1,
         }
       );
-      const msgIds = conversation.msgIds.map((id) => destructObjectId(id));
+      if (!conversation) {
+        cb({ status: "error", data: [] });
+        return;
+      }
+      const msgs = await Message.find({
+        conversationId: ObjectId(conversationId),
+      })
+        .sort({
+          createdAt: -1,
+        })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        });
+      const result = msgs?.sort((a, b) => -1);
+      cb({ status: "success", data: result });
+    } catch (error) {
+      console.error("getConversations: ", error);
+    }
+  }
+  static async getMsgsToSearchMsg(payload, cb) {
+    const { userId, conversationId, limit, searchMsgId, currentPage } = payload;
+    if (!userId) {
+      cb({ status: "error", data: [] });
+      return;
+    }
+    const conversation = await Conversation.findOne(
+      {
+        _id: ObjectId(conversationId),
+      },
+      {
+        msgIds: 1,
+      }
+    );
+    if (!conversation) {
+      cb({ status: "error", data: [] });
+      return;
+    }
+    const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
+    const searchMsgIndex = msgIds?.findIndex((id) => id === searchMsgId);
+    const page = Math.ceil((msgIds.length - searchMsgIndex) / limit);
+    if (page <= currentPage) {
+      cb({ status: "success", data: [] });
+    } else {
+      const skip = currentPage * limit;
+      const newLimit = (page - currentPage) * limit;
       const msgs = await Message.find({
         _id: { $in: msgIds },
       })
         .sort({
-          createdAt: 1,
+          createdAt: -1,
         })
+        .skip(skip)
+        .limit(newLimit)
         .populate({
           path: "file",
+        })
+        .populate({
+          path: "links",
         });
-      cb({ status: "success", data: msgs });
-    } catch (error) {
-      console.error("getConversations: ", error);
+      const result = msgs?.sort((a, b) => -1);
+      cb({ status: "success", data: result, page: page });
     }
   }
 }

@@ -1,9 +1,10 @@
-import { Avatar, Flex, Text, Tooltip, Image } from "@chakra-ui/react";
+import { Avatar, Flex, Link, Text, Tooltip } from "@chakra-ui/react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
+import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
 import FileMsg from "./Files";
-import { Constants } from "../../../../../../Breads-Shared/Constants";
+import MsgMediaLayout from "./MediaLayout";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -11,7 +12,7 @@ const Message = ({ msg }) => {
     (state) => state.message.selectedConversation?.participant
   );
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media } = msg;
+  const { content, createdAt, file, media, links } = msg;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -28,10 +29,25 @@ const Message = ({ msg }) => {
   };
 
   const msgContent = () => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const contentArr = content
+      ?.split(urlRegex)
+      ?.filter((part) => !!part.trim());
+
     return (
-      <>
+      <Flex
+        id={`msg_${msg?._id}`}
+        flexDir={ownMessage ? "column" : ""}
+        alignItems={ownMessage ? "flex-end" : "flex-start"}
+        width={"fit-content"}
+      >
         {!ownMessage && (
-          <Avatar src={participant?.avatar} w={"32px"} h={"32px"} />
+          <Avatar
+            src={participant?.avatar}
+            w={"32px"}
+            h={"32px"}
+            mr={ownMessage ? 0 : 2}
+          />
         )}
         {content?.trim() && (
           <Text
@@ -39,23 +55,38 @@ const Message = ({ msg }) => {
             bg={ownMessage ? "blue.400" : "gray.400"}
             py={ownMessage ? 2 : 1}
             px={2}
-            ml={ownMessage ? 0 : 1}
             borderRadius={"md"}
             color={ownMessage ? "white" : "black"}
           >
-            {content}
+            {contentArr.map((part, index) => {
+              if (part.match(urlRegex)) {
+                return (
+                  <span key={index} style={{ marginRight: "4px" }}>
+                    <Link
+                      href={part}
+                      color={ownMessage ? "white" : "black"}
+                      isExternal
+                      _hover={{ textDecoration: "underline" }}
+                      _focus={{ boxShadow: "none" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      {part}
+                    </Link>
+                  </span>
+                );
+              }
+              return <span key={index}>{part}</span>;
+            })}
           </Text>
         )}
-        {media?.length === 1 && media[0]?.type === Constants.MEDIA_TYPE.GIF && (
-          <Image
-            src={media[0].url}
-            height={"auto"}
-            maxHeight={"200px"}
-            objectFit={"cover"}
-          />
+        {links?.length > 0 && (
+          <CustomLinkPreview link={links[links?.length - 1]} />
         )}
+        {media?.length > 0 && <MsgMediaLayout media={media} />}
         {file?._id && <FileMsg file={file} />}
-      </>
+      </Flex>
     );
   };
 

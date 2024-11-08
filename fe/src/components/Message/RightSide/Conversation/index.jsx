@@ -20,7 +20,7 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab }) => {
         setOpenDetailTab={setOpenDetailTab}
       />
       <Divider />
-      <ConversationBody />
+      <ConversationBody openDetailTab={openDetailTab} />
       <Container
         position={"absolute"}
         bottom={0}

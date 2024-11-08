@@ -1,5 +1,6 @@
 import { POST } from "../config/API";
 import { Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
+import moment from "moment";
 
 export const emojiMap = {
   ":)": {
@@ -448,4 +449,13 @@ export const generateObjectId = () => {
     .padStart(6, "0");
 
   return timestamp + randomValue + counter;
+};
+
+export const formatItemDate = (itemDate) => {
+  const currentYear = new Date().getFullYear();
+  const msgYear = new Date(itemDate).getFullYear();
+  if (currentYear === msgYear) {
+    return moment(itemDate).format("DD/MM");
+  }
+  return moment(itemDate).format("DD/MM/YYYY");
 };

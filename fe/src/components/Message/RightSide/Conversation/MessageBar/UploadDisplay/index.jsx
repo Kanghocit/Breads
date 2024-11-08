@@ -150,5 +150,4 @@ const UploadDisplay = ({isPost = false}) => {
       </Flex>
     );
   };
-};
 export default UploadDisplay;
