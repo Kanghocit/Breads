@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import ContainerLayout from "../components/MainBoxLayout";
 import { getNotificattions } from "../store/NotificationSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import Activity from "../components/Activity";
 
 const ActivityPage = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,9 @@ const ActivityPage = () => {
 
   return (
     <>
-      <ContainerLayout></ContainerLayout>
+      <ContainerLayout>
+        <Activity />
+      </ContainerLayout>
     </>
   );
 };

@@ -1,9 +1,9 @@
 import { Container, Text, Button, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from 'react-i18next'; // Nhập i18n
+import { useTranslation } from 'react-i18next'; 
 
 const ErrorPage = () => {
-  const { t } = useTranslation(); // Khai báo hook i18n
+  const { t } = useTranslation(); 
   const navigate = useNavigate();
 
   const handleGoBack = () => {
