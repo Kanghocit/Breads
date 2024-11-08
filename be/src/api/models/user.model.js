@@ -56,6 +56,10 @@ const userSchema = mongoose.Schema(
         required: false,
       },
     ],
+    hasNewNotify: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

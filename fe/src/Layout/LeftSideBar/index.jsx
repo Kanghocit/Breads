@@ -6,7 +6,10 @@ import { GrHomeRounded } from "react-icons/gr";
 import { MdAdd, MdOutlinePushPin } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import useSocket from "../../hooks/useSocket";
+import { updateHasNotification } from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
@@ -19,7 +22,17 @@ const LeftSideBar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
+  const hasNewNotification = useSelector(
+    (state) => state.notification.hasNewNotification
+  );
   let bgk = { bg: "gray.dark" };
+
+  useSocket((socket) => {
+    socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
+      console.log("payload: ", payload);
+      dispatch(updateHasNotification(true));
+    });
+  }, []);
 
   const getButtonColor = (isActive, colorMode) => {
     if (isActive) {
@@ -58,7 +71,30 @@ const LeftSideBar = () => {
       color: getButtonColor(currentPage === PageConstant.SEARCH, colorMode),
     },
     {
-      icon: <FaRegHeart size={24} />,
+      icon: (
+        <div
+          style={{
+            position: "relative",
+            width: "fit-content",
+            height: "fit-content",
+          }}
+        >
+          <FaRegHeart size={24} />
+          {hasNewNotification && (
+            <div
+              style={{
+                position: "absolute",
+                right: "-4px",
+                top: "1px",
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                backgroundColor: "red",
+              }}
+            />
+          )}
+        </div>
+      ),
       linkTo: "/" + PageConstant.ACTIVITY,
       onClick: () => {
         if (currentPage !== PageConstant.ACTIVITY) {

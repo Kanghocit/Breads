@@ -11,9 +11,8 @@ import {
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
-import Message from "./Message";
-import MessagesSkeleton from "./Message/skeleton";
 import InfiniteScroll from "../../../../InfiniteScroll";
+import Message from "./Message";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
