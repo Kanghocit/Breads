@@ -51,6 +51,13 @@ const messageSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    isRetrieve: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
