@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getConversationById, getConversations, getMsgs } from "./asyncThunk";
 import { formatDateToDDMMYYYY } from "../../util";
+import moment from "moment";
 
 export const defaulMessageInfo = {
   content: "",
@@ -42,6 +43,9 @@ const msgSlice = createSlice({
     },
     addNewMsg: (state, action) => {
       const msgsInfo = action.payload;
+      if (!msgsInfo?.length) {
+        return;
+      }
       const msgCreateDate = formatDateToDDMMYYYY(
         new Date(msgsInfo[0]?.createdAt)
       );
@@ -56,7 +60,7 @@ const msgSlice = createSlice({
       }
       //Update last message
       const lastMsg = msgsInfo[msgsInfo.length - 1];
-      if (state.selectedConversation?._id === msgsInfo[0].conversationId) {
+      if (state.selectedConversation?._id === msgsInfo[0]?.conversationId) {
         state.selectedConversation.lastMsg = lastMsg;
       }
       const conversationIndex = state.conversations.findIndex(
@@ -71,6 +75,20 @@ const msgSlice = createSlice({
     },
     updateLoadingUpload: (state, action) => {
       state.loadingUploadMsg = action.payload;
+    },
+    updateMsg: (state, action) => {
+      const msgUpdate = action.payload;
+      if (msgUpdate?._id) {
+        const msgDateConvert = moment(msgUpdate?.createdAt).format(
+          "DD/MM/YYYY"
+        );
+        const msgInListIndex = state.messages[msgDateConvert].findIndex(
+          (msg) => msg._id === msgUpdate._id
+        );
+        if (msgInListIndex !== -1) {
+          state.messages[msgDateConvert][msgInListIndex] = msgUpdate;
+        }
+      }
     },
   },
   extraReducers: (builder) => {
@@ -127,5 +145,6 @@ export const {
   addNewMsg,
   updateLoadingUpload,
   updateCurrentPageMsg,
+  updateMsg,
 } = msgSlice.actions;
 export default msgSlice.reducer;

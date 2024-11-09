@@ -39,3 +39,12 @@ export const getFriendSocketId = async (userId, io, socket) => {
   }
   return "";
 };
+
+export const getUserSocketByUserId = async (userId, io) => {
+  const listSocket = await getAllSockets(io);
+  const socketsData = listSocket.map((sk) => sk.data);
+  const userSocketId = socketsData?.find(
+    (socket) => socket?.userId === userId.toString()
+  )?.id;
+  return userSocketId;
+};

@@ -1,10 +1,9 @@
-import { CloseIcon } from "@chakra-ui/icons";
-import { Button, Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import { Button, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { fileTypes } from "../File";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
-import LoadingUploadMsg from "./loading";
+import { fileTypes } from "../File";
 import ItemUploadDisplay from "./ItemUploadDisplay";
+import LoadingUploadMsg from "./loading";
 
 export const FILE_TYPES = {
   word: "word",

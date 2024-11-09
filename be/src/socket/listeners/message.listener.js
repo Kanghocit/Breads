@@ -14,6 +14,9 @@ const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MSGS_BY_SEARCH, (payload, cb) => {
     MessageController.getMsgsToSearchMsg(payload, cb);
   });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.REACT, (payload, cb) => {
+    MessageController.reactMsg(payload, cb, io);
+  });
 };
 
 export default MessageListener;

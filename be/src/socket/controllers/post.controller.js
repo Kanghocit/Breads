@@ -1,6 +1,14 @@
-import { POST_PATH } from "../../Breads-Shared/APIConfig.js";
+import Notification from "../../api/models/notification.model.js";
+import User from "../../api/models/user.model.js";
+import {
+  NOTIFICATION_PATH,
+  POST_PATH,
+  Route,
+} from "../../Breads-Shared/APIConfig.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { destructObjectId, getCollection, ObjectId } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
+import { getUserSocketByUserId } from "../services/user.js";
 
 export default class PostController {
   static likePost = async (payload, socket, io) => {
@@ -23,10 +31,51 @@ export default class PostController {
         },
         query
       );
-      const updateList = usersLike?.includes(userId)
+      const likedBefore = usersLike?.includes(userId);
+      const updateList = likedBefore
         ? usersLike.filter((id) => id !== userId)
         : [...usersLike, userId];
-      io.emit(POST_PATH.GET_ONE, {
+      //Handle send notification
+      if (likedBefore) {
+        const validNotification = await Notification.findOne({
+          fromUser: ObjectId(userId),
+          "toUsers.0": postInfo.authorId,
+        });
+        if (validNotification) {
+          await Notification.deleteOne({
+            _id: validNotification._id,
+          });
+        }
+      } else {
+        if (userId !== postInfo.authorId) {
+          const notificationInfo = new Notification({
+            fromUser: userId,
+            toUsers: [postInfo.authorId],
+            action: Constants.NOTIFICATION_ACTION.LIKE,
+            target: postId,
+          });
+          const newNotification = await notificationInfo.save();
+          const authorSocketId = await getUserSocketByUserId(
+            postInfo.authorId,
+            io
+          );
+          if (authorSocketId) {
+            io.to(authorSocketId).emit(
+              Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW,
+              newNotification
+            );
+          }
+          await User.updateOne(
+            {
+              _id: postInfo.authorId,
+            },
+            {
+              hasNewNotify: true,
+            }
+          );
+        }
+      }
+      io.emit(Route.POST + POST_PATH.GET_ONE, {
         usersLike: updateList,
         postId,
       });

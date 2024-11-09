@@ -8,12 +8,12 @@ import Socket from "../../../../../socket";
 import {
   addNewMsg,
   updateCurrentPageMsg,
+  updateMsg,
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
-import Message from "./Message";
-import MessagesSkeleton from "./Message/skeleton";
 import InfiniteScroll from "../../../../InfiniteScroll";
+import Message from "./Message";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -42,10 +42,16 @@ const ConversationBody = ({ openDetailTab }) => {
   }, [selectedConversation?._id, userInfo]);
 
   useSocket((socket) => {
-    socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (payload) => {
-      if (payload) {
-        dispatch(addNewMsg(payload));
+    socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (data) => {
+      if (data) {
+        dispatch(addNewMsg(data));
         setScrollText("New message");
+      }
+    });
+    socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
+      if (data) {
+        console.log("data: ", data);
+        dispatch(updateMsg(data));
       }
     });
   }, []);
@@ -141,7 +147,7 @@ const ConversationBody = ({ openDetailTab }) => {
         ></div>
         <Flex
           flexDir={"column"}
-          gap={2}
+          gap={"12px"}
           my={2}
           height={"fit-content"}
           py={2}

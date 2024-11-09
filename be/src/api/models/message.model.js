@@ -38,7 +38,7 @@ const messageSchema = new mongoose.Schema(
       ref: "Message",
       required: false,
     },
-    react: [
+    reacts: [
       {
         type: Object,
         required: false,
@@ -51,6 +51,13 @@ const messageSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    isRetrieve: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

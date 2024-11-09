@@ -16,7 +16,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { RiDoubleQuotesL } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { POST_PATH } from "../../../Breads-Shared/APIConfig";
+import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
 import { updatePostLike } from "../../../store/PostSlice";
@@ -27,8 +27,8 @@ import PostConstants from "../../../util/PostConstants";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
 import UserInfoPopover from "../../UserInfoPopover";
-import PostContent from "./Content";
 import Actions from "./Actions";
+import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
@@ -48,7 +48,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
     usePopupCancel();
 
   useSocket((socket) => {
-    socket.on(POST_PATH.GET_ONE, ({ usersLike, postId }) => {
+    socket.on(Route.POST + POST_PATH.GET_ONE, ({ usersLike, postId }) => {
       if (post._id === postId) {
         dispatch(
           updatePostLike({
