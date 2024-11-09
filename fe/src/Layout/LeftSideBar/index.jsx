@@ -29,7 +29,6 @@ const LeftSideBar = () => {
 
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
-      console.log("payload: ", payload);
       dispatch(updateHasNotification(true));
     });
   }, []);

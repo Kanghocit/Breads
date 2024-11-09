@@ -38,7 +38,7 @@ const messageSchema = new mongoose.Schema(
       ref: "Message",
       required: false,
     },
-    react: [
+    reacts: [
       {
         type: Object,
         required: false,
