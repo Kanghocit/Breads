@@ -1,7 +1,12 @@
 import { Flex, Tooltip } from "@chakra-ui/react";
 import { memo } from "react";
 
-const IconWrapper = ({ label = "", icon, placement = "top" }) => {
+const IconWrapper = ({
+  label = "",
+  icon,
+  placement = "top",
+  addBg = false,
+}) => {
   const containerStyle = {
     width: "24px",
     height: "24px",
@@ -19,6 +24,7 @@ const IconWrapper = ({ label = "", icon, placement = "top" }) => {
           style={containerStyle}
           alignItems={"center"}
           justifyContent={"center"}
+          bg={addBg ? "gray" : ""}
           _hover={{
             bg: "gray",
           }}

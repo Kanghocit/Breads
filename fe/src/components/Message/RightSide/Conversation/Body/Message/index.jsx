@@ -16,7 +16,10 @@ const Message = ({ msg }) => {
   );
   const [displayAction, setDisplayAction] = useState(false);
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media, links } = msg;
+  const { content, createdAt, file, media, links, reacts } = msg;
+  const previousReact = reacts?.find(
+    ({ userId }) => userId === userInfo?._id
+  )?.react;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -48,7 +51,7 @@ const Message = ({ msg }) => {
             left: ownMessage ? "-16px" : "",
           }}
         >
-          <MessageReactsBox reacts={msg?.reacts} />
+          <MessageReactsBox reacts={reacts} msgId={msg?._id} />
         </div>
       );
     };
@@ -61,7 +64,11 @@ const Message = ({ msg }) => {
         pos={"relative"}
       >
         {ownMessage && displayAction && (
-          <MessageAction ownMsg={ownMessage} msgId={msg?._id} />
+          <MessageAction
+            ownMsg={ownMessage}
+            msgId={msg?._id}
+            previousReact={previousReact}
+          />
         )}
         {!ownMessage && (
           <Avatar
@@ -106,7 +113,7 @@ const Message = ({ msg }) => {
                 }
                 return <span key={index}>{part}</span>;
               })}
-              {msg?.reacts?.length > 0 &&
+              {reacts?.length > 0 &&
                 !links?.length &&
                 !media?.length &&
                 !file?._id && <>{reactBox()}</>}
@@ -128,7 +135,11 @@ const Message = ({ msg }) => {
           {file?._id && <FileMsg file={file} />}
         </Flex>
         {!ownMessage && displayAction && (
-          <MessageAction ownMsg={ownMessage} msgId={msg?._id} />
+          <MessageAction
+            ownMsg={ownMessage}
+            msgId={msg?._id}
+            previousReact={previousReact}
+          />
         )}
       </Flex>
     );

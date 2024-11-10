@@ -4,20 +4,19 @@ import { BsThreeDots } from "react-icons/bs";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { IoMdSend } from "react-icons/io";
 import { MdEmojiEmotions, MdOutlineReply } from "react-icons/md";
-import { Constants } from "../../../../../../../Breads-Shared/Constants";
-import { emojiMap } from "../../../../../../../util";
-import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
-import IconWrapper from "../../../MessageBar/IconWrapper";
-import Socket from "../../../../../../../socket";
+import { useDispatch, useSelector } from "react-redux";
 import {
   MESSAGE_PATH,
   Route,
 } from "../../../../../../../Breads-Shared/APIConfig";
-import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+import { Constants } from "../../../../../../../Breads-Shared/Constants";
+import Socket from "../../../../../../../socket";
 import { updateMsg } from "../../../../../../../store/MessageSlice";
+import { emojiMap } from "../../../../../../../util";
+import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
+import IconWrapper from "../../../MessageBar/IconWrapper";
 
-const MessageAction = ({ ownMsg, msgId }) => {
+const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -151,6 +150,7 @@ const MessageAction = ({ ownMsg, msgId }) => {
           >
             {defaultEmoji.map((emjStr) => (
               <IconWrapper
+                addBg={previousReact === emjStr ? true : false}
                 icon={
                   <Text
                     onClick={() => {

@@ -1,22 +1,73 @@
-import { Flex, Text } from "@chakra-ui/react";
-import { emojiMap } from "../../../../../../../util";
+import { CloseIcon } from "@chakra-ui/icons";
 import {
+  Flex,
   Modal,
-  ModalOverlay,
+  ModalBody,
   ModalContent,
   ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  ModalOverlay,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { emojiMap } from "../../../../../../../util";
 import IconWrapper from "../../../MessageBar/IconWrapper";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import UserReactItem from "./UserReactItem";
 
-const MessageReactsBox = ({ reacts }) => {
+const MessageReactsBox = ({ reacts, msgId }) => {
   const [openDetailBox, setOpenDetailBox] = useState(false);
+  const setEmoji = [...new Set(reacts?.map(({ react }) => react))];
+
+  const headerTabs = () => {
+    let headerEmj = [...setEmoji];
+    headerEmj = headerEmj?.map((emoji) => {
+      const count = reacts?.filter(({ react }) => react === emoji)?.length;
+      return {
+        emoji: emoji,
+        count: count,
+      };
+    });
+    headerEmj.unshift({
+      emoji: "All",
+    });
+    return (
+      <TabList>
+        {headerEmj.map((item, index) => (
+          <Tab>
+            {index === 0
+              ? item.emoji
+              : emojiMap[item.emoji]?.icon + item?.count}
+          </Tab>
+        ))}
+      </TabList>
+    );
+  };
+
+  const tabItems = () => {
+    const tabInfo = ["All", ...setEmoji];
+    return (
+      <TabPanels>
+        {tabInfo?.map((tab, index) => {
+          const userReacts = reacts.filter(({ react }) => react === tab);
+          const displayList = index === 0 ? reacts : userReacts;
+          return (
+            <TabPanel p={0} mt={3}>
+              {displayList?.map(({ userId, react }) => (
+                <UserReactItem userId={userId} react={react} msgId={msgId} />
+              ))}
+            </TabPanel>
+          );
+        })}
+      </TabPanels>
+    );
+  };
+
+  tabItems();
 
   return (
     <>
@@ -26,9 +77,13 @@ const MessageReactsBox = ({ reacts }) => {
         px={"6px"}
         gap={"2px"}
         onClick={() => setOpenDetailBox(true)}
+        cursor={"pointer"}
+        _hover={{
+          bg: "#ebebeb",
+        }}
       >
         <Flex>
-          {reacts?.map(({ react }) => (
+          {setEmoji?.map((react) => (
             <Text fontSize={"12px"}>{emojiMap[react].icon}</Text>
           ))}
         </Flex>
@@ -61,9 +116,12 @@ const MessageReactsBox = ({ reacts }) => {
               </div>
             </Flex>
           </ModalHeader>
-          <ModalBody></ModalBody>
-
-          <ModalFooter></ModalFooter>
+          <ModalBody maxHeight={"520px"} overflowY={"auto"}>
+            <Tabs>
+              {headerTabs()}
+              {tabItems()}
+            </Tabs>
+          </ModalBody>
         </ModalContent>
       </Modal>
     </>
