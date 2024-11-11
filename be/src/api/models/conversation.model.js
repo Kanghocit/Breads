@@ -18,7 +18,7 @@ const conversationSchema = new mongoose.Schema(
     },
     emoji: {
       type: String,
-      default: "like",
+      default: ":thumbsup:",
     },
     lastMsgId: {
       type: ObjectId,

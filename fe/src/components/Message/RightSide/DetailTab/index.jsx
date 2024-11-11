@@ -1,4 +1,4 @@
-import { LinkIcon } from "@chakra-ui/icons";
+import { LinkIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -9,15 +9,24 @@ import {
   Box,
   Container,
   Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Modal,
+  ModalContent,
+  ModalOverlay,
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaFileAlt } from "react-icons/fa";
-import { IoIosSearch, IoMdPhotos } from "react-icons/io";
-import { MdColorLens, MdThumbUp } from "react-icons/md";
+import { IoIosSearch, IoMdClose, IoMdPhotos } from "react-icons/io";
+import { MdColorLens } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Socket from "../../../../socket";
+import { getEmojiIcon, getEmojiNameFromIcon } from "../../../../util";
+import EmojiBox from "../Conversation/MessageBar/Emoji/EmojiBox";
 import IconWrapper from "../Conversation/MessageBar/IconWrapper";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
@@ -47,7 +56,7 @@ const DetailConversationTab = () => {
       },
       {
         name: EMOJI,
-        icon: <MdThumbUp />,
+        icon: <Text>{getEmojiIcon(selectedConversation?.emoji)}</Text>,
       },
     ],
     "Media, files and links": [
@@ -81,6 +90,16 @@ const DetailConversationTab = () => {
       },
     },
   ];
+  const [searchEmojiValue, setSearchEmojiValue] = useState("");
+
+  const handleChangeEmoji = async (emojiStr) => {
+    try {
+      const socket = Socket.getInstant();
+      console.log("emojiStr: ", emojiStr);
+    } catch (err) {
+      console.error("handleChangeEmoji: ", err);
+    }
+  };
 
   const displaySubTab = () => {
     switch (itemSelected) {
@@ -94,6 +113,48 @@ const DetailConversationTab = () => {
             currentTab={itemSelected}
             setItemSelected={setItemSelected}
           />
+        );
+      case EMOJI:
+        return (
+          <Modal
+            isOpen={itemSelected === EMOJI}
+            onClose={() => setItemSelected("")}
+          >
+            <ModalOverlay />
+            <ModalContent width={"fit-content"} p={4}>
+              <Flex
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                mb={3}
+              >
+                <InputGroup maxWidth={"160px"} height={"32px"}>
+                  <InputLeftElement pointerEvents="none" height={"32px"}>
+                    <SearchIcon
+                      color="gray.300"
+                      height={"16px"}
+                      width={"16px"}
+                    />
+                  </InputLeftElement>
+                  <Input
+                    type="text"
+                    placeholder="Search emoji"
+                    height={"32px"}
+                    fontSize={"14px"}
+                    value={searchEmojiValue}
+                    onChange={(e) => setSearchEmojiValue(e.target.value)}
+                  />
+                </InputGroup>
+                <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
+              </Flex>
+              <EmojiBox
+                searchValue={searchEmojiValue}
+                currentEmoji={getEmojiIcon(selectedConversation?.emoji)}
+                onClick={(emojiIcon) =>
+                  handleChangeEmoji(getEmojiNameFromIcon(emojiIcon))
+                }
+              />
+            </ModalContent>
+          </Modal>
         );
       default:
         return <></>;
@@ -110,7 +171,7 @@ const DetailConversationTab = () => {
       borderRadius={"12px"}
     >
       {displaySubTab()}
-      {!itemSelected && (
+      {!itemSelected && itemSelected !== EMOJI && (
         <>
           <Flex
             justifyContent={"center"}

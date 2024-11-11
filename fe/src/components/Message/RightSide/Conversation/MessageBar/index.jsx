@@ -1,7 +1,6 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import { IoSendSharp } from "react-icons/io5";
-import { MdThumbUp } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
@@ -19,6 +18,7 @@ import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import MediaUpload from "./Media";
 import UploadDisplay from "./UploadDisplay";
+import MessageIconBtn from "./MessageIconBtn";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -39,16 +39,17 @@ export const iconStyle = {
 const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
-  const participant = useSelector(
-    (state) => state.message.selectedConversation?.participant
+  const { msgInfo, loadingUploadMsg, selectedConversation } = useSelector(
+    (state) => state.message
   );
+  const participant = selectedConversation?.participant;
   const files = msgInfo.files;
   const [popup, setPopup] = useState("");
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
   const [content, setContent] = useState("");
-  const debouceContent = useDebounce(content);
+  const inputRef = useRef(null);
+  const debouceContent = useDebounce(content, 200);
   const ableToSend =
     !!content.trim() ||
     msgInfo.files?.length !== 0 ||
@@ -66,7 +67,7 @@ const MessageInput = () => {
 
   useEffect(() => {
     if (loadingUploadMsg) {
-      handleSendMsg(false);
+      handleSendMsg({ clickUpload: false });
       dispatch(updateLoadingUpload(false));
     }
   }, [loadingUploadMsg]);
@@ -100,7 +101,7 @@ const MessageInput = () => {
     // },
   ];
 
-  const handleSendMsg = async (clickUpload) => {
+  const handleSendMsg = async ({ clickUpload = true, sendIcon = false }) => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
     if (payload.files?.length) {
       if (clickUpload) {
@@ -112,6 +113,9 @@ const MessageInput = () => {
         userId: userInfo._id,
       });
       payload.files = filesId;
+    }
+    if (sendIcon) {
+      payload.content = sendIcon;
     }
     const socket = Socket.getInstant();
     const msgPayload = {
@@ -125,6 +129,8 @@ const MessageInput = () => {
     dispatch(updateMsgInfo(defaulMessageInfo));
     setContent("");
   };
+
+  console.log("content: ", content);
 
   return (
     <form
@@ -142,6 +148,7 @@ const MessageInput = () => {
           </Fragment>
         ))}
         <Input
+          ref={inputRef}
           flex={1}
           placeholder="Type a message"
           margin={"0 8px"}
@@ -149,6 +156,13 @@ const MessageInput = () => {
           onChange={(e) => {
             if (!loadingUploadMsg) {
               setContent(replaceEmojis(e.target.value));
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13 && ableToSend) {
+              if (!loadingUploadMsg) {
+                handleSendMsg({});
+              }
             }
           }}
           opacity={loadingUploadMsg ? 0.4 : 1}
@@ -160,6 +174,8 @@ const MessageInput = () => {
             closeTooltip={closeTooltip}
             onClose={onClose}
             onOpen={onOpen}
+            inputRef={inputRef}
+            setContent={setContent}
           />
         </InputRightElement>
         <IconWrapper
@@ -170,12 +186,12 @@ const MessageInput = () => {
                 style={iconStyle}
                 onClick={() => {
                   if (!loadingUploadMsg) {
-                    handleSendMsg(true);
+                    handleSendMsg({});
                   }
                 }}
               />
             ) : (
-              <MdThumbUp style={iconStyle} />
+              <MessageIconBtn handleSendMsg={handleSendMsg} />
             )
           }
         />

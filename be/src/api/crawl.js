@@ -330,6 +330,7 @@ export const genMsgsInConversation = async (conversationId, numberMsg = 50) => {
           conversationId: conversationId,
           content: content,
           createdAt: msgDate,
+          type: "text",
         });
         listMsg.push(msgInfo);
         listId.push(_id);
@@ -347,6 +348,7 @@ export const genMsgsInConversation = async (conversationId, numberMsg = 50) => {
             conversationId: conversationId,
             media: media,
             createdAt: msgDate,
+            type: "media",
           });
           listMsg.push(mediaMsg);
           listId.push(_id);

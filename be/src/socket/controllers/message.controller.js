@@ -7,7 +7,8 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
-import { getFriendSocketId } from "../services/user.js";
+import { getFriendSocketId, getUserSocketByUserId } from "../services/user.js";
+import User from "../../api/models/user.model.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -83,6 +84,7 @@ export default class MessageController {
             ...msgInfo,
             content: content,
             links: links?.map((_id) => _id),
+            type: "text",
           };
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
@@ -103,6 +105,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             media: uploadMedia,
+            type: "media",
           });
           addMedia = true;
         } else if (
@@ -114,45 +117,30 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             file: files[currentFileIndex],
+            type: "file",
           });
           currentFileIndex += 1;
         }
         console.log("newMsg: ", newMsg);
         listMsg.push(newMsg);
       }
-      console.log("listMsg: ", listMsg);
       await Message.insertMany(listMsg, { ordered: false });
       const newMessages = await Message.find({
         _id: { $in: listMsgId },
       }).populate({
         path: "file",
       });
-      const friendOnline = socket.friendsInfo?.find(
-        (socketInfo) => socketInfo?.userId === recipientId
-      );
-      if (!friendOnline) {
-        const recipientSocketId = await getFriendSocketId(
-          recipientId,
-          io,
-          socket
+      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit(
+          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+          newMessages
         );
-        if (recipientSocketId) {
-          socket.data.friendsInfo = [
-            ...socket.data.friendsInfo,
-            {
-              socketId: recipientSocketId,
-              userId: recipientId,
-            },
-          ];
-          io.to(recipientSocketId).emit(
-            Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-            newMessages
-          );
-        }
       }
       !!cb && cb(newMessages);
     } catch (error) {
       console.error("sendMessage: ", error);
+      cb([]);
     }
   }
 
@@ -279,6 +267,7 @@ export default class MessageController {
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
+      cb({ status: "error", data: [] });
     }
   }
   static async getMessages(payload, cb) {
@@ -319,50 +308,135 @@ export default class MessageController {
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
+      cb({ status: "error", data: [] });
     }
   }
   static async getMsgsToSearchMsg(payload, cb) {
-    const { userId, conversationId, limit, searchMsgId, currentPage } = payload;
-    if (!userId) {
-      cb({ status: "error", data: [] });
-      return;
-    }
-    const conversation = await Conversation.findOne(
-      {
-        _id: ObjectId(conversationId),
-      },
-      {
-        msgIds: 1,
+    try {
+      const { userId, conversationId, limit, searchMsgId, currentPage } =
+        payload;
+      if (!userId) {
+        cb({ status: "error", data: [] });
+        return;
       }
-    );
-    if (!conversation) {
-      cb({ status: "error", data: [] });
-      return;
+      const conversation = await Conversation.findOne(
+        {
+          _id: ObjectId(conversationId),
+        },
+        {
+          msgIds: 1,
+        }
+      );
+      if (!conversation) {
+        cb({ status: "error", data: [] });
+        return;
+      }
+      const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
+      const searchMsgIndex = msgIds?.findIndex((id) => id === searchMsgId);
+      const page = Math.ceil((msgIds.length - searchMsgIndex) / limit);
+      if (page <= currentPage) {
+        cb({ status: "success", data: [] });
+      } else {
+        const skip = currentPage * limit;
+        const newLimit = (page - currentPage) * limit;
+        const msgs = await Message.find({
+          _id: { $in: msgIds },
+        })
+          .sort({
+            createdAt: -1,
+          })
+          .skip(skip)
+          .limit(newLimit)
+          .populate({
+            path: "file",
+          })
+          .populate({
+            path: "links",
+          });
+        const result = msgs?.sort((a, b) => -1);
+        cb({ status: "success", data: result, page: page });
+      }
+    } catch (err) {
+      console.error("getMsgsToSearchMsg: ", err);
+      cb({ status: "error", data: [], page: 1 });
     }
-    const msgIds = conversation?.msgIds.map((id) => destructObjectId(id));
-    const searchMsgIndex = msgIds?.findIndex((id) => id === searchMsgId);
-    const page = Math.ceil((msgIds.length - searchMsgIndex) / limit);
-    if (page <= currentPage) {
-      cb({ status: "success", data: [] });
-    } else {
-      const skip = currentPage * limit;
-      const newLimit = (page - currentPage) * limit;
-      const msgs = await Message.find({
-        _id: { $in: msgIds },
-      })
-        .sort({
-          createdAt: -1,
-        })
-        .skip(skip)
-        .limit(newLimit)
-        .populate({
-          path: "file",
-        })
-        .populate({
-          path: "links",
+  }
+  static async reactMsg(payload, cb, io) {
+    try {
+      const { participantId, userId, msgId, react } = payload;
+      if (!msgId || !participantId) {
+        cb({ status: "error", data: [] });
+        return;
+      }
+      const msgInfo = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
+      const msgReact = msgInfo?.reacts;
+      const validUserReact = msgReact?.find(
+        (userReact) => userReact?.userId === userId
+      );
+      let result = null;
+      if (validUserReact) {
+        let newReacts = [];
+        if (validUserReact?.react === react) {
+          newReacts = msgReact.filter((react) => react?.userId !== userId);
+        } else {
+          newReacts = msgReact?.map((reactInfo) => {
+            if (reactInfo?.userId === userId) {
+              return {
+                userId: userId,
+                react: react,
+              };
+            }
+            return reactInfo;
+          });
+        }
+        await Message.updateOne(
+          {
+            _id: ObjectId(msgId),
+          },
+          {
+            $set: {
+              reacts: newReacts,
+            },
+          }
+        );
+        result = await Message.findOne({
+          _id: ObjectId(msgId),
         });
-      const result = msgs?.sort((a, b) => -1);
-      cb({ status: "success", data: result, page: page });
+      } else {
+        const newReact = {
+          userId: userId,
+          react: react,
+        };
+        await Message.updateOne(
+          {
+            _id: ObjectId(msgId),
+          },
+          {
+            $push: {
+              reacts: newReact,
+            },
+          }
+        );
+        result = await Message.findOne({
+          _id: ObjectId(msgId),
+        });
+      }
+      !!cb && cb({ status: "success", data: result });
+      const participantSocketId = await getUserSocketByUserId(
+        participantId,
+        io
+      );
+      if (participantSocketId) {
+        io.to(participantSocketId).emit(
+          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+          result
+        );
+      }
+    } catch (err) {
+      console.log("reactMsg: ", err);
+      cb({ status: "error", data: null });
     }
   }
 }

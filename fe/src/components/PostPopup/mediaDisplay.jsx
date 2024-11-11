@@ -51,15 +51,15 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
     mediaContainerRef.current.scrollLeft = scrollPosition.current - distance;
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
     isDragging.current = false;
-    startMomentumScroll();
+    startMomentumScroll(e);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e) => {
     if (isDragging.current) {
       isDragging.current = false;
-      startMomentumScroll();
+      startMomentumScroll(e);
     }
   };
 

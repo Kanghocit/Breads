@@ -1,4 +1,5 @@
 import Notification from "../../api/models/notification.model.js";
+import User from "../../api/models/user.model.js";
 import {
   NOTIFICATION_PATH,
   POST_PATH,
@@ -64,6 +65,14 @@ export default class PostController {
               newNotification
             );
           }
+          await User.updateOne(
+            {
+              _id: postInfo.authorId,
+            },
+            {
+              hasNewNotify: true,
+            }
+          );
         }
       }
       io.emit(Route.POST + POST_PATH.GET_ONE, {

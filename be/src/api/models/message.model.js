@@ -38,7 +38,7 @@ const messageSchema = new mongoose.Schema(
       ref: "Message",
       required: false,
     },
-    react: [
+    reacts: [
       {
         type: Object,
         required: false,
@@ -57,6 +57,7 @@ const messageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
+      enum: ["text", "media", "file", "setting"],
     },
   },
   { timestamps: true }

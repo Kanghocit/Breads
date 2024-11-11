@@ -18,9 +18,32 @@ import { MdEmojiEmotions } from "react-icons/md";
 import { ACTIONS, iconStyle } from "..";
 import IconWrapper from "../IconWrapper";
 import EmojiBox from "./EmojiBox";
+import { replaceEmojis } from "../../../../../../util";
 
-const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
+const EmojiMsgBtn = ({
+  popup,
+  closeTooltip,
+  onClose,
+  onOpen,
+  inputRef,
+  setContent,
+}) => {
   const [searchValue, setSearchValue] = useState("");
+
+  const handleAddEmojiToInput = (emojiIcon) => {
+    if (inputRef.current) {
+      const input = inputRef.current;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      const newText = text.slice(0, start) + emojiIcon + text.slice(end);
+      setContent(replaceEmojis(newText));
+      setTimeout(() => {
+        input.focus();
+        input.selectionStart = input.selectionEnd = start + emojiIcon.length;
+      }, 0);
+    }
+  };
 
   return (
     <IconWrapper
@@ -73,7 +96,10 @@ const EmojiMsgBtn = ({ popup, closeTooltip, onClose, onOpen }) => {
             </PopoverHeader>
             <PopoverArrow />
             <PopoverBody padding={"8px 4px"} width={"fit-content"}>
-              <EmojiBox searchValue={searchValue} />
+              <EmojiBox
+                searchValue={searchValue}
+                onClick={(emojiIcon) => handleAddEmojiToInput(emojiIcon)}
+              />
             </PopoverBody>
           </PopoverContent>
         </Popover>

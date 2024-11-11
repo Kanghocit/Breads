@@ -1,18 +1,24 @@
 import { Flex, Input, useDisclosure } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { RiFileGifLine } from "react-icons/ri";
-import { TbLibraryPhoto } from "react-icons/tb";
+
 import { VscListSelection } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
+import FileUpload from "../Message/RightSide/Conversation/MessageBar/File";
+
 import GifBox from "./gif";
+import { TbLibraryPhoto } from "react-icons/tb";
 
 const PostPopupAction = () => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const imageRef = useRef(null);
+  const [filesData, setFilesData] = useState([]);
+
+  const fileUploadRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleAddMedia = async (files) => {
@@ -55,6 +61,15 @@ const PostPopupAction = () => {
         type="file"
         multiple
         hidden
+        ref={fileUploadRef}
+        onChange={(e) => {
+          setFilesData(e.target.files);
+        }}
+      />
+      <Input
+        type="file"
+        multiple
+        hidden
         ref={imageRef}
         onChange={(e) => {
           handleAddMedia(e.target.files);
@@ -62,6 +77,12 @@ const PostPopupAction = () => {
       />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
         <Flex maxWidth="100%" gap="10px">
+          <FileUpload
+            setFilesData={setFilesData}
+            isPost={true}
+            cursor="pointer"
+          />
+
           <TbLibraryPhoto
             cursor="pointer"
             onClick={() => imageRef.current.click()}
@@ -73,6 +94,7 @@ const PostPopupAction = () => {
           />
         </Flex>
       </Flex>
+
       <GifBox isOpen={isOpen} onClose={onClose} />
     </>
   );
