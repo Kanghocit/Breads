@@ -1,5 +1,4 @@
 import { Container, Flex, Image, Text } from "@chakra-ui/react";
-import { Constants } from "../../../../../../../Breads-Shared/Constants";
 import { useDispatch } from "react-redux";
 import { updateSeeMedia } from "../../../../../../../store/UtilSlice";
 

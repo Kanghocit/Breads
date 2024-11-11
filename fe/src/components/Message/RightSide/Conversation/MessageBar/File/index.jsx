@@ -64,7 +64,6 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
       showToast("", "Invalid file's type", "error");
     }
   };
-  console.log("chạy vào file ");
 
   return (
     <>

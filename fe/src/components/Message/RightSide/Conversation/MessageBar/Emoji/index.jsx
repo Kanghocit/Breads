@@ -27,6 +27,7 @@ const EmojiMsgBtn = ({
   onOpen,
   inputRef,
   setContent,
+  color = "",
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -64,7 +65,13 @@ const EmojiMsgBtn = ({
               }}
               onClick={() => onOpen(ACTIONS.EMOJI)}
             >
-              <MdEmojiEmotions style={{ ...iconStyle, width: "fit-content" }} />
+              <MdEmojiEmotions
+                style={{
+                  ...iconStyle,
+                  width: "fit-content",
+                  color: color ? color : "",
+                }}
+              />
             </Button>
           </PopoverTrigger>
           <PopoverContent width={"fit-content"}>
