@@ -12,7 +12,7 @@ import {
 import { Constants } from "../../../../../../../Breads-Shared/Constants";
 import Socket from "../../../../../../../socket";
 import { updateMsg } from "../../../../../../../store/MessageSlice";
-import { emojiMap } from "../../../../../../../util";
+import { getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 
@@ -157,7 +157,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
                       handleReactMsg(emjStr);
                     }}
                   >
-                    {emojiMap[emjStr].icon}
+                    {getEmojiIcon(emjStr)}
                   </Text>
                 }
               />

@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import { iconStyle } from ".";
-import { emojiMap } from "../../../../../util";
+import { getEmojiIcon } from "../../../../../util";
 
 const MessageIconBtn = ({ handleSendMsg }) => {
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
   const emoji = selectedConversation?.emoji;
-  const iconStr = emojiMap[emoji]?.icon;
+  const iconStr = getEmojiIcon(emoji);
 
   return (
     <div

@@ -454,3 +454,19 @@ export const formatItemDate = (itemDate) => {
   }
   return moment(itemDate).format("DD/MM/YYYY");
 };
+
+export const getEmojiIcon = (emojiStr) => {
+  if (!emojiStr?.trim() || !(emojiStr in emojiMap)) {
+    return "";
+  }
+  return emojiMap[emojiStr].icon;
+};
+
+export const getEmojiNameFromIcon = (emojiIcon) => {
+  if (!emojiIcon) {
+    return "";
+  }
+  const emjEntries = Object.entries(emojiMap);
+  const emjStr = emjEntries.find((arr) => arr[1]?.icon === emojiIcon)?.[0];
+  return emjStr;
+};

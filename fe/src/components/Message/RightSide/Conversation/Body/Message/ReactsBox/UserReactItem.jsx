@@ -7,7 +7,7 @@ import {
 } from "../../../../../../../Breads-Shared/APIConfig";
 import Socket from "../../../../../../../socket";
 import { updateMsg } from "../../../../../../../store/MessageSlice";
-import { emojiMap } from "../../../../../../../util";
+import { getEmojiIcon } from "../../../../../../../util";
 
 const UserReactItem = ({ userId, react, msgId }) => {
   const dispatch = useDispatch();
@@ -73,7 +73,7 @@ const UserReactItem = ({ userId, react, msgId }) => {
           </Text>
         </Flex>
       </Flex>
-      <Text>{emojiMap[react]?.icon}</Text>
+      <Text>{getEmojiIcon(react)}</Text>
     </Flex>
   );
 };

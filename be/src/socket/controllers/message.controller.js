@@ -84,6 +84,7 @@ export default class MessageController {
             ...msgInfo,
             content: content,
             links: links?.map((_id) => _id),
+            type: "text",
           };
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
@@ -104,6 +105,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             media: uploadMedia,
+            type: "media",
           });
           addMedia = true;
         } else if (
@@ -115,6 +117,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             file: files[currentFileIndex],
+            type: "file",
           });
           currentFileIndex += 1;
         }

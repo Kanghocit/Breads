@@ -15,7 +15,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { emojiMap } from "../../../../../../../util";
+import { getEmojiIcon } from "../../../../../../../util";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 import UserReactItem from "./UserReactItem";
 
@@ -39,9 +39,7 @@ const MessageReactsBox = ({ reacts, msgId }) => {
       <TabList>
         {headerEmj.map((item, index) => (
           <Tab>
-            {index === 0
-              ? item.emoji
-              : emojiMap[item.emoji]?.icon + item?.count}
+            {index === 0 ? item.emoji : getEmojiIcon(item.emoji) + item?.count}
           </Tab>
         ))}
       </TabList>
@@ -84,7 +82,7 @@ const MessageReactsBox = ({ reacts, msgId }) => {
       >
         <Flex>
           {setEmoji?.map((react) => (
-            <Text fontSize={"12px"}>{emojiMap[react].icon}</Text>
+            <Text fontSize={"12px"}>{getEmojiIcon(react)}</Text>
           ))}
         </Flex>
         <Text fontSize={"12px"} fontWeight={600} color={"black"}>

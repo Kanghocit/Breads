@@ -1,7 +1,6 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import { IoSendSharp } from "react-icons/io5";
-import { MdThumbUp } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
@@ -49,6 +48,7 @@ const MessageInput = () => {
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
   const [content, setContent] = useState("");
+  const inputRef = useRef(null);
   const debouceContent = useDebounce(content, 200);
   const ableToSend =
     !!content.trim() ||
@@ -85,7 +85,7 @@ const MessageInput = () => {
   const icons = [
     {
       action: ACTIONS.FILES,
-      icon: <FileUpload setFilesData={setFilesData}/>,
+      icon: <FileUpload setFilesData={setFilesData} />,
     },
     {
       action: ACTIONS.MEDIA,
@@ -130,6 +130,8 @@ const MessageInput = () => {
     setContent("");
   };
 
+  console.log("content: ", content);
+
   return (
     <form
       style={{
@@ -146,6 +148,7 @@ const MessageInput = () => {
           </Fragment>
         ))}
         <Input
+          ref={inputRef}
           flex={1}
           placeholder="Type a message"
           margin={"0 8px"}
@@ -171,6 +174,8 @@ const MessageInput = () => {
             closeTooltip={closeTooltip}
             onClose={onClose}
             onOpen={onOpen}
+            inputRef={inputRef}
+            setContent={setContent}
           />
         </InputRightElement>
         <IconWrapper
