@@ -19,7 +19,6 @@ const LeftSideBar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const userInfo = useSelector((state) => state.user.userInfo);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
-  let bgk = { bg: "gray.dark" };
 
   const getButtonColor = (isActive, colorMode) => {
     if (isActive) {
@@ -31,6 +30,7 @@ const LeftSideBar = () => {
   const getHoverColor = (colorMode) => {
     return colorMode === "dark" ? "#171717" : "#f0f0f0";
   };
+
   const listItems = [
     {
       icon: <GrHomeRounded size={24} />,
@@ -84,9 +84,6 @@ const LeftSideBar = () => {
           dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
         }
         navigate("/" + PageConstant.USER + `/${userInfo._id}`);
-        // window.location.replace(
-        //   window.location.origin + "/" + PageConstant.USER + `/${userInfo._id}`
-        // );
       },
       color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
@@ -104,126 +101,156 @@ const LeftSideBar = () => {
   ];
 
   return (
-    <>
-      <Flex>
-        <Box
-          height="100vh"
-          color="white"
-          p={1}
-          position="fixed"
-          top={0}
-          left={0}
-          zIndex={1000}
+    <Flex direction={["column", "row"]}>
+      <Box
+        height={["auto", "auto", "100vh"]}
+        color="white"
+        p={1}
+        position="fixed"
+        top={0}
+        left={0}
+        zIndex={1000}
+        display={["none", "none", "block"]}
+      >
+        <Flex
+          alignItems={"center"}
+          direction="column"
+          justifyContent="space-between"
+          height="100%"
+          color={colorMode === "dark" ? "white" : "black"}
+          position="relative"
         >
-          <Flex
-            alignItems={"center"}
-            direction="column"
-            justifyContent="space-between"
-            height="100%"
-            color={colorMode === "dark" ? "white" : "black"}
-            position="relative"
-          >
-            <Link as={RouterLink} to={"/"}>
-              <Box m={5}>
-                <Image
-                  cursor={"pointer"}
-                  alt="logo"
-                  w={9}
-                  src={
-                    colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"
-                  }
-                  onClick={() => {
-                    if (currentPage !== PageConstant.HOME) {
-                      dispatch(
-                        changePage({ currentPage, nextPage: PageConstant.HOME })
-                      );
-                      if (displayPageData !== PageConstant.FOR_YOU) {
-                        dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
-                      }
+          <Link as={RouterLink} to={"/"}>
+            <Box m={5}>
+              <Image
+                cursor={"pointer"}
+                alt="logo"
+                w={9}
+                src={
+                  colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"
+                }
+                onClick={() => {
+                  if (currentPage !== PageConstant.HOME) {
+                    dispatch(
+                      changePage({ currentPage, nextPage: PageConstant.HOME })
+                    );
+                    if (displayPageData !== PageConstant.FOR_YOU) {
+                      dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
                     }
-                    navigate("/");
-                  }}
-                />
-              </Box>
-            </Link>
-            <Flex direction={"column"}>
-              {listItems.map((item, index) => (
-                <Box my={3} key={`side-bar-item-${index}`}>
-                  <Button
-                    bg="transparent"
-                    _hover={{
-                      bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                    }}
-                    color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
-                    py={2}
-                    px={4}
-                    borderRadius="md"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (item.linkTo) {
-                        e.preventDefault();
-                        item.onClick && item.onClick();
-                      } else {
-                        item.onClick && item.onClick();
-                      }
-                    }}
-                  >
-                    {item?.linkTo ? (
-                      <Link
-                        as={RouterLink}
-                        to={item.linkTo}
-                        borderRadius="md"
-                        width={"100%"}
-                        height={"100%"}
-                        _hover={{ textDecoration: "none" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          item.onClick && item.onClick();
-                        }}
-                        color={item.color}
-                      >
-                        {item.icon}
-                      </Link>
-                    ) : (
-                      <>{item.icon}</>
-                    )}
-                  </Button>
-                </Box>
-              ))}
-            </Flex>
-            <Flex direction={"column"}>
-              <Box bottom={0}>
+                  }
+                  navigate("/");
+                }}
+              />
+            </Box>
+          </Link>
+          <Flex direction={"column"}>
+            {listItems.map((item, index) => (
+              <Box my={2} key={`side-bar-item-${index}`}>
                 <Button
-                  mt={7}
-                  mb={3}
-                  bg={"none"}
-                  color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
+                  bg="transparent"
                   _hover={{
-                    color: colorMode === "dark" ? "#f3f5f7" : "#000000",
+                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                  }}
+                  color={colorMode === "dark" ? "#4d4d4d" : "#a0a0a0"}
+                  py={2}
+                  px={4}
+                  borderRadius="md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.linkTo) {
+                      e.preventDefault();
+                      item.onClick && item.onClick();
+                    } else {
+                      item.onClick && item.onClick();
+                    }
                   }}
                 >
-                  <Link as={RouterLink} to={`/`}>
-                    <MdOutlinePushPin size={24} />
-                  </Link>
+                  {item?.linkTo ? (
+                    <Link
+                      as={RouterLink}
+                      to={item.linkTo}
+                      borderRadius="md"
+                      width={"100%"}
+                      height={"100%"}
+                      _hover={{ textDecoration: "none" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        item.onClick && item.onClick();
+                      }}
+                      color={item.color}
+                    >
+                      {item.icon}
+                    </Link>
+                  ) : (
+                    <>{item.icon}</>
+                  )}
                 </Button>
-                <Box
-                  mt={3}
-                  mb={7}
-                  bg={"none"}
-                  _hover={{ bg: "none" }}
-                  display="flex"
-                  justifyContent="center"
-                  height="24px"
-                  alignItems="center"
-                >
-                  <SidebarMenu />
-                </Box>
+                
               </Box>
-            </Flex>
+              
+            ))}
+              <SidebarMenu  />
+
           </Flex>
-        </Box>
-      </Flex>
-    </>
+          <Flex></Flex>
+        </Flex>
+      </Box>
+
+      {/* leftsidebar với mobile */}
+      <Box
+        display={["block", "block", "none"]}
+        position="fixed"
+        bottom={0}
+        width="100%"
+        bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
+        zIndex={1000}
+        p={2}
+      >
+        <Flex
+          justifyContent="space-evenly"
+          alignItems="center"
+          direction="row"
+          width="100%"
+        >
+          {listItems.map((item, index) => (
+            <Box key={`side-bar-item-${index}`} mx={3}>
+              <Button
+                bg="transparent"
+                _hover={{
+                  bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                }}
+                color={item.color}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (item.linkTo) {
+                    e.preventDefault();
+                    item.onClick && item.onClick();
+                  } else {
+                    item.onClick && item.onClick();
+                  }
+                }}
+              >
+                {item?.linkTo ? (
+                  <Link
+                    as={RouterLink}
+                    to={item.linkTo}
+                    _hover={{ textDecoration: "none" }}
+                  >
+                    {item.icon}
+                  </Link>
+                ) : (
+                  <>{item.icon}</>
+                )}
+              </Button>
+            </Box>
+          ))}
+            <SidebarMenu  />
+
+        </Flex>
+        
+
+      </Box>
+    </Flex>
   );
 };
 
