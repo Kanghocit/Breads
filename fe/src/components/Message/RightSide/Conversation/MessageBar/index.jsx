@@ -85,7 +85,7 @@ const MessageInput = () => {
   const icons = [
     {
       action: ACTIONS.FILES,
-      icon: <FileUpload setFilesData={setFilesData} />,
+      icon: <FileUpload setFilesData={setFilesData}/>,
     },
     {
       action: ACTIONS.MEDIA,

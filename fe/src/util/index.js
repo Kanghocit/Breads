@@ -407,6 +407,31 @@ export const formatDateToDDMMYYYY = (date) => {
   return `${day}/${month}/${year}`;
 };
 
+export const fileTypes = {
+  word: [
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ],
+  excel: [
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ],
+  powerpoint: [
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ],
+  text: ["text/plain"],
+  pdf: ["application/pdf"],
+};
+
+export const FILE_TYPES = {
+  word: "word",
+  excel: "excel",
+  powerpoint: "powerpoint",
+  pdf: "pdf",
+  text: "text",
+};
+
 export const generateObjectId = () => {
   const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
   const randomValue = Array.from({ length: 5 }, () =>

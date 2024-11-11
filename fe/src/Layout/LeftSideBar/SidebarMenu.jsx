@@ -159,7 +159,7 @@ const SidebarMenu = () => {
       {isMenuOpen && !isSubMenuOpen && !isSubMenuOpen1 && (
         <ClickOutsideComponent onClose={handleCloseMenu}>
           <Menu isOpen={isMenuOpen}>
-            <MenuButton as={Box} onClick={handleCloseMenu}>
+            <MenuButton as={Box} onClick={handleCloseMenu} py={2} px={4}>
               <HiMenuAlt4 size={24} />
             </MenuButton>
             <MenuList
@@ -210,7 +210,7 @@ const SidebarMenu = () => {
       {isSubMenuOpen && (
         <ClickOutsideComponent onClose={handleCloseMenu}>
           <Menu isOpen={isSubMenuOpen}>
-            <MenuButton as={Box} onClick={handleCloseMenu}>
+            <MenuButton as={Box} onClick={handleCloseMenu}  py={2} px={4}>
               <HiMenuAlt4 size={24} />
             </MenuButton>
             <MenuList
@@ -263,7 +263,7 @@ const SidebarMenu = () => {
       {isSubMenuOpen1 && (
         <ClickOutsideComponent onClose={handleCloseMenu}>
           <Menu isOpen={isSubMenuOpen1}>
-            <MenuButton as={Box} onClick={handleCloseMenu}>
+            <MenuButton as={Box} onClick={handleCloseMenu}  py={2} px={4}>
               <HiMenuAlt4 size={24} />
             </MenuButton>
             <MenuList
