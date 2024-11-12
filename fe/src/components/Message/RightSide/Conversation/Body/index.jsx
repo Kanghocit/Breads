@@ -14,6 +14,7 @@ import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
+import { getCurrentTheme } from "../../../../../util/Themes";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -28,6 +29,9 @@ const ConversationBody = ({ openDetailTab }) => {
   const conversationScreenRef = useRef(null);
   const layerRef = useRef(null);
   const [firstLoad, setFirstLoad] = useState(true);
+  const { conversationBackground, user1Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
@@ -135,13 +139,17 @@ const ConversationBody = ({ openDetailTab }) => {
           flex: 1,
           maxHeight: "calc(100% - 112px)",
           position: "relative",
+          backgroundBlendMode: conversationBackground?.backgroundBlendMode,
+          backgroundImage: `url(${conversationBackground?.backgroundImage})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
         }}
       >
         <div
           ref={layerRef}
           style={{
             position: "fixed",
-            backgroundColor: "#181818",
+            backgroundColor: conversationBackground?.backgroundColor,
             zIndex: 5000,
           }}
         ></div>
@@ -163,14 +171,14 @@ const ConversationBody = ({ openDetailTab }) => {
               const msgs = messages[date];
               const brStyle = {
                 height: "2px",
-                backgroundColor: "gray",
+                backgroundColor: user1Message?.backgroundColor,
                 flex: 1,
               };
               return (
                 <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
                     <div style={brStyle} />
-                    <Text px={2}>
+                    <Text px={2} color={user1Message?.backgroundColor}>
                       {date === currentDateFormat ? "Today" : date}
                     </Text>
                     <div style={brStyle} />

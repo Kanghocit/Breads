@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Socket from "../../../../socket";
 import { getEmojiIcon, getEmojiNameFromIcon } from "../../../../util";
+import { getCurrentTheme } from "../../../../util/Themes";
 import EmojiBox from "../Conversation/MessageBar/Emoji/EmojiBox";
 import IconWrapper from "../Conversation/MessageBar/IconWrapper";
 import ConversationDataTab from "./DataTab";
@@ -91,6 +92,10 @@ const DetailConversationTab = () => {
     },
   ];
   const [searchEmojiValue, setSearchEmojiValue] = useState("");
+  const { conversationBackground, user1Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const borderColor = user1Message?.borderColor;
 
   const handleChangeEmoji = async (emojiStr) => {
     try {
@@ -166,12 +171,15 @@ const DetailConversationTab = () => {
       width={"100%"}
       p={0}
       margin={0}
-      border={"1px solid gray"}
+      border={`1px solid ${borderColor ? borderColor : "gray"}`}
       height={"fit-content"}
       borderRadius={"12px"}
+      bg={conversationBackground?.backgroundColor}
+      backgroundBlendMode={conversationBackground?.backgroundBlendMode}
+      color={borderColor ? borderColor : ""}
     >
       {displaySubTab()}
-      {!itemSelected && itemSelected !== EMOJI && (
+      {(!itemSelected || itemSelected === EMOJI) && (
         <>
           <Flex
             justifyContent={"center"}
@@ -218,6 +226,7 @@ const DetailConversationTab = () => {
                   <AccordionPanel pb={3} px={4}>
                     {subItems.map(({ name, icon }) => (
                       <Flex
+                        key={name}
                         py={2}
                         gap={2}
                         alignItems={"center"}

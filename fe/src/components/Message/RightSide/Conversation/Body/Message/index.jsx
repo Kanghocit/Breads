@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
 import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
+import { getCurrentTheme } from "../../../../../../util/Themes";
 import MessageAction from "./Actions";
 import FileMsg from "./Files";
 import MsgMediaLayout from "./MediaLayout";
@@ -11,15 +12,24 @@ import MessageReactsBox from "./ReactsBox";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const participant = useSelector(
-    (state) => state.message.selectedConversation?.participant
+  const selectedConversation = useSelector(
+    (state) => state.message.selectedConversation
   );
+  const participant = selectedConversation?.participant;
   const [displayAction, setDisplayAction] = useState(false);
   const ownMessage = msg?.sender === userInfo?._id;
   const { content, createdAt, file, media, links, reacts } = msg;
   const previousReact = reacts?.find(
     ({ userId }) => userId === userInfo?._id
   )?.react;
+  const { user1Message, user2Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const {
+    backgroundColor: msgBg,
+    color: msgColor,
+    borderColor,
+  } = ownMessage ? user1Message : user2Message;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -49,6 +59,7 @@ const Message = ({ msg }) => {
             right: ownMessage ? "" : "-16px",
             bottom: "-10px",
             left: ownMessage ? "-16px" : "",
+            zIndex: 1000,
           }}
         >
           <MessageReactsBox reacts={reacts} msgId={msg?._id} />
@@ -86,11 +97,12 @@ const Message = ({ msg }) => {
             <Text
               pos={"relative"}
               maxW={"350px"}
-              bg={ownMessage ? "blue.400" : "gray.400"}
+              bg={msgBg}
               py={1}
               px={2}
               borderRadius={"md"}
-              color={ownMessage ? "white" : "black"}
+              color={msgColor}
+              border={borderColor ? `1px solid ${borderColor}` : ""}
             >
               {contentArr.map((part, index) => {
                 if (part.match(urlRegex)) {
@@ -125,14 +137,19 @@ const Message = ({ msg }) => {
                 position: "relative",
               }}
             >
-              <CustomLinkPreview link={links[links?.length - 1]} />
+              <CustomLinkPreview
+                link={links[links?.length - 1]}
+                bg={msgBg}
+                color={msgColor}
+                borderColor={borderColor}
+              />
               {msg?.reacts?.length > 0 && !media?.length && !file?._id && (
                 <>{reactBox()}</>
               )}
             </div>
           )}
           {media?.length > 0 && <MsgMediaLayout media={media} />}
-          {file?._id && <FileMsg file={file} />}
+          {file?._id && <FileMsg file={file} bg={msgBg} color={msgColor} />}
         </Flex>
         {!ownMessage && displayAction && (
           <MessageAction

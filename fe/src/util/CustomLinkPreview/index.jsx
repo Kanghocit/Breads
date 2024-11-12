@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePostInfo } from "../../store/PostSlice";
 import "./index.css";
 
-const CustomLinkPreview = ({ url = "", link = null }) => {
+const CustomLinkPreview = ({
+  url = "",
+  link = null,
+  bg = "",
+  color = "",
+  borderColor = "",
+}) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const [data, setData] = useState(link);
@@ -36,13 +42,26 @@ const CustomLinkPreview = ({ url = "", link = null }) => {
   if (!data) return <div>Loading...</div>;
 
   return (
-    <div className="preview-link-container">
+    <div
+      className="preview-link-container"
+      style={{
+        backgroundColor: bg ? bg : "",
+        color: color ? color : "",
+        border: borderColor ? `1px solid ${borderColor}` : "",
+      }}
+    >
       <h4 className="link-title">{data.title}</h4>
       <a href={url} target="_blank" rel="noopener noreferrer">
         {data.image && (
           <>
             <img src={data.image} className="link-img" />
-            <p className="link-des">
+            <p
+              className="link-des"
+              style={{
+                backgroundColor: bg ? bg : "",
+                color: color ? color : "",
+              }}
+            >
               {data.description.length > 100
                 ? `${data.description.slice(0, 100)}...`
                 : data.description}

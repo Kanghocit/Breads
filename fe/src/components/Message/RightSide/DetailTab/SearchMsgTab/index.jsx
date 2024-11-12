@@ -9,12 +9,16 @@ import InfiniteScroll from "../../../../InfiniteScroll";
 import ConversationTabHeader from "../tabHeader";
 import MessageSearchItem from "./msgSearch";
 import { EmptyContentSvg } from "../../../../../assests/icons";
+import { getCurrentTheme } from "../../../../../util/Themes";
 
 const ConversationSearchTab = ({ setItemSelected }) => {
   const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const { user1Message } = getCurrentTheme(selectedConversation?.theme);
+  const textColor = user1Message?.color;
+  const borderColor = user1Message?.borderColor;
   const [data, setData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const debounceValue = useDebounce(searchValue);
@@ -53,10 +57,14 @@ const ConversationSearchTab = ({ setItemSelected }) => {
 
   return (
     <Container margin={0} padding={2} height={"70vh"} overflowY={"auto"}>
-      <ConversationTabHeader setItemSelected={setItemSelected} />
+      <ConversationTabHeader
+        setItemSelected={setItemSelected}
+        color={textColor}
+      />
       <Flex alignItems={"center"} gap={4} flexDir={"column"} px={2}>
         <Input
           placeholder="Search a message"
+          border={borderColor ? `1px solid ${borderColor}` : ""}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />

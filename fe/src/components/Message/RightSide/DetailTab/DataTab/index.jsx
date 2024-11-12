@@ -10,13 +10,15 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
 import { POST } from "../../../../../config/API";
 import ConversationTabHeader from "../tabHeader";
 import FileMsg from "../../Conversation/Body/Message/Files";
 import LinkBox from "../../Conversation/Body/Message/Links";
+import { updateSeeMedia } from "../../../../../store/UtilSlice";
+import { getCurrentTheme } from "../../../../../util/Themes";
 
 const TABS = {
   MEDIA: "Media",
@@ -25,6 +27,7 @@ const TABS = {
 };
 
 const ConversationDataTab = ({ currentTab, setItemSelected }) => {
+  const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
@@ -32,6 +35,8 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
   const [tabIndex, setTabIndex] = useState(
     Object.values(TABS).findIndex((tabValue) => tabValue === currentTab)
   );
+  const { user1Message } = getCurrentTheme(selectedConversation?.theme);
+  const textColor = user1Message?.color;
 
   useEffect(() => {
     if (currentTab && selectedConversation?._id) {
@@ -79,12 +84,25 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
     }
   };
 
+  const handleSeeMedia = (index) => {
+    dispatch(
+      updateSeeMedia({
+        open: true,
+        media: tabData,
+        currentMediaIndex: index,
+      })
+    );
+  };
+
   return (
     <Container margin={0} padding={2} height={"70vh"}>
-      <ConversationTabHeader setItemSelected={setItemSelected} />
+      <ConversationTabHeader
+        setItemSelected={setItemSelected}
+        color={textColor}
+      />
       <Tabs w={"full"} index={tabIndex} onChange={handleTabsChange}>
         <TabList w={"full"}>
-          {Object.entries(TABS).map(([key, value]) => (
+          {Object.entries(TABS).map(([_, value]) => (
             <Tab
               flex={1}
               borderBottom={"1.5px solid white"}
@@ -105,11 +123,17 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
         <TabPanels overflowY={"auto"} maxHeight={"calc(70vh - 120px)"} pr={2}>
           <TabPanel p={0} mt={4}>
             <Flex gap={2} wrap={"wrap"}>
-              {tabData?.map((item) => {
+              {tabData?.map((item, index) => {
                 const type = item.type;
                 const url = item.url;
                 if (type === Constants.MEDIA_TYPE.VIDEO) {
-                  return <video src={url} key={url} />;
+                  return (
+                    <video
+                      src={url}
+                      key={url}
+                      onClick={() => handleSeeMedia(index)}
+                    />
+                  );
                 } else {
                   return (
                     <Image
@@ -118,6 +142,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
                       w={"30%"}
                       objectFit={"cover"}
                       cursor={"pointer"}
+                      onClick={() => handleSeeMedia(index)}
                     />
                   );
                 }
@@ -134,7 +159,7 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
           <TabPanel p={0} mt={4}>
             <Flex gap={2} wrap={"wrap"}>
               {tabData?.map((item) => (
-                <LinkBox link={item} />
+                <LinkBox link={item} color={textColor} />
               ))}
             </Flex>
           </TabPanel>
