@@ -139,15 +139,17 @@ const ConversationBody = ({ openDetailTab }) => {
           flex: 1,
           maxHeight: "calc(100% - 112px)",
           position: "relative",
-          backgroundColor: conversationBackground?.backgroundColor,
           backgroundBlendMode: conversationBackground?.backgroundBlendMode,
+          backgroundImage: `url(${conversationBackground?.backgroundImage})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
         }}
       >
         <div
           ref={layerRef}
           style={{
             position: "fixed",
-            backgroundColor: "#181818",
+            backgroundColor: conversationBackground?.backgroundColor,
             zIndex: 5000,
           }}
         ></div>

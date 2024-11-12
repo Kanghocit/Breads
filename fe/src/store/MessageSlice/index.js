@@ -40,6 +40,7 @@ const msgSlice = createSlice({
     },
     selectConversation: (state, action) => {
       state.selectedConversation = action.payload;
+      state.messages = {};
     },
     addNewMsg: (state, action) => {
       const msgsInfo = action.payload;

@@ -226,6 +226,7 @@ const DetailConversationTab = () => {
                   <AccordionPanel pb={3} px={4}>
                     {subItems.map(({ name, icon }) => (
                       <Flex
+                        key={name}
                         py={2}
                         gap={2}
                         alignItems={"center"}

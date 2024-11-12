@@ -1,8 +1,7 @@
 const messageThemes = {
-  // Theme 0: Default
   default: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/soft-sky-background.jpg')",
+      backgroundImage: "",
       backgroundColor: "#181818",
       backgroundBlendMode: "soft-light",
     },
@@ -17,10 +16,10 @@ const messageThemes = {
       borderColor: "#718096",
     },
   },
-  // Theme 1: Soft Sky - Light and Airy
   softSky: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/soft-sky-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1178574683/photo/blue-sky-and-white-clouds.webp?a=1&b=1&s=612x612&w=0&k=20&c=IUEiqjSgmy6tizBDDfEoKnfkqsc0JP3vRTvzaAlat8E=",
       backgroundColor: "#E3F2FD",
       backgroundBlendMode: "soft-light",
     },
@@ -35,11 +34,10 @@ const messageThemes = {
       borderColor: "#B3E5FC",
     },
   },
-
-  // Theme 2: Warm Desert - Earthy and Neutral
   warmDesert: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/desert-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/482377760/photo/desert-cloudscape.webp?a=1&b=1&s=612x612&w=0&k=20&c=s_TEBG8UyZziixecgTGQNXPkcRDwtdZiqTAxkpdhRIg=",
       backgroundColor: "#FBE9E7",
       backgroundBlendMode: "overlay",
     },
@@ -54,11 +52,10 @@ const messageThemes = {
       borderColor: "#FF8A65",
     },
   },
-
-  // Theme 3: Midnight Glow - Dark and Vibrant
   midnightGlow: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/midnight-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1358640729/photo/full-moon-over-lake-with-mountains-night-scene-moonlight-scenic-landscape-purple-sky-3d.webp?a=1&b=1&s=612x612&w=0&k=20&c=vTwpY27wFPpAiELz_YsLAYRSBllBGX3nnM9dtQVz6ys=",
       backgroundColor: "#212121",
       backgroundBlendMode: "multiply",
     },
@@ -73,11 +70,10 @@ const messageThemes = {
       borderColor: "#484848",
     },
   },
-
-  // Theme 4: Lavender Bloom - Calm and Elegant
   lavenderBloom: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/lavender-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1409704770/photo/close-up-lavender-flowers-in-beautiful-field-at-sunset.webp?a=1&b=1&s=612x612&w=0&k=20&c=cdxehGkeiR1Tsn4jAy9zZY5pL8RPoTyhB2WtAKg9508=",
       backgroundColor: "#F3E5F5",
       backgroundBlendMode: "soft-light",
     },
@@ -92,11 +88,10 @@ const messageThemes = {
       borderColor: "#BA68C8",
     },
   },
-
-  // Theme 5: Cyberwave - Neon and Futuristic
   cyberwave: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/cyberpunk-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1144238730/photo/digital-particles-wave-digital-cyberspace-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=56_Bwk5rwSe3Iuai_MQ3OOo0qERs2W2p3HLGdR64epE=",
       backgroundColor: "#1E1E2C",
       backgroundBlendMode: "multiply",
     },
@@ -113,7 +108,8 @@ const messageThemes = {
   },
   oceanBreeze: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/ocean-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1616880604/photo/beautiful-tropical-island-white-sand-beach-andaman-sea-in-blue-sky-sunny-day.webp?a=1&b=1&s=612x612&w=0&k=20&c=fTnAR7NeOfcoW4NKoUW2k-4hP7OytJ2yakprwe7qnWQ=",
       backgroundColor: "#E0F7FA",
       backgroundBlendMode: "soft-light",
     },
@@ -128,11 +124,10 @@ const messageThemes = {
       borderColor: "#81D4FA",
     },
   },
-
-  // Theme 7: Autumn Forest - Warm and Earthy
   autumnForest: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/autumn-forest-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1585613131/photo/autumn-leaves-on-the-fall-blurred-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=Wfblla8F0d3TByA3ZitN-c5n-XT7NYkr1oMy3FHtR-I=",
       backgroundColor: "#FBE9E7",
       backgroundBlendMode: "overlay",
     },
@@ -147,11 +142,10 @@ const messageThemes = {
       borderColor: "#FF5722",
     },
   },
-
-  // Theme 8: Galaxy Night - Mysterious and Cosmic
   galaxyNight: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/galaxy-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1732963074/photo/starry-night-sky-in-space.webp?a=1&b=1&s=612x612&w=0&k=20&c=RbS4XYiZ3_TEOX7JwePEnosDax-MNp5q_aIprqRMHM4=",
       backgroundColor: "#212121",
       backgroundBlendMode: "multiply",
     },
@@ -166,11 +160,10 @@ const messageThemes = {
       borderColor: "#311B92",
     },
   },
-
-  // Theme 9: Minty Fresh - Cool and Modern
   mintyFresh: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/minty-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1304690828/photo/organic-mint-leaves-mentha-piperita.webp?a=1&b=1&s=612x612&w=0&k=20&c=ZrYuVQ6S0S6bHHTRxDBWVDVfW8AKTuHj9rj8-c6hv-Q=",
       backgroundColor: "#E0F2F1",
       backgroundBlendMode: "soft-light",
     },
@@ -185,11 +178,10 @@ const messageThemes = {
       borderColor: "#80CBC4",
     },
   },
-
-  // Theme 10: Urban Jungle - Lush and Green
   urbanJungle: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/jungle-background.jpg')",
+      backgroundImage:
+        "https://images.unsplash.com/photo-1569521862953-e999a7f8b1e5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fHVyYmFuSnVuZ2xlfGVufDB8fDB8fHww",
       backgroundColor: "#C8E6C9",
       backgroundBlendMode: "soft-light",
     },
@@ -206,7 +198,8 @@ const messageThemes = {
   },
   sunsetGlow: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/sunset-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1271239232/photo/natural-background-blurring-warm-colors-and-bright-glod-sunlight-bokeh-or-christmas.webp?a=1&b=1&s=612x612&w=0&k=20&c=t5ANnruLmT3GIZ0JvcmJ6xAa1tYxXHMLj_gGtWz6E8c=",
       backgroundColor: "#FFE0B2",
       backgroundBlendMode: "soft-light",
     },
@@ -221,11 +214,10 @@ const messageThemes = {
       borderColor: "#FFB74D",
     },
   },
-
-  // Theme 12: Winter Frost - Cool and Icy
   winterFrost: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/winter-frost-background.jpg')",
+      backgroundImage:
+        "https://plus.unsplash.com/premium_photo-1668792545377-49e3dc0257f0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2ludGVyRnJvc3R8ZW58MHx8MHx8fDA%3D",
       backgroundColor: "#E0F7FA",
       backgroundBlendMode: "overlay",
     },
@@ -240,11 +232,10 @@ const messageThemes = {
       borderColor: "#80DEEA",
     },
   },
-
-  // Theme 13: Neon Lights - Bold and Vibrant
   neonLights: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/neon-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1153669560/photo/abstract-vaporwave-holographic-background-image-of-spectrum-colors.webp?a=1&b=1&s=612x612&w=0&k=20&c=DJ4LS8jYtGgEVnX60E6OA4EUweNTJjnHbVE4bZ2mg04=",
       backgroundColor: "#1A237E",
       backgroundBlendMode: "multiply",
     },
@@ -259,11 +250,10 @@ const messageThemes = {
       borderColor: "#D500F9",
     },
   },
-
-  // Theme 14: Vintage Paper - Rustic and Classic
   vintagePaper: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/vintage-paper-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1497523070/photo/closeup-of-white-crumpled-paper-for-texture-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=5MuAzUFbeXbA2GQZfUJg_Fx1fHzTa_HwnflpLV2vtNU=",
       backgroundColor: "#FFF3E0",
       backgroundBlendMode: "soft-light",
     },
@@ -278,11 +268,10 @@ const messageThemes = {
       borderColor: "#A1887F",
     },
   },
-
-  // Theme 15: Candy Land - Fun and Colorful
   candyLand: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/candy-land-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/2174098019/photo/a-colorful-delight-of-candy-eggs-nestled-together-a-close-up-of-a-pile-of-candy-eggs.webp?a=1&b=1&s=612x612&w=0&k=20&c=jtqA4zGUiwKHqAsyi91P0npBn_m56fZpf41-VXiLB-4=",
       backgroundColor: "#FFEBEE",
       backgroundBlendMode: "overlay",
     },
@@ -299,7 +288,8 @@ const messageThemes = {
   },
   desertOasis: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/desert-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/471759147/photo/oasis.webp?a=1&b=1&s=612x612&w=0&k=20&c=Bli9OuqhfbCqtn3skXQMxN80uHjytQx0vsvWTJxWXKI=",
       backgroundColor: "#FFF3E0",
       backgroundBlendMode: "soft-light",
     },
@@ -314,11 +304,10 @@ const messageThemes = {
       borderColor: "#FFB74D",
     },
   },
-
-  // Theme 17: Aurora Borealis - Mystical and Ethereal
   auroraBorealis: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/aurora-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1545604498/photo/northern-lights-in-the-sky-tromso-norway.webp?a=1&b=1&s=612x612&w=0&k=20&c=sWYVEn1hOMzzA1c1Z13WE1epUka3ijZW5HbACGXNs1E=",
       backgroundColor: "#0D47A1",
       backgroundBlendMode: "overlay",
     },
@@ -333,11 +322,10 @@ const messageThemes = {
       borderColor: "#90CAF9",
     },
   },
-
-  // Theme 18: Cyberpunk City - Futuristic and Neon
   cyberpunkCity: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/cyberpunk-city-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1382275104/photo/metaverse-city-and-cyberpunk-concept-3d-render.webp?a=1&b=1&s=612x612&w=0&k=20&c=l3Eg3VhotKqwmeZHDpwB0lLgL8oUYG9ihImqeb3DwN0=",
       backgroundColor: "#1C1C1E",
       backgroundBlendMode: "multiply",
     },
@@ -352,11 +340,10 @@ const messageThemes = {
       borderColor: "#F50057",
     },
   },
-
-  // Theme 19: Spring Blossom - Soft and Pastel
   springBlossom: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/spring-blossom-background.jpg')",
+      backgroundImage:
+        "https://media.istockphoto.com/id/1301592082/photo/beautiful-meadow-field-with-fresh-grass-and-yellow-dandelion-flowers-in-nature.webp?a=1&b=1&s=612x612&w=0&k=20&c=O2PJ1erwXe5TFC__iu7uzl139QfAtnTZ2a3shggpzdU=",
       backgroundColor: "#FFFDE7",
       backgroundBlendMode: "soft-light",
     },
@@ -371,11 +358,10 @@ const messageThemes = {
       borderColor: "#F48FB1",
     },
   },
-
-  // Theme 20: Starry Sky - Calm and Dreamy
   starrySky: {
     conversationBackground: {
-      backgroundImage: "url('/path/to/starry-sky-background.jpg')",
+      backgroundImage:
+        "https://images.unsplash.com/photo-1565121796532-6d3f0704d7a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHN0YXJyeVNreXxlbnwwfHwwfHx8MA%3D%3D",
       backgroundColor: "#212121",
       backgroundBlendMode: "soft-light",
     },
