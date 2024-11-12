@@ -185,12 +185,9 @@ const LeftSideBar = () => {
                     <>{item.icon}</>
                   )}
                 </Button>
-                
               </Box>
-              
             ))}
-              <SidebarMenu  />
-
+            <SidebarMenu />
           </Flex>
           <Flex></Flex>
         </Flex>
@@ -204,7 +201,7 @@ const LeftSideBar = () => {
         width="100%"
         bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
         zIndex={1000}
-        p={2}
+        py={2}
       >
         <Flex
           justifyContent="space-evenly"
@@ -213,8 +210,12 @@ const LeftSideBar = () => {
           width="100%"
         >
           {listItems.map((item, index) => (
-            <Box key={`side-bar-item-${index}`} mx={3}>
+            <Box
+              key={`side-bar-item-${index}`}
+              // mx={3}
+            >
               <Button
+              p={0}
                 bg="transparent"
                 _hover={{
                   bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
@@ -244,11 +245,8 @@ const LeftSideBar = () => {
               </Button>
             </Box>
           ))}
-            <SidebarMenu  />
-
+          <SidebarMenu />
         </Flex>
-        
-
       </Box>
     </Flex>
   );

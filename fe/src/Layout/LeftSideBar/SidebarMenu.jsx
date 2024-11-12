@@ -165,6 +165,7 @@ const SidebarMenu = () => {
             <MenuList
               {...bgk}
               bg={colorMode === "dark" ? "#0a0a0a" : "#ffffff"}
+              
             >
               {menuItems.map((item) => (
                 <React.Fragment key={item.name}>

@@ -200,11 +200,12 @@ const PostPopup = () => {
         <ModalContent
           position="relative"
           boxSizing="border-box"
-          width="620px"
+          width="94%"
           maxWidth="620px"
           bg={bgColor}
           color={textColor}
           padding="24px"
+          marginRight={1}
           borderRadius="16px"
           zIndex={3000}
         >
