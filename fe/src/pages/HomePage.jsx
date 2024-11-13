@@ -53,7 +53,8 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
-        {displayPageData === FOR_YOU && <CreatePostBar />}
+        {displayPageData === FOR_YOU && <CreatePostBar />
+        }
         <ListPost />
       </>
     </ContainerLayout>

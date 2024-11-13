@@ -8,11 +8,12 @@ import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
 import { useTranslation } from "react-i18next";
+import { BtnLike, BtnMess } from "./LeftSideBar/ActionsBtns";
 
 export const HeaderHeight = 60;
 
 const Header = () => {
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -64,13 +65,13 @@ const Header = () => {
       );
     }
 
-    return headerContentMap[currentPage] || t("forYou"); 
+    return headerContentMap[currentPage] || t("forYou");
   };
 
   const handleNavigate = (item) => {
     if (currentPage === PageConstant.ACTIVITY) {
       const activityPageMap = {
-        [t("all")]: PageConstant.ACTIVITY, 
+        [t("all")]: PageConstant.ACTIVITY,
         [t("follows")]: PageConstant.FOLLOWS,
         [t("replies")]: PageConstant.REPLIES,
         [t("mentions")]: PageConstant.MENTIONS,
@@ -95,17 +96,19 @@ const Header = () => {
 
   return (
     <Flex
+      display={["flex", "flex", "none"]}
       position={"fixed"}
       left={0}
       top={0}
       width={"100vw"}
       maxWidth={"100vw"}
-      height={`${HeaderHeight}px`}
+      height={`${HeaderHeight}px`} 
       zIndex={999}
-      justifyContent={"center"}
+      justifyContent={"space-between"}
       alignItems={"center"}
       bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
     >
+      <BtnLike />
       <Flex
         width={containerBoxWidth}
         maxWidth={containerBoxWidth}
@@ -167,6 +170,7 @@ const Header = () => {
           </ClickOutsideComponent>
         )}
       </Flex>
+      <BtnMess />
     </Flex>
   );
 };
