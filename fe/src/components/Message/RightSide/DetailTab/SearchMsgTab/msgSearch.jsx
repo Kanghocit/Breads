@@ -27,8 +27,8 @@ const MessageSearchItem = ({ msg }) => {
         behavior: "smooth",
         block: "center",
       });
-      setStartScroll(false);
     }
+    setStartScroll(false);
   }, [loadingMsgs, startScroll]);
 
   const clickSeeDetailMsg = () => {

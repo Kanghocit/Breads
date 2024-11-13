@@ -130,8 +130,8 @@ const msgSlice = createSlice({
           }
         }
         state.messages = currentMsgState;
-        state.loadingMsgs = false;
       }
+      state.loadingMsgs = false;
     });
     builder.addCase(getConversationById.fulfilled, (state, action) => {
       const conversation = action.payload;

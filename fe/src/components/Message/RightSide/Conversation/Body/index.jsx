@@ -20,9 +20,8 @@ const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { selectedConversation, messages, currentPageMsg } = useSelector(
-    (state) => state.message
-  );
+  const { selectedConversation, messages, currentPageMsg, loadingMsgs } =
+    useSelector((state) => state.message);
   const lastMsg = selectedConversation?.lastMsg;
   const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);
@@ -54,7 +53,6 @@ const ConversationBody = ({ openDetailTab }) => {
     });
     socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
       if (data) {
-        console.log("data: ", data);
         dispatch(updateMsg(data));
       }
     });
@@ -96,7 +94,7 @@ const ConversationBody = ({ openDetailTab }) => {
         layerRef.current.style.visibility = "hidden";
         layerRef.current.style.transition =
           "opacity 0.3s ease-out, visibility 0.2s linear";
-      }, 1500);
+      }, 2500);
     }
   };
 
@@ -120,10 +118,10 @@ const ConversationBody = ({ openDetailTab }) => {
               msgs: data,
             })
           );
+          dispatch(updateCurrentPageMsg(page));
           setTimeout(() => {
             setFirstLoad(false);
-            dispatch(updateCurrentPageMsg(page));
-          }, 500);
+          }, 1500);
         }
       }
     );
@@ -147,6 +145,7 @@ const ConversationBody = ({ openDetailTab }) => {
       >
         <div
           ref={layerRef}
+          id="chat-hidden-layer"
           style={{
             position: "fixed",
             backgroundColor: conversationBackground?.backgroundColor,
