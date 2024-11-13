@@ -1,4 +1,12 @@
-import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  Link,
+  useBreakpointValue,
+  useColorMode,
+} from "@chakra-ui/react";
 import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
@@ -15,7 +23,6 @@ import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
-
 const LeftSideBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -44,6 +51,30 @@ const LeftSideBar = () => {
     return colorMode === "dark" ? "#171717" : "#f0f0f0";
   };
 
+  const LikeItem = {
+    icon: <FaRegHeart size={24} />,
+    linkTo: "/" + PageConstant.ACTIVITY,
+    onClick: () => {
+      if (currentPage !== PageConstant.ACTIVITY) {
+        dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
+      }
+      navigate("/" + PageConstant.ACTIVITY);
+    },
+    color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
+  };
+
+  const messItem = {
+    icon: <FaFacebookMessenger size={24} />,
+    linkTo: "/" + PageConstant.CHAT,
+    onClick: () => {
+      if (currentPage !== PageConstant.CHAT) {
+        dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT }));
+      }
+      navigate("/" + PageConstant.CHAT);
+    },
+    color: getButtonColor(currentPage === PageConstant.CHAT, colorMode),
+  };
+
   const listItems = [
     {
       icon: <GrHomeRounded size={24} />,
@@ -70,42 +101,7 @@ const LeftSideBar = () => {
       },
       color: getButtonColor(currentPage === PageConstant.SEARCH, colorMode),
     },
-    {
-      icon: (
-        <div
-          style={{
-            position: "relative",
-            width: "fit-content",
-            height: "fit-content",
-          }}
-        >
-          <FaRegHeart size={24} />
-          {hasNewNotification && (
-            <div
-              style={{
-                position: "absolute",
-                right: "-4px",
-                top: "1px",
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                backgroundColor: "red",
-              }}
-            />
-          )}
-        </div>
-      ),
-      linkTo: "/" + PageConstant.ACTIVITY,
-      onClick: () => {
-        if (currentPage !== PageConstant.ACTIVITY) {
-          dispatch(
-            changePage({ currentPage, nextPage: PageConstant.ACTIVITY })
-          );
-        }
-        navigate("/" + PageConstant.ACTIVITY);
-      },
-      color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
-    },
+    LikeItem,
     {
       icon: <MdAdd size={24} />,
       onClick: () => {
@@ -123,17 +119,7 @@ const LeftSideBar = () => {
       },
       color: getButtonColor(currentPage === PageConstant.USER, colorMode),
     },
-    {
-      icon: <FaFacebookMessenger size={24} />,
-      linkTo: "/" + PageConstant.CHAT,
-      onClick: () => {
-        if (currentPage !== PageConstant.CHAT) {
-          dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT }));
-        }
-        navigate("/" + PageConstant.CHAT);
-      },
-      color: getButtonColor(currentPage === PageConstant.CHAT, colorMode),
-    },
+    messItem,
   ];
 
   return (
@@ -223,9 +209,10 @@ const LeftSideBar = () => {
                 </Button>
               </Box>
             ))}
+          </Flex>
+          <Flex marginBottom={"10px"}>
             <SidebarMenu />
           </Flex>
-          <Flex></Flex>
         </Flex>
       </Box>
 
@@ -245,42 +232,41 @@ const LeftSideBar = () => {
           direction="row"
           width="100%"
         >
-          {listItems.map((item, index) => (
-            <Box
-              key={`side-bar-item-${index}`}
-              // mx={3}
-            >
-              <Button
-              p={0}
-                bg="transparent"
-                _hover={{
-                  bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
-                }}
-                color={item.color}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (item.linkTo) {
-                    e.preventDefault();
-                    item.onClick && item.onClick();
-                  } else {
-                    item.onClick && item.onClick();
-                  }
-                }}
-              >
-                {item?.linkTo ? (
-                  <Link
-                    as={RouterLink}
-                    to={item.linkTo}
-                    _hover={{ textDecoration: "none" }}
-                  >
-                    {item.icon}
-                  </Link>
-                ) : (
-                  <>{item.icon}</>
-                )}
-              </Button>
-            </Box>
-          ))}
+          {listItems
+            .filter((item) => item !== LikeItem && item !== messItem)
+            .map((item, index) => (
+              <Box key={`side-bar-item-${index}`}>
+                <Button
+                  p={0}
+                  bg="transparent"
+                  _hover={{
+                    bg: colorMode === "dark" ? "#171717" : "#f0f0f0",
+                  }}
+                  color={item.color}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.linkTo) {
+                      e.preventDefault();
+                      item.onClick && item.onClick();
+                    } else {
+                      item.onClick && item.onClick();
+                    }
+                  }}
+                >
+                  {item?.linkTo ? (
+                    <Link
+                      as={RouterLink}
+                      to={item.linkTo}
+                      _hover={{ textDecoration: "none" }}
+                    >
+                      {item.icon}
+                    </Link>
+                  ) : (
+                    <>{item.icon}</>
+                  )}
+                </Button>
+              </Box>
+            ))}
           <SidebarMenu />
         </Flex>
       </Box>
