@@ -96,15 +96,15 @@ const Header = () => {
 
   return (
     <Flex
-      display={["flex", "flex", "none"]}
+      display={"flex"}
       position={"fixed"}
       left={0}
       top={0}
       width={"100vw"}
       maxWidth={"100vw"}
-      height={`${HeaderHeight}px`} 
+      height={`${HeaderHeight}px`}
       zIndex={999}
-      justifyContent={"space-between"}
+      justifyContent={["space-between", "space-between", "center"]}
       alignItems={"center"}
       bg={colorMode === "dark" ? "#0a0a0a" : "#fafafa"}
     >

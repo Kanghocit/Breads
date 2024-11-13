@@ -222,9 +222,7 @@ const LeftSideBar = () => {
           {listItems
             .filter((item) => item !== LikeItem && item !== messItem)
             .map((item, index) => (
-              <Box
-                key={`side-bar-item-${index}`}
-              >
+              <Box key={`side-bar-item-${index}`}>
                 <Button
                   p={0}
                   bg="transparent"
