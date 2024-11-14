@@ -1,4 +1,4 @@
-import { LinkIcon, SearchIcon } from "@chakra-ui/icons";
+import { LinkIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
@@ -9,9 +9,6 @@ import {
   Box,
   Container,
   Flex,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -20,15 +17,15 @@ import {
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaFileAlt } from "react-icons/fa";
-import { IoIosSearch, IoMdClose, IoMdPhotos } from "react-icons/io";
+import { IoIosSearch, IoMdPhotos } from "react-icons/io";
 import { MdColorLens } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Socket from "../../../../socket";
-import { getEmojiIcon, getEmojiNameFromIcon } from "../../../../util";
+import { getEmojiIcon } from "../../../../util";
 import { getCurrentTheme } from "../../../../util/Themes";
-import EmojiBox from "../Conversation/MessageBar/Emoji/EmojiBox";
 import IconWrapper from "../Conversation/MessageBar/IconWrapper";
+import EmojiModal from "./ConfigModal/EmojiModal";
+import ThemeModal from "./ConfigModal/ThemeModal";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
 
@@ -97,15 +94,6 @@ const DetailConversationTab = () => {
   );
   const borderColor = user1Message?.borderColor;
 
-  const handleChangeEmoji = async (emojiStr) => {
-    try {
-      const socket = Socket.getInstant();
-      console.log("emojiStr: ", emojiStr);
-    } catch (err) {
-      console.error("handleChangeEmoji: ", err);
-    }
-  };
-
   const displaySubTab = () => {
     switch (itemSelected) {
       case SEARCH:
@@ -120,44 +108,16 @@ const DetailConversationTab = () => {
           />
         );
       case EMOJI:
+      case THEME:
         return (
-          <Modal
-            isOpen={itemSelected === EMOJI}
-            onClose={() => setItemSelected("")}
-          >
+          <Modal isOpen={true} onClose={() => setItemSelected("")}>
             <ModalOverlay />
             <ModalContent width={"fit-content"} p={4}>
-              <Flex
-                alignItems={"center"}
-                justifyContent={"space-between"}
-                mb={3}
-              >
-                <InputGroup maxWidth={"160px"} height={"32px"}>
-                  <InputLeftElement pointerEvents="none" height={"32px"}>
-                    <SearchIcon
-                      color="gray.300"
-                      height={"16px"}
-                      width={"16px"}
-                    />
-                  </InputLeftElement>
-                  <Input
-                    type="text"
-                    placeholder="Search emoji"
-                    height={"32px"}
-                    fontSize={"14px"}
-                    value={searchEmojiValue}
-                    onChange={(e) => setSearchEmojiValue(e.target.value)}
-                  />
-                </InputGroup>
-                <IconWrapper icon={<IoMdClose onClick={() => onClose()} />} />
-              </Flex>
-              <EmojiBox
-                searchValue={searchEmojiValue}
-                currentEmoji={getEmojiIcon(selectedConversation?.emoji)}
-                onClick={(emojiIcon) =>
-                  handleChangeEmoji(getEmojiNameFromIcon(emojiIcon))
-                }
-              />
+              {itemSelected === EMOJI ? (
+                <EmojiModal setItemSelected={setItemSelected} />
+              ) : (
+                <ThemeModal setItemSelected={setItemSelected} />
+              )}
             </ModalContent>
           </Modal>
         );
@@ -179,7 +139,7 @@ const DetailConversationTab = () => {
       color={borderColor ? borderColor : ""}
     >
       {displaySubTab()}
-      {(!itemSelected || itemSelected === EMOJI) && (
+      {(!itemSelected || [EMOJI, THEME].includes(itemSelected)) && (
         <>
           <Flex
             justifyContent={"center"}

@@ -1,10 +1,11 @@
-import { Avatar, Flex, Link, Text, Tooltip } from "@chakra-ui/react";
+import { Avatar, Flex, Image, Link, Text, Tooltip } from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { isDifferentDate } from "../../../../../../util";
 import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
 import { getCurrentTheme } from "../../../../../../util/Themes";
+import { messageThemes } from "../../../../../../util/Themes/index";
 import MessageAction from "./Actions";
 import FileMsg from "./Files";
 import MsgMediaLayout from "./MediaLayout";
@@ -162,27 +163,65 @@ const Message = ({ msg }) => {
     );
   };
 
+  const handleSettingMsg = () => {
+    const splitArr = msg?.content.split(" ");
+    const lastWord = splitArr[splitArr.length - 1];
+    const isTheme = lastWord in messageThemes;
+    const bgImg =
+      messageThemes?.[lastWord]?.conversationBackground?.backgroundImage;
+
+    return (
+      <>
+        <Text textAlign={"center"}>
+          {ownMessage ? "You " : participant?.username + " "}
+          {msg?.content}
+        </Text>
+        {isTheme && (
+          <Image
+            src={bgImg}
+            width={"20px"}
+            height={"20px"}
+            borderRadius={"50%"}
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <>
       <Tooltip
         label={getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        <Flex
-          pos={"relative"}
-          flexDir={ownMessage ? "column" : ""}
-          gap={2}
-          alignSelf={ownMessage ? "flex-end" : "flex-start"}
-          width={"fit-content"}
-          onMouseEnter={() => {
-            setDisplayAction(true);
-          }}
-          onMouseLeave={() => {
-            setDisplayAction(false);
-          }}
-        >
-          {msgContent()}
-        </Flex>
+        {msg?.type === "setting" ? (
+          <Flex
+            _id={`msg_${msg?._id}`}
+            width={"100%"}
+            height={"fit-content"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            gap={1}
+          >
+            {handleSettingMsg()}
+          </Flex>
+        ) : (
+          <Flex
+            pos={"relative"}
+            flexDir={ownMessage ? "column" : ""}
+            gap={2}
+            alignSelf={ownMessage ? "flex-end" : "flex-start"}
+            width={"fit-content"}
+            onMouseEnter={() => {
+              setDisplayAction(true);
+            }}
+            onMouseLeave={() => {
+              setDisplayAction(false);
+            }}
+          >
+            {msgContent()}
+          </Flex>
+        )}
       </Tooltip>
     </>
   );

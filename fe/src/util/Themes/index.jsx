@@ -1,5 +1,6 @@
-const messageThemes = {
+export const messageThemes = {
   default: {
+    name: "default",
     conversationBackground: {
       backgroundImage: "",
       backgroundColor: "#181818",
@@ -17,6 +18,7 @@ const messageThemes = {
     },
   },
   softSky: {
+    name: "soft sky",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1178574683/photo/blue-sky-and-white-clouds.webp?a=1&b=1&s=612x612&w=0&k=20&c=IUEiqjSgmy6tizBDDfEoKnfkqsc0JP3vRTvzaAlat8E=",
@@ -35,6 +37,7 @@ const messageThemes = {
     },
   },
   warmDesert: {
+    name: "warm desert",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/482377760/photo/desert-cloudscape.webp?a=1&b=1&s=612x612&w=0&k=20&c=s_TEBG8UyZziixecgTGQNXPkcRDwtdZiqTAxkpdhRIg=",
@@ -53,6 +56,7 @@ const messageThemes = {
     },
   },
   midnightGlow: {
+    name: "midnight glow",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1358640729/photo/full-moon-over-lake-with-mountains-night-scene-moonlight-scenic-landscape-purple-sky-3d.webp?a=1&b=1&s=612x612&w=0&k=20&c=vTwpY27wFPpAiELz_YsLAYRSBllBGX3nnM9dtQVz6ys=",
@@ -71,6 +75,7 @@ const messageThemes = {
     },
   },
   lavenderBloom: {
+    name: "lavender bloom",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1409704770/photo/close-up-lavender-flowers-in-beautiful-field-at-sunset.webp?a=1&b=1&s=612x612&w=0&k=20&c=cdxehGkeiR1Tsn4jAy9zZY5pL8RPoTyhB2WtAKg9508=",
@@ -89,6 +94,7 @@ const messageThemes = {
     },
   },
   cyberwave: {
+    name: "cyberwave",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1144238730/photo/digital-particles-wave-digital-cyberspace-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=56_Bwk5rwSe3Iuai_MQ3OOo0qERs2W2p3HLGdR64epE=",
@@ -107,6 +113,7 @@ const messageThemes = {
     },
   },
   oceanBreeze: {
+    name: "ocean breeze",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1616880604/photo/beautiful-tropical-island-white-sand-beach-andaman-sea-in-blue-sky-sunny-day.webp?a=1&b=1&s=612x612&w=0&k=20&c=fTnAR7NeOfcoW4NKoUW2k-4hP7OytJ2yakprwe7qnWQ=",
@@ -125,6 +132,7 @@ const messageThemes = {
     },
   },
   autumnForest: {
+    name: "autumn forest",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1585613131/photo/autumn-leaves-on-the-fall-blurred-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=Wfblla8F0d3TByA3ZitN-c5n-XT7NYkr1oMy3FHtR-I=",
@@ -143,6 +151,7 @@ const messageThemes = {
     },
   },
   galaxyNight: {
+    name: "galaxy night",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1732963074/photo/starry-night-sky-in-space.webp?a=1&b=1&s=612x612&w=0&k=20&c=RbS4XYiZ3_TEOX7JwePEnosDax-MNp5q_aIprqRMHM4=",
@@ -161,6 +170,7 @@ const messageThemes = {
     },
   },
   mintyFresh: {
+    name: "minty fresh",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1304690828/photo/organic-mint-leaves-mentha-piperita.webp?a=1&b=1&s=612x612&w=0&k=20&c=ZrYuVQ6S0S6bHHTRxDBWVDVfW8AKTuHj9rj8-c6hv-Q=",
@@ -179,6 +189,7 @@ const messageThemes = {
     },
   },
   urbanJungle: {
+    name: "urban jungle",
     conversationBackground: {
       backgroundImage:
         "https://images.unsplash.com/photo-1569521862953-e999a7f8b1e5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fHVyYmFuSnVuZ2xlfGVufDB8fDB8fHww",
@@ -197,6 +208,7 @@ const messageThemes = {
     },
   },
   sunsetGlow: {
+    name: "sunset glow",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1271239232/photo/natural-background-blurring-warm-colors-and-bright-glod-sunlight-bokeh-or-christmas.webp?a=1&b=1&s=612x612&w=0&k=20&c=t5ANnruLmT3GIZ0JvcmJ6xAa1tYxXHMLj_gGtWz6E8c=",
@@ -215,6 +227,7 @@ const messageThemes = {
     },
   },
   winterFrost: {
+    name: "winter frost",
     conversationBackground: {
       backgroundImage:
         "https://plus.unsplash.com/premium_photo-1668792545377-49e3dc0257f0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2ludGVyRnJvc3R8ZW58MHx8MHx8fDA%3D",
@@ -233,6 +246,7 @@ const messageThemes = {
     },
   },
   neonLights: {
+    name: "neon lights",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1153669560/photo/abstract-vaporwave-holographic-background-image-of-spectrum-colors.webp?a=1&b=1&s=612x612&w=0&k=20&c=DJ4LS8jYtGgEVnX60E6OA4EUweNTJjnHbVE4bZ2mg04=",
@@ -251,6 +265,7 @@ const messageThemes = {
     },
   },
   vintagePaper: {
+    name: "vintage paper",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1497523070/photo/closeup-of-white-crumpled-paper-for-texture-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=5MuAzUFbeXbA2GQZfUJg_Fx1fHzTa_HwnflpLV2vtNU=",
@@ -269,6 +284,7 @@ const messageThemes = {
     },
   },
   candyLand: {
+    name: "candy land",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/2174098019/photo/a-colorful-delight-of-candy-eggs-nestled-together-a-close-up-of-a-pile-of-candy-eggs.webp?a=1&b=1&s=612x612&w=0&k=20&c=jtqA4zGUiwKHqAsyi91P0npBn_m56fZpf41-VXiLB-4=",
@@ -287,6 +303,7 @@ const messageThemes = {
     },
   },
   desertOasis: {
+    name: "desert oasis",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/471759147/photo/oasis.webp?a=1&b=1&s=612x612&w=0&k=20&c=Bli9OuqhfbCqtn3skXQMxN80uHjytQx0vsvWTJxWXKI=",
@@ -305,6 +322,7 @@ const messageThemes = {
     },
   },
   auroraBorealis: {
+    name: "aurora borealis",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1545604498/photo/northern-lights-in-the-sky-tromso-norway.webp?a=1&b=1&s=612x612&w=0&k=20&c=sWYVEn1hOMzzA1c1Z13WE1epUka3ijZW5HbACGXNs1E=",
@@ -323,6 +341,7 @@ const messageThemes = {
     },
   },
   cyberpunkCity: {
+    name: "cyberpunk city",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1382275104/photo/metaverse-city-and-cyberpunk-concept-3d-render.webp?a=1&b=1&s=612x612&w=0&k=20&c=l3Eg3VhotKqwmeZHDpwB0lLgL8oUYG9ihImqeb3DwN0=",
@@ -341,6 +360,7 @@ const messageThemes = {
     },
   },
   springBlossom: {
+    name: "spring blossom",
     conversationBackground: {
       backgroundImage:
         "https://media.istockphoto.com/id/1301592082/photo/beautiful-meadow-field-with-fresh-grass-and-yellow-dandelion-flowers-in-nature.webp?a=1&b=1&s=612x612&w=0&k=20&c=O2PJ1erwXe5TFC__iu7uzl139QfAtnTZ2a3shggpzdU=",
@@ -359,6 +379,7 @@ const messageThemes = {
     },
   },
   starrySky: {
+    name: "starry sky",
     conversationBackground: {
       backgroundImage:
         "https://images.unsplash.com/photo-1565121796532-6d3f0704d7a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHN0YXJyeVNreXxlbnwwfHwwfHx8MA%3D%3D",

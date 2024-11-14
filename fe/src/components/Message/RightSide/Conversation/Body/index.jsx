@@ -12,9 +12,9 @@ import {
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
+import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
-import { getCurrentTheme } from "../../../../../util/Themes";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -54,7 +54,6 @@ const ConversationBody = ({ openDetailTab }) => {
     });
     socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
       if (data) {
-        console.log("data: ", data);
         dispatch(updateMsg(data));
       }
     });
@@ -96,7 +95,7 @@ const ConversationBody = ({ openDetailTab }) => {
         layerRef.current.style.visibility = "hidden";
         layerRef.current.style.transition =
           "opacity 0.3s ease-out, visibility 0.2s linear";
-      }, 1500);
+      }, 2500);
     }
   };
 
@@ -120,10 +119,10 @@ const ConversationBody = ({ openDetailTab }) => {
               msgs: data,
             })
           );
+          dispatch(updateCurrentPageMsg(page));
           setTimeout(() => {
             setFirstLoad(false);
-            dispatch(updateCurrentPageMsg(page));
-          }, 500);
+          }, 1500);
         }
       }
     );
@@ -147,6 +146,7 @@ const ConversationBody = ({ openDetailTab }) => {
       >
         <div
           ref={layerRef}
+          id="chat-hidden-layer"
           style={{
             position: "fixed",
             backgroundColor: conversationBackground?.backgroundColor,

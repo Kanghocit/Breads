@@ -1,6 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { EmptyContentSvg } from "../../../../assests/icons";
 import { MESSAGE_PATH, Route } from "../../../../Breads-Shared/APIConfig";
 import Socket from "../../../../socket";
@@ -9,7 +10,6 @@ import { getConversations } from "../../../../store/MessageSlice/asyncThunk";
 import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
-import { useParams } from "react-router-dom";
 
 const Conversations = ({ searchValue }) => {
   const { conversationId } = useParams();
@@ -29,7 +29,7 @@ const Conversations = ({ searchValue }) => {
         const conversationHtml = document.getElementById(
           `conversation_${selectedConversation?._id}`
         );
-        conversationHtml?.scrollIntoView();
+        // conversationHtml?.scrollIntoView();
       }, 500);
       return () => {
         clearTimeout(timeout);

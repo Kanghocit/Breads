@@ -48,6 +48,19 @@ const ConversationBar = ({ conversation }) => {
     );
   };
 
+  const handleClickConversation = () => {
+    if (_id && selectedConversation?._id !== _id) {
+      dispatch(selectConversation(conversation));
+      const newPath = `/chat/${conversation?._id}`;
+      history.pushState(null, "", newPath);
+      const hiddenChatLayer = document.getElementById("chat-hidden-layer");
+      if (hiddenChatLayer) {
+        hiddenChatLayer.style.opacity = 1;
+        hiddenChatLayer.style.visibility = "visible";
+      }
+    }
+  };
+
   return (
     <Flex
       id={`conversation_${conversation?._id}`}
@@ -56,21 +69,13 @@ const ConversationBar = ({ conversation }) => {
       p={2}
       _hover={{
         cursor: "pointer",
-        bg: useColorModeValue("gray.600", "gray.600"),
+        bg: "gray",
         color: "white",
       }}
-      bg={
-        _id == selectedConversation?._id
-          ? useColorModeValue("gray.600", "gray.600")
-          : ""
-      }
+      bg={_id === selectedConversation?._id ? "gray" : ""}
       borderRadius={"md"}
       onClick={() => {
-        if (_id && selectedConversation?._id !== _id) {
-          dispatch(selectConversation(conversation));
-          const newPath = `/chat/${conversation?._id}`;
-          history.pushState(null, "", newPath);
-        }
+        handleClickConversation();
       }}
     >
       <WrapItem>
