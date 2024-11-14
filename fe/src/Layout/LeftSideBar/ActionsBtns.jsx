@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, useColorMode } from "@chakra-ui/react";
 import { FaRegHeart, FaFacebookMessenger } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +6,10 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 export const BtnLike = () => {
+    
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { colorMode } = useSelector((state) => state.util);
+  const { colorMode, toggleColorMode } = useColorMode();
   const { currentPage } = useSelector((state) => state.util);
 
   const getButtonColor = (isActive, colorMode) => {
@@ -34,6 +35,7 @@ export const BtnLike = () => {
       height="60px"
       minW="60px"
       minH="60px"
+      display={[ "block","block","none"]}
     >
       <FaRegHeart size={24} />
     </Button>
@@ -43,9 +45,8 @@ export const BtnLike = () => {
 export const BtnMess = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { colorMode } = useSelector((state) => state.util);
-  const { currentPage } = useSelector((state) => state.util);
-
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { currentPage, displayPageData } = useSelector((state) => state.util);
   const getButtonColor = (isActive, colorMode) => {
     if (isActive) {
       return colorMode === "dark" ? "#f3f5f7" : "#000000";
@@ -69,6 +70,7 @@ export const BtnMess = () => {
       height="60px"
       minW="60px"
       minH="60px"
+      display={["block", "block","none"]}
     >
       <FaFacebookMessenger size={24} />
     </Button>
