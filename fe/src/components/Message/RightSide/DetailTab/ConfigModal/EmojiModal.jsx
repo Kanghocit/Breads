@@ -2,22 +2,52 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Socket from "../../../../../socket";
 import { getEmojiIcon, getEmojiNameFromIcon } from "../../../../../util";
 import EmojiBox from "../../Conversation/MessageBar/Emoji/EmojiBox";
 import IconWrapper from "../../Conversation/MessageBar/IconWrapper";
+import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import {
+  addNewMsg,
+  updateSelectedConversation,
+} from "../../../../../store/MessageSlice";
 
 const EmojiModal = ({ setItemSelected }) => {
+  const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const userInfo = useSelector((state) => state.user.userInfo);
   const [searchEmojiValue, setSearchEmojiValue] = useState("");
 
   const handleChangeEmoji = async (emojiStr) => {
     try {
       const socket = Socket.getInstant();
-      console.log("emojiStr: ", emojiStr);
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION,
+        {
+          key: "emoji",
+          value: emojiStr,
+          conversationId: selectedConversation?._id,
+          userId: userInfo?._id,
+          recipientId: selectedConversation?.participant?._id,
+          changeSettingContent:
+            "has change conversation's emoji into " + getEmojiIcon(emojiStr),
+        },
+        ({ data }) => {
+          if (data) {
+            dispatch(addNewMsg(data));
+            dispatch(
+              updateSelectedConversation({
+                key: "emoji",
+                value: emojiStr,
+              })
+            );
+          }
+        }
+      );
+      setItemSelected("");
     } catch (err) {
       console.error("handleChangeEmoji: ", err);
     }

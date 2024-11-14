@@ -17,6 +17,9 @@ const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.REACT, (payload, cb) => {
     MessageController.reactMsg(payload, cb, io);
   });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION, (payload, cb) => {
+    MessageController.changeSettingConversation(payload, cb, io);
+  });
 };
 
 export default MessageListener;

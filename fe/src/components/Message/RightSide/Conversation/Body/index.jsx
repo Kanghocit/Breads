@@ -12,16 +12,17 @@ import {
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
 import { formatDateToDDMMYYYY } from "../../../../../util";
+import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
-import { getCurrentTheme } from "../../../../../util/Themes";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { selectedConversation, messages, currentPageMsg, loadingMsgs } =
-    useSelector((state) => state.message);
+  const { selectedConversation, messages, currentPageMsg } = useSelector(
+    (state) => state.message
+  );
   const lastMsg = selectedConversation?.lastMsg;
   const [scrollText, setScrollText] = useState("Move to current");
   const [noticeNewMsgBox, setNoticeNewMsgBox] = useState(false);

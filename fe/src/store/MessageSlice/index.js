@@ -42,6 +42,12 @@ const msgSlice = createSlice({
       state.selectedConversation = action.payload;
       state.messages = {};
     },
+    updateSelectedConversation: (state, action) => {
+      const { key, value } = action.payload;
+      if (key in state.selectedConversation) {
+        state.selectedConversation[key] = value;
+      }
+    },
     addNewMsg: (state, action) => {
       const msgsInfo = action.payload;
       if (!msgsInfo?.length) {
@@ -147,5 +153,6 @@ export const {
   updateLoadingUpload,
   updateCurrentPageMsg,
   updateMsg,
+  updateSelectedConversation,
 } = msgSlice.actions;
 export default msgSlice.reducer;
