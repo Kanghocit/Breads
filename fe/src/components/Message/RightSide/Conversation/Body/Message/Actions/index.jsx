@@ -38,10 +38,32 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   ];
   if (ownMsg) {
     boxActions.push({
+      onClick: () => {
+        handleRetriveMsg();
+      },
       icon: <FaDeleteLeft />,
       name: Constants.MSG_ACTION.RETRIEVE,
     });
   }
+
+  const handleRetriveMsg = async () => {
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.RETRIEVE,
+        {
+          msgId: msgId,
+          userId: userInfo?._id,
+          participantId: selectedConversation?.participant?._id,
+        },
+        ({ data }) => {
+          dispatch(updateMsg(data));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleReactMsg = async (react) => {
     try {
@@ -105,7 +127,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
             zIndex={1000}
             minWidth={"140px"}
           >
-            {boxActions.map(({ icon, name }) => (
+            {boxActions.map(({ icon, name, onClick }) => (
               <Flex
                 key={name}
                 alignItems={"center"}
@@ -118,6 +140,9 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
                   bg: "gray",
                 }}
                 minWidth={"140px"}
+                onClick={() => {
+                  !!onClick && onClick();
+                }}
               >
                 {icon}
                 <Text textTransform={"capitalize"}>{name}</Text>

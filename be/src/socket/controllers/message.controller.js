@@ -9,6 +9,8 @@ import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import { getUserSocketByUserId } from "../services/user.js";
 
+const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
+
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
     try {
@@ -83,7 +85,7 @@ export default class MessageController {
             ...msgInfo,
             content: content,
             links: links?.map((_id) => _id),
-            type: "text",
+            type: TEXT,
           };
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
@@ -104,7 +106,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             media: uploadMedia,
-            type: "media",
+            type: MEDIA,
           });
           addMedia = true;
         } else if (
@@ -116,7 +118,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             file: files[currentFileIndex],
-            type: "file",
+            type: FILE,
           });
           currentFileIndex += 1;
         }
@@ -465,7 +467,7 @@ export default class MessageController {
         conversationId: ObjectId(conversationId),
         content: changeSettingContent,
         sender: ObjectId(userId),
-        type: "setting",
+        type: SETTING,
       });
       const result = await settingMsg.save();
       conversation[key] = value;
@@ -475,12 +477,49 @@ export default class MessageController {
       if (recipientSocketId) {
         io.to(recipientSocketId).emit(
           Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-          result
+          [result]
         );
       }
       !!cb && cb({ status: "success", data: [result] });
     } catch (err) {
       console.log("changeSettingConversation: ", err);
+      cb({ status: "error", data: null });
+    }
+  }
+  static async retrieveMsg(payload, cb, io) {
+    try {
+      const { msgId, userId, participantId } = payload;
+      if (!msgId || !userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const msgInfo = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
+      console.log(msgInfo);
+      if (!msgInfo || destructObjectId(msgInfo?.sender) !== userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      msgInfo.isRetrieve = true;
+      const result = await msgInfo.save();
+      !!cb &&
+        cb({
+          status: "success",
+          data: result,
+        });
+      const participantSocketId = await getUserSocketByUserId(
+        participantId,
+        io
+      );
+      if (participantSocketId) {
+        io.to(participantSocketId).emit(
+          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+          result
+        );
+      }
+    } catch (err) {
+      console.log("retrieveMsg: ", err);
       cb({ status: "error", data: null });
     }
   }

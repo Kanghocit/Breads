@@ -75,6 +75,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
         width={"100%"}
         transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"
+        mt={isReply ? "8px" : ""}
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
@@ -137,8 +138,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               )}
             </Flex>
           </Flex>
-          <Text
+          <Container
+            p={0}
+            m={0}
             my={2}
+            width={"100%"}
             cursor={
               !isDetail &&
               !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
@@ -160,7 +164,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 link={post?.linksInfo[post?.linksInfo?.length - 1]}
               />
             )}
-          </Text>
+          </Container>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text
               display={"flex"}

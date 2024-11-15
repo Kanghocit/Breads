@@ -164,6 +164,16 @@ export const deletePost = async (req, res) => {
       await Post.deleteMany({ _id: { $in: repliesId } });
     }
     await Post.updateMany(
+      {
+        replies: postId,
+      },
+      {
+        $pull: {
+          replies: postId,
+        },
+      }
+    );
+    await Post.updateMany(
       { "quote._id": postId },
       {
         quote: {},

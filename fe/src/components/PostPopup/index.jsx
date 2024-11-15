@@ -39,6 +39,7 @@ import Socket from "../../socket";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 
 const PostPopup = () => {
+  const postId = window.location.pathname.split("/")?.[2];
   const { t } = useTranslation();
   const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
@@ -195,14 +196,14 @@ const PostPopup = () => {
           dispatch(updatePostInfo(defaultPostInfo));
           postAction === PostConstants.ACTIONS.REPLY
             ? dispatch(selectPostReply(null))
-            : dispatch(selectPost(null));
+            : postId !== postSelected?._id && dispatch(selectPost(null));
         },
       });
     } else {
       dispatch(updatePostAction());
       postAction === PostConstants.ACTIONS.REPLY
         ? dispatch(selectPostReply(null))
-        : dispatch(selectPost(null));
+        : postId !== postSelected?._id && dispatch(selectPost(null));
     }
   };
 
@@ -213,9 +214,6 @@ const PostPopup = () => {
       showToast("", "Maximum characters for a post", "error");
     }
   };
-
-  let files = postInfo.files;
-  console.log(files);
 
   return (
     <>
@@ -267,15 +265,9 @@ const PostPopup = () => {
                   setText={(value) => handleContent(value)}
                   tagUsers={true}
                 />
-                {files && files?.length !== 0 && (
+                {postInfo.files && postInfo.files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
-                {
-                  files && files?.length !== 0 && (
-                  console.log("đã chạy display upload")
-                  
-                  )
-                }
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
