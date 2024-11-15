@@ -190,9 +190,6 @@ const PostPopup = () => {
     }
   };
 
-  let files = postInfo.files;
-  console.log(files);
-
   return (
     <>
       <Modal isOpen={true} onClose={handleClose}>
@@ -243,15 +240,9 @@ const PostPopup = () => {
                   setText={(value) => handleContent(value)}
                   tagUsers={true}
                 />
-                {files && files?.length !== 0 && (
+                {postInfo.files && postInfo.files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
-                {
-                  files && files?.length !== 0 && (
-                  console.log("đã chạy display upload")
-                  
-                  )
-                }
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />

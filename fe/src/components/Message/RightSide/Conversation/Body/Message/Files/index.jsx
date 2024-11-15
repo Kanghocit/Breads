@@ -1,6 +1,7 @@
-import { Container, Flex, Image, Text } from "@chakra-ui/react";
+import { Button, Container, Flex, Image, Text } from "@chakra-ui/react";
 import { FILE_TYPES } from "../../../../../../../util";
 import { formatItemDate } from "../../../../../../../util";
+import { FaFileDownload } from "react-icons/fa";
 
 const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
   const { word, excel, powerpoint, pdf, text } = FILE_TYPES;
@@ -68,6 +69,21 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
           >
             {file.name}
           </Text>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              const link = getLinkByType();
+              const a = document.createElement("a");
+              a.href = link;
+              a.download = `${file.name}`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              console.log("install");
+            }}
+          >
+            <FaFileDownload />
+          </Button>
         </Flex>
         {inMsgTab && (
           <Text
@@ -92,8 +108,13 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
         return (
           <a
             href={linkType}
+            target="_self"
             style={{
               width: inMsgTab ? "100%" : "",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
             }}
           >
             {fileDisplay()}
@@ -104,9 +125,13 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
         return (
           <a
             href={linkType}
-            target="_blank"
+            target="_self"
             style={{
               width: inMsgTab ? "100%" : "",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
             }}
           >
             {fileDisplay()}

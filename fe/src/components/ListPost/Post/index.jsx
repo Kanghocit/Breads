@@ -137,8 +137,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               )}
             </Flex>
           </Flex>
-          <Text
+          <Container
+            p={0}
+            m={0}
             my={2}
+            width={"100%"}
             cursor={
               !isDetail &&
               !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
@@ -160,7 +163,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 link={post?.linksInfo[post?.linksInfo?.length - 1]}
               />
             )}
-          </Text>
+          </Container>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text
               display={"flex"}

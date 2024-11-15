@@ -38,10 +38,31 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   ];
   if (ownMsg) {
     boxActions.push({
+      onClick: () => {
+        handleRetriveMsg();
+      },
       icon: <FaDeleteLeft />,
       name: Constants.MSG_ACTION.RETRIEVE,
     });
   }
+
+  const handleRetriveMsg = async () => {
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.RETRIEVE,
+        {
+          msgId: msgId,
+          userId: userInfo?._id,
+        },
+        ({ data }) => {
+          dispatch(updateMsg(data));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleReactMsg = async (react) => {
     try {

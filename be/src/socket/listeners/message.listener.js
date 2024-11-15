@@ -20,6 +20,9 @@ const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION, (payload, cb) => {
     MessageController.changeSettingConversation(payload, cb, io);
   });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.RETRIEVE, (payload, cb) => {
+    MessageController.retrieveMsg(payload, cb, io);
+  });
 };
 
 export default MessageListener;

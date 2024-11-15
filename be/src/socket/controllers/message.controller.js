@@ -484,4 +484,40 @@ export default class MessageController {
       cb({ status: "error", data: null });
     }
   }
+  static async retrieveMsg(payload, cb, io) {
+    try {
+      const { msgId, userId } = payload;
+      if (!msgId || !userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const msgInfo = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
+      if (!msgInfo || msgInfo?.sender !== userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      msgInfo.isRetrieve = true;
+      const result = await msgInfo.save();
+      !!cb &&
+        cb({
+          status: "success",
+          data: result,
+        });
+      const participantSocketId = await getUserSocketByUserId(
+        participantId,
+        io
+      );
+      if (participantSocketId) {
+        io.to(participantSocketId).emit(
+          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+          result
+        );
+      }
+    } catch (err) {
+      console.log("retrieveMsg: ", err);
+      cb({ status: "error", data: null });
+    }
+  }
 }
