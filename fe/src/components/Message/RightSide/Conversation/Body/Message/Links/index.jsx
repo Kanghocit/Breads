@@ -1,6 +1,6 @@
 import { Flex, Image, Text, useColorMode, Link } from "@chakra-ui/react";
 
-const LinkBox = ({ link }) => {
+const LinkBox = ({ link, color = "" }) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -40,7 +40,7 @@ const LinkBox = ({ link }) => {
             maxW={"100%"}
             overflow={"hidden"}
             whiteSpace={"nowrap"}
-            color={colorMode === "dark" ? "white" : "black"}
+            color={color ? color : ""}
           >
             {link.title}
           </Text>

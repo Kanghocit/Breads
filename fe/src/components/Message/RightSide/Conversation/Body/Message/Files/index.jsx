@@ -1,8 +1,8 @@
 import { Container, Flex, Image, Text } from "@chakra-ui/react";
+import { FILE_TYPES } from "../../../../../../../util";
 import { formatItemDate } from "../../../../../../../util";
-import { FILE_TYPES } from "../../../MessageBar/UploadDisplay";
 
-const FileMsg = ({ file, inMsgTab = false }) => {
+const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
   const { word, excel, powerpoint, pdf, text } = FILE_TYPES;
   const fileType = file.contentType;
 
@@ -46,6 +46,8 @@ const FileMsg = ({ file, inMsgTab = false }) => {
         borderRadius={3}
         padding={3}
         cursor={"pointer"}
+        bg={bg ? bg : ""}
+        color={color ? color : ""}
         _hover={{
           bg: "gray",
         }}

@@ -1,27 +1,11 @@
 import cloudinary from "cloudinary";
 import express from "express";
 import fs from "fs";
+import { UTIL_PATH } from "../../Breads-Shared/APIConfig.js";
+import { fileTypes } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId } from "../../util/index.js";
 import { getAllFiles, upload } from "../middlewares/upload.js";
 import File from "../models/file.model.js";
-import { UTIL_PATH } from "../../Breads-Shared/APIConfig.js";
-
-const fileTypes = {
-  word: [
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ],
-  excel: [
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  ],
-  powerpoint: [
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  ],
-  text: ["text/plain"],
-  pdf: ["application/pdf"],
-};
 
 const getFileType = (inputType) => {
   let fileType = "";

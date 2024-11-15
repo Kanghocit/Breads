@@ -57,6 +57,7 @@ const messageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
+      enum: ["text", "media", "file", "setting"],
     },
   },
   { timestamps: true }

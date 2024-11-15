@@ -12,6 +12,7 @@ const CreatePostBtn = () => {
   return (
     <>
       <Button
+        display={["none", "none", "flex"]}
         padding={"25px"}
         opacity={0.8}
         position={"fixed"}

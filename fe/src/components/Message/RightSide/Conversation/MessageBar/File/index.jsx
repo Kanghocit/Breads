@@ -1,28 +1,13 @@
 import { SmallAddIcon } from "@chakra-ui/icons";
 import { Input } from "@chakra-ui/react";
 import { useRef } from "react";
+import { AiOutlineFileAdd } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { iconStyle } from "..";
+import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import useShowToast from "../../../../../../hooks/useShowToast";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
-
-export const fileTypes = {
-  word: [
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ],
-  excel: [
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  ],
-  powerpoint: [
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-  ],
-  text: ["text/plain"],
-  pdf: ["application/pdf"],
-};
 
 const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useDispatch();
@@ -33,6 +18,7 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
 
   const handleFileChange = (e) => {
     const selectedFiles = Object.values(e.target.files);
+
     if (selectedFiles?.length > 5) {
       showToast("", "You can only upload a maximum of 5 files", "info");
       return;
@@ -89,8 +75,14 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
         ref={fileRef}
         onChange={handleFileChange}
       />
-      <SmallAddIcon style={iconStyle} onClick={() => fileRef.current.click()} />
-
+      {isPost ? (
+        <AiOutlineFileAdd onClick={() => fileRef.current.click()} />
+      ) : (
+        <SmallAddIcon
+          style={iconStyle}
+          onClick={() => fileRef.current.click()}
+        />
+      )}
       {/* {files && (
         <div style={{ marginTop: "10px" }}>
           <strong>Selected File:</strong> {file.name} (

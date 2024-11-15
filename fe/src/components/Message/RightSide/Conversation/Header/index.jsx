@@ -1,7 +1,8 @@
-import { Avatar, Container, Flex, Image, Text } from "@chakra-ui/react";
+import { InfoIcon } from "@chakra-ui/icons";
+import { Avatar, Flex, Image, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { InfoIcon } from "@chakra-ui/icons";
+import { getCurrentTheme } from "../../../../../util/Themes";
 
 const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
   const navigate = useNavigate();
@@ -9,6 +10,10 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
     (state) => state.message.selectedConversation
   );
   const participant = selectedConversation?.participant;
+  const { conversationBackground, user1Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const borderColor = user1Message?.borderColor;
 
   return (
     <Flex
@@ -17,6 +22,9 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
       alignItems={"center"}
       justifyContent={"space-between"}
       height={"56px"}
+      bg={conversationBackground?.backgroundColor}
+      backgroundBlendMode={conversationBackground?.backgroundBlendMode}
+      color={borderColor ? borderColor : ""}
     >
       <Flex
         width={"fit-content"}

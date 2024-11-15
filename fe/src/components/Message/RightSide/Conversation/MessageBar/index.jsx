@@ -1,7 +1,6 @@
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { IoSendSharp } from "react-icons/io5";
-import { MdThumbUp } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import useDebounce from "../../../../../hooks/useDebounce";
@@ -13,13 +12,14 @@ import {
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
 import { handleUploadFiles, replaceEmojis } from "../../../../../util";
+import { getCurrentTheme } from "../../../../../util/Themes";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
 import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import MediaUpload from "./Media";
-import UploadDisplay from "./UploadDisplay";
 import MessageIconBtn from "./MessageIconBtn";
+import UploadDisplay from "./UploadDisplay";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -49,12 +49,19 @@ const MessageInput = () => {
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
   const [content, setContent] = useState("");
+  const inputRef = useRef(null);
   const debouceContent = useDebounce(content, 200);
   const ableToSend =
     !!content.trim() ||
     msgInfo.files?.length !== 0 ||
     msgInfo.media?.length !== 0 ||
     msgInfo.icon;
+  const { conversationBackground, user1Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const bg = conversationBackground?.backgroundColor;
+  const textColor = user1Message?.color;
+  const borderColor = user1Message?.borderColor;
 
   useEffect(() => {
     dispatch(
@@ -93,7 +100,14 @@ const MessageInput = () => {
     },
     {
       action: ACTIONS.GIF,
-      icon: <GifMsgBtn popup={popup} onClose={onClose} onOpen={onOpen} />,
+      icon: (
+        <GifMsgBtn
+          popup={popup}
+          onClose={onClose}
+          onOpen={onOpen}
+          color={borderColor}
+        />
+      ),
     },
     // {
     //   action: ACTIONS.AUDIO,
@@ -134,22 +148,33 @@ const MessageInput = () => {
     <form
       style={{
         position: "relative",
+        backgroundColor: conversationBackground?.backgroundColor,
+        backgroundBlendMode: conversationBackground?.backgroundBlendMode,
       }}
     >
       {((!!files && files?.length !== 0) || msgInfo.media?.length !== 0) && (
         <UploadDisplay />
       )}
-      <InputGroup alignItems={"center"} p={2} width={"100%"}>
+      <InputGroup
+        alignItems={"center"}
+        p={2}
+        width={"100%"}
+        color={borderColor}
+      >
         {icons.map(({ action, icon }) => (
           <Fragment key={action}>
             <IconWrapper label={closeTooltip ? "" : action} icon={icon} />
           </Fragment>
         ))}
         <Input
+          ref={inputRef}
           flex={1}
           placeholder="Type a message"
           margin={"0 8px"}
           value={content}
+          bg={loadingUploadMsg ? "gray" : bg ? bg : ""}
+          color={textColor ? textColor : ""}
+          border={borderColor ? `1px solid ${borderColor}` : ""}
           onChange={(e) => {
             if (!loadingUploadMsg) {
               setContent(replaceEmojis(e.target.value));
@@ -163,7 +188,6 @@ const MessageInput = () => {
             }
           }}
           opacity={loadingUploadMsg ? 0.4 : 1}
-          bg={loadingUploadMsg ? "gray" : ""}
         />
         <InputRightElement cursor={"pointer"} mr={"38px"} mt={"8px"}>
           <EmojiMsgBtn
@@ -171,6 +195,9 @@ const MessageInput = () => {
             closeTooltip={closeTooltip}
             onClose={onClose}
             onOpen={onOpen}
+            inputRef={inputRef}
+            setContent={setContent}
+            color={borderColor}
           />
         </InputRightElement>
         <IconWrapper

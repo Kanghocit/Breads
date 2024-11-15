@@ -7,8 +7,7 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
-import { getFriendSocketId, getUserSocketByUserId } from "../services/user.js";
-import User from "../../api/models/user.model.js";
+import { getUserSocketByUserId } from "../services/user.js";
 
 export default class MessageController {
   static async sendMessage(payload, cb, socket, io) {
@@ -84,6 +83,7 @@ export default class MessageController {
             ...msgInfo,
             content: content,
             links: links?.map((_id) => _id),
+            type: "text",
           };
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
@@ -104,6 +104,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             media: uploadMedia,
+            type: "media",
           });
           addMedia = true;
         } else if (
@@ -115,6 +116,7 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             file: files[currentFileIndex],
+            type: "file",
           });
           currentFileIndex += 1;
         }
@@ -433,6 +435,52 @@ export default class MessageController {
       }
     } catch (err) {
       console.log("reactMsg: ", err);
+      cb({ status: "error", data: null });
+    }
+  }
+  static async changeSettingConversation(payload, cb, io) {
+    try {
+      const {
+        key,
+        value,
+        conversationId,
+        userId,
+        recipientId,
+        changeSettingContent,
+      } = payload;
+      if (!conversationId || !userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const conversation = await Conversation.findOne({
+        _id: ObjectId(conversationId),
+      });
+      if (!conversation) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const msgId = ObjectId();
+      const settingMsg = new Message({
+        _id: msgId,
+        conversationId: ObjectId(conversationId),
+        content: changeSettingContent,
+        sender: ObjectId(userId),
+        type: "setting",
+      });
+      const result = await settingMsg.save();
+      conversation[key] = value;
+      conversation.msgIds.push(msgId);
+      await conversation.save();
+      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit(
+          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+          result
+        );
+      }
+      !!cb && cb({ status: "success", data: [result] });
+    } catch (err) {
+      console.log("changeSettingConversation: ", err);
       cb({ status: "error", data: null });
     }
   }

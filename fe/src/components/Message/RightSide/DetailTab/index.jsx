@@ -9,16 +9,23 @@ import {
   Box,
   Container,
   Flex,
+  Modal,
+  ModalContent,
+  ModalOverlay,
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaFileAlt } from "react-icons/fa";
 import { IoIosSearch, IoMdPhotos } from "react-icons/io";
-import { MdColorLens, MdThumbUp } from "react-icons/md";
+import { MdColorLens } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getEmojiIcon } from "../../../../util";
+import { getCurrentTheme } from "../../../../util/Themes";
 import IconWrapper from "../Conversation/MessageBar/IconWrapper";
+import EmojiModal from "./ConfigModal/EmojiModal";
+import ThemeModal from "./ConfigModal/ThemeModal";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
 
@@ -47,7 +54,7 @@ const DetailConversationTab = () => {
       },
       {
         name: EMOJI,
-        icon: <MdThumbUp />,
+        icon: <Text>{getEmojiIcon(selectedConversation?.emoji)}</Text>,
       },
     ],
     "Media, files and links": [
@@ -81,6 +88,11 @@ const DetailConversationTab = () => {
       },
     },
   ];
+  const [searchEmojiValue, setSearchEmojiValue] = useState("");
+  const { conversationBackground, user1Message } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const borderColor = user1Message?.borderColor;
 
   const displaySubTab = () => {
     switch (itemSelected) {
@@ -95,6 +107,20 @@ const DetailConversationTab = () => {
             setItemSelected={setItemSelected}
           />
         );
+      case EMOJI:
+      case THEME:
+        return (
+          <Modal isOpen={true} onClose={() => setItemSelected("")}>
+            <ModalOverlay />
+            <ModalContent width={"fit-content"} p={4}>
+              {itemSelected === EMOJI ? (
+                <EmojiModal setItemSelected={setItemSelected} />
+              ) : (
+                <ThemeModal setItemSelected={setItemSelected} />
+              )}
+            </ModalContent>
+          </Modal>
+        );
       default:
         return <></>;
     }
@@ -105,12 +131,15 @@ const DetailConversationTab = () => {
       width={"100%"}
       p={0}
       margin={0}
-      border={"1px solid gray"}
+      border={`1px solid ${borderColor ? borderColor : "gray"}`}
       height={"fit-content"}
       borderRadius={"12px"}
+      bg={conversationBackground?.backgroundColor}
+      backgroundBlendMode={conversationBackground?.backgroundBlendMode}
+      color={borderColor ? borderColor : ""}
     >
       {displaySubTab()}
-      {!itemSelected && (
+      {(!itemSelected || [EMOJI, THEME].includes(itemSelected)) && (
         <>
           <Flex
             justifyContent={"center"}
@@ -157,6 +186,7 @@ const DetailConversationTab = () => {
                   <AccordionPanel pb={3} px={4}>
                     {subItems.map(({ name, icon }) => (
                       <Flex
+                        key={name}
                         py={2}
                         gap={2}
                         alignItems={"center"}

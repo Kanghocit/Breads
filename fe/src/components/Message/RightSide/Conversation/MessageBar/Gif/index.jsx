@@ -11,11 +11,11 @@ import {
 } from "@chakra-ui/react";
 import { IoMdClose } from "react-icons/io";
 import { RiFileGifLine } from "react-icons/ri";
-import IconWrapper from "../IconWrapper";
 import { ACTIONS, iconStyle } from "..";
+import IconWrapper from "../IconWrapper";
 import GifMsgBox from "./GifMsgBox";
 
-const GifMsgBtn = ({ popup, onClose, onOpen }) => {
+const GifMsgBtn = ({ popup, onClose, onOpen, color = "" }) => {
   return (
     <Popover
       isOpen={popup === ACTIONS.GIF}
@@ -32,7 +32,10 @@ const GifMsgBtn = ({ popup, onClose, onOpen }) => {
           }}
         >
           <RiFileGifLine
-            style={iconStyle}
+            style={{
+              ...iconStyle,
+              color: color ? color : "",
+            }}
             onClick={() => onOpen(ACTIONS.GIF)}
           />
         </Button>

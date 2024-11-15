@@ -407,6 +407,31 @@ export const formatDateToDDMMYYYY = (date) => {
   return `${day}/${month}/${year}`;
 };
 
+export const fileTypes = {
+  word: [
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ],
+  excel: [
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ],
+  powerpoint: [
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ],
+  text: ["text/plain"],
+  pdf: ["application/pdf"],
+};
+
+export const FILE_TYPES = {
+  word: "word",
+  excel: "excel",
+  powerpoint: "powerpoint",
+  pdf: "pdf",
+  text: "text",
+};
+
 export const generateObjectId = () => {
   const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
   const randomValue = Array.from({ length: 5 }, () =>
@@ -428,4 +453,20 @@ export const formatItemDate = (itemDate) => {
     return moment(itemDate).format("DD/MM");
   }
   return moment(itemDate).format("DD/MM/YYYY");
+};
+
+export const getEmojiIcon = (emojiStr) => {
+  if (!emojiStr?.trim() || !(emojiStr in emojiMap)) {
+    return "";
+  }
+  return emojiMap[emojiStr].icon;
+};
+
+export const getEmojiNameFromIcon = (emojiIcon) => {
+  if (!emojiIcon) {
+    return "";
+  }
+  const emjEntries = Object.entries(emojiMap);
+  const emjStr = emjEntries.find((arr) => arr[1]?.icon === emojiIcon)?.[0];
+  return emjStr;
 };

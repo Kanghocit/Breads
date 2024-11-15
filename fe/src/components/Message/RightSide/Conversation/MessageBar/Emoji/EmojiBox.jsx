@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 import { emojiMap } from "../../../../../../util";
 import IconWrapper from "../IconWrapper";
 
-const EmojiBox = ({ searchValue }) => {
+const EmojiBox = ({ searchValue, currentEmoji = "", onClick }) => {
   const emojis = useMemo(() => {
     const filterEmoji = Object.values(emojiMap)
       .filter(({ names }) => {
@@ -35,7 +35,19 @@ const EmojiBox = ({ searchValue }) => {
     >
       <Flex wrap="wrap" width={"180px"} gap={"4px"}>
         {emojis.map((emoji) => (
-          <IconWrapper key={emoji} icon={<Text>{emoji}</Text>} />
+          <IconWrapper
+            key={emoji}
+            addBg={currentEmoji ? currentEmoji === emoji : false}
+            icon={
+              <Text
+                onClick={() => {
+                  !!onClick && onClick(emoji);
+                }}
+              >
+                {emoji}
+              </Text>
+            }
+          />
         ))}
       </Flex>
     </Container>
