@@ -33,6 +33,9 @@ import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 import { useTranslation } from "react-i18next";
+import { Constants } from "../../Breads-Shared/Constants";
+import Socket from "../../socket";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 
 const PostPopup = () => {
   const { t } = useTranslation();
@@ -126,25 +129,46 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
+      const socket = Socket.getInstant();
+
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
+        payload._id = generateObjectId();
+        let notificationPayload = {
+          fromUser: userInfo._id,
+          toUsers: [postReply?.authorId],
+          target: payload._id,
+        };
         if (postAction === PostConstants.ACTIONS.REPOST) {
           payload.quote = {
             _id: postSelected._id,
             content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
           };
           payload.parentPost = postSelected._id;
+          notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
+          notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
         }
+        
         if (payload.usersTag?.length) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
+          socket.emit(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, {
+            fromUser: userInfo._id,
+            toUsers: [...usersId],
+            action: Constants.NOTIFICATION_ACTION.TAG,
+            target: payload._id,
+          })
         }
-        payload._id = generateObjectId();
+
         dispatch(createPost({ postPayload: payload, action: postAction }));
+        socket.emit(
+          Route.NOTIFICATION + NOTIFICATION_PATH.CREATE,
+          notificationPayload
+        );
       }
     } catch (err) {
       console.error(err);

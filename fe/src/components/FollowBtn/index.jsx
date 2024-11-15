@@ -5,8 +5,11 @@ import { followUser } from "../../store/UserSlice/asyncThunk";
 import { useState } from "react";
 import UnFollowPopup from "./UnfollowPopup";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-
+import Socket from "../../socket";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
+  console.log("khangdz", userInfo);
   if (!userInfo?._id) {
     showToast("Error", "Please login to follow", "error");
     return;
@@ -18,6 +21,13 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
     })
   );
   try {
+    const socket = Socket.getInstant();
+    socket.emit(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, {
+      fromUser: userInfo._id,
+      toUsers: [user._id],
+      action: Constants.NOTIFICATION_ACTION.FOLLOW,
+      target: userInfo.followed,
+    });
   } catch (error) {
     showToast("Error", error, "error");
   }
