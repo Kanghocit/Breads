@@ -13,7 +13,6 @@ const ActivityPage = () => {
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
-
   useEffect(() => {
     dispatch(
       changePage({
