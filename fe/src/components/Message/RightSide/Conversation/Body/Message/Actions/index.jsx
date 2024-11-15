@@ -54,6 +54,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
         {
           msgId: msgId,
           userId: userInfo?._id,
+          participantId: selectedConversation?.participant?._id,
         },
         ({ data }) => {
           dispatch(updateMsg(data));
@@ -126,7 +127,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
             zIndex={1000}
             minWidth={"140px"}
           >
-            {boxActions.map(({ icon, name }) => (
+            {boxActions.map(({ icon, name, onClick }) => (
               <Flex
                 key={name}
                 alignItems={"center"}
@@ -139,6 +140,9 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
                   bg: "gray",
                 }}
                 minWidth={"140px"}
+                onClick={() => {
+                  !!onClick && onClick();
+                }}
               >
                 {icon}
                 <Text textTransform={"capitalize"}>{name}</Text>

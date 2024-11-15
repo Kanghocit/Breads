@@ -75,6 +75,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
         width={"100%"}
         transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"
+        mt={isReply ? "8px" : ""}
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>

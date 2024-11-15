@@ -9,12 +9,17 @@ import {
   addNewMsg,
   updateCurrentPageMsg,
   updateMsg,
+  updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
-import { formatDateToDDMMYYYY } from "../../../../../util";
+import {
+  formatDateToDDMMYYYY,
+  getEmojiNameFromIcon,
+} from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
+import { Constants } from "../../../../../Breads-Shared/Constants";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -50,6 +55,26 @@ const ConversationBody = ({ openDetailTab }) => {
       if (data) {
         dispatch(addNewMsg(data));
         setScrollText("New message");
+        if (data?.[0]?.type === Constants.MSG_TYPE.SETTING) {
+          const splitContent = data[0].content.split(" ");
+          const value = splitContent[splitContent?.length - 1];
+          if (splitContent?.includes("theme")) {
+            dispatch(
+              updateSelectedConversation({
+                key: "theme",
+                value: value,
+              })
+            );
+          }
+          if (splitContent?.includes("emoji")) {
+            dispatch(
+              updateSelectedConversation({
+                key: "emoji",
+                value: getEmojiNameFromIcon(value),
+              })
+            );
+          }
+        }
       }
     });
     socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {

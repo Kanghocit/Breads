@@ -50,7 +50,7 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
         bg={bg ? bg : ""}
         color={color ? color : ""}
         _hover={{
-          bg: "gray",
+          opacity: 0.8,
         }}
       >
         <Flex gap={3}>
@@ -69,7 +69,7 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
           >
             {file.name}
           </Text>
-          <Button
+          {/* <Button
             onClick={(e) => {
               e.stopPropagation();
               const link = getLinkByType();
@@ -83,7 +83,7 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
             }}
           >
             <FaFileDownload />
-          </Button>
+          </Button> */}
         </Flex>
         {inMsgTab && (
           <Text

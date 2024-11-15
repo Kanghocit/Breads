@@ -1,4 +1,12 @@
-import { Avatar, Flex, Image, Link, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Avatar,
+  Container,
+  Flex,
+  Image,
+  Link,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -10,6 +18,7 @@ import MessageAction from "./Actions";
 import FileMsg from "./Files";
 import MsgMediaLayout from "./MediaLayout";
 import MessageReactsBox from "./ReactsBox";
+import { Constants } from "../../../../../../Breads-Shared/Constants";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -19,7 +28,7 @@ const Message = ({ msg }) => {
   const participant = selectedConversation?.participant;
   const [displayAction, setDisplayAction] = useState(false);
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media, links, reacts } = msg;
+  const { content, createdAt, file, media, links, reacts, isRetrieve } = msg;
   const previousReact = reacts?.find(
     ({ userId }) => userId === userInfo?._id
   )?.react;
@@ -31,6 +40,7 @@ const Message = ({ msg }) => {
     color: msgColor,
     borderColor,
   } = ownMessage ? user1Message : user2Message;
+  const isSettingMsg = msg?.type === Constants.MSG_TYPE.SETTING;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -68,6 +78,21 @@ const Message = ({ msg }) => {
       );
     };
 
+    if (isRetrieve) {
+      return (
+        <Container
+          py={1}
+          px={3}
+          borderRadius={"16px"}
+          color={msgColor}
+          border={borderColor ? `1px solid ${borderColor}` : ""}
+          bg={"lightgray"}
+        >
+          <Text>This message is retrieved</Text>
+        </Container>
+      );
+    }
+
     return (
       <Flex
         id={`msg_${msg?._id}`}
@@ -100,8 +125,8 @@ const Message = ({ msg }) => {
               maxW={"350px"}
               bg={msgBg}
               py={1}
-              px={2}
-              borderRadius={"md"}
+              px={3}
+              borderRadius={"16px"}
               color={msgColor}
               border={borderColor ? `1px solid ${borderColor}` : ""}
             >
@@ -191,10 +216,10 @@ const Message = ({ msg }) => {
   return (
     <>
       <Tooltip
-        label={getTooltipTime()}
+        label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        {msg?.type === "setting" ? (
+        {isSettingMsg ? (
           <Flex
             _id={`msg_${msg?._id}`}
             width={"100%"}
@@ -213,7 +238,9 @@ const Message = ({ msg }) => {
             alignSelf={ownMessage ? "flex-end" : "flex-start"}
             width={"fit-content"}
             onMouseEnter={() => {
-              setDisplayAction(true);
+              if (!isRetrieve) {
+                setDisplayAction(true);
+              }
             }}
             onMouseLeave={() => {
               setDisplayAction(false);

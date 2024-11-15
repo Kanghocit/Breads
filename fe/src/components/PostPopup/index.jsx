@@ -36,6 +36,7 @@ import PostSurvey from "./survey";
 import { useTranslation } from "react-i18next";
 
 const PostPopup = () => {
+  const postId = window.location.pathname.split("/")?.[2];
   const { t } = useTranslation();
   const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
@@ -171,14 +172,14 @@ const PostPopup = () => {
           dispatch(updatePostInfo(defaultPostInfo));
           postAction === PostConstants.ACTIONS.REPLY
             ? dispatch(selectPostReply(null))
-            : dispatch(selectPost(null));
+            : postId !== postSelected?._id && dispatch(selectPost(null));
         },
       });
     } else {
       dispatch(updatePostAction());
       postAction === PostConstants.ACTIONS.REPLY
         ? dispatch(selectPostReply(null))
-        : dispatch(selectPost(null));
+        : postId !== postSelected?._id && dispatch(selectPost(null));
     }
   };
 
