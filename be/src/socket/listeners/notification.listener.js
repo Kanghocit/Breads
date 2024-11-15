@@ -5,6 +5,7 @@ const NotificationListener = (socket, io) => {
   socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, (payload) => {
     NotificationController.create(payload, socket, io);
   });
+  
 };
 
 export default NotificationListener;
