@@ -1,20 +1,53 @@
-import { Button, Flex, useColorModeValue } from "@chakra-ui/react";
+import { Button, Flex } from "@chakra-ui/react";
+import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
 import { FILE_TYPES } from "../../../../../../util";
+import { getCurrentTheme } from "../../../../../../util/Themes";
 import ItemUploadDisplay from "./ItemUploadDisplay";
 import LoadingUploadMsg from "./loading";
+
 const UploadDisplay = ({ isPost = false }) => {
   //Max 5 files / folders
   const dispatch = useDispatch();
-  const { msgInfo, loadingUploadMsg } = useSelector((state) => state.message);
+  const { msgInfo, loadingUploadMsg, selectedConversation } = useSelector(
+    (state) => state.message
+  );
+  const { conversationBackground } = getCurrentTheme(
+    selectedConversation?.theme
+  );
+  const bg = conversationBackground?.backgroundColor;
   const { postInfo } = useSelector((state) => state.post);
-  // const files = msgInfo.files;
   const media = msgInfo.media;
-
   const files = isPost ? postInfo.files : msgInfo.files;
+  const baseStyles = {
+    width: "100%",
+    px: 2,
+    py: 3,
+    gap: "10px",
+    justifyContent: "start",
+    bg: loadingUploadMsg ? "gray" : bg ? bg : "",
+  };
+  const postStyles = {
+    position: "relative",
+    height: "100px",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    flexDirection: "column",
+  };
+  const nonPostStyles = {
+    borderTop: "1px solid gray",
+    // position: "absolute",
+    // left: 0,
+    // bottom: "calc(100% - 2px)",
+    height: "100px",
+    justifyContent: "start",
+    alignItems: "center",
+    flexDirection: "row",
+  };
+
   const getImgByType = (inputType) => {
     let fileType = "";
     const types = Object.keys(fileTypes);
@@ -69,12 +102,13 @@ const UploadDisplay = ({ isPost = false }) => {
     );
   };
 
-  const handleRemoveAllFiles = () => {
+  const handleRemoveAll = () => {
     if (!isPost) {
       dispatch(
         updateMsgInfo({
           ...msgInfo,
           files: [],
+          media: [],
         })
       );
     }
@@ -86,71 +120,43 @@ const UploadDisplay = ({ isPost = false }) => {
         })
       );
     }
-
-    const baseStyles = {
-      width: "100%",
-      px: 2,
-      py: 3,
-      gap: "10px",
-      justifyContent: "start",
-      bg: useColorModeValue("gray.200", "#181818"),
-    };
-    const postStyles = {
-      position: "relative",
-      height: "100px",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      flexDirection: "column",
-    };
-
-    const nonPostStyles = {
-      borderTop: "1px solid gray",
-      position: "absolute",
-      left: 0,
-      bottom: "calc(100% - 2px)",
-      height: "100px",
-      justifyContent: "start",
-      alignItems: "center",
-      flexDirection: "row",
-    };
-    console.log("uploaddisplay nè");
-
-    return (
-      <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
-        <>
-          {media?.map((item, index) => (
-            <ItemUploadDisplay
-              item={item}
-              imgSrc={item?.url}
-              onClick={() => {
-                handleRemoveMedia(index);
-              }}
-              key={index}
-              isPost={isPost}
-            />
-          ))}
-
-          {files?.map((file, index) => (
-            <ItemUploadDisplay
-              item={file}
-              imgSrc={getImgByType(file.contentType)}
-              onClick={() => handleRemoveFile(index)}
-              key={index}
-              isPost={isPost}
-            />
-          ))}
-        </>
-        {!isPost ? (
-          <Button padding={"8px 12px"} onClick={() => handleRemoveAllFiles()}>
-            Clear all
-          </Button>
-        ) : (
-          <></>
-        )}
-        {loadingUploadMsg && <LoadingUploadMsg />}
-      </Flex>
-    );
   };
+
+  return (
+    <Flex {...baseStyles} {...(isPost ? postStyles : nonPostStyles)}>
+      <>
+        {media?.map((item, index) => (
+          <ItemUploadDisplay
+            item={item}
+            imgSrc={item?.url}
+            onClick={() => {
+              handleRemoveMedia(index);
+            }}
+            key={index}
+            isPost={isPost}
+          />
+        ))}
+
+        {files?.map((file, index) => (
+          <ItemUploadDisplay
+            item={file}
+            imgSrc={getImgByType(file.contentType)}
+            onClick={() => handleRemoveFile(index)}
+            key={index}
+            isPost={isPost}
+          />
+        ))}
+      </>
+      {!isPost ? (
+        <Button padding={"8px 12px"} onClick={() => handleRemoveAll()}>
+          Clear all
+        </Button>
+      ) : (
+        <></>
+      )}
+      {loadingUploadMsg && <LoadingUploadMsg />}
+    </Flex>
+  );
 };
 
-export default UploadDisplay;
+export default memo(UploadDisplay);

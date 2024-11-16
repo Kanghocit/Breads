@@ -1,13 +1,13 @@
 import { Avatar, AvatarBadge, Box, Button, Flex, Text } from "@chakra-ui/react";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { FaHeart } from "react-icons/fa";
-import { FaUser, FaRepeat } from "react-icons/fa6";
+import { useTranslation } from "react-i18next";
 import { BiSolidShare } from "react-icons/bi";
 import { BsThreads } from "react-icons/bs";
-import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
-import { formatDistanceToNow } from "date-fns";
+import { FaHeart } from "react-icons/fa";
+import { FaRepeat, FaUser } from "react-icons/fa6";
 import { IoImageOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import { Constants } from "../Breads-Shared/Constants";
 
 const Activity = () => {
@@ -16,7 +16,6 @@ const Activity = () => {
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
-  console.log("khangdz", notifications);
   const [isFollowing, setIsFollowing] = useState(false);
   const [uniqueNotifications, setUniqueNotifications] = useState([]);
 
@@ -102,13 +101,11 @@ const Activity = () => {
                     </Text>
                     <Text color="gray.500" fontSize="sm">
                       {item.createdAt
-                        ? formatDistanceToNow(new Date(item.createdAt), {
-                            addSuffix: true,
-                          })
+                        ? moment(new Date(item.createdAt)).fromNow()
                         : "Unknown time"}
                     </Text>
                   </Box>
-                  
+
                   <Text color="white" fontSize="sm">
                     {item.postDetails?.content ? (
                       item.postDetails.content
@@ -139,9 +136,7 @@ const Activity = () => {
                       </Text>
                       <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
                         {item.createdAt
-                          ? formatDistanceToNow(new Date(item.createdAt), {
-                              addSuffix: true,
-                            })
+                          ? moment(new Date(item.createdAt)).fromNow()
                           : "Unknown time"}
                       </Text>
                     </Box>

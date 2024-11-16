@@ -48,7 +48,6 @@ export const getNotifications = async (req, res) => {
       },
     ]);
 
-    console.log("khang", notifications.length);
     res.status(HTTPStatus.OK).json(notifications);
   } catch (err) {
     console.error("getNotifications: ", err);

@@ -10,6 +10,7 @@ import {
 import moment from "moment";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { Constants } from "../../../../../../Breads-Shared/Constants";
 import { isDifferentDate } from "../../../../../../util";
 import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
 import { getCurrentTheme } from "../../../../../../util/Themes";
@@ -18,7 +19,7 @@ import MessageAction from "./Actions";
 import FileMsg from "./Files";
 import MsgMediaLayout from "./MediaLayout";
 import MessageReactsBox from "./ReactsBox";
-import { Constants } from "../../../../../../Breads-Shared/Constants";
+import RepliedMsg from "./RepliedMsg";
 
 const Message = ({ msg }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -28,7 +29,16 @@ const Message = ({ msg }) => {
   const participant = selectedConversation?.participant;
   const [displayAction, setDisplayAction] = useState(false);
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media, links, reacts, isRetrieve } = msg;
+  const {
+    content,
+    createdAt,
+    file,
+    media,
+    links,
+    reacts,
+    isRetrieve,
+    respondTo,
+  } = msg;
   const previousReact = reacts?.find(
     ({ userId }) => userId === userInfo?._id
   )?.react;
@@ -103,7 +113,7 @@ const Message = ({ msg }) => {
         {ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
-            msgId={msg?._id}
+            msg={msg}
             previousReact={previousReact}
           />
         )}
@@ -119,16 +129,19 @@ const Message = ({ msg }) => {
           flexDir={"column"}
           alignItems={ownMessage ? "flex-end" : "flex-start"}
         >
+          {respondTo?._id && <RepliedMsg repliedMsgs={respondTo} msg={msg} />}
           {content?.trim() && (
-            <Text
+            <Container
+              m={0}
               pos={"relative"}
-              maxW={"350px"}
+              maxW={"30vw"}
               bg={msgBg}
               py={1}
               px={3}
               borderRadius={"16px"}
               color={msgColor}
               border={borderColor ? `1px solid ${borderColor}` : ""}
+              width={"fit-content"}
             >
               {contentArr.map((part, index) => {
                 if (part.match(urlRegex)) {
@@ -155,7 +168,7 @@ const Message = ({ msg }) => {
                 !links?.length &&
                 !media?.length &&
                 !file?._id && <>{reactBox()}</>}
-            </Text>
+            </Container>
           )}
           {links?.length > 0 && (
             <div
@@ -180,7 +193,7 @@ const Message = ({ msg }) => {
         {!ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
-            msgId={msg?._id}
+            msg={msg}
             previousReact={previousReact}
           />
         )}
@@ -197,7 +210,7 @@ const Message = ({ msg }) => {
 
     return (
       <>
-        <Text textAlign={"center"}>
+        <Text textAlign={"center"} color={msgColor}>
           {ownMessage ? "You " : participant?.username + " "}
           {msg?.content}
         </Text>

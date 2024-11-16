@@ -11,12 +11,12 @@ import {
 } from "../../../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../../../Breads-Shared/Constants";
 import Socket from "../../../../../../../socket";
-import { updateMsg } from "../../../../../../../store/MessageSlice";
+import { selectMsg, updateMsg } from "../../../../../../../store/MessageSlice";
 import { getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 
-const MessageAction = ({ ownMsg, msgId, previousReact }) => {
+const MessageAction = ({ ownMsg, msg, previousReact }) => {
   const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -25,9 +25,13 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   const [openBox, setOpenBox] = useState(false);
   const [displayReactBox, setDisplayReactBox] = useState(false);
   const defaultEmoji = ["<3", ":D", ":O", ":(", ":slang"];
+  const msgId = msg?._id;
 
   const boxActions = [
     {
+      onClick: () => {
+        dispatch(selectMsg(msg));
+      },
       icon: <MdOutlineReply />,
       name: Constants.MSG_ACTION.REPLY,
     },

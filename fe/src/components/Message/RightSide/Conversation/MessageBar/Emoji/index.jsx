@@ -12,13 +12,13 @@ import {
   PopoverHeader,
   PopoverTrigger,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { MdEmojiEmotions } from "react-icons/md";
 import { ACTIONS, iconStyle } from "..";
+import { replaceEmojis } from "../../../../../../util";
 import IconWrapper from "../IconWrapper";
 import EmojiBox from "./EmojiBox";
-import { replaceEmojis } from "../../../../../../util";
 
 const EmojiMsgBtn = ({
   popup,
@@ -115,4 +115,4 @@ const EmojiMsgBtn = ({
   );
 };
 
-export default EmojiMsgBtn;
+export default memo(EmojiMsgBtn);

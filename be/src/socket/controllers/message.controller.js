@@ -20,13 +20,12 @@ export default class MessageController {
       });
       const listMsgId = [];
       const listMsg = [];
-      const { files, media, content } = message;
+      const { files, media, content, respondTo } = message;
       const numberNewMsg =
         files?.length + (media?.length > 0 ? 1 : 0) + (content ? 1 : 0);
       [...Array(numberNewMsg)].map((_) => {
         listMsgId.push(ObjectId());
       });
-      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
@@ -53,6 +52,7 @@ export default class MessageController {
       }
       let currentFileIndex = 0;
       let addMedia = false;
+      let isReplied = false;
       for (let index = 0; index < listMsgId.length; index++) {
         const _id = listMsgId[index];
         let newMsg = null;
@@ -64,7 +64,6 @@ export default class MessageController {
         if (content?.trim() && index === 0) {
           const urlRegex = /(https?:\/\/[^\s]+)/g;
           const urls = content.match(urlRegex);
-          console.log("urls: ", urls);
           const links = [];
           if (urls?.length) {
             for (let url of urls) {
@@ -78,7 +77,6 @@ export default class MessageController {
             }
           }
           if (links?.length > 0) {
-            console.log("links: ", links);
             await Link.insertMany(links, { ordered: false });
           }
           newMsg = {
@@ -87,6 +85,10 @@ export default class MessageController {
             links: links?.map((_id) => _id),
             type: TEXT,
           };
+          if (respondTo) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
             media?.length === 1 && media[0].type === Constants.MEDIA_TYPE.GIF;
@@ -108,6 +110,10 @@ export default class MessageController {
             media: uploadMedia,
             type: MEDIA,
           });
+          if (respondTo && !isReplied) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
           addMedia = true;
         } else if (
           files?.length !== 0 &&
@@ -120,6 +126,10 @@ export default class MessageController {
             file: files[currentFileIndex],
             type: FILE,
           });
+          if (respondTo && !isReplied) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
           currentFileIndex += 1;
         }
         console.log("newMsg: ", newMsg);
@@ -128,9 +138,13 @@ export default class MessageController {
       await Message.insertMany(listMsg, { ordered: false });
       const newMessages = await Message.find({
         _id: { $in: listMsgId },
-      }).populate({
-        path: "file",
-      });
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "respondTo",
+        });
       const recipientSocketId = await getUserSocketByUserId(recipientId, io);
       if (recipientSocketId) {
         io.to(recipientSocketId).emit(
@@ -160,23 +174,6 @@ export default class MessageController {
         .lean();
     } catch (error) {
       console.error("getMessage: ", error);
-    }
-  }
-
-  static async deleteMessage(payload, socket, io) {
-    try {
-      const { messageId, userId } = payload;
-      const mess = await getCollection(Model.MESSAGE).findOne({
-        _id: ObjectId(messageId),
-      });
-      if (mess.sender.toString() !== userId.toString()) {
-      }
-
-      await getCollection(Model.MESSAGE).deleteOne({
-        _id: ObjectId(messageId),
-      });
-    } catch (error) {
-      console.error("deleteMessage: ", error);
     }
   }
 
@@ -304,6 +301,9 @@ export default class MessageController {
         })
         .populate({
           path: "links",
+        })
+        .populate({
+          path: "respondTo",
         });
       const result = msgs?.sort((a, b) => -1);
       cb({ status: "success", data: result });
