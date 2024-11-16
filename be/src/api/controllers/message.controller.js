@@ -184,6 +184,7 @@ export const searchMsg = async (req, res) => {
     const msgsFind = await Message.find({
       conversationId: ObjectId(conversationId),
       content: { $regex: value, $options: "i" },
+      isRetrieve: false,
     })
       .sort({
         createdAt: -1,

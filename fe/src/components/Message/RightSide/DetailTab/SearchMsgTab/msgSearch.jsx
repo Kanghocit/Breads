@@ -32,34 +32,34 @@ const MessageSearchItem = ({ msg }) => {
   }, [loadingMsgs, startScroll]);
 
   const clickSeeDetailMsg = () => {
-    const socket = Socket.getInstant();
-    socket.emit(
-      Route.MESSAGE + MESSAGE_PATH.GET_MSGS_BY_SEARCH,
-      {
-        userId: userInfo._id,
-        conversationId: selectedConversation?._id,
-        limit: 30,
-        searchMsgId: msg._id,
-        currentPage: currentPageMsg,
-      },
-      ({ data, page }) => {
-        if (data?.length) {
-          dispatch(
-            getMsgs({
-              msgs: data,
-              isNew: false,
-            })
-          );
-          dispatch(updateCurrentPageMsg(page));
+    if (!msgEle) {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.GET_MSGS_BY_SEARCH,
+        {
+          userId: userInfo._id,
+          conversationId: selectedConversation?._id,
+          limit: 30,
+          searchMsgId: msg._id,
+          currentPage: currentPageMsg,
+        },
+        ({ data, page }) => {
+          if (data?.length) {
+            dispatch(
+              getMsgs({
+                msgs: data,
+                isNew: false,
+              })
+            );
+            dispatch(updateCurrentPageMsg(page));
+          }
         }
-      }
-    );
-    if (msgEle) {
-      setStartScroll(true);
-    } else {
+      );
       setTimeout(() => {
         setStartScroll(true);
       }, 1500);
+    } else {
+      setStartScroll(true);
     }
   };
 

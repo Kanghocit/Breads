@@ -3,6 +3,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import { Constants } from "../../../../../Breads-Shared/Constants";
 import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
 import {
@@ -19,7 +20,6 @@ import {
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
-import { Constants } from "../../../../../Breads-Shared/Constants";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());

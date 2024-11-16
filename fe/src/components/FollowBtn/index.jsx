@@ -1,15 +1,15 @@
 import { Button } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
-import useShowToast from "../../hooks/useShowToast";
-import { followUser } from "../../store/UserSlice/asyncThunk";
 import { useState } from "react";
-import UnFollowPopup from "./UnfollowPopup";
-import PageConstant from "../../Breads-Shared/Constants/PageConstants";
-import Socket from "../../socket";
+import { useDispatch, useSelector } from "react-redux";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import useShowToast from "../../hooks/useShowToast";
+import Socket from "../../socket";
+import { followUser } from "../../store/UserSlice/asyncThunk";
+import UnFollowPopup from "./UnfollowPopup";
+
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
-  console.log("khangdz", userInfo);
   if (!userInfo?._id) {
     showToast("Error", "Please login to follow", "error");
     return;

@@ -17,11 +17,7 @@ import {
   RepostIcon,
   ShareIcon,
 } from "../../../assests/icons";
-import {
-  NOTIFICATION_PATH,
-  POST_PATH,
-  Route,
-} from "../../../Breads-Shared/APIConfig";
+import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import Socket from "../../../socket";
 import {
   selectPost,
@@ -30,7 +26,6 @@ import {
 } from "../../../store/PostSlice";
 import PostConstants from "../../../util/PostConstants";
 import useCopyLink from "./MoreAction/CopyLink";
-import { Constants } from "../../../Breads-Shared/Constants";
 
 const ACTIONS_NAME = {
   LIKE: "like",
@@ -41,7 +36,6 @@ const ACTIONS_NAME = {
 };
 
 const Actions = ({ post }) => {
-  console.log("cas cha bac", post);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [openSubBox, setOpenSubBox] = useState(false);
@@ -55,7 +49,6 @@ const Actions = ({ post }) => {
     };
     socket.emitWithAck(Route.POST + POST_PATH.LIKE, payload);
   };
-  
 
   const convertStatistic = (number) => {
     let value = number;
