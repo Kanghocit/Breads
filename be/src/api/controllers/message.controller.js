@@ -3,6 +3,7 @@ import HTTPStatus from "../../util/httpStatus.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import Link from "../models/link.model.js";
+import { genConversations, genMsgsInConversations } from "../crawl.js";
 
 export const getConversationByUsersId = async (req, res) => {
   try {
@@ -194,6 +195,27 @@ export const searchMsg = async (req, res) => {
     res.status(HTTPStatus.OK).json(msgsFind);
   } catch (err) {
     console.log("getConversationLinks: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const handleFakeConversations = async (req, res) => {
+  try {
+    const { userId, numberConversations } = req.body;
+    await genConversations(userId, numberConversations);
+    res.status(HTTPStatus.OK).json("OK");
+  } catch (err) {
+    console.log(err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const handleFakeConversationsMsgs = async (req, res) => {
+  try {
+    await genMsgsInConversations();
+    res.status(HTTPStatus.OK).json("OK");
+  } catch (err) {
+    console.log(err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
