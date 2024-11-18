@@ -145,7 +145,7 @@ const DetailConversationTab = () => {
             justifyContent={"center"}
             alignItems={"center"}
             flexDirection={"column"}
-            p={8}
+            p={6}
             gap={3}
           >
             <Avatar src={participant?.avatar} size={"xl"} />

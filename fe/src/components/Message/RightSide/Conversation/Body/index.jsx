@@ -80,6 +80,14 @@ const ConversationBody = ({ openDetailTab }) => {
     socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
       if (data) {
         dispatch(updateMsg(data));
+        if (data?._id === lastMsg?._id) {
+          dispatch(
+            updateSelectedConversation({
+              key: "lastMsg",
+              value: data,
+            })
+          );
+        }
       }
     });
   }, []);
@@ -106,7 +114,39 @@ const ConversationBody = ({ openDetailTab }) => {
     if ((firstLoad && Object.keys(messages)?.length > 0) || !!lastMsg) {
       scrollToBottom();
     }
-  }, [lastMsg?._id, firstLoad]);
+    if (
+      lastMsg?._id &&
+      userInfo?._id &&
+      !lastMsg?.usersSeen?.includes(userInfo?._id)
+    ) {
+      handleUpdateLastSeen();
+    }
+  }, [lastMsg?._id, firstLoad, userInfo?._id, selectedConversation?._id]);
+
+  const handleUpdateLastSeen = () => {
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.SEEN_MSGS,
+        {
+          userId: userInfo?._id,
+          lastMsg: lastMsg,
+          recipientId: selectedConversation?.participant?._id,
+        },
+        ({ data }) => {
+          dispatch(updateMsg(data));
+          dispatch(
+            updateSelectedConversation({
+              key: "lastMsg",
+              value: data,
+            })
+          );
+        }
+      );
+    } catch (err) {
+      console.error("handleUpdateLastSeen: ", err);
+    }
+  };
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {

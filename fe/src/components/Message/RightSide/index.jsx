@@ -13,7 +13,7 @@ const RightSideMsg = () => {
         setOpenDetailTab={setOpenDetailTab}
       />
       {openDetailTab && (
-        <Container width={"20vw"}>
+        <Container width={"18vw"}>
           <DetailConversationTab />
         </Container>
       )}

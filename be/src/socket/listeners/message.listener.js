@@ -23,6 +23,9 @@ const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.RETRIEVE, (payload, cb) => {
     MessageController.retrieveMsg(payload, cb, io);
   });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.SEEN_MSGS, (payload, cb) => {
+    MessageController.updateLastSeen(payload, cb, io);
+  });
 };
 
 export default MessageListener;

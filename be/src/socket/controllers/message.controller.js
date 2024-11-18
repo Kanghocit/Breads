@@ -7,7 +7,7 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
-import { getUserSocketByUserId } from "../services/user.js";
+import { sendToSpecificUser } from "../services/message.js";
 
 const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
 
@@ -145,13 +145,12 @@ export default class MessageController {
         .populate({
           path: "respondTo",
         });
-      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-          newMessages
-        );
-      }
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+        payload: newMessages,
+      });
       !!cb && cb(newMessages);
     } catch (error) {
       console.error("sendMessage: ", error);
@@ -257,7 +256,7 @@ export default class MessageController {
         },
       ];
       const conversations = await Conversation.aggregate(agg);
-      const result = conversations.map((conversation) => {
+      const result = conversations.map((conversation, index) => {
         delete conversation.otherParticipant;
         delete conversation.lastMsgId;
         return conversation;
@@ -424,17 +423,13 @@ export default class MessageController {
           _id: ObjectId(msgId),
         });
       }
+      await sendToSpecificUser({
+        recipientId: participantId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: result,
+      });
       !!cb && cb({ status: "success", data: result });
-      const participantSocketId = await getUserSocketByUserId(
-        participantId,
-        io
-      );
-      if (participantSocketId) {
-        io.to(participantSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
-          result
-        );
-      }
     } catch (err) {
       console.log("reactMsg: ", err);
       cb({ status: "error", data: null });
@@ -473,13 +468,12 @@ export default class MessageController {
       conversation[key] = value;
       conversation.msgIds.push(msgId);
       await conversation.save();
-      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-          [result]
-        );
-      }
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+        payload: [result],
+      });
       !!cb && cb({ status: "success", data: [result] });
     } catch (err) {
       console.log("changeSettingConversation: ", err);
@@ -503,24 +497,58 @@ export default class MessageController {
       }
       msgInfo.isRetrieve = true;
       const result = await msgInfo.save();
+      await sendToSpecificUser({
+        recipientId: participantId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: result,
+      });
       !!cb &&
         cb({
           status: "success",
           data: result,
         });
-      const participantSocketId = await getUserSocketByUserId(
-        participantId,
-        io
-      );
-      if (participantSocketId) {
-        io.to(participantSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
-          result
-        );
-      }
     } catch (err) {
       console.log("retrieveMsg: ", err);
       cb({ status: "error", data: null });
+    }
+  }
+  static async updateLastSeen(payload, cb, io) {
+    try {
+      const { userId, lastMsg, recipientId } = payload;
+      if (!userId || !lastMsg) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const conversationId = ObjectId(lastMsg.conversationId);
+      await Message.updateMany(
+        {
+          conversationId: conversationId,
+          usersSeen: {
+            $nin: [ObjectId(userId)],
+          },
+          createdAt: {
+            $lte: lastMsg.createdAt,
+          },
+        },
+        {
+          $push: {
+            usersSeen: ObjectId(userId),
+          },
+        }
+      );
+      const lastMsgUpdated = await Message.findOne({
+        _id: ObjectId(lastMsg._id),
+      });
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: lastMsgUpdated,
+      });
+      !!cb && cb({ status: "success", data: lastMsgUpdated });
+    } catch (err) {
+      console.log("updateLastSeen: ", err);
     }
   }
 }
