@@ -13,13 +13,15 @@ import {
   ModalFooter,
   ModalOverlay,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { PUT } from "../../config/API";
 import useShowToast from "../../hooks/useShowToast";
-import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
-import { useTranslation } from 'react-i18next';
 
 const ChangePWModal = ({ setPopup }) => {
   const { t } = useTranslation();
@@ -85,6 +87,16 @@ const ChangePWModal = ({ setPopup }) => {
     setPasswordInfo(cloneState);
   };
 
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { currentPage } = useSelector((state) => state.util);
+
+  const getButtonColor = (isActive, colorMode) => {
+    if (isActive) {
+      return colorMode === "dark" ? "#f3f5f7" : "#000000";
+    }
+    return colorMode === "dark" ? "#4d4d4d" : "#a0a0a0";
+  };
+
   return (
     <Modal
       isOpen={true}
@@ -99,10 +111,8 @@ const ChangePWModal = ({ setPopup }) => {
       <ModalContent
         position={"relative"}
         boxSizing="border-box"
-        width="460px"
+        width={["420px","460px"]}
         maxWidth={"620px"}
-        bg={"white"}
-        color={"gray"}
         borderRadius={"16px"}
         id="modal"
         padding={"4px 8px"}
@@ -113,7 +123,7 @@ const ChangePWModal = ({ setPopup }) => {
           top={"-36px"}
           left={"50%"}
           transform={"translateX(-50%)"}
-          color={"white"}
+          color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
           zIndex={4000}
           textTransform={"capitalize"}
           fontWeight={600}
@@ -125,7 +135,7 @@ const ChangePWModal = ({ setPopup }) => {
           position={"absolute"}
           top={"-36px"}
           left={"0"}
-          color={"white"}
+          color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
         />
         <ModalBody>
           <FormControl>
