@@ -45,11 +45,10 @@ const Message = ({ msg }) => {
   const { user1Message, user2Message } = getCurrentTheme(
     selectedConversation?.theme
   );
-  const {
-    backgroundColor: msgBg,
-    color: msgColor,
-    borderColor,
-  } = ownMessage ? user1Message : user2Message;
+  const msgStyle = ownMessage ? user1Message : user2Message;
+  const msgBg = msgStyle?.backgroundColor;
+  const msgColor = msgStyle?.color;
+  const borderColor = msgStyle?.borderColor;
   const isSettingMsg = msg?.type === Constants.MSG_TYPE.SETTING;
 
   const getTooltipTime = () => {

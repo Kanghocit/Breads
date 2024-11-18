@@ -16,7 +16,7 @@ const RepliedMsg = ({ msg, repliedMsgs }) => {
   const { selectedConversation, loadingMsgs, currentPageMsg } = useSelector(
     (state) => state.message
   );
-  const msgEle = document.getElementById(`msg_${msg?._id}`);
+  const msgEle = document.getElementById(`msg_${repliedMsgs?._id}`);
   const participant = selectedConversation?.participant;
   const userInfo = useSelector((state) => state.user.userInfo);
   const { sender, content, media, file } = repliedMsgs;
@@ -25,11 +25,9 @@ const RepliedMsg = ({ msg, repliedMsgs }) => {
   );
   const ownRepliedMessage = userInfo?._id === sender;
   const ownMessage = msg?.sender === userInfo?._id;
-  const {
-    backgroundColor: msgBg,
-    color: msgColor,
-    borderColor,
-  } = ownMessage ? user1Message : user2Message;
+  const msgStyle = ownMessage ? user1Message : user2Message;
+  const msgColor = msgStyle?.color;
+  const borderColor = msgStyle?.borderColor;
   const cssProp = {
     float: ownMessage ? "right" : "left",
     width: "fit-content",

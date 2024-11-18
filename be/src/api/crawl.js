@@ -6,7 +6,7 @@ import Post from "./models/post.model.js";
 import SurveyOption from "./models/surveyOption.model.js";
 import User from "./models/user.model.js";
 import { getImgUnsplash, randomAvatar } from "./utils/index.js";
-import { ObjectId } from "../util/index.js";
+import { destructObjectId, ObjectId } from "../util/index.js";
 import Conversation from "./models/conversation.model.js";
 import Message from "./models/message.model.js";
 
@@ -279,6 +279,113 @@ export const crawlUser = async () => {
 
 export const genConversations = async (userId, numberConversations = 5) => {
   try {
+    const themes = [
+      "default",
+      "softSky",
+      "warmDesert",
+      "midnightGlow",
+      "lavenderBloom",
+      "cyberwave",
+      "oceanBreeze",
+      "autumnForest",
+      "galaxyNight",
+      "mintyFresh",
+      "urbanJungle",
+      "sunsetGlow",
+      "winterFrost",
+      "neonLights",
+      "vintagePaper",
+      "candyLand",
+      "desertOasis",
+      "auroraBorealis",
+      "cyberpunkCity",
+      "springBlossom",
+      "starrySky",
+    ];
+    const emojis = [
+      ":)",
+      ";)",
+      ":D",
+      "<3",
+      "<3*",
+      ":(",
+      ":O",
+      ":P",
+      "B)",
+      ":*",
+      ":|",
+      ":x",
+      ":*(",
+      ":#",
+      ":^)",
+      ":3",
+      ">_<",
+      ":tired:",
+      ":sweat:",
+      ":>",
+      ":-3",
+      "|3",
+      "$:D",
+      ">o<",
+      ":-/",
+      "o-O",
+      ":hurt",
+      ":huh",
+      ":haiz",
+      ":slang",
+      ":sleepy",
+      ":emotional",
+      ":cold",
+      ":hot",
+      ":what",
+      ":lovely",
+      ":thinking",
+      ":friendly",
+      ":angry",
+      ":shock",
+      ":clown",
+      ":chicken",
+      ":penguin",
+      ":fire:",
+      ":zap:",
+      ":100:",
+      ":clap",
+      ":thumbsup:",
+      ":thumbsdown:",
+      ":ok_hand:",
+      ":ban",
+      ":wrong",
+      ":?",
+      ":true",
+      ":Ffinger",
+      ":brain",
+      ":shit",
+      ":ghost",
+      ":moneybag",
+      ":money",
+      ":dollar",
+      ":break-heart",
+      ":skull",
+      ":eyes",
+      ":zzz",
+      ":dimond",
+      ":stonk",
+      ":stink",
+      ":target",
+      ":<18",
+      ":search",
+      ":coffee",
+      ":chad",
+      ":phone",
+      ":key",
+      ":lock",
+      ":link",
+      ":start",
+      ":power",
+      ":bomb",
+      ":water",
+      ":talk",
+    ];
     if (!userId) {
       throw new Error("Empty userId");
     }
@@ -288,12 +395,45 @@ export const genConversations = async (userId, numberConversations = 5) => {
     if (!userInfo) {
       throw new Error("Invalid user");
     }
+    const validConversations = await Conversation.find({
+      participants: ObjectId(userId),
+    });
+    let participants = validConversations?.map((conversation) =>
+      conversation?.participants?.map((userId) => destructObjectId(userId))
+    );
+    participants = participants?.flat(Infinity);
     const othersUser = await User.find({
-      _id: { $ne: userId },
+      _id: { $nin: participants },
     }).limit(numberConversations);
-    console.log(othersUser);
+    let othersUserId = othersUser?.map((user) => destructObjectId(user._id));
+    othersUserId = [...new Set(othersUserId)];
+    const newConversations = othersUserId?.map((participantId) => {
+      const randomTheme = randomValueInArr(themes);
+      const randomEmoji = randomValueInArr(emojis);
+      return new Conversation({
+        participants: [ObjectId(userId), ObjectId(participantId)],
+        theme: randomTheme,
+        emoji: randomEmoji,
+      });
+    });
+    console.log("newConversations: ", newConversations);
+    await Conversation.insertMany(newConversations, { ordered: false });
   } catch (err) {
     console.log("genConversation: ", err);
+    throw new Error(err);
+  }
+};
+
+export const genMsgsInConversations = async () => {
+  try {
+    const conversations = await Conversation.find();
+    const conversationsId = conversations?.map((ele) => ele._id);
+    for (let i = 0; i < conversationsId?.length; i++) {
+      const randomNumberMsgs = Math.floor(Math.random() * 100) + 10;
+      await genMsgsInConversation(conversationsId[i], randomNumberMsgs);
+    }
+  } catch (err) {
+    console.log(err);
     throw new Error(err);
   }
 };
@@ -367,7 +507,6 @@ export const genMsgsInConversation = async (conversationId, numberMsg = 50) => {
       }
     );
     await Message.insertMany(listMsg, { ordered: false });
-    console.log("OK");
   } catch (err) {
     console.log("genMsgsInConversation: ", err);
     throw new Error(err);
