@@ -326,6 +326,7 @@ const UpdateProfilePage = () => {
                 type="submit"
                 isLoading={updating}
                 disabled={updating}
+                mb={["36px","36px",0]}
               >
                  {t("updateProfile.confirm")}
               </Button>
