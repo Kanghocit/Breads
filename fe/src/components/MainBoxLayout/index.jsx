@@ -20,7 +20,7 @@ const ContainerLayout = ({ children }) => {
         borderRadius={"2xl"}
         width={containerBoxWidth}
         maxWidth={containerBoxWidth}
-        margin={"0"}
+        margin={"10px"}
         padding={"16px"}
         boxShadow={"0px 0px 8px -3px rgba(0,0,0,0.53)"}
       >

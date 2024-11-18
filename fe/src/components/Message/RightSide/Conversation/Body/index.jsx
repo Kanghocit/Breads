@@ -37,6 +37,7 @@ const ConversationBody = ({ openDetailTab }) => {
   const { conversationBackground, user1Message } = getCurrentTheme(
     selectedConversation?.theme
   );
+  const participant = selectedConversation?.participant;
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
@@ -220,7 +221,7 @@ const ConversationBody = ({ openDetailTab }) => {
         ></div>
         <Flex
           flexDir={"column"}
-          gap={"12px"}
+          gap={"6px"}
           my={2}
           height={"fit-content"}
           py={2}
@@ -239,6 +240,10 @@ const ConversationBody = ({ openDetailTab }) => {
                 backgroundColor: user1Message?.backgroundColor,
                 flex: 1,
               };
+              const participantSeen = msgs?.filter((msg) =>
+                msg?.usersSeen?.includes(participant?._id)
+              );
+              const lastUserSeen = participantSeen[participantSeen?.length - 1];
               return (
                 <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
@@ -249,7 +254,10 @@ const ConversationBody = ({ openDetailTab }) => {
                     <div style={brStyle} />
                   </Flex>
                   {msgs.map((msg) => (
-                    <Message msg={msg} />
+                    <Message
+                      msg={msg}
+                      isLastSeen={lastUserSeen?._id === msg?._id}
+                    />
                   ))}
                 </Fragment>
               );

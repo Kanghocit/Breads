@@ -3,7 +3,7 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 
 const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.CREATE, (payload, cb) => {
-    MessageController.sendMessage(payload, cb, socket, io);
+    MessageController.sendMessage(payload, cb, io);
   });
   socket.on(Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATIONS, (payload, cb) => {
     MessageController.getConversations(payload, cb);
