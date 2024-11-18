@@ -194,7 +194,6 @@ export const getPostsIdByFilter = async (payload) => {
               createdAt: -1,
             });
         }
-        // console.log(data);
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });

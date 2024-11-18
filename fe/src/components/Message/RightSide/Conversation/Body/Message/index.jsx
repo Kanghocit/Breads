@@ -21,7 +21,7 @@ import MsgMediaLayout from "./MediaLayout";
 import MessageReactsBox from "./ReactsBox";
 import RepliedMsg from "./RepliedMsg";
 
-const Message = ({ msg }) => {
+const Message = ({ msg, isLastSeen = false }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -38,6 +38,7 @@ const Message = ({ msg }) => {
     reacts,
     isRetrieve,
     respondTo,
+    updatedAt,
   } = msg;
   const previousReact = reacts?.find(
     ({ userId }) => userId === userInfo?._id
@@ -65,6 +66,21 @@ const Message = ({ msg }) => {
     return moment(createdAt).format(format);
   };
 
+  const getUserSeenTooltip = () => {
+    const currentDate = new Date();
+    const updatedAtDate = new Date(updatedAt);
+    let format = "";
+    const isDiffDate = isDifferentDate(updatedAtDate, currentDate);
+    if (isDiffDate) {
+      format = "lll";
+    } else {
+      format = "LT";
+    }
+    return `Seen by ${participant?.username} at ${moment(createdAt).format(
+      format
+    )}`;
+  };
+
   const msgContent = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const contentArr = content
@@ -79,7 +95,7 @@ const Message = ({ msg }) => {
             right: ownMessage ? "" : "-16px",
             bottom: "-10px",
             left: ownMessage ? "-16px" : "",
-            zIndex: 1000,
+            zIndex: 2000,
           }}
         >
           <MessageReactsBox reacts={reacts} msgId={msg?._id} />
@@ -231,36 +247,49 @@ const Message = ({ msg }) => {
         label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        {isSettingMsg ? (
-          <Flex
-            _id={`msg_${msg?._id}`}
-            width={"100%"}
-            height={"fit-content"}
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={1}
-          >
-            {handleSettingMsg()}
-          </Flex>
-        ) : (
-          <Flex
-            pos={"relative"}
-            flexDir={ownMessage ? "column" : ""}
-            gap={2}
-            alignSelf={ownMessage ? "flex-end" : "flex-start"}
-            width={"fit-content"}
-            onMouseEnter={() => {
-              if (!isRetrieve) {
-                setDisplayAction(true);
-              }
-            }}
-            onMouseLeave={() => {
-              setDisplayAction(false);
-            }}
-          >
-            {msgContent()}
-          </Flex>
-        )}
+        <>
+          {isSettingMsg ? (
+            <Flex
+              _id={`msg_${msg?._id}`}
+              width={"100%"}
+              height={"fit-content"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              gap={1}
+            >
+              {handleSettingMsg()}
+            </Flex>
+          ) : (
+            <Flex
+              pos={"relative"}
+              flexDir={ownMessage ? "column" : ""}
+              gap={2}
+              alignSelf={ownMessage ? "flex-end" : "flex-start"}
+              width={"fit-content"}
+              onMouseEnter={() => {
+                if (!isRetrieve) {
+                  setDisplayAction(true);
+                }
+              }}
+              onMouseLeave={() => {
+                setDisplayAction(false);
+              }}
+            >
+              {msgContent()}
+            </Flex>
+          )}
+          {isLastSeen && (
+            <Flex justifyContent={"end"}>
+              <Tooltip label={getUserSeenTooltip()} placement={"top"}>
+                <Avatar
+                  width={"16px"}
+                  height={"16px"}
+                  src={participant?.avatar}
+                />
+              </Tooltip>
+            </Flex>
+          )}
+        </>
       </Tooltip>
     </>
   );

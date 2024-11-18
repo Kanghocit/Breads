@@ -176,6 +176,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
             transform={"translateX(55%)"}
             border={"1px solid gray"}
             bg={useColorModeValue("gray.200", "#181818")}
+            zIndex={1000}
           >
             {defaultEmoji.map((emjStr) => (
               <IconWrapper

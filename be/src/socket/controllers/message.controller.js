@@ -12,7 +12,7 @@ import { sendToSpecificUser } from "../services/message.js";
 const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
 
 export default class MessageController {
-  static async sendMessage(payload, cb, socket, io) {
+  static async sendMessage(payload, cb, io) {
     try {
       const { recipientId, senderId, message } = payload;
       let conversation = await Conversation.findOne({
@@ -141,6 +141,9 @@ export default class MessageController {
       })
         .populate({
           path: "file",
+        })
+        .populate({
+          path: "links",
         })
         .populate({
           path: "respondTo",
@@ -399,11 +402,9 @@ export default class MessageController {
             $set: {
               reacts: newReacts,
             },
-          }
+          },
+          { timestamps: false }
         );
-        result = await Message.findOne({
-          _id: ObjectId(msgId),
-        });
       } else {
         const newReact = {
           userId: userId,
@@ -417,12 +418,22 @@ export default class MessageController {
             $push: {
               reacts: newReact,
             },
-          }
+          },
+          { timestamps: false }
         );
-        result = await Message.findOne({
-          _id: ObjectId(msgId),
-        });
       }
+      result = await Message.findOne({
+        _id: ObjectId(msgId),
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        })
+        .populate({
+          path: "respondTo",
+        });
       await sendToSpecificUser({
         recipientId: participantId,
         io,
@@ -490,13 +501,22 @@ export default class MessageController {
       const msgInfo = await Message.findOne({
         _id: ObjectId(msgId),
       });
-      console.log(msgInfo);
       if (!msgInfo || destructObjectId(msgInfo?.sender) !== userId) {
         cb({ status: "error", data: null });
         return;
       }
-      msgInfo.isRetrieve = true;
-      const result = await msgInfo.save();
+      await Message.updateOne(
+        {
+          _id: ObjectId(msgId),
+        },
+        {
+          isRetrieve: true,
+        },
+        { timestamps: false }
+      );
+      const result = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
       await sendToSpecificUser({
         recipientId: participantId,
         io,
