@@ -14,7 +14,7 @@ const LeftSideBarMsg = () => {
         md: "row",
       }}
       maxW={{
-        sm: "440px",
+        sm: "480px",
         md: "full",
       }}
       pr={3}
@@ -24,10 +24,10 @@ const LeftSideBarMsg = () => {
     >
       <Flex
         flex={30}
-        gap={2}
+        gap={3}
         flexDirection={"column"}
         maxW={{
-          sm: "250px",
+          sm: "280px",
           mx: "auto",
         }}
         mx={"auto"}

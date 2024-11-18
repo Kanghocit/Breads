@@ -1,5 +1,5 @@
 export const getAllSockets = async (io) => {
-  const sockets = await io.fetchSockets();
+  const sockets = await io?.fetchSockets();
   return sockets;
 };
 
@@ -42,7 +42,7 @@ export const getFriendSocketId = async (userId, io, socket) => {
 
 export const getUserSocketByUserId = async (userId, io) => {
   const listSocket = await getAllSockets(io);
-  const socketsData = listSocket.map((sk) => sk.data);
+  const socketsData = listSocket?.map((sk) => sk.data);
   const userSocketId = socketsData?.find(
     (socket) => socket?.userId === userId.toString()
   )?.id;
