@@ -27,11 +27,13 @@ const enTranslations = {
   following: "Following",
   followback: "Follow back",
   liked: "Liked",
+  likes: "Likes",
   saved: "Saved",
   activity: "Activity",
   all: "All",
   follows: "Follows",
   reply: "Replies",
+  replies:"Replies",
   mentions: "Mentions",
   quotes: "Quotes",
   reposts: "Reposts",
@@ -60,7 +62,7 @@ const enTranslations = {
   whatnew: "What new....",
   save: "Save",
   create:"Create",
-  
+  chat:"Chat"
 
   // thêm các từ khóa khác ở đây
 };

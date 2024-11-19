@@ -9,7 +9,7 @@ import Socket from "../../socket";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
-  console.log("khangdz", userInfo);
+
   if (!userInfo?._id) {
     showToast("Error", "Please login to follow", "error");
     return;

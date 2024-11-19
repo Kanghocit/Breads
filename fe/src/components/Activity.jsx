@@ -10,13 +10,12 @@ import { formatDistanceToNow } from "date-fns";
 import { IoImageOutline } from "react-icons/io5";
 import { Constants } from "../Breads-Shared/Constants";
 
-const Activity = () => {
+const Activity = ({ currentPage }) => {
   const { t } = useTranslation();
-
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
-  console.log("khangdz", notifications);
+
   const [isFollowing, setIsFollowing] = useState(false);
   const [uniqueNotifications, setUniqueNotifications] = useState([]);
 
@@ -66,9 +65,26 @@ const Activity = () => {
     },
   ];
 
+  const filteredNotifications = (() => {
+    switch (currentPage) {
+      case "follows":
+        return uniqueNotifications.filter((item) => item.action === FOLLOW);
+      case "likes":
+        return uniqueNotifications.filter((item) => item.action === LIKE);
+      case "reposts":
+        return uniqueNotifications.filter((item) => item.action === REPOST);
+      case "replies":
+        return uniqueNotifications.filter((item) => item.action === REPLY);
+      case "tags":
+        return uniqueNotifications.filter((item) => item.action === TAG);
+      default:
+        return uniqueNotifications; 
+    }
+  })();
+
   return (
     <>
-      {uniqueNotifications.map((item) => {
+      {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
         return (
@@ -108,7 +124,6 @@ const Activity = () => {
                         : "Unknown time"}
                     </Text>
                   </Box>
-                  
                   <Text color="white" fontSize="sm">
                     {item.postDetails?.content ? (
                       item.postDetails.content
@@ -137,7 +152,11 @@ const Activity = () => {
                       <Text fontWeight="bold" mr={2} fontSize={"sm"}>
                         {item.fromUserDetails?.username || "Unknown User"}
                       </Text>
-                      <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
+                      <Text
+                        color="gray.500"
+                        fontSize="sm"
+                        whiteSpace="nowrap"
+                      >
                         {item.createdAt
                           ? formatDistanceToNow(new Date(item.createdAt), {
                               addSuffix: true,
@@ -179,3 +198,4 @@ const Activity = () => {
 };
 
 export default Activity;
+

@@ -41,7 +41,6 @@ const ACTIONS_NAME = {
 };
 
 const Actions = ({ post }) => {
-  console.log("cas cha bac", post);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const [openSubBox, setOpenSubBox] = useState(false);
@@ -55,7 +54,6 @@ const Actions = ({ post }) => {
     };
     socket.emitWithAck(Route.POST + POST_PATH.LIKE, payload);
   };
-  
 
   const convertStatistic = (number) => {
     let value = number;
