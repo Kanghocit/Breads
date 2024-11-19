@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { IoImageOutline } from "react-icons/io5";
 import { Constants } from "../Breads-Shared/Constants";
 import { useNavigate } from "react-router-dom";
+import FollowBtn from "./FollowBtn";
 const Activity = ({ currentPage }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -190,7 +191,7 @@ const Activity = ({ currentPage }) => {
                 </Flex>
 
                 <Flex alignItems="center" justifyContent="flex-end" w="full">
-                  <Button
+                  {/* <Button
                     bg="#232323"
                     color="white"
                     border="1px solid white"
@@ -202,7 +203,8 @@ const Activity = ({ currentPage }) => {
                     onClick={() => setIsFollowing(!isFollowing)}
                   >
                     {isFollowing ? t("following") : t("followback")}
-                  </Button>
+                  </Button> */}
+                  <FollowBtn user={item.fromUser}/>
                 </Flex>
               </Flex>
             )}

@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 const UnFollowPopup = ({ user, isOpen, onClose, onClick }) => {
+
   return (
     <AlertDialog isOpen={isOpen} onClose={onClose}>
       <AlertDialogOverlay>
