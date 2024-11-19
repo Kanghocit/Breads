@@ -34,6 +34,7 @@ import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
 import { useTranslation } from "react-i18next";
+import { setNotificationPostId } from "../../store/ToastCreatedPost";
 
 const PostPopup = () => {
   const { t } = useTranslation();
@@ -145,7 +146,9 @@ const PostPopup = () => {
           payload.usersTag = [...usersId];
         }
         payload._id = generateObjectId();
-        dispatch(createPost({ postPayload: payload, action: postAction }));
+        // xly bat dong bo
+        await dispatch(createPost({ postPayload: payload, action: postAction })).unwrap();
+        dispatch(setNotificationPostId(payload._id));
       }
     } catch (err) {
       console.error(err);
@@ -246,12 +249,9 @@ const PostPopup = () => {
                 {files && files?.length !== 0 && (
                   <UploadDisplay isPost={true} />
                 )}
-                {
-                  files && files?.length !== 0 && (
-                  console.log("đã chạy display upload")
-                  
-                  )
-                }
+                {files &&
+                  files?.length !== 0 &&
+                  console.log("đã chạy display upload")}
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
