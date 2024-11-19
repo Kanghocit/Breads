@@ -28,7 +28,7 @@ function App() {
   const location = useLocation();
   const userId = localStorage.getItem("userId");
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { seeMediaInfo } = useSelector((state) => state.util);
+  const { seeMediaInfo, currentPage } = useSelector((state) => state.util);
   const postAction = useSelector((state) => state.post.postAction);
   const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
   const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
@@ -101,7 +101,9 @@ function App() {
     <div
       className="app"
       style={{
-        marginTop: HeaderHeight + 12 + "px",
+        marginTop:
+          ![PageConstant.SIGNUP, PageConstant.LOGIN].includes(currentPage) &&
+          HeaderHeight + 12 + "px",
       }}
     >
       {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
@@ -111,9 +113,7 @@ function App() {
         {!!userId &&
           !seeMediaInfo.open &&
           location.pathname !== "/error" &&
-          !location.pathname?.includes("chat") && (
-            <CreatePostBtn  />
-          )}
+          !location.pathname?.includes("chat") && <CreatePostBtn />}
       </Container>
 
       <Routes>

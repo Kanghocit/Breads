@@ -11,7 +11,6 @@ export const sendToSpecificUser = async ({
       return;
     }
     const recipientSocketId = await getUserSocketByUserId(recipientId, io);
-    console.log("recipientSocketId: ", recipientSocketId);
     if (recipientSocketId) {
       io.to(recipientSocketId).emit(path, payload);
     }

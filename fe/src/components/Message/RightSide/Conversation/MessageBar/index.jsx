@@ -139,8 +139,8 @@ const MessageInput = () => {
       senderId: userInfo._id,
       message: payload,
     };
-    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, (newMsg) => {
-      dispatch(addNewMsg(newMsg));
+    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, ({ data }) => {
+      dispatch(addNewMsg(data));
       dispatch(updateLoadingUpload(false));
       dispatch(updateMsgInfo(defaulMessageInfo));
       dispatch(selectMsg(null));

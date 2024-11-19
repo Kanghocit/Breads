@@ -240,7 +240,8 @@ const ConversationBody = ({ openDetailTab }) => {
                 backgroundColor: user1Message?.backgroundColor,
                 flex: 1,
               };
-              const participantSeen = msgs?.filter((msg) =>
+              const allMsg = Object.values(messages).flat(Infinity);
+              const participantSeen = allMsg?.filter((msg) =>
                 msg?.usersSeen?.includes(participant?._id)
               );
               const lastUserSeen = participantSeen[participantSeen?.length - 1];

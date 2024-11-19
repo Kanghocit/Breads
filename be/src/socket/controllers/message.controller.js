@@ -154,10 +154,10 @@ export default class MessageController {
         path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
         payload: newMessages,
       });
-      !!cb && cb(newMessages);
+      !!cb && cb({ status: "success", data: newMessages });
     } catch (error) {
       console.error("sendMessage: ", error);
-      cb([]);
+      cb({ status: "error", data: [] });
     }
   }
 
@@ -559,7 +559,16 @@ export default class MessageController {
       );
       const lastMsgUpdated = await Message.findOne({
         _id: ObjectId(lastMsg._id),
-      });
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        })
+        .populate({
+          path: "respondTo",
+        });
       await sendToSpecificUser({
         recipientId,
         io,

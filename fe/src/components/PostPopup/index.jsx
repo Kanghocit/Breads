@@ -1,7 +1,6 @@
 import {
   Avatar,
   Button,
-  Container,
   Flex,
   Modal,
   ModalContent,
@@ -11,10 +10,14 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
+import Socket from "../../socket";
 import {
   defaultPostInfo,
   selectPost,
@@ -23,7 +26,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { generateObjectId, replaceEmojis } from "../../util";
+import { generateObjectId, handleUploadFiles, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
@@ -33,10 +36,6 @@ import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
-import { useTranslation } from "react-i18next";
-import { Constants } from "../../Breads-Shared/Constants";
-import Socket from "../../socket";
-import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 
 const PostPopup = () => {
   const postId = window.location.pathname.split("/")?.[2];
@@ -55,6 +54,7 @@ const PostPopup = () => {
     usePopupCancel();
   const [content, setContent] = useState("");
   const [clickPost, setClickPost] = useState(false);
+  const [filesData, setFilesData] = useState([]);
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
   const containsLink = (text) => {
@@ -82,7 +82,9 @@ const PostPopup = () => {
   }, [isEditing, postInfo, content]);
 
   const closePostAction =
-    !!postInfo.media?.length || postInfo.survey.length !== 0;
+    !!postInfo.media?.length ||
+    postInfo.survey.length !== 0 ||
+    postInfo.files.length !== 0;
 
   const checkUploadCondition = useCallback(() => {
     let checkResult = true;
@@ -131,17 +133,19 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
+      if (payload?.files?.length) {
+        const filesId = await handleUploadFiles({
+          files: filesData,
+          userId: userInfo?._id,
+        });
+        payload.files = filesId;
+        console.log("filesId: ", filesId);
+      }
       const socket = Socket.getInstant();
-
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
         payload._id = generateObjectId();
-        let notificationPayload = {
-          fromUser: userInfo._id,
-          toUsers: [postReply?.authorId],
-          target: payload._id,
-        };
         if (postAction === PostConstants.ACTIONS.REPOST) {
           payload.quote = {
             _id: postSelected._id,
@@ -153,8 +157,7 @@ const PostPopup = () => {
           payload.parentPost = postReply._id;
           notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
         }
-        
-        if (payload.usersTag?.length) {
+        if (payload.usersTag?.length > 0) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
@@ -163,14 +166,21 @@ const PostPopup = () => {
             toUsers: [...usersId],
             action: Constants.NOTIFICATION_ACTION.TAG,
             target: payload._id,
-          })
+          });
         }
 
         dispatch(createPost({ postPayload: payload, action: postAction }));
-        socket.emit(
-          Route.NOTIFICATION + NOTIFICATION_PATH.CREATE,
-          notificationPayload
-        );
+        if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
+          let notificationPayload = {
+            fromUser: userInfo._id,
+            toUsers: [postReply?.authorId],
+            target: payload._id,
+          };
+          socket.emit(
+            Route.NOTIFICATION + NOTIFICATION_PATH.CREATE,
+            notificationPayload
+          );
+        }
       }
     } catch (err) {
       console.error(err);
@@ -256,7 +266,7 @@ const PostPopup = () => {
             </Text>
             <Flex>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
-              <Container margin="0" paddingRight={0}>
+              <Flex ml={4} paddingRight={0} flexDir={"column"}>
                 <Text color={textColor} fontWeight="600">
                   {userInfo.username}
                 </Text>
@@ -265,14 +275,12 @@ const PostPopup = () => {
                   setText={(value) => handleContent(value)}
                   tagUsers={true}
                 />
-                {postInfo.files && postInfo.files?.length !== 0 && (
-                  <UploadDisplay isPost={true} />
-                )}
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
-
-                    {!closePostAction && <PostPopupAction />}
+                    {!closePostAction && (
+                      <PostPopupAction setFilesData={setFilesData} />
+                    )}
                     {postInfo.survey.length !== 0 && <PostSurvey />}
                     {postSelected?._id &&
                       postAction === PostConstants.ACTIONS.REPOST && (
@@ -282,7 +290,10 @@ const PostPopup = () => {
                       )}
                   </>
                 )}
-              </Container>
+                {postInfo.files && postInfo.files?.length !== 0 && (
+                  <UploadDisplay isPost={true} />
+                )}
+              </Flex>
             </Flex>
           </div>
           <ModalFooter padding="0">
