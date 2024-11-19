@@ -9,8 +9,9 @@ import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { IoImageOutline } from "react-icons/io5";
 import { Constants } from "../Breads-Shared/Constants";
-
+import { useNavigate } from "react-router-dom";
 const Activity = ({ currentPage }) => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const notifications = useSelector(
     (state) => state.notification.notifications
@@ -78,15 +79,22 @@ const Activity = ({ currentPage }) => {
       case "tags":
         return uniqueNotifications.filter((item) => item.action === TAG);
       default:
-        return uniqueNotifications; 
+        return uniqueNotifications;
     }
   })();
+  const comeToPost = (postId) => {
+    navigate(`/posts/${postId}`);
+  };
+  const comeToUser = (userId) => {
+    navigate(`/users/${userId}`);
+  };
 
   return (
     <>
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
+        console.log("item", item);
         return (
           <Flex
             key={item._id}
@@ -113,7 +121,14 @@ const Activity = ({ currentPage }) => {
                 </Avatar>
                 <Flex direction="column" wrap="wrap">
                   <Box display="flex">
-                    <Text fontWeight="bold" mr={2} fontSize={"sm"}>
+                    <Text
+                      fontWeight="bold"
+                      mr={2}
+                      fontSize={"sm"}
+                      onClick={() => comeToUser(item.fromUser)}
+                      cursor="pointer"
+                      _hover={{ textDecoration: "underline" }}
+                    >
                       {item.fromUserDetails?.username || "Unknown User"}
                     </Text>
                     <Text color="gray.500" fontSize="sm">
@@ -124,7 +139,12 @@ const Activity = ({ currentPage }) => {
                         : "Unknown time"}
                     </Text>
                   </Box>
-                  <Text color="white" fontSize="sm">
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    onClick={() => comeToPost(item.target)}
+                    cursor="pointer"
+                  >
                     {item.postDetails?.content ? (
                       item.postDetails.content
                     ) : (
@@ -152,11 +172,7 @@ const Activity = ({ currentPage }) => {
                       <Text fontWeight="bold" mr={2} fontSize={"sm"}>
                         {item.fromUserDetails?.username || "Unknown User"}
                       </Text>
-                      <Text
-                        color="gray.500"
-                        fontSize="sm"
-                        whiteSpace="nowrap"
-                      >
+                      <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
                         {item.createdAt
                           ? formatDistanceToNow(new Date(item.createdAt), {
                               addSuffix: true,
@@ -198,4 +214,3 @@ const Activity = ({ currentPage }) => {
 };
 
 export default Activity;
-
