@@ -26,6 +26,7 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
+import { setNotificationPostId } from "../../store/ToastCreatedPost";
 import { generateObjectId, handleUploadFiles, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
@@ -168,8 +169,10 @@ const PostPopup = () => {
             target: payload._id,
           });
         }
-
-        dispatch(createPost({ postPayload: payload, action: postAction }));
+        await dispatch(
+          createPost({ postPayload: payload, action: postAction })
+        ).unwrap();
+        dispatch(setNotificationPostId(payload._id));
         if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
           let notificationPayload = {
             fromUser: userInfo._id,
@@ -264,9 +267,9 @@ const PostPopup = () => {
             >
               {postAction + " Bread"}
             </Text>
-            <Flex>
+            <Flex width={"100%"}>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
-              <Flex ml={4} paddingRight={0} flexDir={"column"}>
+              <Flex ml={4} paddingRight={0} flexDir={"column"} flex={1}>
                 <Text color={textColor} fontWeight="600">
                   {userInfo.username}
                 </Text>

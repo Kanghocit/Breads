@@ -60,9 +60,9 @@ const enTranslations = {
   whatnew: "What new....",
   save: "Save",
   create:"Create",
-  
-
   // thêm các từ khóa khác ở đây
+  toastCreadtedPost :"New article created successfully!",
+  show:"Show"
 };
 
 export default enTranslations;
