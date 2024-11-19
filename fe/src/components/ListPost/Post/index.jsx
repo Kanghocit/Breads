@@ -32,6 +32,7 @@ import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -203,6 +204,9 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 <Post post={post?.parentPostInfo} isParentPost={true} />
               )}
             </>
+          )}
+          {post?.files?.length > 0 && (
+            <UploadDisplay isPost={true} filesFromPost={post?.files} />
           )}
           {!isParentPost && (
             <Flex gap={3} mt={"10px"} mb={isDetail ? "10px" : ""}>

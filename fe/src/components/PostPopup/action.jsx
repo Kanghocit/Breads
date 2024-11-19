@@ -1,5 +1,5 @@
 import { Flex, Input, useDisclosure } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { RiFileGifLine } from "react-icons/ri";
 
 import { VscListSelection } from "react-icons/vsc";
@@ -9,14 +9,13 @@ import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
 import { convertToBase64 } from "../../util";
 import FileUpload from "../Message/RightSide/Conversation/MessageBar/File";
 
-import GifBox from "./gif";
 import { TbLibraryPhoto } from "react-icons/tb";
+import GifBox from "./gif";
 
-const PostPopupAction = () => {
+const PostPopupAction = ({ setFilesData }) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
   const imageRef = useRef(null);
-  const [filesData, setFilesData] = useState([]);
 
   const fileUploadRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -77,12 +76,7 @@ const PostPopupAction = () => {
       />
       <Flex gap="10px" padding="8px 0" direction={"column"} position="relative">
         <Flex maxWidth="100%" gap="10px">
-          <FileUpload
-            setFilesData={setFilesData}
-            isPost={true}
-            cursor="pointer"
-          />
-
+          <FileUpload setFilesData={setFilesData} isPost={true} />
           <TbLibraryPhoto
             cursor="pointer"
             onClick={() => imageRef.current.click()}

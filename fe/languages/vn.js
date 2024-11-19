@@ -58,9 +58,11 @@ const vnTranslations = {
     delete: "Xóa",
   },
   whatnew: "Có gì mới....",
-  save: "Save",
+  save: "Lưu",
   create:"Tạo",
   // thêm các từ khóa khác ở đây
+  toastCreadtedPost :"Bài viết mới được tạo thành công!",
+  show:"Xem"
 };
 
 export default vnTranslations;

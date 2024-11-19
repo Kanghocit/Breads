@@ -6,6 +6,7 @@ import * as APIConfig from "./Breads-Shared/APIConfig";
 import PageConstant from "./Breads-Shared/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
+import NotificationCreatePost from "./components/PostPopup/NotificationPost";
 import SeeMedia from "./components/SeeMedia";
 import Layout from "./Layout";
 import { HeaderHeight } from "./Layout/Header";
@@ -20,6 +21,7 @@ import SettingPage from "./pages/SettingPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import UserPage from "./pages/UserPage";
 import Socket from "./socket";
+import { clearNotificationPostId } from "./store/ToastCreatedPost";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
 import PostConstants from "./util/PostConstants";
 
@@ -28,10 +30,13 @@ function App() {
   const location = useLocation();
   const userId = localStorage.getItem("userId");
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { seeMediaInfo } = useSelector((state) => state.util);
+  const { seeMediaInfo, currentPage } = useSelector((state) => state.util);
   const postAction = useSelector((state) => state.post.postAction);
   const { CREATE, EDIT, REPLY, REPOST } = PostConstants.ACTIONS;
   const openPostPopup = [CREATE, EDIT, REPLY, REPOST].includes(postAction);
+  const toastPostId = useSelector(
+    (state) => state.notificationCreatedPosts.postId
+  );
 
   useEffect(() => {
     if (!!userId) {
@@ -96,12 +101,27 @@ function App() {
       />
     ));
   };
+  // useEffect(() => {
+  //   if (toastPostId) {
+  //     const timer = setTimeout(() => {
+  //       handleCloseToast();
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [toastPostId]);
+  
+  const handleCloseToast = () => {
+    dispatch(clearNotificationPostId());
+  };
+  
 
   return (
     <div
       className="app"
       style={{
-        marginTop: HeaderHeight + 12 + "px",
+        marginTop:
+          ![PageConstant.SIGNUP, PageConstant.LOGIN].includes(currentPage) &&
+          HeaderHeight + 12 + "px",
       }}
     >
       {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
@@ -111,9 +131,7 @@ function App() {
         {!!userId &&
           !seeMediaInfo.open &&
           location.pathname !== "/error" &&
-          !location.pathname?.includes("chat") && (
-            <CreatePostBtn  />
-          )}
+          !location.pathname?.includes("chat") && <CreatePostBtn />}
       </Container>
 
       <Routes>
@@ -144,6 +162,12 @@ function App() {
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
       {openPostPopup && <PostPopup />}
+      {toastPostId && (
+        <NotificationCreatePost
+          postId={toastPostId}
+          onClose={handleCloseToast}
+        />
+      )}
     </div>
   );
 }

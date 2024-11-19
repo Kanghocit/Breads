@@ -6,10 +6,11 @@ import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
 import { FILE_TYPES } from "../../../../../../util";
 import { getCurrentTheme } from "../../../../../../util/Themes";
+import FileMsg from "../../Body/Message/Files";
 import ItemUploadDisplay from "./ItemUploadDisplay";
 import LoadingUploadMsg from "./loading";
 
-const UploadDisplay = ({ isPost = false }) => {
+const UploadDisplay = ({ isPost = false, filesFromPost = null }) => {
   //Max 5 files / folders
   const dispatch = useDispatch();
   const { msgInfo, loadingUploadMsg, selectedConversation } = useSelector(
@@ -21,27 +22,31 @@ const UploadDisplay = ({ isPost = false }) => {
   const bg = conversationBackground?.backgroundColor;
   const { postInfo } = useSelector((state) => state.post);
   const media = msgInfo.media;
-  const files = isPost ? postInfo.files : msgInfo.files;
-  const baseStyles = {
-    width: "100%",
-    px: 2,
-    py: 3,
-    gap: "10px",
-    justifyContent: "start",
-    bg: loadingUploadMsg ? "gray" : bg ? bg : "",
-  };
+  const files = filesFromPost
+    ? filesFromPost
+    : isPost
+    ? postInfo.files
+    : msgInfo.files;
+  const baseStyles = !isPost
+    ? {
+        width: "100%",
+        px: 2,
+        py: 3,
+        gap: "10px",
+        justifyContent: "start",
+        bg: loadingUploadMsg ? "gray" : bg ? bg : "",
+      }
+    : {};
   const postStyles = {
     position: "relative",
-    height: "100px",
-    justifyContent: "center",
+    height: "fit-content",
+    justifyContent: "start",
     alignItems: "flex-start",
-    flexDirection: "column",
+    gap: "8px",
+    flexWrap: "wrap",
   };
   const nonPostStyles = {
     borderTop: "1px solid gray",
-    // position: "absolute",
-    // left: 0,
-    // bottom: "calc(100% - 2px)",
     height: "100px",
     justifyContent: "start",
     alignItems: "center",
@@ -136,16 +141,20 @@ const UploadDisplay = ({ isPost = false }) => {
             isPost={isPost}
           />
         ))}
-
-        {files?.map((file, index) => (
-          <ItemUploadDisplay
-            item={file}
-            imgSrc={getImgByType(file.contentType)}
-            onClick={() => handleRemoveFile(index)}
-            key={index}
-            isPost={isPost}
-          />
-        ))}
+        {files?.map((file, index) => {
+          if (filesFromPost) {
+            return <FileMsg file={file} />;
+          }
+          return (
+            <ItemUploadDisplay
+              item={file}
+              imgSrc={getImgByType(file.contentType)}
+              onClick={() => handleRemoveFile(index)}
+              key={index}
+              isPost={isPost}
+            />
+          );
+        })}
       </>
       {!isPost ? (
         <Button padding={"8px 12px"} onClick={() => handleRemoveAll()}>

@@ -278,7 +278,7 @@ const Message = ({ msg, isLastSeen = false }) => {
               {msgContent()}
             </Flex>
           )}
-          {isLastSeen && (
+          {isLastSeen && msg?.sender === userInfo?._id && (
             <Flex justifyContent={"end"}>
               <Tooltip label={getUserSeenTooltip()} placement={"top"}>
                 <Avatar

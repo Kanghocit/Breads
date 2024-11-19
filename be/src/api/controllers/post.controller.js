@@ -28,6 +28,7 @@ export const createPost = async (req, res) => {
       type,
       usersTag,
       links,
+      files,
     } = payload;
     const user = await User.findById(authorId);
     if (!user) {
@@ -36,9 +37,10 @@ export const createPost = async (req, res) => {
     if (
       !content.trim() &&
       !media?.[0]?.url &&
-      survey.length === 0 &&
+      !survey.length &&
       !parentPost &&
-      !quote?._id
+      !quote?._id &&
+      !files?.length
     ) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
@@ -105,6 +107,7 @@ export const createPost = async (req, res) => {
       type: type,
       usersTag: newUsersTag,
       links: linksId,
+      files,
     };
     if (action === "repost") {
       newPostPayload.parentPost = parentPost;
@@ -246,7 +249,6 @@ export const likeUnlikePost = async (req, res) => {
   }
 };
 
-//Temp
 export const getPosts = async (req, res) => {
   try {
     const payload = req.query;

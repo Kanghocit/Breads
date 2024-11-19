@@ -69,6 +69,14 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           as: "linksInfo",
         },
       },
+      {
+        $lookup: {
+          from: "files",
+          localField: "files",
+          foreignField: "_id",
+          as: "files",
+        },
+      },
     ];
     if (getFullInfo) {
       agg.push({
