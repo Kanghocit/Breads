@@ -66,6 +66,14 @@ const vnTranslations = {
   // thêm các từ khóa khác ở đây
   toastCreadtedPost: "Bài viết mới được tạo thành công!",
   show: "Xem",
+  Yourconversations: "Cuộc trò chuyện của bạn",
+  Searchforuser: "Tìm kiếm bạn bè",
+  Typeamessage: "Soạn tin nhắn....",
+  changetheme: "Thay đổi phông bạt",
+  Changeemoji: "Thay đổi cảm xúc",
+  Customizechat: "Chỉnh sửa đoạn chat",
+  profile: "Thông tin cá nhân",
+  
 };
 
 export default vnTranslations;

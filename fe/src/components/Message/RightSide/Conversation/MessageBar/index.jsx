@@ -20,6 +20,7 @@ import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import MediaUpload from "./Media";
 import MessageIconBtn from "./MessageIconBtn";
+import { useTranslation } from "react-i18next";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -62,6 +63,7 @@ const MessageInput = () => {
   const bg = conversationBackground?.backgroundColor;
   const textColor = user1Message?.color;
   const borderColor = user1Message?.borderColor;
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(
@@ -172,7 +174,7 @@ const MessageInput = () => {
         <Input
           ref={inputRef}
           flex={1}
-          placeholder="Type a message"
+          placeholder={t('Typeamessage')}
           margin={"0 8px"}
           value={content}
           bg={loadingUploadMsg ? "gray" : bg ? bg : ""}

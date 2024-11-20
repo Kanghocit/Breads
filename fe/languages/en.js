@@ -67,6 +67,13 @@ const enTranslations = {
   // thêm các từ khóa khác ở đây
   toastCreadtedPost: "New article created successfully!",
   show: "Show",
+  Yourconversations: "Your conversations",
+  Searchforuser: "Search for a user",
+  Typeamessage: "Type a message....",
+  changetheme: "Change emoji",
+  Changeemoji: "Change emoji",
+  Customizechat: "Customize chat",
+  profile: "Profile",
 };
 
 export default enTranslations;
