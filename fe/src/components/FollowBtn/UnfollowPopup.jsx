@@ -35,6 +35,7 @@ const UnFollowPopup = ({ user, isOpen, onClose, onClick }) => {
               marginTop={"12px"}
               padding={"4px"}
               flexWrap={"wrap"}
+              textAlign={"center"}
             >
               Unfollow {user?.name} ?
             </AlertDialogHeader>

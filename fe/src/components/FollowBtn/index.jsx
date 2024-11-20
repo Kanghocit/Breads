@@ -26,7 +26,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
       fromUser: userInfo._id,
       toUsers: [user._id],
       action: Constants.NOTIFICATION_ACTION.FOLLOW,
-      target: userInfo.followed,
+      target: "",
     });
   } catch (error) {
     showToast("Error", error, "error");
