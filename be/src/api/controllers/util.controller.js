@@ -5,11 +5,8 @@ import User from "../models/user.model.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  host: "smtp.gmail.com",
-  port: 4000,
-  secure: false,
   auth: {
-    user: "doancnteam@gmail.com",
+    user: "mraducky@gmail.com",
     pass: process.env.SEND_MAIL_PASS || "",
   },
 });

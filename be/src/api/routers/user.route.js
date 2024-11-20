@@ -1,8 +1,10 @@
 import express from "express";
 import {
   changePassword,
+  checkValidUser,
   followUser,
   getAdminAccount,
+  getUserIdFromEmail,
   getUserProfile,
   getUsersFollow,
   getUsersToTag,
@@ -30,6 +32,8 @@ const {
   CRAWL_USER,
   USERS_FOLLOW,
   USERS_TO_TAG,
+  CHECK_VALID_USER,
+  GET_USER_ID_FROM_EMAIL,
 } = USER_PATH;
 
 router.get(USERS_FOLLOW, getUsersFollow);
@@ -44,5 +48,7 @@ router.put(FOLLOW, followUser);
 router.put(UPDATE + ":id", updateUser);
 router.put(CHANGE_PW + ":id", changePassword);
 router.post(CRAWL_USER, handleCrawlFakeUsers);
+router.post(CHECK_VALID_USER, checkValidUser);
+router.post(GET_USER_ID_FROM_EMAIL, getUserIdFromEmail);
 
 export default router;

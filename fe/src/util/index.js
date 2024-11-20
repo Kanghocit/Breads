@@ -470,3 +470,35 @@ export const getEmojiNameFromIcon = (emojiIcon) => {
   const emjStr = emjEntries.find((arr) => arr[1]?.icon === emojiIcon)?.[0];
   return emjStr;
 };
+
+export const listCharacter = () => {
+  const characters = [];
+  for (let i = 65; i <= 90; i++) {
+    characters.push(String.fromCharCode(i));
+  }
+  return characters;
+};
+
+export const genRandomCode = () => {
+  const characters = listCharacter();
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    let numOrCharac = Math.floor(Math.random() * 2);
+    if (numOrCharac === 0) {
+      //Code random num
+      let numChose = Math.floor(Math.random() * 10).toString();
+      code += numChose;
+    } else {
+      //Code random character
+      let upperOrlower = Math.floor(Math.random() * 2);
+      let characChose =
+        upperOrlower === 0
+          ? characters[
+              Math.floor(Math.random() * characters.length)
+            ].toLowerCase()
+          : characters[Math.floor(Math.random() * characters.length)];
+      code += characChose;
+    }
+  }
+  return code;
+};

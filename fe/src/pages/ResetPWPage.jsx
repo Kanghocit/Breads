@@ -1,32 +1,30 @@
-// import LockIcon from "@mui/icons-material/Lock";
-// import Button from "@mui/material/Button";
-// import IconButton from "@mui/material/IconButton";
-// import InputAdornment from "@mui/material/InputAdornment";
 import {
   Button,
   Flex,
   FormControl,
   Input,
-  Text,
   InputGroup,
   InputRightElement,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { decodeString } from "../Breads-Shared/util";
 import useShowToast from "../hooks/useShowToast";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import ErrorPage from "./ErrorPage";
-import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
 
 const ResetPWPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const showToast = useShowToast();
   const { userId, code } = useParams();
-  const encodedCode = localStorage.getItem("encodedCode") ?? "1234";
-  const isTrueCode = true; //decodeString(encodedCode) === code;
+  const encodedCode = localStorage.getItem("encodedCode");
+  const isTrueCode = decodeString(encodedCode) === code;
   const [showPassword, setShowPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     password: "",
@@ -40,25 +38,27 @@ const ResetPWPage = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { password, confirmPassword } = passwordData;
     if (password === confirmPassword) {
       setPasswordData({ ...passwordData, passwordsMatch: true });
-      // handleUpdateUser(dispatch, userId, "password", password);
-      setTimeout(() => {
-        showToast("", "Change password successfully", "success");
-        navigate("/home");
-        localStorage.setItem("userId", userId);
-        localStorage.removeItem("encodedCode");
-      }, 2000);
+      await handleUpdatePW({
+        currentPWValue: "",
+        newPWValue: passwordData.password,
+        userId: userId,
+        forgotPW: true,
+        showToast: showToast,
+        endAction: () => {
+          setTimeout(() => {
+            navigate("/");
+            localStorage.setItem("userId", userId);
+            localStorage.removeItem("encodedCode");
+          }, 1500);
+        },
+      });
     } else {
       setPasswordData({ ...passwordData, passwordsMatch: false });
     }
-  };
-
-  const handleChangePassword = (e) => {
-    const newPassword = e.target.value;
-    setPasswordData({ ...passwordData, password: newPassword });
   };
 
   return (
@@ -92,7 +92,12 @@ const ResetPWPage = () => {
                   placeholder="Please enter password"
                   type={showPassword ? "text" : "password"}
                   value={passwordData.password}
-                  onChange={handleChangePassword}
+                  onChange={(e) =>
+                    setPasswordData({
+                      ...passwordData,
+                      password: e.target.value,
+                    })
+                  }
                 />
                 <InputRightElement width="4.5rem">
                   <Button
