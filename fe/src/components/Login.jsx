@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Input,
@@ -13,14 +14,16 @@ import {
   Stack,
   Text,
   useColorModeValue,
-  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { encodedString } from "../Breads-Shared/util";
 import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { POST } from "../config/API";
+import { Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -91,6 +94,42 @@ const Login = () => {
         error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
         "error"
       );
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      const email = inputs.email;
+      if (email.trim()) {
+        let isValidAccount = true; //await checkValidAccount(email);
+        if (isValidAccount) {
+          showToast("", "Code send", "success");
+          const codeSendDecoded = encodedString(codeSend.current);
+          try {
+            const options = {
+              from: "doancnteam@gmail.com",
+              to: email,
+              subject: "Reset password",
+              code: codeSendDecoded,
+              url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
+            };
+            localStorage.setItem("encodedCode", codeSendDecoded);
+            await POST({
+              path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
+              payload: options,
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          showToast("", "Invalid account", "error");
+        }
+      } else {
+        showToast("", "Invalid email", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Server error", "error");
     }
   };
 
