@@ -3,7 +3,7 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 
 const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.CREATE, (payload, cb) => {
-    MessageController.sendMessage(payload, cb, socket, io);
+    MessageController.sendMessage(payload, cb, io);
   });
   socket.on(Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATIONS, (payload, cb) => {
     MessageController.getConversations(payload, cb);
@@ -19,6 +19,12 @@ const MessageListener = (socket, io) => {
   });
   socket.on(Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION, (payload, cb) => {
     MessageController.changeSettingConversation(payload, cb, io);
+  });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.RETRIEVE, (payload, cb) => {
+    MessageController.retrieveMsg(payload, cb, io);
+  });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.SEEN_MSGS, (payload, cb) => {
+    MessageController.updateLastSeen(payload, cb, io);
   });
 };
 

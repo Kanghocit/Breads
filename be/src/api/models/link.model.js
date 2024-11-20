@@ -19,9 +19,11 @@ const linkSchema = new mongoose.Schema(
     },
     image: {
       type: String,
+      default: "",
     },
     title: {
       type: String,
+      default: "",
       required: true,
     },
   },

@@ -1,7 +1,16 @@
-import { Avatar, Flex, Image, Link, Text, Tooltip } from "@chakra-ui/react";
+import {
+  Avatar,
+  Container,
+  Flex,
+  Image,
+  Link,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import moment from "moment";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { Constants } from "../../../../../../Breads-Shared/Constants";
 import { isDifferentDate } from "../../../../../../util";
 import CustomLinkPreview from "../../../../../../util/CustomLinkPreview";
 import { getCurrentTheme } from "../../../../../../util/Themes";
@@ -10,8 +19,9 @@ import MessageAction from "./Actions";
 import FileMsg from "./Files";
 import MsgMediaLayout from "./MediaLayout";
 import MessageReactsBox from "./ReactsBox";
+import RepliedMsg from "./RepliedMsg";
 
-const Message = ({ msg }) => {
+const Message = ({ msg, isLastSeen = false }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -19,18 +29,28 @@ const Message = ({ msg }) => {
   const participant = selectedConversation?.participant;
   const [displayAction, setDisplayAction] = useState(false);
   const ownMessage = msg?.sender === userInfo?._id;
-  const { content, createdAt, file, media, links, reacts } = msg;
+  const {
+    content,
+    createdAt,
+    file,
+    media,
+    links,
+    reacts,
+    isRetrieve,
+    respondTo,
+    updatedAt,
+  } = msg;
   const previousReact = reacts?.find(
     ({ userId }) => userId === userInfo?._id
   )?.react;
   const { user1Message, user2Message } = getCurrentTheme(
     selectedConversation?.theme
   );
-  const {
-    backgroundColor: msgBg,
-    color: msgColor,
-    borderColor,
-  } = ownMessage ? user1Message : user2Message;
+  const msgStyle = ownMessage ? user1Message : user2Message;
+  const msgBg = msgStyle?.backgroundColor;
+  const msgColor = msgStyle?.color;
+  const borderColor = msgStyle?.borderColor;
+  const isSettingMsg = msg?.type === Constants.MSG_TYPE.SETTING;
 
   const getTooltipTime = () => {
     // const createdLocalTime = convertUTCToLocalTime(createdAt);
@@ -44,6 +64,21 @@ const Message = ({ msg }) => {
       format = "LT";
     }
     return moment(createdAt).format(format);
+  };
+
+  const getUserSeenTooltip = () => {
+    const currentDate = new Date();
+    const updatedAtDate = new Date(updatedAt);
+    let format = "";
+    const isDiffDate = isDifferentDate(updatedAtDate, currentDate);
+    if (isDiffDate) {
+      format = "lll";
+    } else {
+      format = "LT";
+    }
+    return `Seen by ${participant?.username} at ${moment(createdAt).format(
+      format
+    )}`;
   };
 
   const msgContent = () => {
@@ -60,13 +95,28 @@ const Message = ({ msg }) => {
             right: ownMessage ? "" : "-16px",
             bottom: "-10px",
             left: ownMessage ? "-16px" : "",
-            zIndex: 1000,
+            zIndex: 2000,
           }}
         >
           <MessageReactsBox reacts={reacts} msgId={msg?._id} />
         </div>
       );
     };
+
+    if (isRetrieve) {
+      return (
+        <Container
+          py={1}
+          px={3}
+          borderRadius={"16px"}
+          color={msgColor}
+          border={borderColor ? `1px solid ${borderColor}` : ""}
+          bg={"lightgray"}
+        >
+          <Text>This message is retrieved</Text>
+        </Container>
+      );
+    }
 
     return (
       <Flex
@@ -78,7 +128,7 @@ const Message = ({ msg }) => {
         {ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
-            msgId={msg?._id}
+            msg={msg}
             previousReact={previousReact}
           />
         )}
@@ -94,16 +144,19 @@ const Message = ({ msg }) => {
           flexDir={"column"}
           alignItems={ownMessage ? "flex-end" : "flex-start"}
         >
+          {respondTo?._id && <RepliedMsg repliedMsgs={respondTo} msg={msg} />}
           {content?.trim() && (
-            <Text
+            <Container
+              m={0}
               pos={"relative"}
-              maxW={"350px"}
+              maxW={"30vw"}
               bg={msgBg}
               py={1}
-              px={2}
-              borderRadius={"md"}
+              px={3}
+              borderRadius={"16px"}
               color={msgColor}
               border={borderColor ? `1px solid ${borderColor}` : ""}
+              width={"fit-content"}
             >
               {contentArr.map((part, index) => {
                 if (part.match(urlRegex)) {
@@ -130,7 +183,7 @@ const Message = ({ msg }) => {
                 !links?.length &&
                 !media?.length &&
                 !file?._id && <>{reactBox()}</>}
-            </Text>
+            </Container>
           )}
           {links?.length > 0 && (
             <div
@@ -155,7 +208,7 @@ const Message = ({ msg }) => {
         {!ownMessage && displayAction && (
           <MessageAction
             ownMsg={ownMessage}
-            msgId={msg?._id}
+            msg={msg}
             previousReact={previousReact}
           />
         )}
@@ -172,7 +225,7 @@ const Message = ({ msg }) => {
 
     return (
       <>
-        <Text textAlign={"center"}>
+        <Text textAlign={"center"} color={msgColor}>
           {ownMessage ? "You " : participant?.username + " "}
           {msg?.content}
         </Text>
@@ -191,37 +244,52 @@ const Message = ({ msg }) => {
   return (
     <>
       <Tooltip
-        label={getTooltipTime()}
+        label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        {msg?.type === "setting" ? (
-          <Flex
-            _id={`msg_${msg?._id}`}
-            width={"100%"}
-            height={"fit-content"}
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={1}
-          >
-            {handleSettingMsg()}
-          </Flex>
-        ) : (
-          <Flex
-            pos={"relative"}
-            flexDir={ownMessage ? "column" : ""}
-            gap={2}
-            alignSelf={ownMessage ? "flex-end" : "flex-start"}
-            width={"fit-content"}
-            onMouseEnter={() => {
-              setDisplayAction(true);
-            }}
-            onMouseLeave={() => {
-              setDisplayAction(false);
-            }}
-          >
-            {msgContent()}
-          </Flex>
-        )}
+        <>
+          {isSettingMsg ? (
+            <Flex
+              _id={`msg_${msg?._id}`}
+              width={"100%"}
+              height={"fit-content"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              gap={1}
+            >
+              {handleSettingMsg()}
+            </Flex>
+          ) : (
+            <Flex
+              pos={"relative"}
+              flexDir={ownMessage ? "column" : ""}
+              gap={2}
+              alignSelf={ownMessage ? "flex-end" : "flex-start"}
+              width={"fit-content"}
+              onMouseEnter={() => {
+                if (!isRetrieve) {
+                  setDisplayAction(true);
+                }
+              }}
+              onMouseLeave={() => {
+                setDisplayAction(false);
+              }}
+            >
+              {msgContent()}
+            </Flex>
+          )}
+          {isLastSeen && msg?.sender === userInfo?._id && (
+            <Flex justifyContent={"end"}>
+              <Tooltip label={getUserSeenTooltip()} placement={"top"}>
+                <Avatar
+                  width={"16px"}
+                  height={"16px"}
+                  src={participant?.avatar}
+                />
+              </Tooltip>
+            </Flex>
+          )}
+        </>
       </Tooltip>
     </>
   );

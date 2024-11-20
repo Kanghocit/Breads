@@ -33,17 +33,18 @@ const ChatPage = () => {
 
   return (
     <Flex
+      id={"chat-page"}
       position={"absolute"}
-      left={"55%"}
+      left={"50%"}
+      transform={"translateX(-50%)"}
       w={{
         base: "100%",
         md: "80%",
         lg: "90%",
       }}
-      pl={"24px"}
-      pr={3}
-      transform={"translateX(-50%)"}
+      ml={"38px"}
       gap={"24px"}
+      overflow={"hidden"}
     >
       <LeftSideBarMsg />
       <RightSideMsg />

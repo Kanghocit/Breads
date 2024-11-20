@@ -32,6 +32,7 @@ import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
+import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,6 +76,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
         width={"100%"}
         transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"
+        mt={isReply ? "8px" : ""}
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
@@ -137,8 +139,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               )}
             </Flex>
           </Flex>
-          <Text
+          <Container
+            p={0}
+            m={0}
             my={2}
+            width={"100%"}
             cursor={
               !isDetail &&
               !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
@@ -160,7 +165,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 link={post?.linksInfo[post?.linksInfo?.length - 1]}
               />
             )}
-          </Text>
+          </Container>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text
               display={"flex"}
@@ -199,6 +204,9 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 <Post post={post?.parentPostInfo} isParentPost={true} />
               )}
             </>
+          )}
+          {post?.files?.length > 0 && (
+            <UploadDisplay isPost={true} filesFromPost={post?.files} />
           )}
           {!isParentPost && (
             <Flex gap={3} mt={"10px"} mb={isDetail ? "10px" : ""}>

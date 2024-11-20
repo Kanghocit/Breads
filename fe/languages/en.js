@@ -33,7 +33,7 @@ const enTranslations = {
   all: "All",
   follows: "Follows",
   reply: "Replies",
-  replies:"Replies",
+  replies: "Replies",
   mentions: "Mentions",
   quotes: "Quotes",
   reposts: "Reposts",
@@ -61,10 +61,12 @@ const enTranslations = {
   },
   whatnew: "What new....",
   save: "Save",
-  create:"Create",
-  chat:"Chat"
+  create: "Create",
+  chat: "Chat",
 
   // thêm các từ khóa khác ở đây
+  toastCreadtedPost: "New article created successfully!",
+  show: "Show",
 };
 
 export default enTranslations;

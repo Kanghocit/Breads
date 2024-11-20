@@ -5,7 +5,6 @@ import {
   Image,
   Stack,
   Text,
-  useColorModeValue,
   WrapItem,
 } from "@chakra-ui/react";
 import moment from "moment";
@@ -19,6 +18,7 @@ const ConversationBar = ({ conversation }) => {
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const isSeen = lastMsg?.usersSeen?.includes(userInfo?._id);
 
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
@@ -97,6 +97,7 @@ const ConversationBar = ({ conversation }) => {
           alignItems={"center"}
           gap={1}
           maxWidth={"100%"}
+          color={isSeen ? "lightgray" : "white"}
         >
           {handleLastMsgInfo()}
         </Text>

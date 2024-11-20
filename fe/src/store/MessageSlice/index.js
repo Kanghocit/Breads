@@ -20,6 +20,7 @@ export const initialMsgState = {
   userSelected: null,
   messages: {}, //List message in a conversation
   selectedConversation: null,
+  selectedMsg: null,
   msgInfo: defaulMessageInfo,
   loadingConversations: false,
   loadingUploadMsg: false,
@@ -97,6 +98,9 @@ const msgSlice = createSlice({
         }
       }
     },
+    selectMsg: (state, action) => {
+      state.selectedMsg = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getConversations.pending, (state, action) => {
@@ -154,5 +158,6 @@ export const {
   updateCurrentPageMsg,
   updateMsg,
   updateSelectedConversation,
+  selectMsg,
 } = msgSlice.actions;
 export default msgSlice.reducer;

@@ -29,6 +29,7 @@ export const BtnLike = () => {
   return (
     <Button
       bg="transparent"
+      _hover={{ bg: "transparent" }}
       color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
       onClick={handleClick}
       width="60px"
@@ -64,6 +65,7 @@ export const BtnMess = () => {
   return (
     <Button
       bg="transparent"
+      _hover={{ bg: "transparent" }}
       color={getButtonColor(currentPage === PageConstant.CHAT, colorMode)}
       onClick={handleClick}
       width="60px"

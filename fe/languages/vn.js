@@ -33,7 +33,7 @@ const vnTranslations = {
   all: "Tất cả",
   follows: "Theo dõi",
   reply: "Phản hồi",
-  replies:"Phản hồi",
+  replies: "Phản hồi",
   mentions: "Đề cập",
   quotes: "Trích dẫn",
   reposts: "Đăng lại",
@@ -60,10 +60,12 @@ const vnTranslations = {
     delete: "Xóa",
   },
   whatnew: "Có gì mới....",
-  save: "Save",
-  create:"Tạo",
-  chat:"Nhắn tin"
+  save: "Lưu",
+  create: "Tạo",
+  chat: "Nhắn tin",
   // thêm các từ khóa khác ở đây
+  toastCreadtedPost: "Bài viết mới được tạo thành công!",
+  show: "Xem",
 };
 
 export default vnTranslations;

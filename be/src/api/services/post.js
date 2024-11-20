@@ -69,6 +69,14 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           as: "linksInfo",
         },
       },
+      {
+        $lookup: {
+          from: "files",
+          localField: "files",
+          foreignField: "_id",
+          as: "files",
+        },
+      },
     ];
     if (getFullInfo) {
       agg.push({
@@ -194,7 +202,6 @@ export const getPostsIdByFilter = async (payload) => {
               createdAt: -1,
             });
         }
-        // console.log(data);
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });

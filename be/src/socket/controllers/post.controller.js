@@ -8,7 +8,7 @@ import {
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { destructObjectId, getCollection, ObjectId } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
-import { getUserSocketByUserId } from "../services/user.js";
+import { sendToSpecificUser } from "../services/message.js";
 
 export default class PostController {
   static likePost = async (payload, socket, io) => {
@@ -55,16 +55,12 @@ export default class PostController {
             target: postId,
           });
           const newNotification = await notificationInfo.save();
-          const authorSocketId = await getUserSocketByUserId(
-            postInfo.authorId,
-            io
-          );
-          if (authorSocketId) {
-            io.to(authorSocketId).emit(
-              Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW,
-              newNotification
-            );
-          }
+          await sendToSpecificUser({
+            recipientId: postInfo.authorId,
+            io,
+            path: Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW,
+            payload: newNotification,
+          });
           await User.updateOne(
             {
               _id: postInfo.authorId,

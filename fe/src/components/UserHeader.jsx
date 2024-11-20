@@ -263,8 +263,8 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
           </Flex>
         </Flex>
 
-        <Tabs w={"full"}>
-          <TabList w={"full"}>
+        <Tabs width={"100%"}>
+          <TabList width={"100%"}>
             {Object.keys(TABS).map((key) => (
               <Tab
                 flex={1}
@@ -279,40 +279,20 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             ))}
           </TabList>
 
-          <TabPanels>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
+          <TabPanels width={"100%"}>
+            {Object.keys(TABS).map((tab) => (
+              <TabPanel key={tab} p={0} mt={4} width={"100%"}>
+                {isLoading ? (
+                  <Flex direction="column" gap={2}>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={num} />
+                    ))}
+                  </Flex>
+                ) : (
+                  <ListPost posts={userPosts} />
+                )}
+              </TabPanel>
+            ))}
           </TabPanels>
         </Tabs>
       </VStack>

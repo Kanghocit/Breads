@@ -17,11 +17,7 @@ import {
   RepostIcon,
   ShareIcon,
 } from "../../../assests/icons";
-import {
-  NOTIFICATION_PATH,
-  POST_PATH,
-  Route,
-} from "../../../Breads-Shared/APIConfig";
+import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
 import Socket from "../../../socket";
 import {
   selectPost,
@@ -30,7 +26,6 @@ import {
 } from "../../../store/PostSlice";
 import PostConstants from "../../../util/PostConstants";
 import useCopyLink from "./MoreAction/CopyLink";
-import { Constants } from "../../../Breads-Shared/Constants";
 
 const ACTIONS_NAME = {
   LIKE: "like",

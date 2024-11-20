@@ -3,15 +3,20 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import { Constants } from "../../../../../Breads-Shared/Constants";
 import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
 import {
   addNewMsg,
   updateCurrentPageMsg,
   updateMsg,
+  updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
-import { formatDateToDDMMYYYY } from "../../../../../util";
+import {
+  formatDateToDDMMYYYY,
+  getEmojiNameFromIcon,
+} from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
@@ -32,6 +37,7 @@ const ConversationBody = ({ openDetailTab }) => {
   const { conversationBackground, user1Message } = getCurrentTheme(
     selectedConversation?.theme
   );
+  const participant = selectedConversation?.participant;
 
   useEffect(() => {
     if (selectedConversation?._id && userInfo?._id) {
@@ -50,11 +56,39 @@ const ConversationBody = ({ openDetailTab }) => {
       if (data) {
         dispatch(addNewMsg(data));
         setScrollText("New message");
+        if (data?.[0]?.type === Constants.MSG_TYPE.SETTING) {
+          const splitContent = data[0].content.split(" ");
+          const value = splitContent[splitContent?.length - 1];
+          if (splitContent?.includes("theme")) {
+            dispatch(
+              updateSelectedConversation({
+                key: "theme",
+                value: value,
+              })
+            );
+          }
+          if (splitContent?.includes("emoji")) {
+            dispatch(
+              updateSelectedConversation({
+                key: "emoji",
+                value: getEmojiNameFromIcon(value),
+              })
+            );
+          }
+        }
       }
     });
     socket.on(Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG, (data) => {
       if (data) {
         dispatch(updateMsg(data));
+        if (data?._id === lastMsg?._id) {
+          dispatch(
+            updateSelectedConversation({
+              key: "lastMsg",
+              value: data,
+            })
+          );
+        }
       }
     });
   }, []);
@@ -81,7 +115,39 @@ const ConversationBody = ({ openDetailTab }) => {
     if ((firstLoad && Object.keys(messages)?.length > 0) || !!lastMsg) {
       scrollToBottom();
     }
-  }, [lastMsg?._id, firstLoad]);
+    if (
+      lastMsg?._id &&
+      userInfo?._id &&
+      !lastMsg?.usersSeen?.includes(userInfo?._id)
+    ) {
+      handleUpdateLastSeen();
+    }
+  }, [lastMsg?._id, firstLoad, userInfo?._id, selectedConversation?._id]);
+
+  const handleUpdateLastSeen = () => {
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.SEEN_MSGS,
+        {
+          userId: userInfo?._id,
+          lastMsg: lastMsg,
+          recipientId: selectedConversation?.participant?._id,
+        },
+        ({ data }) => {
+          dispatch(updateMsg(data));
+          dispatch(
+            updateSelectedConversation({
+              key: "lastMsg",
+              value: data,
+            })
+          );
+        }
+      );
+    } catch (err) {
+      console.error("handleUpdateLastSeen: ", err);
+    }
+  };
 
   const scrollToBottom = () => {
     if (conversationScreenRef?.current) {
@@ -155,7 +221,7 @@ const ConversationBody = ({ openDetailTab }) => {
         ></div>
         <Flex
           flexDir={"column"}
-          gap={"12px"}
+          gap={"6px"}
           my={2}
           height={"fit-content"}
           py={2}
@@ -174,6 +240,11 @@ const ConversationBody = ({ openDetailTab }) => {
                 backgroundColor: user1Message?.backgroundColor,
                 flex: 1,
               };
+              const allMsg = Object.values(messages).flat(Infinity);
+              const participantSeen = allMsg?.filter((msg) =>
+                msg?.usersSeen?.includes(participant?._id)
+              );
+              const lastUserSeen = participantSeen[participantSeen?.length - 1];
               return (
                 <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
@@ -184,7 +255,10 @@ const ConversationBody = ({ openDetailTab }) => {
                     <div style={brStyle} />
                   </Flex>
                   {msgs.map((msg) => (
-                    <Message msg={msg} />
+                    <Message
+                      msg={msg}
+                      isLastSeen={lastUserSeen?._id === msg?._id}
+                    />
                   ))}
                 </Fragment>
               );

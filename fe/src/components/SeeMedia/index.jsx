@@ -135,11 +135,14 @@ const SeeMedia = () => {
           >
             {currentMedia.type === Constants.MEDIA_TYPE.VIDEO ? (
               <video
-                style={{
-                  maxWidth: "80vw",
-                  height: "100vh",
-                  width: "fit-content",
-                }}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                margin="auto"
+                maxWidth={{ base: "80%", md: "80vw" }}
+                height={{ base: "80%", md: "100vh" }}
+                width="fit-content"
+                objectFit="cover"
                 src={currentMedia?.url}
                 controls
                 autoPlay
@@ -147,10 +150,14 @@ const SeeMedia = () => {
             ) : (
               <Image
                 src={currentMedia?.url}
-                height={"100vh"}
-                maxWidth={"80vw"}
-                width={"fit-content"}
-                objectFit={"cover"}
+                height={{ base: "80%", md: "100vh" }}
+                maxWidth={{ base: "80%", md: "80vw" }}
+                width="fit-content"
+                objectFit="cover"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                margin="auto"
               />
             )}
           </Flex>
