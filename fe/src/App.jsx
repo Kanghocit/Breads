@@ -73,12 +73,12 @@ function App() {
   };
 
   const ActivityRoute = () => {
-    const { ACTIVITY, FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS } =
+    const { ACTIVITY, ALL, FOLLOWS, REPLIES, MENTIONS, LIKES, REPOSTS } =
       PageConstant;
-    return ["", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS].map((page) => (
+    return [ALL, FOLLOWS, REPLIES, MENTIONS, LIKES, REPOSTS].map((page) => (
       <Route
         key={`route-${page}`}
-        path={`${ACTIVITY}/${page}`}
+        path={ALL ? `${ACTIVITY}` : `${ACTIVITY}/${page}`}
         element={
           !!userId ? (
             <ActivityPage />

@@ -16,7 +16,7 @@ const Header = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentPage = useSelector((state) => state.util.currentPage);
+  const { currentPage, displayPageData } = useSelector((state) => state.util);
   const userSelected = useSelector((state) => state.user.userSelected);
   const { colorMode } = useColorMode();
   const [openBox, setOpenBox] = useState(false);
@@ -30,8 +30,7 @@ const Header = () => {
           t("all"),
           t("follows"),
           t("replies"),
-          t("mentions"),
-          t("quotes"),
+          t("likes"),
           t("reposts"),
         ];
       default:
@@ -45,40 +44,66 @@ const Header = () => {
       [PageConstant.ACTIVITY]: t("activity"),
       [PageConstant.FOR_YOU]: t("forYou"),
       [PageConstant.FOLLOWING]: t("following"),
+      [PageConstant.FOLLOWS]: t("follows"),
       [PageConstant.LIKED]: t("liked"),
+      [PageConstant.LIKES]: t("likes"),
+      [PageConstant.REPOSTS]: t("reposts"),
+      [PageConstant.REPLIES]: t("replies"),
       [PageConstant.SAVED]: t("saved"),
       [PageConstant.SEARCH]: t("search"),
       [PageConstant.USER]: t("userProfile"),
       [PageConstant.FRIEND]: userSelected?.username ?? t("friend"),
       [PageConstant.POST_DETAIL]: t("bread"),
+      [PageConstant.CHAT]: t("chat"),
     };
 
-    if (currentPage === PageConstant.HOME) {
-      return (
-        headerContentMap[PageConstant.HOME][0]?.toUpperCase() +
-        headerContentMap[PageConstant.HOME].slice(1)
-      );
-    } else if (currentPage === PageConstant.ACTIVITY) {
-      return (
-        headerContentMap[PageConstant.ACTIVITY][0]?.toUpperCase() +
-        headerContentMap[PageConstant.ACTIVITY].slice(1)
-      );
-    }
+    switch (currentPage) {
+      case PageConstant.HOME: {
+        if (displayPageData === PageConstant.FOR_YOU) {
+          return t("forYou");
+        } else if (displayPageData === PageConstant.FOLLOWING) {
+          return t("following");
+        } else if (displayPageData === PageConstant.LIKED) {
+          return t("liked");
+        } else if (displayPageData === PageConstant.SAVED) {
+          return t("saved");
+        }
 
-    return headerContentMap[currentPage] || t("forYou");
+        return t("forYou");
+      }
+      case PageConstant.ACTIVITY: {
+        if (displayPageData === PageConstant.LIKES) {
+          return t("likes");
+        } else if (displayPageData === PageConstant.FOLLOWS) {
+          return t("follows");
+        } else if (displayPageData === PageConstant.REPLIES) {
+          return t("replies");
+        }  else if (displayPageData === PageConstant.REPOSTS) {
+          return t("reposts");
+        }
+
+        return t("activity");
+      }
+      case PageConstant.CHAT:
+        return (
+          headerContentMap[currentPage][0]?.toUpperCase() +
+          headerContentMap[currentPage].slice(1)
+        );
+      default:
+        return headerContentMap[currentPage] || t("forYou");
+    }
   };
 
   const handleNavigate = (item) => {
     if (currentPage === PageConstant.ACTIVITY) {
       const activityPageMap = {
-        [t("all")]: PageConstant.ACTIVITY,
+        [t("all")]: "",
         [t("follows")]: PageConstant.FOLLOWS,
         [t("replies")]: PageConstant.REPLIES,
-        [t("mentions")]: PageConstant.MENTIONS,
-        [t("quotes")]: PageConstant.QUOTES,
+        [t("likes")]: PageConstant.LIKES,
         [t("reposts")]: PageConstant.REPOSTS,
       };
-      const targetPage = activityPageMap[item] || item;
+      const targetPage = activityPageMap[item];
       navigate(PageConstant.ACTIVITY + "/" + targetPage);
       dispatch(changeDisplayPageData(targetPage));
     } else {
@@ -93,6 +118,7 @@ const Header = () => {
       dispatch(changeDisplayPageData(targetPage));
     }
   };
+  
 
   return (
     <Flex
@@ -122,7 +148,9 @@ const Header = () => {
       >
         {getHeaderContent()}
         {[PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
-          <ClickOutsideComponent onClose={() => setOpenBox(false)}>
+          <ClickOutsideComponent
+            onClose={() => setOpenBox(false)}
+          >
             <ChevronDownIcon
               width={"32px"}
               height={"32px"}

@@ -27,11 +27,13 @@ const enTranslations = {
   following: "Following",
   followback: "Follow back",
   liked: "Liked",
+  likes: "Likes",
   saved: "Saved",
   activity: "Activity",
   all: "All",
   follows: "Follows",
   reply: "Replies",
+  replies: "Replies",
   mentions: "Mentions",
   quotes: "Quotes",
   reposts: "Reposts",
@@ -59,10 +61,19 @@ const enTranslations = {
   },
   whatnew: "What new....",
   save: "Save",
-  create:"Create",
+  create: "Create",
+  chat: "Chat",
+
   // thêm các từ khóa khác ở đây
-  toastCreadtedPost :"New article created successfully!",
-  show:"Show"
+  toastCreadtedPost: "New article created successfully!",
+  show: "Show",
+  Yourconversations: "Your conversations",
+  Searchforuser: "Search for a user",
+  Typeamessage: "Type a message....",
+  changetheme: "Change emoji",
+  Changeemoji: "Change emoji",
+  Customizechat: "Customize chat",
+  profile: "Profile",
 };
 
 export default enTranslations;

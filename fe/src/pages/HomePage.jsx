@@ -14,7 +14,12 @@ const HomePage = () => {
   const { FOR_YOU } = PageConstant;
 
   useEffect(() => {
-    dispatch(changePage({ nextPage: PageConstant.HOME, currentPage }));
+    dispatch(
+      changePage({
+        nextPage: PageConstant.HOME,
+        currentPage,
+      })
+    );
     handleGetDataByPage();
   }, []);
 
@@ -47,8 +52,7 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
-        {displayPageData === FOR_YOU && <CreatePostBar />
-        }
+        {displayPageData === FOR_YOU && <CreatePostBar />}
         <ListPost />
       </>
     </ContainerLayout>

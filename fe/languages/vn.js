@@ -27,11 +27,13 @@ const vnTranslations = {
   following: "Đang theo dõi",
   followback: "Theo dõi lại",
   liked: "Đã thích",
+  likes: "Thích",
   saved: "Đã lưu",
   activity: "Hoạt động",
   all: "Tất cả",
   follows: "Theo dõi",
   reply: "Phản hồi",
+  replies: "Phản hồi",
   mentions: "Đề cập",
   quotes: "Trích dẫn",
   reposts: "Đăng lại",
@@ -59,10 +61,19 @@ const vnTranslations = {
   },
   whatnew: "Có gì mới....",
   save: "Lưu",
-  create:"Tạo",
+  create: "Tạo",
+  chat: "Nhắn tin",
   // thêm các từ khóa khác ở đây
-  toastCreadtedPost :"Bài viết mới được tạo thành công!",
-  show:"Xem"
+  toastCreadtedPost: "Bài viết mới được tạo thành công!",
+  show: "Xem",
+  Yourconversations: "Cuộc trò chuyện của bạn",
+  Searchforuser: "Tìm kiếm bạn bè",
+  Typeamessage: "Soạn tin nhắn....",
+  changetheme: "Thay đổi phông bạt",
+  Changeemoji: "Thay đổi cảm xúc",
+  Customizechat: "Chỉnh sửa đoạn chat",
+  profile: "Thông tin cá nhân",
+  
 };
 
 export default vnTranslations;
