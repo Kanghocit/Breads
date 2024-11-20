@@ -14,6 +14,7 @@ import FollowBtn from "./FollowBtn";
 const Activity = ({ currentPage }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const userInfo = useSelector((state) => state.user.userInfo);
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
@@ -129,7 +130,7 @@ const Activity = ({ currentPage }) => {
                       cursor="pointer"
                       _hover={{ textDecoration: "underline" }}
                     >
-                      {item.fromUserDetails?.username || "Unknown User"}
+                      {item.FromUserDetails?.username || "Unknown User"}
                     </Text>
                     <Text color="gray.500" fontSize="sm">
                       {item.createdAt
@@ -168,7 +169,7 @@ const Activity = ({ currentPage }) => {
                   <Flex direction="column">
                     <Box display="flex" justifyContent="space-between">
                       <Text fontWeight="bold" mr={2} fontSize={"sm"}>
-                        {item.fromUserDetails?.username || "Unknown User"}
+                        {item.FromUserDetails?.username || "Unknown User"}
                       </Text>
                       <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
                         {item.createdAt
@@ -186,8 +187,8 @@ const Activity = ({ currentPage }) => {
                 </Flex>
 
                 <Flex alignItems="center" justifyContent="flex-end" w="full">
+                  <FollowBtn user={item.FromUserDetails}/>
                   
-                  {/* <FollowBtn user={item.fromUser}/> */}
                 </Flex>
               </Flex>
             )}
