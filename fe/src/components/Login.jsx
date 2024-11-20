@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Input,
@@ -13,23 +14,36 @@ import {
   Stack,
   Text,
   useColorModeValue,
-  FormErrorMessage,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { encodedString } from "../Breads-Shared/util";
+import { POST } from "../config/API";
 import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { genRandomCode } from "../util/index";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const codeSend = useRef(genRandomCode());
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [countClick, setCountClick] = useState(0);
+  const [openCodeBox, setOpenCodeBox] = useState(false);
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
+  const [code, setCode] = useState("");
   const [errors, setErrors] = useState({});
   const showToast = useShowToast();
 
@@ -67,7 +81,6 @@ const Login = () => {
       //   delete newErrors.password;
       // }
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,14 +89,14 @@ const Login = () => {
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
-      await dispatch(login(payload));
+      dispatch(login(payload));
       showToast("Thành công", "Đăng nhập bằng Admin thành công", "success");
       return;
     }
     if (!validateField("email") || !validateField("password")) return;
 
     try {
-      const result = await dispatch(login(payload)).unwrap();
+      await dispatch(login(payload)).unwrap();
       showToast("Thành công", "Đăng nhập thành công", "success");
     } catch (error) {
       showToast(
@@ -91,6 +104,67 @@ const Login = () => {
         error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
         "error"
       );
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      const email = inputs.email;
+      if (email.trim() && /\S+@\S+\.\S+/.test(email)) {
+        let isValidAccount = await POST({
+          path: Route.USER + USER_PATH.CHECK_VALID_USER,
+          payload: {
+            userEmail: email,
+          },
+        });
+        if (isValidAccount) {
+          showToast("", "Code send", "success");
+          console.log("code: ", codeSend.current);
+          const codeSendDecoded = encodedString(codeSend.current);
+          try {
+            const options = {
+              from: "mraducky@gmail.com",
+              to: email,
+              subject: "Reset password",
+              code: codeSendDecoded,
+              url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
+            };
+            localStorage.setItem("encodedCode", codeSendDecoded);
+            await POST({
+              path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
+              payload: options,
+            });
+            setOpenCodeBox(true);
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          showToast("", "Invalid account", "error");
+        }
+      } else {
+        showToast("", "Invalid email", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error", "Server error", "error");
+    }
+  };
+
+  const handleSubmitCode = async () => {
+    try {
+      if (code === codeSend.current) {
+        const userId = await POST({
+          path: Route.USER + USER_PATH.GET_USER_ID_FROM_EMAIL,
+          payload: {
+            userEmail: inputs.email,
+          },
+        });
+        navigate(`/reset-pw/${userId}/${code}`);
+      } else {
+        showToast("", "Wrong code", "error");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -164,6 +238,16 @@ const Login = () => {
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
+                <Link
+                  color={"blue.400"}
+                  onClick={() => {
+                    handleForgotPassword();
+                  }}
+                >
+                  Forgot password
+                </Link>
+              </Text>
+              <Text align={"center"}>
                 Bạn chưa có tài khoản?{" "}
                 <Link
                   color={"blue.400"}
@@ -183,6 +267,33 @@ const Login = () => {
           </Stack>
         </Box>
       </Stack>
+      <Modal isOpen={openCodeBox} onClose={() => setOpenCodeBox(false)}>
+        <ModalOverlay />
+        <ModalContent w={"320px"} borderRadius={"10px"}>
+          <ModalBody
+            pb={6}
+            bg={useColorModeValue("white", "gray.dark")}
+            border={`1px solid ${useColorModeValue("gray.dark", "white")}`}
+            borderRadius={6}
+          >
+            <Flex flexDir={"column"}>
+              <Text textAlign={"center"} fontWeight={600} fontSize={18} py={3}>
+                Forgot code validation
+              </Text>
+              <Text fontSize={14}>
+                Type the code sent to your email to change your password
+              </Text>
+              <Input
+                placeholder="Type your code here ..."
+                my={4}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <Button onClick={() => handleSubmitCode()}>Submit</Button>
+            </Flex>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };

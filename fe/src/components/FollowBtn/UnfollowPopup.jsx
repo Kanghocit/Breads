@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 const UnFollowPopup = ({ user, isOpen, onClose, onClick }) => {
+
   return (
     <AlertDialog isOpen={isOpen} onClose={onClose}>
       <AlertDialogOverlay>
@@ -34,6 +35,7 @@ const UnFollowPopup = ({ user, isOpen, onClose, onClick }) => {
               marginTop={"12px"}
               padding={"4px"}
               flexWrap={"wrap"}
+              textAlign={"center"}
             >
               Unfollow {user?.name} ?
             </AlertDialogHeader>

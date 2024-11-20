@@ -16,6 +16,7 @@ import ChatPage from "./pages/ChatPage";
 import ErrorPage from "./pages/ErrorPage";
 import HomePage from "./pages/HomePage";
 import PostDetail from "./pages/PostDetail";
+import ResetPWPage from "./pages/ResetPWPage";
 import SearchPage from "./pages/SearchPage";
 import SettingPage from "./pages/SettingPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
@@ -72,12 +73,12 @@ function App() {
   };
 
   const ActivityRoute = () => {
-    const { ACTIVITY, FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS } =
+    const { ACTIVITY, ALL, FOLLOWS, REPLIES, MENTIONS, LIKES, REPOSTS } =
       PageConstant;
-    return ["", FOLLOWS, REPLIES, MENTIONS, QUOTES, REPOSTS].map((page) => (
+    return [ALL, FOLLOWS, REPLIES, MENTIONS, LIKES, REPOSTS].map((page) => (
       <Route
         key={`route-${page}`}
-        path={`${ACTIVITY}/${page}`}
+        path={ALL ? `${ACTIVITY}` : `${ACTIVITY}/${page}`}
         element={
           !!userId ? (
             <ActivityPage />
@@ -109,19 +110,21 @@ function App() {
   //     return () => clearTimeout(timer);
   //   }
   // }, [toastPostId]);
-  
+
   const handleCloseToast = () => {
     dispatch(clearNotificationPostId());
   };
-  
 
   return (
     <div
       className="app"
       style={{
         marginTop:
-          ![PageConstant.SIGNUP, PageConstant.LOGIN].includes(currentPage) &&
-          HeaderHeight + 12 + "px",
+          ![
+            PageConstant.SIGNUP,
+            PageConstant.LOGIN,
+            PageConstant.RESET_PW,
+          ].includes(currentPage) && HeaderHeight + 12 + "px",
       }}
     >
       {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
@@ -150,7 +153,7 @@ function App() {
             )
           }
         />
-
+        <Route path="/reset-pw/:userId/:code" element={<ResetPWPage />} />
         <Route path="/users/:userId" element={<UserPage />} />
         <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />

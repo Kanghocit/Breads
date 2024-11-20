@@ -201,24 +201,25 @@ export const updateUser = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { currentPW, newPW } = req.body;
+    const forgotPW = req.body?.forgotPW;
     const userId = req.params.id;
     if (!userId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty userId");
     }
-    if (!currentPW || !newPW) {
+    if ((!currentPW || !newPW) && !forgotPW) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     const user = await User.findOne({ _id: ObjectId(userId) });
     if (!user) {
       return res.status(HTTPStatus.BAD_REQUEST).json("User not found");
     }
-    if (user.password !== currentPW) {
+    if (user.password !== currentPW && !forgotPW) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Wrong password");
     } else if (newPW.length < 6) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
         .json("Password must be at least 6 characters");
-    } else if (currentPW === newPW) {
+    } else if (currentPW === newPW && !forgotPW) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Nothing change");
     }
     await User.updateOne(
@@ -332,6 +333,7 @@ export const getUsersFollow = async (req, res) => {
     });
   } catch (err) {
     console.log("getUsersFollow: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
 
@@ -358,5 +360,48 @@ export const getUsersToTag = async (req, res) => {
     return data;
   } catch (err) {
     console.log("getUsersToTag: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const checkValidUser = async (req, res) => {
+  try {
+    const payload = req.body;
+    const userId = payload?.userId;
+    const userEmail = payload?.userEmail;
+    if (!userId && !userEmail) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(userEmail)) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Invalid email type");
+    }
+    const userInfo = await User.findOne({
+      $or: [{ _id: ObjectId(userId) }, { email: userEmail }],
+    });
+    if (userInfo) {
+      return res.status(HTTPStatus.OK).json(true);
+    } else {
+      return res.status(HTTPStatus.OK).json(false);
+    }
+  } catch (err) {
+    console.log("checkValidUser :", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getUserIdFromEmail = async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    if (!userEmail) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty email");
+    }
+    const userInfo = await User.findOne({
+      email: userEmail,
+    });
+    res.status(HTTPStatus.OK).json(userInfo._id);
+  } catch (err) {
+    console.log("getUserIdFromEmail: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };

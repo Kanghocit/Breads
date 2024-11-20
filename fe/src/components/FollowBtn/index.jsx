@@ -26,7 +26,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
       fromUser: userInfo._id,
       toUsers: [user._id],
       action: Constants.NOTIFICATION_ACTION.FOLLOW,
-      target: userInfo.followed,
+      target: "",
     });
   } catch (error) {
     showToast("Error", error, "error");
@@ -34,6 +34,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
 };
 
 const FollowBtn = ({ user }) => {
+  console.log("followbtn",user)
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);

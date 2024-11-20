@@ -1,13 +1,12 @@
-import { Model } from "mongoose";
 import Notification from "../../api/models/notification.model.js";
 import User from "../../api/models/user.model.js";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig.js";
-import { getCollection, ObjectId } from "../../util/index.js";
-import { getUserSocketByUserId } from "../services/user.js";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
+import { ObjectId } from "../../util/index.js";
+import { getUserSocketByUserId } from "../services/user.js";
 
 const { FOLLOW } = Constants.NOTIFICATION_ACTION;
-const handleFollow = async () => {
+const handleFollow = async (fromUser, toUsers) => {
   try {
     const userToFollow = await User.findOne({ _id: ObjectId(fromUser) });
     if (!userToFollow) {
@@ -42,18 +41,20 @@ export default class NotificationController {
     }
     switch (action) {
       case FOLLOW:
-        await handleFollow();
+        await handleFollow(fromUser, toUsers);
         break;
-
       default:
         break;
     }
-    const notificationInfo = new Notification({
+    let notificationInfo = {
       fromUser: fromUser,
       toUsers: sendTo,
       action,
-      target,
-    });
+    };
+    if (target) {
+      notificationInfo.target = target;
+    }
+    notificationInfo = new Notification(notificationInfo);
     const newNotification = await notificationInfo.save();
     const targetUserSocketId = await getUserSocketByUserId(toUsers, io);
     if (targetUserSocketId) {

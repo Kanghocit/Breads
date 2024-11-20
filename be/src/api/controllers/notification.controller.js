@@ -33,7 +33,26 @@ export const getNotifications = async (req, res) => {
         },
       },
       { $unwind: { path: "$postDetails", preserveNullAndEmptyArrays: true } },
-
+      {
+        $addFields: {
+          FromUserDetails: {
+            $cond: {
+              if: { $eq: ["$action", "follow"] },
+              then: {
+                _id: "$fromUserDetails._id",
+                name: "$fromUserDetails.name",
+                username: "$fromUserDetails.username",
+                bio: "$fromUserDetails.bio",
+                avatar: "$fromUserDetails.avatar",
+              },
+              else: {
+                username: "$fromUserDetails.username",
+                avatar: "$fromUserDetails.avatar",
+              },
+            },
+          },
+        },
+      },
       {
         $project: {
           fromUser: 1,
@@ -41,8 +60,7 @@ export const getNotifications = async (req, res) => {
           action: 1,
           target: 1,
           createdAt: 1,
-          "fromUserDetails.username": 1,
-          "fromUserDetails.avatar": 1,
+          FromUserDetails: 1,
           "postDetails.content": 1,
         },
       },
