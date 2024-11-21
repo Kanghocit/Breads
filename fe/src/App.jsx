@@ -101,19 +101,18 @@ function App() {
       />
     ));
   };
-  useEffect(() => {
-    if (toastPostId) {
-      const timer = setTimeout(() => {
-        handleCloseToast();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [toastPostId]);
-  
+  // useEffect(() => {
+  //   if (toastPostId) {
+  //     const timer = setTimeout(() => {
+  //       handleCloseToast();
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [toastPostId]);
+
   const handleCloseToast = () => {
     dispatch(clearNotificationPostId());
   };
-  
 
   return (
     <div
@@ -150,7 +149,10 @@ function App() {
         />
 
         <Route path="/users/:userId" element={<UserPage />} />
-        <Route path="/posts/:postId" element={<PostDetail />} />
+        <Route
+          path="/posts/:postId"
+          element={<PostDetail key={location.pathname} />}
+        />
         <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
         <Route path="/chat" element={<ChatPage />} />
