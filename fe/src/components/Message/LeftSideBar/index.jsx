@@ -3,7 +3,7 @@ import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
 import Conversations from "./Conversations";
 import { useState } from "react";
 
-const LeftSideBarMsg = () => {
+const LeftSideBarMsg = ({onSelectConversation }) => {
   const [searchValue, setSearchValue] = useState("");
 
   return (
@@ -13,11 +13,14 @@ const LeftSideBarMsg = () => {
         base: "column",
         md: "row",
       }}
+      width={{
+        base: "100%", 
+        md: "full", 
+      }}
       maxW={{
-        sm: "440px",
         md: "full",
       }}
-      pr={3}
+      pr={{ base: 0, md: 3 }}
       mx={"auto"}
       maxHeight={`85vh`}
       overflowY={"scroll"}
@@ -26,9 +29,9 @@ const LeftSideBarMsg = () => {
         flex={30}
         gap={2}
         flexDirection={"column"}
-        maxW={{
-          sm: "250px",
-          mx: "auto",
+        width={{
+          base: "100%", 
+          md: "250px", 
         }}
         mx={"auto"}
       >
@@ -47,7 +50,6 @@ const LeftSideBarMsg = () => {
               onChange={(e) => setSearchValue(e.target.value)}
             />
             <Button size={"sm"}>
-              {" "}
               <SearchIcon />{" "}
             </Button>
           </Flex>
@@ -55,6 +57,7 @@ const LeftSideBarMsg = () => {
         <Conversations
           searchValue={searchValue}
           setSearchValue={setSearchValue}
+          onSelect={onSelectConversation} 
         />
       </Flex>
     </Flex>

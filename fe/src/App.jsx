@@ -101,14 +101,14 @@ function App() {
       />
     ));
   };
-  // useEffect(() => {
-  //   if (toastPostId) {
-  //     const timer = setTimeout(() => {
-  //       handleCloseToast();
-  //     }, 3000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [toastPostId]);
+  useEffect(() => {
+    if (toastPostId) {
+      const timer = setTimeout(() => {
+        handleCloseToast();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastPostId]);
   
   const handleCloseToast = () => {
     dispatch(clearNotificationPostId());

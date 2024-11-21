@@ -5,20 +5,21 @@ import {
   Image,
   Stack,
   Text,
-  useColorModeValue,
+  useBreakpointValue,
   WrapItem,
 } from "@chakra-ui/react";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { selectConversation } from "../../../../../store/MessageSlice";
 
-const ConversationBar = ({ conversation }) => {
+const ConversationBar = ({ conversation, onSelect }) => {
   const dispatch = useDispatch();
   const { _id, emoji, updatedAt, lastMsg, participant } = conversation;
   const userInfo = useSelector((state) => state.user.userInfo);
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleLastMsgInfo = () => {
     const isCurrentUser = lastMsg?.sender === userInfo._id;
@@ -30,21 +31,32 @@ const ConversationBar = ({ conversation }) => {
       : lastMsg?.media?.length
       ? "Send media to you"
       : "";
-
+    const maxWidth = isMobile ? "190px" : "100px";
     return (
-      <>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <span
           style={{
             textOverflow: "ellipsis",
             overflow: "hidden",
             whiteSpace: "nowrap",
-            maxWidth: "100px",
+            maxWidth: maxWidth,
+            flexGrow: 1,
           }}
         >
           {userPrefix + ": " + msgContent}
         </span>
-        <span>{" • " + moment(updatedAt).fromNow(true)}</span>
-      </>
+        <span
+          style={{ flexShrink: 0, whiteSpace: "nowrap", marginLeft: "8px" }}
+        >
+          {" • " + moment(updatedAt).fromNow(true)}
+        </span>
+      </div>
     );
   };
 
@@ -54,6 +66,9 @@ const ConversationBar = ({ conversation }) => {
       const newPath = `/chat/${conversation?._id}`;
       history.pushState(null, "", newPath);
       const hiddenChatLayer = document.getElementById("chat-hidden-layer");
+      if (onSelect) {
+        onSelect(conversation);
+      }
       if (hiddenChatLayer) {
         hiddenChatLayer.style.opacity = 1;
         hiddenChatLayer.style.visibility = "visible";
