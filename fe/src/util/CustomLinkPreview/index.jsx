@@ -22,10 +22,11 @@ const CustomLinkPreview = ({
     }
   }, [url]);
 
+
   const fetchLinkData = async () => {
     try {
       const { data } = await axios.get(
-        `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
+        `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url[url.length - 1]}`
       );
       setData(data);
       dispatch(
@@ -39,7 +40,18 @@ const CustomLinkPreview = ({
     }
   };
 
+  const handleDeleteLink = () => {
+    setData(null); 
+    dispatch(
+      updatePostInfo({
+        ...postInfo,
+        links: postInfo?.links.filter((link) => link !== data), 
+      })
+    );
+  };
+
   if (!data) return <div>Loading...</div>;
+// 
 
   return (
     <div
@@ -50,11 +62,32 @@ const CustomLinkPreview = ({
         border: borderColor ? `1px solid ${borderColor}` : "",
       }}
     >
+      <button
+        className="delete-button"
+        onClick={handleDeleteLink}
+        style={{
+          position: "absolute",
+          top: "5px",
+          right: "5px",
+          background: "red",
+          color: "white",
+          border: "none",
+          borderRadius: "50%",
+          width: "20px",
+          height: "20px",
+          cursor: "pointer",
+          fontSize: "12px",
+          textAlign: "center",
+        }}
+      >
+        x
+      </button>
+
       <h4 className="link-title">{data.title}</h4>
       <a href={url} target="_blank" rel="noopener noreferrer">
         {data.image && (
           <>
-            <img src={data.image} className="link-img" />
+            <img src={data.image} className="link-img" alt={data.title} />
             <p
               className="link-des"
               style={{

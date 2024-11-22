@@ -116,6 +116,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
       setOpenTagBox(false);
     }
   }, [searchValue]);
+  console.log("khangurlss",urls)
 
   return (
     <div className="text-area-container">
@@ -129,7 +130,7 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         className="auto-expand-textarea"
       />
 
-      {urls.length > 0 && <CustomLinkPreview url={urls[0]} bgColor={bgColor} />}
+      {urls.length > 0 && <CustomLinkPreview url={urls} bgColor={bgColor} />}
 
       {tagUsers && (
         <Container

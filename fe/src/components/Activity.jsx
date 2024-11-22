@@ -95,7 +95,6 @@ const Activity = ({ currentPage }) => {
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
-        console.log("item", item);
         return (
           <Flex
             key={item._id}
@@ -106,6 +105,7 @@ const Activity = ({ currentPage }) => {
             p={3}
             borderRadius="10px"
             my={2}
+            onClick={() => dispatch(updateHasNotification(false))}
           >
             {item.action !== FOLLOW ? (
               <Flex alignItems="center">
@@ -153,7 +153,8 @@ const Activity = ({ currentPage }) => {
                 </Flex>
               </Flex>
             ) : (
-              <Flex alignItems="center" justifyContent="space-between" w="full">
+      
+              <Flex alignItems="center" justifyContent="space-between" w="full" onClick={() => dispatch(updateHasNotification(false))}>
                 <Flex alignItems="center">
                   <Avatar mr={4} src={item.fromUserDetails?.avatar}>
                     <AvatarBadge

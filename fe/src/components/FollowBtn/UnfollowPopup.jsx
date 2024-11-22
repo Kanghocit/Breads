@@ -1,14 +1,12 @@
 import {
   AlertDialog,
-  AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  AlertDialogCloseButton,
   Avatar,
   Button,
-  Flex,
+  Flex
 } from "@chakra-ui/react";
 
 const UnFollowPopup = ({ user, isOpen, onClose, onClick }) => {
