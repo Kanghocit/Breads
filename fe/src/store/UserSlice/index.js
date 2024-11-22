@@ -32,7 +32,11 @@ export const initialUserState = {
 const userSlice = createSlice({
   name: "user",
   initialState: initialUserState,
-  reducers: {},
+  reducers: {
+    selectUser: (state, action) => {
+      state.userSelected = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
       state.isLoading = true;
@@ -83,12 +87,12 @@ const userSlice = createSlice({
       }
       if (state.userSelected?._id) {
         let newFlList = [];
-        if (state.userSelected?.followed?.includes(userFlId)) {
+        if (state.userSelected?.followed?.includes(userInfo?._id)) {
           newFlList = state.userSelected.followed.filter(
-            (_id) => _id !== userFlId
+            (_id) => _id !== userInfo?._id
           );
         } else {
-          newFlList = [...state.userSelected.followed, userFlId];
+          newFlList = [...state.userSelected.followed, userInfo?._id];
         }
         state.userSelected.followed = newFlList;
       }
@@ -97,4 +101,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { selectUser } = userSlice.actions;
 export default userSlice.reducer;

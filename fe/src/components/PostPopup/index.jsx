@@ -118,7 +118,8 @@ const PostPopup = () => {
     if (
       !postInfo.content.trim() &&
       postInfo.survey.length === 0 &&
-      postInfo.media.length === 0
+      postInfo.media.length === 0 &&
+      filesData?.length === 0
     ) {
       checkResult = false;
       msg = "Can't upload new bread with empty payload";
@@ -146,6 +147,7 @@ const PostPopup = () => {
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
+        let notificationPayload = {};
         payload._id = generateObjectId();
         if (postAction === PostConstants.ACTIONS.REPOST) {
           payload.quote = {
@@ -153,10 +155,16 @@ const PostPopup = () => {
             content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
           };
           payload.parentPost = postSelected._id;
-          notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
+          if (postSelected?.authorId !== userInfo?._id) {
+            notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
+            notificationPayload.toUsers = [postSelected?.authorId];
+          }
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
-          notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
+          if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
+            notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
+            notificationPayload.toUsers = [postReply?.authorId];
+          }
         }
         if (payload.usersTag?.length > 0) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
@@ -173,10 +181,10 @@ const PostPopup = () => {
           createPost({ postPayload: payload, action: postAction })
         ).unwrap();
         dispatch(setNotificationPostId(payload._id));
-        if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
-          let notificationPayload = {
+        if (!!notificationPayload?.toUsers?.length) {
+          notificationPayload = {
+            ...notificationPayload,
             fromUser: userInfo._id,
-            toUsers: [postReply?.authorId],
             target: payload._id,
           };
           socket.emit(
@@ -267,9 +275,9 @@ const PostPopup = () => {
             >
               {postAction + " Bread"}
             </Text>
-            <Flex width={"100%"}>
+            <Flex width={"100%"} gap={4}>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
-              <Flex ml={4} paddingRight={0} flexDir={"column"} flex={1}>
+              <Flex flexDir={"column"} flex={1}>
                 <Text color={textColor} fontWeight="600">
                   {userInfo.username}
                 </Text>

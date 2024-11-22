@@ -45,7 +45,6 @@ const TABS = {
 };
 
 const UserHeader = ({ user, usersFollow, userPosts }) => {
-  
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -161,13 +160,10 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} {t("followers")}
+              {user?.followed?.length} {t("followers")}
             </Text>
           </Flex>
           <Flex>
-            {/* <Box className="icon-container">
-              <BsInstagram size={24} cursor={"pointer"} />
-            </Box> */}
             {user?._id !== userInfo?._id && (
               <Box className="icon-container">
                 <Menu>
@@ -240,16 +236,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                               <Flex justifyContent={"space-between"} my={2}>
                                 <Flex direction={"column"}>
                                   <Text>{t("joindate")}</Text>
-                                  <Box>{`${month} ${t(
-                                    "year"
-                                  )} ${year} • 100 ${t("")} +`}</Box>
-                                </Flex>
-                              </Flex>
-                              <Divider borderWidth="1px" />
-                              <Flex justifyContent={"space-between"} mt={2}>
-                                <Flex direction={"column"}>
-                                  <Text>{t("oldusername")}</Text>
-                                  <Box>{t("change_name_count")}</Box>
+                                  <Box>{`${month} ${t("year")} ${year}`}</Box>
                                 </Flex>
                               </Flex>
                             </ModalBody>

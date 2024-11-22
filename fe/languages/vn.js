@@ -69,11 +69,10 @@ const vnTranslations = {
   Yourconversations: "Cuộc trò chuyện của bạn",
   Searchforuser: "Tìm kiếm bạn bè",
   Typeamessage: "Soạn tin nhắn....",
-  changetheme: "Thay đổi phông bạt",
+  changetheme: "Thay đổi chủ đề",
   Changeemoji: "Thay đổi cảm xúc",
   Customizechat: "Chỉnh sửa đoạn chat",
   profile: "Thông tin cá nhân",
-  
 };
 
 export default vnTranslations;

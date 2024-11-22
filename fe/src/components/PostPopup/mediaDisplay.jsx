@@ -1,13 +1,15 @@
-import { Flex, Button, Image, useColorMode } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
+import { Button, Flex, Image } from "@chakra-ui/react";
 import { useRef, useState } from "react";
-import { Constants } from "../../Breads-Shared/Constants";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Constants } from "../../Breads-Shared/Constants";
 import { updatePostInfo } from "../../store/PostSlice";
-import PostConstants from "../../util/PostConstants";
 import { updateSeeMedia } from "../../store/UtilSlice";
+import PostConstants from "../../util/PostConstants";
 
-const MediaDisplay = ({ post, isDetail, isParentPost }) => {
+const MediaDisplay = ({ post, isDetail }) => {
+  const navigate = useNavigate();
   const postAction = useSelector((state) => state.post.postAction);
   const dispatch = useDispatch();
   const mediaContainerRef = useRef(null);
@@ -84,8 +86,9 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
     }
   };
   const handleSeeDetail = () => {
-    window.open(`/posts/${post._id}`, "_self");
+    navigate(`/posts/${post._id}`);
   };
+
   return (
     post.media?.length > 0 && (
       <Flex
@@ -101,11 +104,8 @@ const MediaDisplay = ({ post, isDetail, isParentPost }) => {
         overflowX={post.media?.length > 2 ? "auto" : "hidden"}
         padding="6px 0"
         onClick={() => {
-          if (
-            !isDetail &&
-            !(postAction === PostConstants.ACTIONS.REPOST && isParentPost) &&
-            !(postAction === PostConstants.ACTIONS.CREATE)
-          ) {
+          const { REPOST, CREATE, REPLY } = PostConstants.ACTIONS;
+          if (![REPOST, CREATE, REPLY].includes(postAction) && !isDetail) {
             handleSeeDetail();
           }
         }}

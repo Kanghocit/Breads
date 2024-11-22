@@ -24,6 +24,7 @@ import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
 import PostConstants from "../../../util/PostConstants";
+import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
 import UserInfoPopover from "../../UserInfoPopover";
@@ -32,7 +33,6 @@ import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,13 +68,13 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   return (
     <>
       <Card
+        boxSizing={"border-box"}
         className="post-container"
         borderRadius="12px"
         border={isParentPost ? "1px solid gray" : "none"}
         boxShadow={isReply ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"}
         bg={colorMode === "dark" ? "#202020" : "#ffffff"}
         width={"100%"}
-        transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"
         mt={isReply ? "8px" : ""}
       >
@@ -181,11 +181,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay
-            post={post}
-            isDetail={isDetail}
-            isParentPost={isParentPost}
-          />
+          <MediaDisplay post={post} isDetail={isDetail} />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>

@@ -54,26 +54,30 @@ const ConversationBody = ({ openDetailTab }) => {
   useSocket((socket) => {
     socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (data) => {
       if (data) {
-        dispatch(addNewMsg(data));
-        setScrollText("New message");
-        if (data?.[0]?.type === Constants.MSG_TYPE.SETTING) {
-          const splitContent = data[0].content.split(" ");
-          const value = splitContent[splitContent?.length - 1];
-          if (splitContent?.includes("theme")) {
-            dispatch(
-              updateSelectedConversation({
-                key: "theme",
-                value: value,
-              })
-            );
-          }
-          if (splitContent?.includes("emoji")) {
-            dispatch(
-              updateSelectedConversation({
-                key: "emoji",
-                value: getEmojiNameFromIcon(value),
-              })
-            );
+        const msgDate = formatDateToDDMMYYYY(new Date(data[0]?.createdAt));
+        const isValid = messages[msgDate]?.find(({ _id }) => data[0]?._id);
+        if (!isValid) {
+          dispatch(addNewMsg(data));
+          setScrollText("New message");
+          if (data?.[0]?.type === Constants.MSG_TYPE.SETTING) {
+            const splitContent = data[0].content.split(" ");
+            const value = splitContent[splitContent?.length - 1];
+            if (splitContent?.includes("theme")) {
+              dispatch(
+                updateSelectedConversation({
+                  key: "theme",
+                  value: value,
+                })
+              );
+            }
+            if (splitContent?.includes("emoji")) {
+              dispatch(
+                updateSelectedConversation({
+                  key: "emoji",
+                  value: getEmojiNameFromIcon(value),
+                })
+              );
+            }
           }
         }
       }

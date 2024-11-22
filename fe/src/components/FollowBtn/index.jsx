@@ -33,8 +33,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   }
 };
 
-const FollowBtn = ({ user }) => {
-  console.log("followbtn",user)
+const FollowBtn = ({ user, inUserFlBox = false }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -45,11 +44,13 @@ const FollowBtn = ({ user }) => {
   return (
     <div
       style={{
-        flex: currentPage === PageConstant.FRIEND ? 1 : "",
+        flex: currentPage === PageConstant.FRIEND && !inUserFlBox ? 1 : "",
       }}
     >
       <Button
-        width={currentPage === PageConstant.FRIEND ? "100%" : ""}
+        width={
+          currentPage === PageConstant.FRIEND && !inUserFlBox ? "100%" : ""
+        }
         size={"md"}
         onClick={() => {
           if (isFollowing) {
@@ -69,7 +70,8 @@ const FollowBtn = ({ user }) => {
         user={user}
         isOpen={openCancelPopup}
         onClose={() => setOpenCancelPopup(false)}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           handleFlow(userInfo, user, dispatch, showToast);
           setOpenCancelPopup(false);
         }}

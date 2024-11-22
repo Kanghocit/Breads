@@ -70,7 +70,7 @@ const enTranslations = {
   Yourconversations: "Your conversations",
   Searchforuser: "Search for a user",
   Typeamessage: "Type a message....",
-  changetheme: "Change emoji",
+  changetheme: "Change theme",
   Changeemoji: "Change emoji",
   Customizechat: "Customize chat",
   profile: "Profile",

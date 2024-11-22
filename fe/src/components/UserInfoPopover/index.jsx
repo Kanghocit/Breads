@@ -11,7 +11,7 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
@@ -19,12 +19,13 @@ import useShowToast from "../../hooks/useShowToast";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import { handleFlow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
+import { selectUser } from "../../store/UserSlice";
 
 export const UserInfoBox = ({ user }) => {
   const dispatch = useDispatch();
   const showToast = useShowToast();
   const [openCancelPopup, setOpenCancelPopup] = useState(false);
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const { userInfo } = useSelector((state) => state.user);
   const isFollowing = userInfo?.following?.includes(user?._id);
   const { colorMode } = useColorMode();
 
@@ -88,7 +89,10 @@ export const UserInfoBox = ({ user }) => {
 const UserInfoPopover = ({ user, isParentPost = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const { userInfo, userSelected } = useSelector((state) => state.user);
+  const currentPage = useSelector((state) => state.util.currentPage);
+  const isFrPage = currentPage === PageConstant.FRIEND;
+
   const handleGoToUserPage = () => {
     navigate(`/users/${user._id}`);
     dispatch(
@@ -106,6 +110,11 @@ const UserInfoPopover = ({ user, isParentPost = false }) => {
           as={RouterLink}
           to={`/users/${user?._id}`}
           onClick={() => handleGoToUserPage()}
+          onMouseEnter={() => {
+            if (userSelected?._id !== user?._id && !isFrPage) {
+              dispatch(selectUser(user));
+            }
+          }}
         >
           <Text
             fontSize={"sm"}
@@ -118,17 +127,22 @@ const UserInfoPopover = ({ user, isParentPost = false }) => {
         </Link>
       </PopoverTrigger>
 
-      {!isParentPost && (
-        <PopoverContent
-          top="-1"
-          left="-7"
-          transform="translateX(-50%)"
-          borderRadius={"10px"}
-          zIndex={10000}
-        >
-          <UserInfoBox user={user} />
-        </PopoverContent>
-      )}
+      {!isParentPost &&
+        (isFrPage
+          ? userSelected?._id !== user?._id
+          : userInfo?._id !== user?._id) && (
+          <PopoverContent
+            top="-1"
+            left="-7"
+            transform="translateX(-50%)"
+            borderRadius={"10px"}
+            zIndex={10000}
+          >
+            <UserInfoBox
+              user={user?._id === userSelected?._id ? userSelected : user}
+            />
+          </PopoverContent>
+        )}
     </Popover>
   );
 };
