@@ -74,6 +74,15 @@ const enTranslations = {
   Changeemoji: "Change emoji",
   Customizechat: "Customize chat",
   profile: "Profile",
+  liked: "Liked your post.",
+  followed: "Followed you.",
+  replied: "Replied to your post.",
+  reposted: "Reposted your post.",
+  tagged: "Tagged you in their post.",
+  unfollow: "Unfollow",
+  followback: "Follow back",
+  
+
 };
 
 export default enTranslations;

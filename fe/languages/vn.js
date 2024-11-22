@@ -73,6 +73,13 @@ const vnTranslations = {
   Changeemoji: "Thay đổi cảm xúc",
   Customizechat: "Chỉnh sửa đoạn chat",
   profile: "Thông tin cá nhân",
+  liked: "Đã thích bài viết của bạn.",
+  followed: "Đã theo dõi bạn.",
+  replied: "Đã trả lời bài viết của bạn.",
+  reposted: "Đã đăng lại bài viết của bạn.",
+  tagged: "Đã tag bạn trong bài viết của họ.",
+  unfollow: "Hủy theo dõi",
+  followback: "Theo dõi lại",
 };
 
 export default vnTranslations;

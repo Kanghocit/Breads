@@ -39,31 +39,31 @@ const Activity = ({ currentPage }) => {
       name: LIKE,
       icon: <FaHeart color="white" size={12} />,
       color: "red.600",
-      actionText: "Đã thích bài viết của bạn",
+      actionText: t('liked'),
     },
     {
       name: FOLLOW,
       icon: <FaUser color="white" size={12} />,
       color: "purple.500",
-      actionText: "Đã theo dõi bạn",
+      actionText: t('followed'),
     },
     {
       name: REPLY,
       icon: <BiSolidShare color="white" size={12} />,
       color: "blue.500",
-      actionText: "Đã trả lời bài viết của bạn",
+      actionText: t('replied'),
     },
     {
       name: REPOST,
       icon: <FaRepeat color="white" size={12} />,
       color: "#c329bf",
-      actionText: "Đã đăng lại bài viết của bạn",
+      actionText: t('reposted'),
     },
     {
       name: TAG,
       icon: <BsThreads color="white" size={12} />,
       color: "green.500",
-      actionText: "Đã tag bạn trong bài viết của họ",
+      actionText: t('tagged'),
     },
   ];
 
@@ -95,7 +95,6 @@ const Activity = ({ currentPage }) => {
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
-        console.log("item", item);
         return (
           <Flex
             key={item._id}
@@ -106,6 +105,7 @@ const Activity = ({ currentPage }) => {
             p={3}
             borderRadius="10px"
             my={2}
+            onClick={() => dispatch(updateHasNotification(false))}
           >
             {item.action !== FOLLOW ? (
               <Flex alignItems="center">
@@ -153,7 +153,8 @@ const Activity = ({ currentPage }) => {
                 </Flex>
               </Flex>
             ) : (
-              <Flex alignItems="center" justifyContent="space-between" w="full">
+      
+              <Flex alignItems="center" justifyContent="space-between" w="full" onClick={() => dispatch(updateHasNotification(false))}>
                 <Flex alignItems="center">
                   <Avatar mr={4} src={item.fromUserDetails?.avatar}>
                     <AvatarBadge

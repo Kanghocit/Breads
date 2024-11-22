@@ -32,7 +32,8 @@ const LeftSideBar = () => {
   const hasNewNotification = useSelector(
     (state) => state.notification.hasNewNotification
   );
-  let bgk = { bg: "gray.dark" };
+  console.log("khanghihi", hasNewNotification);
+
 
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
@@ -52,13 +53,31 @@ const LeftSideBar = () => {
   };
 
   const LikeItem = {
-    icon: <FaRegHeart size={24} />,
+    icon: (
+      <Box position="relative" display="inline-block">
+        <FaRegHeart size={24} />
+        {hasNewNotification && (
+          <Box
+            position="absolute"
+            top="0"
+            right="-4px"
+            width="8px"
+            height="8px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
     linkTo: "/" + PageConstant.ACTIVITY,
     onClick: () => {
       if (currentPage !== PageConstant.ACTIVITY) {
         dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
       }
       navigate("/" + PageConstant.ACTIVITY);
+      dispatch(updateHasNotification(false));
     },
     color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
   };
