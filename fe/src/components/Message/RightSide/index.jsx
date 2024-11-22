@@ -3,20 +3,25 @@ import { useState } from "react";
 import ConversationScreen from "./Conversation";
 import DetailConversationTab from "./DetailTab";
 
-const RightSideMsg = ({ onBack }) => {
+const RightSideMsg = ({ onBack , onDetailBack  }) => {
   const [openDetailTab, setOpenDetailTab] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
-
   return (
     <Flex flex={isMobile ? 1 : 70} width="100%" minWidth="300px">
-      <ConversationScreen
-        openDetailTab={openDetailTab}
-        setOpenDetailTab={setOpenDetailTab}
-        onBack={onBack}
-      />
+      {!isMobile || !openDetailTab ? (
+        <ConversationScreen
+          openDetailTab={openDetailTab}
+          setOpenDetailTab={setOpenDetailTab}
+          onBack={onBack}
+        />
+      ) : null}
       {openDetailTab && (
-        <Container width={"20vw"}>
-          <DetailConversationTab />
+        <Container width={isMobile ? "100vw" : "20vw"}>
+          <DetailConversationTab
+            openDetailTab={openDetailTab}
+            setOpenDetailTab={setOpenDetailTab}
+            // onCloseTab={handleDetailBack}
+          />
         </Container>
       )}
     </Flex>

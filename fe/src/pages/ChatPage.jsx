@@ -63,7 +63,8 @@ const ChatPage = () => {
 
       {!isMobile || showRightSide ? (
         <Box w="100%" display={!showRightSide && isMobile ? "none" : "block"}>
-          <RightSideMsg onBack={handleBackToLeft} />
+          <RightSideMsg onBack={handleBackToLeft} 
+           onDetailBack={() => setShowRightSide(true)}/>
         </Box>
       ) : null}
     </Flex>

@@ -13,6 +13,7 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
@@ -28,6 +29,7 @@ import EmojiModal from "./ConfigModal/EmojiModal";
 import ThemeModal from "./ConfigModal/ThemeModal";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
+import { IoIosArrowBack } from "react-icons/io";
 
 export const TAB_ITEMS = {
   SEARCH: "search",
@@ -38,7 +40,11 @@ export const TAB_ITEMS = {
   LINKS: "Links",
 };
 
-const DetailConversationTab = () => {
+const DetailConversationTab = ({
+  openDetailTab,
+  setOpenDetailTab,
+  // onCloseTab = false,
+}) => {
   const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = TAB_ITEMS;
   const navigate = useNavigate();
   const selectedConversation = useSelector(
@@ -125,7 +131,7 @@ const DetailConversationTab = () => {
         return <></>;
     }
   };
-
+  const isMobile = useBreakpointValue({ base: true, md: false });
   return (
     <Container
       width={"100%"}
@@ -145,9 +151,21 @@ const DetailConversationTab = () => {
             justifyContent={"center"}
             alignItems={"center"}
             flexDirection={"column"}
-            p={8}
+            p={isMobile ? 2 : 8}
             gap={3}
           >
+            {isMobile && (
+              <Flex width={"100%"} justifyContent={"start"}
+              mt={2}>
+                <IoIosArrowBack
+                  onClick={() => {
+                    setOpenDetailTab(!openDetailTab);
+                    // onCloseTab();
+                  }}
+                />
+              </Flex>
+            )}
+
             <Avatar src={participant?.avatar} size={"xl"} />
             <Text fontWeight={"500"} fontSize={"20px"}>
               {participant?.username}
@@ -170,7 +188,7 @@ const DetailConversationTab = () => {
               ))}
             </Flex>
           </Flex>
-          <Accordion defaultIndex={[0]} allowMultiple>
+          <Accordion defaultIndex={isMobile ? [0,1] : [0]} allowMultiple>
             {Object.keys(menu).map((itemName) => {
               const subItems = menu[itemName];
               return (
@@ -183,7 +201,7 @@ const DetailConversationTab = () => {
                       <AccordionIcon />
                     </AccordionButton>
                   </h2>
-                  <AccordionPanel pb={3} px={4}>
+                  <AccordionPanel py={isMobile ? 0: 3} px={4}>
                     {subItems.map(({ name, icon }) => (
                       <Flex
                         key={name}
@@ -194,7 +212,9 @@ const DetailConversationTab = () => {
                         __hover={{
                           bg: "lightgray",
                         }}
-                        onClick={() => setItemSelected(name)}
+                        onClick={() => {
+                          setItemSelected(name);
+                        }}
                       >
                         <div>{icon}</div>
                         <Text>{name}</Text>
