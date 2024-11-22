@@ -2,9 +2,9 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
 import Conversations from "./Conversations";
 import { useState } from "react";
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from "react-i18next";
 
-const LeftSideBarMsg = () => {
+const LeftSideBarMsg = ({ onSelectConversation }) => {
   const [searchValue, setSearchValue] = useState("");
   const { t } = useTranslation();
   return (
@@ -14,11 +14,15 @@ const LeftSideBarMsg = () => {
         base: "column",
         md: "row",
       }}
+      width={{
+        base: "100%",
+        md: "full",
+      }}
       maxW={{
         sm: "480px",
         md: "full",
       }}
-      pr={3}
+      pr={{ base: 0, md: 3 }}
       mx={"auto"}
       maxHeight={`85vh`}
       overflowY={"scroll"}
@@ -27,9 +31,9 @@ const LeftSideBarMsg = () => {
         flex={30}
         gap={3}
         flexDirection={"column"}
-        maxW={{
-          sm: "280px",
-          mx: "auto",
+        width={{
+          base: "100%",
+          md: "250px",
         }}
         mx={"auto"}
       >
@@ -38,17 +42,16 @@ const LeftSideBarMsg = () => {
           color={useColorModeValue("gray.600", "gray.400")}
         >
           {" "}
-        {t('Yourconversations')}
+          {t("Yourconversations")}
         </Text>
         <form>
           <Flex alignItems={"center"} gap={2}>
             <Input
-              placeholder={t('Searchforuser')}
+              placeholder={t("Searchforuser")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
             <Button size={"sm"}>
-              {" "}
               <SearchIcon />{" "}
             </Button>
           </Flex>
@@ -56,6 +59,7 @@ const LeftSideBarMsg = () => {
         <Conversations
           searchValue={searchValue}
           setSearchValue={setSearchValue}
+          onSelect={onSelectConversation}
         />
       </Flex>
     </Flex>

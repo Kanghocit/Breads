@@ -1,4 +1,10 @@
-import { Container, Divider, Flex, useColorModeValue } from "@chakra-ui/react";
+import {
+  Container,
+  Divider,
+  Flex,
+  useBreakpointValue,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { HeaderHeight } from "../../../../Layout/Header";
 import ConversationBody from "./Body";
@@ -7,10 +13,11 @@ import MessageInput from "./MessageBar";
 import RepliedMsgBar from "./MessageBar/RepliedMsgBar";
 import UploadDisplay from "./MessageBar/UploadDisplay";
 
-const ConversationScreen = ({ openDetailTab, setOpenDetailTab }) => {
+const ConversationScreen = ({ openDetailTab, setOpenDetailTab, onBack }) => {
   const { msgInfo, selectedMsg } = useSelector((state) => state.message);
   const { files, media } = msgInfo;
-
+  const footerOffset = useBreakpointValue({ base: 75, md: 24 });
+  // const footerOffset = 24
   return (
     <Flex
       flex={1}
@@ -19,11 +26,12 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab }) => {
       flexDirection={"column"}
       overflow={"hidden"}
       position={"relative"}
-      height={`calc(100vh - ${HeaderHeight}px - 24px)`}
+      height={`calc(100vh - ${HeaderHeight}px - ${footerOffset}px)`}
     >
       <ConversationHeader
         openDetailTab={openDetailTab}
         setOpenDetailTab={setOpenDetailTab}
+        onBack={onBack}
       />
       <Divider />
       <ConversationBody openDetailTab={openDetailTab} />
