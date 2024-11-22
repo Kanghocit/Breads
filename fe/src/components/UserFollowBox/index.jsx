@@ -22,7 +22,9 @@ const UserFollowBox = ({ user, inFollowBox = false }) => {
         borderBottom={inFollowBox ? "1px solid gray" : ""}
       >
         <UserBox user={user} inFollowBox={inFollowBox} />
-        {userInfo?._id !== user?._id && <FollowBtn user={user} />}
+        {userInfo?._id !== user?._id && (
+          <FollowBtn user={user} inUserFlBox={true} />
+        )}
       </Flex>
     </>
   );

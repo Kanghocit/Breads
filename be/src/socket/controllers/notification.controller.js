@@ -11,24 +11,26 @@ const handleFollow = async (fromUser, toUsers) => {
     const userToFollow = await User.findOne({ _id: ObjectId(fromUser) });
     if (!userToFollow) {
       console.log("User not found");
-      return;
+      return false;
     }
-    const isAlreadyFollowing = userToFollow.following.includes(
-      ObjectId(toUsers)
-    );
-    if (isAlreadyFollowing) {
-      const existingNotification = await Notification.findOne({
+
+    const existingNotifications = await Notification.find({
+      fromUser: ObjectId(fromUser),
+      toUsers: { $in: [ObjectId(toUsers[0])] },
+      action: FOLLOW,
+    });
+
+    if (existingNotifications.length > 0) {
+      await Notification.deleteMany({
         fromUser: ObjectId(fromUser),
-        "toUsers.0": toUsers,
+        toUsers: { $in: [ObjectId(toUsers[0])] },
+        action: FOLLOW,
       });
-      if (existingNotification) {
-        await Notification.deleteOne({ _id: existingNotification._id });
-        console.log("Existing follow notification deleted.");
-      }
-      return;
-    }
+      return true;
+    } else return false;
   } catch (error) {
-    console.error("Error creating notification:", error);
+    console.error("Error deleting notifications:", error);
+    return false;
   }
 };
 
@@ -41,7 +43,10 @@ export default class NotificationController {
     }
     switch (action) {
       case FOLLOW:
-        await handleFollow(fromUser, toUsers);
+        const shouldCreateNotification = await handleFollow(fromUser, toUsers);
+        if (shouldCreateNotification) {
+          return;
+        }
         break;
       default:
         break;

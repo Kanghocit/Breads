@@ -1,10 +1,18 @@
 import { InfoIcon } from "@chakra-ui/icons";
-import { Avatar, Flex, Image, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Flex,
+  Image,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getCurrentTheme } from "../../../../../util/Themes";
 
-const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
+const ConversationHeader = ({ openDetailTab, setOpenDetailTab, onBack }) => {
   const navigate = useNavigate();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -14,6 +22,7 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
     selectedConversation?.theme
   );
   const borderColor = user1Message?.borderColor;
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Flex
@@ -33,11 +42,41 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab }) => {
         gap={2}
         px={2}
         cursor={"pointer"}
-        onClick={() => {
-          navigate(`/users/${participant?._id}`);
-        }}
       >
-        <Avatar src={participant?.avatar} size={"sm"} />
+        {isMobile && (
+          <Flex
+            alignItems={"center"}
+            onClick={() => {
+              onBack();
+            }}
+          >
+            <IoIosArrowBack />
+            <Box
+              bg={"red"}
+              borderRadius={"50%"}
+              fontSize={"sm"}
+              textAlign={"center"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              width={"auto"}
+              height={"auto"}
+              minWidth={"24px"}
+              minHeight={"24px"}
+              padding={"1px"}
+            >
+              9
+            </Box>
+          </Flex>
+        )}
+
+        <Avatar
+          src={participant?.avatar}
+          size={"sm"}
+          onClick={() => {
+            navigate(`/users/${participant?._id}`);
+          }}
+        />
         <Text display={"flex"} alignItems={"center"}>
           {participant?.username}{" "}
           <Image src="/verified.png" w={4} h={4} ml={1} />

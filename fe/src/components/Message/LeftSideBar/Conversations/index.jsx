@@ -11,7 +11,7 @@ import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
 
-const Conversations = ({ searchValue }) => {
+const Conversations = ({ searchValue, onSelect }) => {
   const { conversationId } = useParams();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -80,6 +80,7 @@ const Conversations = ({ searchValue }) => {
               <ConversationBar
                 key={conversation?._id}
                 conversation={conversation}
+                onSelect={onSelect}
               />
             )}
             condition={!init}

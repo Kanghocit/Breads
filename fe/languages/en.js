@@ -70,10 +70,19 @@ const enTranslations = {
   Yourconversations: "Your conversations",
   Searchforuser: "Search for a user",
   Typeamessage: "Type a message....",
-  changetheme: "Change emoji",
+  changetheme: "Change theme",
   Changeemoji: "Change emoji",
   Customizechat: "Customize chat",
   profile: "Profile",
+  liked: "Liked your post.",
+  followed: "Followed you.",
+  replied: "Replied to your post.",
+  reposted: "Reposted your post.",
+  tagged: "Tagged you in their post.",
+  unfollow: "Unfollow",
+  followback: "Follow back",
+  
+
 };
 
 export default enTranslations;
