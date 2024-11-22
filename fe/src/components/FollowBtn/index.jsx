@@ -8,6 +8,7 @@ import useShowToast from "../../hooks/useShowToast";
 import Socket from "../../socket";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import UnFollowPopup from "./UnfollowPopup";
+import { useTranslation } from "react-i18next";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   if (!userInfo?._id) {
@@ -34,7 +35,7 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
 };
 
 const FollowBtn = ({ user }) => {
-  console.log("followbtn",user)
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -60,10 +61,10 @@ const FollowBtn = ({ user }) => {
         }}
       >
         {isFollowing
-          ? "Unfollow"
+          ? t("unfollow")
           : userInfo.followed?.includes(user?._id)
-          ? "Follow Back"
-          : "Follow"}
+          ? t("followback")
+          : t("follow")}
       </Button>
       <UnFollowPopup
         user={user}
