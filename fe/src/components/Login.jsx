@@ -15,7 +15,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { encodedString } from "../Breads-Shared/util";
@@ -35,6 +35,7 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
   const showToast = useShowToast();
+  const codeSend = useRef(null);
 
   useEffect(() => {
     if (countClick >= 5) {
@@ -61,14 +62,13 @@ const Login = () => {
         newErrors.password = "Mật khẩu là bắt buộc.";
       } else if (password.length < 6) {
         newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+      } else if (!/[A-Z]/.test(password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      } else {
+        delete newErrors.password;
       }
-      // else if (!/[A-Z]/.test(password)) {
-      //   newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
-      // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      //   newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
-      // } else {
-      //   delete newErrors.password;
-      // }
     }
 
     setErrors(newErrors);
@@ -101,9 +101,9 @@ const Login = () => {
     try {
       const email = inputs.email;
       if (email.trim()) {
-        let isValidAccount = true; //await checkValidAccount(email);
+        let isValidAccount = true; // Replace with actual check if necessary
         if (isValidAccount) {
-          showToast("", "Code send", "success");
+          showToast("", "Code sent", "success");
           const codeSendDecoded = encodedString(codeSend.current);
           try {
             const options = {
@@ -173,7 +173,7 @@ const Login = () => {
                   onChange={(e) =>
                     setInputs((prev) => ({ ...prev, password: e.target.value }))
                   }
-                  // onBlur={() => validateField("password")}
+                  onBlur={() => validateField("password")}
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>
