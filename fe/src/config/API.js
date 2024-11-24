@@ -24,20 +24,17 @@ export const GET = async ({ path, params = null, showToast = null }) => {
   }
 };
 
-export const POST = async ({ path, payload, params, showToast = null }) => {
+export const POST = async ({ path, payload, params }) => {
   try {
     const url = serverUrl + "/api" + path;
-    const { data } = await axios.post(url, payload, {
-      params: params,
-    });
+    const { data } = await axios.post(url, payload, { params });
     return data;
-  
   } catch (err) {
-    if (showToast && err.response.data) {
-      const errorMsg = err.response.data;
-      showToast("", errorMsg, "error");
-    }
-    throw new Error(err);
+    const errorResponse = err.response?.data || {
+      errorType: "UNKNOWN_ERROR",
+      error: "An unknown error occurred!",
+    };
+    throw errorResponse; // Throw structured error
   }
 };
 
