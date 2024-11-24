@@ -32,7 +32,7 @@ const LeftSideBar = () => {
   const hasNewNotification = useSelector(
     (state) => state.notification.hasNewNotification
   );
-  console.log("khanghihi", hasNewNotification);
+
 
 
   useSocket((socket) => {

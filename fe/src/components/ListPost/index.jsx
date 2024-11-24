@@ -11,7 +11,6 @@ import SkeletonPost from "./Post/skeleton";
 const ListPost = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("usser",userInfo)
   const { listPost, isLoading } = useSelector((state) => state.post);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
 
