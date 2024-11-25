@@ -94,6 +94,7 @@ const Activity = ({ currentPage }) => {
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
+          console.log("khangdzno1",item.FromUserDetails.avatar)
         return (
           <Flex
             key={item._id}
@@ -108,7 +109,7 @@ const Activity = ({ currentPage }) => {
           >
             {item.action !== FOLLOW ? (
               <Flex alignItems="center">
-                <Avatar mr={4} src={item.fromUserDetails?.avatar}>
+                <Avatar mr={4} src={item.FromUserDetails?.avatar}>
                   <AvatarBadge
                     boxSize="1.4em"
                     bg={actionDetails.color}
@@ -159,7 +160,7 @@ const Activity = ({ currentPage }) => {
                 onClick={() => dispatch(updateHasNotification(false))}
               >
                 <Flex alignItems="center">
-                  <Avatar mr={4} src={item.fromUserDetails?.avatar}>
+                  <Avatar mr={4} src={item.FromUserDetails?.avatar}>
                     <AvatarBadge
                       boxSize="1.4em"
                       bg={actionDetails.color}
@@ -172,7 +173,14 @@ const Activity = ({ currentPage }) => {
                   </Avatar>
                   <Flex direction="column">
                     <Box display="flex" justifyContent="space-between">
-                      <Text fontWeight="bold" mr={2} fontSize={"sm"}>
+                      <Text
+                        fontWeight="bold"
+                        mr={2}
+                        fontSize={"sm"}
+                        onClick={() => comeToUser(item.fromUser)}
+                        cursor={"pointer"}
+                        _hover={{ textDecoration: "underline" }}
+                      >
                         {item.FromUserDetails?.username || "Unknown User"}
                       </Text>
                       <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">

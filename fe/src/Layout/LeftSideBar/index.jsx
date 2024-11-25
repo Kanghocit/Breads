@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Image,
-  Link,
-  useBreakpointValue,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
 import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";

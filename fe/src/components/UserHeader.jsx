@@ -260,7 +260,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 cursor={"pointer"}
                 onClick={() => dispatch(changeDisplayPageData(TABS[key]))}
               >
-                <Text fontWeight={"bold"}>{key}</Text>
+                <Text fontWeight={"bold"}>{t(key)}</Text>
               </Tab>
             ))}
           </TabList>

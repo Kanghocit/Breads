@@ -34,7 +34,6 @@ import { genRandomCode } from "../util/index";
 
 const Login = () => {
   const navigate = useNavigate();
-  const codeSend = useRef(genRandomCode());
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [countClick, setCountClick] = useState(0);
@@ -49,6 +48,7 @@ const Login = () => {
   const [code, setCode] = useState("");
   const [errors, setErrors] = useState({});
   const showToast = useShowToast();
+  const codeSend = useRef(genRandomCode());
 
   useEffect(() => {
     if (countClick >= 5) {
@@ -93,14 +93,13 @@ const Login = () => {
         newErrors.password = "Mật khẩu là bắt buộc.";
       } else if (password.length < 6) {
         newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+      } else if (!/[A-Z]/.test(password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      } else {
+        delete newErrors.password;
       }
-      // else if (!/[A-Z]/.test(password)) {
-      //   newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
-      // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      //   newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
-      // } else {
-      //   delete newErrors.password;
-      // }
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -300,7 +299,7 @@ const Login = () => {
                   onChange={(e) =>
                     setInputs((prev) => ({ ...prev, password: e.target.value }))
                   }
-                  // onBlur={() => validateField("password")}
+                  onBlur={() => validateField("password")}
                   value={inputs.password}
                 />
                 <InputRightElement h={"full"}>

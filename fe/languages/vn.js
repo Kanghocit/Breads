@@ -14,7 +14,7 @@ const vnTranslations = {
   login: "Đăng Nhập",
   signup: "Đăng Ký",
   aboutthisprofile: "Giới thiệu về trang cá nhân này",
-  copylink: "Sao chép đường dẫn",
+  copylink: "Sao chép link",
   follow: "Theo dõi",
   joindate: "Ngày tham gia",
   oldusername: "Tên người dùng cũ",
@@ -80,6 +80,12 @@ const vnTranslations = {
   tagged: "Đã tag bạn trong bài viết của họ.",
   unfollow: "Hủy theo dõi",
   followback: "Theo dõi lại",
+  Replies: "Bình luận",
+  Reposts: "Đăng lại",
+  save: "Lưu bài viết",
+  unsave: "Bỏ lưu ",
+  delete: "Xóa bài viết",
+  update: "Cập nhật ",
 };
 
 export default vnTranslations;
