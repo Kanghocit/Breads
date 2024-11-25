@@ -31,13 +31,15 @@ const ConversationBar = ({ conversation, onSelect }) => {
       : lastMsg?.media?.length
       ? "Send media to you"
       : "";
-    const maxWidth = isMobile ? "190px" : "100px";
+    const maxWidth = isMobile ? "145px" : "100px";
+    const marginBottom = isMobile ? "5px" : "0px";
     return (
       <div
         style={{
           width: "100%",
           display: "flex",
           alignItems: "center",
+          marginBottom: marginBottom,
         }}
       >
         <span
@@ -52,7 +54,12 @@ const ConversationBar = ({ conversation, onSelect }) => {
           {userPrefix + ": " + msgContent}
         </span>
         <span
-          style={{ flexShrink: 0, whiteSpace: "nowrap", marginLeft: "8px" }}
+          style={{
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+            marginLeft: "8px",
+            minWidth: "50px",
+          }}
         >
           {" • " + moment(updatedAt).fromNow(true)}
         </span>
@@ -95,19 +102,19 @@ const ConversationBar = ({ conversation, onSelect }) => {
     >
       <WrapItem>
         <Avatar
-          size={{ base: "xs", sm: "sm", md: "md" }}
+          size={{ base: "md", sm: "sm", md: "md" }}
           src={participant?.avatar}
         >
           <AvatarBadge boxSize={"1em"} bg={"green.500"} />
         </Avatar>
       </WrapItem>
-      <Stack direction={"column"} fontSize={"sm"}>
+      <Stack direction={"column"} fontSize={isMobile ? "md" : "sm"}>
         <Text fontWeight={"700"} display={"flex"} alignItems={"center"}>
           {participant?.username}
           <Image src="/verified.png" w={4} h={4} ml={1} />
         </Text>
         <Text
-          fontSize={"xs"}
+          fontSize={isMobile ? "md" : "xs"}
           display={"flex"}
           alignItems={"center"}
           gap={1}
