@@ -1,6 +1,5 @@
 import { Button } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { POST } from "../../../src/config/API";
 import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
@@ -9,7 +8,6 @@ import { changePage } from "../../store/UtilSlice/asyncThunk";
 
 const ConversationBtn = ({ user }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
   const handleClickChat = async () => {
     try {
@@ -21,13 +19,12 @@ const ConversationBtn = ({ user }) => {
         },
       });
       if (!!data) {
-        history.pushState(null, "", `/chat/${data._id}`);
-        navigate(`/chat/${data._id}`);
         dispatch(changePage({ nextPage: PageConstant.CHAT }));
         dispatch(selectConversation(data));
+        window.location.href = window.location.origin + `/chat/${data._id}`;
       }
     } catch (err) {
-      console.log("handleClickChat: ", err);
+      console.error("handleClickChat: ", err);
     }
   };
 

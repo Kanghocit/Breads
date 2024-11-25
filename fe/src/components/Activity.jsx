@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Avatar, AvatarBadge, Box, Flex, Text } from "@chakra-ui/react";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,17 +8,16 @@ import { FaHeart } from "react-icons/fa";
 import { FaRepeat, FaUser } from "react-icons/fa6";
 import { IoImageOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { Constants } from "../Breads-Shared/Constants";
 import { useNavigate } from "react-router-dom";
+import { Constants } from "../Breads-Shared/Constants";
 import FollowBtn from "./FollowBtn";
+
 const Activity = ({ currentPage }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const userInfo = useSelector((state) => state.user.userInfo);
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
-  const [isFollowing, setIsFollowing] = useState(false);
   const [uniqueNotifications, setUniqueNotifications] = useState([]);
 
   useEffect(() => {
@@ -39,31 +38,31 @@ const Activity = ({ currentPage }) => {
       name: LIKE,
       icon: <FaHeart color="white" size={12} />,
       color: "red.600",
-      actionText: t('liked'),
+      actionText: t("liked"),
     },
     {
       name: FOLLOW,
       icon: <FaUser color="white" size={12} />,
       color: "purple.500",
-      actionText: t('followed'),
+      actionText: t("followed"),
     },
     {
       name: REPLY,
       icon: <BiSolidShare color="white" size={12} />,
       color: "blue.500",
-      actionText: t('replied'),
+      actionText: t("replied"),
     },
     {
       name: REPOST,
       icon: <FaRepeat color="white" size={12} />,
       color: "#c329bf",
-      actionText: t('reposted'),
+      actionText: t("reposted"),
     },
     {
       name: TAG,
       icon: <BsThreads color="white" size={12} />,
       color: "green.500",
-      actionText: t('tagged'),
+      actionText: t("tagged"),
     },
   ];
 
@@ -95,6 +94,7 @@ const Activity = ({ currentPage }) => {
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
+          console.log("khangdzno1",item.FromUserDetails.avatar)
         return (
           <Flex
             key={item._id}
@@ -109,7 +109,7 @@ const Activity = ({ currentPage }) => {
           >
             {item.action !== FOLLOW ? (
               <Flex alignItems="center">
-                <Avatar mr={4} src={item.fromUserDetails?.avatar}>
+                <Avatar mr={4} src={item.FromUserDetails?.avatar}>
                   <AvatarBadge
                     boxSize="1.4em"
                     bg={actionDetails.color}
@@ -153,10 +153,14 @@ const Activity = ({ currentPage }) => {
                 </Flex>
               </Flex>
             ) : (
-      
-              <Flex alignItems="center" justifyContent="space-between" w="full" onClick={() => dispatch(updateHasNotification(false))}>
+              <Flex
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+                onClick={() => dispatch(updateHasNotification(false))}
+              >
                 <Flex alignItems="center">
-                  <Avatar mr={4} src={item.fromUserDetails?.avatar}>
+                  <Avatar mr={4} src={item.FromUserDetails?.avatar}>
                     <AvatarBadge
                       boxSize="1.4em"
                       bg={actionDetails.color}
@@ -169,7 +173,14 @@ const Activity = ({ currentPage }) => {
                   </Avatar>
                   <Flex direction="column">
                     <Box display="flex" justifyContent="space-between">
-                      <Text fontWeight="bold" mr={2} fontSize={"sm"}>
+                      <Text
+                        fontWeight="bold"
+                        mr={2}
+                        fontSize={"sm"}
+                        onClick={() => comeToUser(item.fromUser)}
+                        cursor={"pointer"}
+                        _hover={{ textDecoration: "underline" }}
+                      >
                         {item.FromUserDetails?.username || "Unknown User"}
                       </Text>
                       <Text color="gray.500" fontSize="sm" whiteSpace="nowrap">
@@ -188,8 +199,7 @@ const Activity = ({ currentPage }) => {
                 </Flex>
 
                 <Flex alignItems="center" justifyContent="flex-end" w="full">
-                  <FollowBtn user={item.FromUserDetails}/>
-                  
+                  <FollowBtn user={item.FromUserDetails} />
                 </Flex>
               </Flex>
             )}
@@ -201,7 +211,8 @@ const Activity = ({ currentPage }) => {
 };
 
 export default Activity;
-{/* <Button
+{
+  /* <Button
                     bg="#232323"
                     color="white"
                     border="1px solid white"
@@ -213,4 +224,5 @@ export default Activity;
                     onClick={() => setIsFollowing(!isFollowing)}
                   >
                     {isFollowing ? t("following") : t("followback")}
-                  </Button> */}
+                  </Button> */
+}

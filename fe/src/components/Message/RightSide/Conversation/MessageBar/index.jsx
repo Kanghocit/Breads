@@ -9,6 +9,7 @@ import {
   addNewMsg,
   defaulMessageInfo,
   selectMsg,
+  updateConversations,
   updateLoadingUpload,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
@@ -142,10 +143,13 @@ const MessageInput = () => {
       message: payload,
     };
     socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, ({ data }) => {
-      dispatch(addNewMsg(data));
+      const conversationInfo = data?.conversationInfo;
+      const msgs = data?.msgs;
+      dispatch(addNewMsg(msgs));
       dispatch(updateLoadingUpload(false));
       dispatch(updateMsgInfo(defaulMessageInfo));
       dispatch(selectMsg(null));
+      dispatch(updateConversations(conversationInfo));
       setContent("");
     });
   };
@@ -174,7 +178,7 @@ const MessageInput = () => {
         <Input
           ref={inputRef}
           flex={1}
-          placeholder={t('Typeamessage')}
+          placeholder={t("Typeamessage")}
           margin={"0 8px"}
           value={content}
           bg={loadingUploadMsg ? "gray" : bg ? bg : ""}

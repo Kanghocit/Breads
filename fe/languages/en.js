@@ -81,8 +81,12 @@ const enTranslations = {
   tagged: "Tagged you in their post.",
   unfollow: "Unfollow",
   followback: "Follow back",
-  
-
+  Replies: "Replies",
+  Reposts: "Reposts",
+  save: "Save",
+  unsave: "Unsave",
+  delete: "Delete",
+  update: "Update",
 };
 
 export default enTranslations;

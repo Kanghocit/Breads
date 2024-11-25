@@ -15,6 +15,7 @@ export const defaulMessageInfo = {
   */
   icon: "",
 };
+
 export const initialMsgState = {
   conversations: [], //List user message
   userSelected: null,
@@ -27,6 +28,8 @@ export const initialMsgState = {
   loadingMsgs: false,
   isLoading: false,
   currentPageMsg: 1,
+  currentPageConversation: 1,
+  limitConversation: 15,
 };
 
 const msgSlice = createSlice({
@@ -54,25 +57,28 @@ const msgSlice = createSlice({
       if (!msgsInfo?.length) {
         return;
       }
-      const msgCreateDate = formatDateToDDMMYYYY(
-        new Date(msgsInfo[0]?.createdAt)
-      );
-      const isValidDate = Object.keys(state.messages).includes(msgCreateDate);
-      if (isValidDate) {
-        state.messages[msgCreateDate] = [
-          ...state.messages[msgCreateDate],
-          ...msgsInfo,
-        ];
-      } else {
-        state.messages[msgCreateDate] = [...msgsInfo];
+      const conversationId = msgsInfo[0]?.conversationId;
+      if (conversationId === state.selectedConversation?._id) {
+        const msgCreateDate = formatDateToDDMMYYYY(
+          new Date(msgsInfo[0]?.createdAt)
+        );
+        const isValidDate = Object.keys(state.messages).includes(msgCreateDate);
+        if (isValidDate) {
+          state.messages[msgCreateDate] = [
+            ...state.messages[msgCreateDate],
+            ...msgsInfo,
+          ];
+        } else {
+          state.messages[msgCreateDate] = [...msgsInfo];
+        }
       }
-      //Update last message
+      // Update last message
       const lastMsg = msgsInfo[msgsInfo.length - 1];
-      if (state.selectedConversation?._id === msgsInfo[0]?.conversationId) {
+      if (state.selectedConversation?._id === conversationId) {
         state.selectedConversation.lastMsg = lastMsg;
       }
       const conversationIndex = state.conversations.findIndex(
-        (item) => item._id === msgsInfo[0].conversationId
+        (item) => item._id === conversationId
       );
       if (conversationIndex !== -1) {
         state.conversations[conversationIndex] = {
@@ -90,7 +96,7 @@ const msgSlice = createSlice({
         const msgDateConvert = moment(msgUpdate?.createdAt).format(
           "DD/MM/YYYY"
         );
-        const msgInListIndex = state.messages[msgDateConvert].findIndex(
+        const msgInListIndex = state.messages[msgDateConvert]?.findIndex(
           (msg) => msg._id === msgUpdate._id
         );
         if (msgInListIndex !== -1) {
@@ -100,6 +106,26 @@ const msgSlice = createSlice({
     },
     selectMsg: (state, action) => {
       state.selectedMsg = action.payload;
+    },
+    updateConversations: (state, action) => {
+      const conversation = action.payload;
+      const converstaionIndex = state.conversations.findIndex(
+        ({ _id }) => _id === conversation?._id
+      );
+      if (converstaionIndex !== -1) {
+        state.conversations.splice(converstaionIndex, 1);
+      } else {
+        if (state.limitConversation - 1 === 0) {
+          state.limitConversation = 15;
+          state.currentPageConversation += 1;
+        } else {
+          state.limitConversation -= 1;
+        }
+      }
+      state.conversations.unshift(conversation);
+    },
+    updateCurrentPageConversation: (state, action) => {
+      state.currentPageConversation = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -115,6 +141,7 @@ const msgSlice = createSlice({
         state.conversations = newConversations;
       }
       state.loadingConversations = false;
+      state.limitConversation = 15;
     });
     builder.addCase(getMsgs.pending, (state) => {
       state.loadingMsgs = true;
@@ -159,5 +186,7 @@ export const {
   updateMsg,
   updateSelectedConversation,
   selectMsg,
+  updateConversations,
+  updateCurrentPageConversation,
 } = msgSlice.actions;
 export default msgSlice.reducer;

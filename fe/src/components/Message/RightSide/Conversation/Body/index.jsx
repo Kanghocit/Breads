@@ -8,11 +8,13 @@ import useSocket from "../../../../../hooks/useSocket";
 import Socket from "../../../../../socket";
 import {
   addNewMsg,
+  updateConversations,
   updateCurrentPageMsg,
   updateMsg,
   updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { getMsgs } from "../../../../../store/MessageSlice/asyncThunk";
+import { updateUserInfo } from "../../../../../store/UserSlice";
 import {
   formatDateToDDMMYYYY,
   getEmojiNameFromIcon,
@@ -53,14 +55,27 @@ const ConversationBody = ({ openDetailTab }) => {
 
   useSocket((socket) => {
     socket.on(Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE, (data) => {
-      if (data) {
-        const msgDate = formatDateToDDMMYYYY(new Date(data[0]?.createdAt));
-        const isValid = messages[msgDate]?.find(({ _id }) => data[0]?._id);
+      const conversationInfo = data?.conversationInfo;
+      const msgs = data?.msgs;
+      if (msgs) {
+        const msgDate = formatDateToDDMMYYYY(new Date(msgs[0]?.createdAt));
+        const isValid = messages[msgDate]?.find(
+          ({ _id }) => msgs[0]?._id === _id
+        );
         if (!isValid) {
-          dispatch(addNewMsg(data));
+          dispatch(addNewMsg(msgs));
+          dispatch(updateConversations(conversationInfo));
           setScrollText("New message");
-          if (data?.[0]?.type === Constants.MSG_TYPE.SETTING) {
-            const splitContent = data[0].content.split(" ");
+          if (conversationInfo?._id !== selectedConversation?._id) {
+            dispatch(
+              updateUserInfo({
+                key: "hasNewMsg",
+                value: true,
+              })
+            );
+          }
+          if (msgs?.[0]?.type === Constants.MSG_TYPE.SETTING) {
+            const splitContent = msgs[0].content.split(" ");
             const value = splitContent[splitContent?.length - 1];
             if (splitContent?.includes("theme")) {
               dispatch(
@@ -221,6 +236,7 @@ const ConversationBody = ({ openDetailTab }) => {
             position: "fixed",
             backgroundColor: conversationBackground?.backgroundColor,
             zIndex: 5000,
+            display: "none",
           }}
         ></div>
         <Flex

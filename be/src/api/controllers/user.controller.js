@@ -41,11 +41,18 @@ export const getAdminAccount = async (req, res) => {
 export const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
-    const user = await User.findOne({ $or: [{ email }, { username }] });
-    if (user?._id) {
+    const userEmail = await User.findOne({email});
+    const userUsername = await User.findOne({username});
+    if (userUsername?._id) {
+      return res.status(HTTPStatus.BAD_REQUEST).json({
+          errorType: "USERNAME_EXISTS",
+          error: "Tên người dùng đã tồn tại",
+      });
+    }
+    if (userEmail?._id) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "Tài khoản đã tồn tại" });
+        .json({ errorType: "EMAIL_EXISTS", error: "Email đã tồn tại" });
     }
 
     // const salt = await bcrypt.genSalt(10);
@@ -259,6 +266,18 @@ export const getUserProfile = async (req, res) => {
 export const getUserToFollows = async (req, res) => {
   try {
     const { userId, page, limit, searchValue } = req.query;
+    const isTest = req.query?.isTest ?? false;
+    if (isTest) {
+      const users = await User.find(
+        {},
+        {
+          _id: 1,
+          username: 1,
+          avatar: 1,
+        }
+      );
+      return res.status(HTTPStatus.OK).json(users);
+    }
     if (!userId) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
     }
