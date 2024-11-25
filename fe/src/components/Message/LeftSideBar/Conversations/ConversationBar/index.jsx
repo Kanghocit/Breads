@@ -55,7 +55,7 @@ const ConversationBar = ({ conversation, onSelect }) => {
         <span
           style={{ flexShrink: 0, whiteSpace: "nowrap", marginLeft: "8px" }}
         >
-          {" • " + moment(updatedAt).fromNow(true)}
+          {" • " + moment(lastMsg?.createdAt).fromNow(true)}
         </span>
       </div>
     );

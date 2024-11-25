@@ -36,6 +36,10 @@ const userSlice = createSlice({
     selectUser: (state, action) => {
       state.userSelected = action.payload;
     },
+    updateUserInfo: (state, action) => {
+      const { key, value } = action.payload;
+      state.userInfo[key] = value;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
@@ -101,5 +105,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { selectUser } = userSlice.actions;
+export const { selectUser, updateUserInfo } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,5 +1,6 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
+  Avatar,
   Box,
   Button,
   Flex,
@@ -11,26 +12,25 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  Stack,
-  Text,
-  useColorModeValue,
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
+  Stack,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { encodedString } from "../Breads-Shared/util";
-import { POST } from "../config/API";
+import { GET, POST } from "../config/API";
 import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { genRandomCode } from "../util/index";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,6 +38,9 @@ const Login = () => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [countClick, setCountClick] = useState(0);
+  const [countClickGetFullAcc, setCountClickGetFullAcc] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [displayUsers, setDisplayUsers] = useState([]);
   const [openCodeBox, setOpenCodeBox] = useState(false);
   const [inputs, setInputs] = useState({
     email: "",
@@ -51,7 +54,25 @@ const Login = () => {
     if (countClick >= 5) {
       handleLogin(true);
     }
-  }, [countClick]);
+    if (countClickGetFullAcc >= 5) {
+      handleGetAllAcc();
+    }
+  }, [countClick, countClickGetFullAcc]);
+
+  const handleGetAllAcc = async () => {
+    try {
+      const data = await GET({
+        path: Route.USER + USER_PATH.USERS_TO_FOLLOW,
+        params: {
+          isTest: true,
+        },
+      });
+      setUsers(data);
+      setDisplayUsers(data);
+    } catch (err) {
+      console.error("handleGetAllAcc: ", err);
+    }
+  };
 
   const validateField = (fieldName) => {
     const newErrors = { ...errors };
@@ -168,6 +189,73 @@ const Login = () => {
     }
   };
 
+  const loginForTest = (userId) => {
+    localStorage.setItem("userId", userId);
+    location.reload();
+  };
+
+  if (countClickGetFullAcc >= 5) {
+    return (
+      <Flex
+        flexDir={"column"}
+        width={"100vw"}
+        height={"100vh"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        gap={5}
+      >
+        <Text fontSize={"24px"} fontWeight={600}>
+          Select user to login
+        </Text>
+        <Input
+          placeholder={"Search user..."}
+          width={"320px"}
+          onChange={(e) => {
+            const searchValue = e.target.value;
+            const searchResult = users?.filter(({ username }) => {
+              if (
+                username?.includes(searchValue) ||
+                searchValue?.includes(username)
+              ) {
+                return true;
+              }
+              return false;
+            });
+            setDisplayUsers(searchResult);
+          }}
+        />
+        <Flex
+          // flexDir={"column"}
+          maxHeight={"60vh"}
+          width={"60vw"}
+          overflowY={"scroll"}
+          flexWrap={"wrap"}
+          alignContent={"start"}
+        >
+          {displayUsers?.map((user) => (
+            <Flex
+              p={2}
+              px={4}
+              borderRadius={8}
+              gap={2}
+              alignItems={"center"}
+              cursor={"pointer"}
+              _hover={{
+                bg: "lightgray",
+              }}
+              width={"33%"}
+              height={"64px"}
+              onClick={() => loginForTest(user?._id)}
+            >
+              <Avatar src={user?.avatar} />
+              <Text>{user?.username}</Text>
+            </Flex>
+          ))}
+        </Flex>
+      </Flex>
+    );
+  }
+
   return (
     <Flex align={"center"} justify={"center"}>
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6} my={6}>
@@ -189,7 +277,11 @@ const Login = () => {
         >
           <Stack spacing={4}>
             <FormControl isRequired isInvalid={!!errors.email}>
-              <FormLabel>Email</FormLabel>
+              <FormLabel
+                onClick={() => setCountClickGetFullAcc((prev) => prev + 1)}
+              >
+                Email
+              </FormLabel>
               <Input
                 type="email"
                 onChange={(e) =>

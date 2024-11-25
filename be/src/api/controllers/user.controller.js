@@ -259,6 +259,18 @@ export const getUserProfile = async (req, res) => {
 export const getUserToFollows = async (req, res) => {
   try {
     const { userId, page, limit, searchValue } = req.query;
+    const isTest = req.query?.isTest ?? false;
+    if (isTest) {
+      const users = await User.find(
+        {},
+        {
+          _id: 1,
+          username: 1,
+          avatar: 1,
+        }
+      );
+      return res.status(HTTPStatus.OK).json(users);
+    }
     if (!userId) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
     }

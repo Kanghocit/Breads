@@ -32,8 +32,6 @@ const LeftSideBar = () => {
   const hasNewNotification = useSelector(
     (state) => state.notification.hasNewNotification
   );
-  console.log("khanghihi", hasNewNotification);
-
 
   useSocket((socket) => {
     socket.on(Route.NOTIFICATION + NOTIFICATION_PATH.GET_NEW, (payload) => {
@@ -59,10 +57,10 @@ const LeftSideBar = () => {
         {hasNewNotification && (
           <Box
             position="absolute"
-            top="0"
-            right="-4px"
-            width="8px"
-            height="8px"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
             borderRadius="full"
             bg="red"
             border="2px solid"
@@ -83,7 +81,24 @@ const LeftSideBar = () => {
   };
 
   const messItem = {
-    icon: <FaFacebookMessenger size={24} />,
+    icon: (
+      <Box position="relative" display="inline-block">
+        <FaFacebookMessenger size={24} />
+        {userInfo.hasNewMsg && (
+          <Box
+            position="absolute"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
     linkTo: "/" + PageConstant.CHAT,
     onClick: () => {
       if (currentPage !== PageConstant.CHAT) {

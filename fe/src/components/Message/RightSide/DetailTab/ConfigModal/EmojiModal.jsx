@@ -36,8 +36,10 @@ const EmojiModal = ({ setItemSelected }) => {
             "has change conversation's emoji into " + getEmojiIcon(emojiStr),
         },
         ({ data }) => {
-          if (data) {
-            dispatch(addNewMsg(data));
+          const msgs = data?.msgs;
+          const conversationInfo = data?.conversationInfo;
+          if (msgs) {
+            dispatch(addNewMsg(msgs));
             dispatch(
               updateSelectedConversation({
                 key: "emoji",

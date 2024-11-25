@@ -327,10 +327,6 @@ const PostPopup = () => {
               borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
-                console.log({
-                  checkCondition,
-                  msg,
-                });
                 if (!checkCondition) {
                   showToast("Error", msg, "error");
                   return;

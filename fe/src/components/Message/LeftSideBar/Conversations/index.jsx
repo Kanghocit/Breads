@@ -5,7 +5,10 @@ import { useParams } from "react-router-dom";
 import { EmptyContentSvg } from "../../../../assests/icons";
 import { MESSAGE_PATH, Route } from "../../../../Breads-Shared/APIConfig";
 import Socket from "../../../../socket";
-import { selectConversation } from "../../../../store/MessageSlice";
+import {
+  selectConversation,
+  updateCurrentPageConversation,
+} from "../../../../store/MessageSlice";
 import { getConversations } from "../../../../store/MessageSlice/asyncThunk";
 import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
@@ -16,8 +19,13 @@ const Conversations = ({ searchValue, onSelect }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
-  const { conversations, selectedConversation, loadingConversations } =
-    useSelector((state) => state.message);
+  const {
+    conversations,
+    selectedConversation,
+    loadingConversations,
+    limitConversation,
+    currentPageConversation,
+  } = useSelector((state) => state.message);
   const [init, setInit] = useState(true);
 
   useEffect(() => {
@@ -47,7 +55,12 @@ const Conversations = ({ searchValue, onSelect }) => {
     const socket = Socket.getInstant();
     socket.emit(
       Route.MESSAGE + MESSAGE_PATH.GET_CONVERSATIONS,
-      { userId: userInfo._id, page: page, limit: 15, searchValue },
+      {
+        userId: userInfo._id,
+        page: page,
+        limit: limitConversation,
+        searchValue,
+      },
       (res) => {
         const { data } = res;
         if (data) {
@@ -57,6 +70,7 @@ const Conversations = ({ searchValue, onSelect }) => {
               isLoadNew: page === 1 ? true : false,
             })
           );
+          dispatch(updateCurrentPageConversation(page));
           if (!selectedConversation && !conversationId) {
             dispatch(selectConversation(data[0]));
           }
@@ -87,6 +101,7 @@ const Conversations = ({ searchValue, onSelect }) => {
             deps={[userInfo._id, currentPage]}
             skeletonCpn={<ConversationSkeleton />}
             preloadIndex={1}
+            updatePageValue={currentPageConversation}
           />
         </>
       ) : (

@@ -4,6 +4,7 @@ import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import Link from "../models/link.model.js";
 import { genConversations, genMsgsInConversations } from "../crawl.js";
+import { getConversationInfo } from "../services/message.js";
 
 export const getConversationByUsersId = async (req, res) => {
   try {
@@ -49,28 +50,9 @@ export const getConversationById = async (req, res) => {
     if (!conversationId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty conversationId");
     }
-    const data = await Conversation.findOne({
-      _id: ObjectId(conversationId),
-    })
-      .populate({
-        path: "participants",
-        select: "_id username avatar",
-      })
-      .populate({
-        path: "lastMsgId",
-        select: "_id content media files sender createdAt",
-      })
-      .lean();
+    const data = await getConversationInfo({ conversationId, userId });
     if (!!data) {
-      const result = JSON.parse(JSON.stringify(data));
-      const participant = result.participants.filter(
-        ({ _id }) => destructObjectId(_id) !== userId
-      );
-      result.participant = participant[0];
-      result.lastMsg = result.lastMsgId;
-      delete result.participants;
-      delete result.lastMsgId;
-      return res.status(HTTPStatus.OK).json(result);
+      return res.status(HTTPStatus.OK).json(data);
     } else {
       return res.status(HTTPStatus.NOT_FOUND).json("Invalid conversation");
     }

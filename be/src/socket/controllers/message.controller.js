@@ -8,6 +8,8 @@ import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
 import { sendToSpecificUser } from "../services/message.js";
+import { getConversationInfo } from "../../api/services/message.js";
+import User from "../../api/models/user.model.js";
 
 const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
 
@@ -148,13 +150,39 @@ export default class MessageController {
         .populate({
           path: "respondTo",
         });
+      const conversationInfo = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: senderId,
+      });
+      const conversationInfoToRecipient = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: recipientId,
+      });
+      await User.updateOne(
+        {
+          _id: ObjectId(recipientId),
+        },
+        {
+          hasNewMsg: true,
+        }
+      );
       await sendToSpecificUser({
         recipientId,
         io,
         path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-        payload: newMessages,
+        payload: {
+          msgs: newMessages,
+          conversationInfo: conversationInfoToRecipient,
+        },
       });
-      !!cb && cb({ status: "success", data: newMessages });
+      !!cb &&
+        cb({
+          status: "success",
+          data: {
+            msgs: newMessages,
+            conversationInfo: conversationInfo,
+          },
+        });
     } catch (error) {
       console.error("sendMessage: ", error);
       cb({ status: "error", data: [] });
@@ -190,6 +218,11 @@ export default class MessageController {
           },
         },
         {
+          $sort: {
+            updatedAt: -1,
+          },
+        },
+        {
           $project: {
             otherParticipant: {
               $arrayElemAt: [
@@ -212,11 +245,6 @@ export default class MessageController {
         },
         {
           $limit: limit,
-        },
-        {
-          $sort: {
-            updatedAt: -1,
-          },
         },
         {
           $lookup: {
@@ -254,16 +282,20 @@ export default class MessageController {
             as: "lastMsg",
           },
         },
-        {
-          $unwind: "$lastMsg",
-        },
+        // {
+        //   $unwind: "$lastMsg",
+        // },
       ];
       const conversations = await Conversation.aggregate(agg);
       const result = conversations.map((conversation, index) => {
         delete conversation.otherParticipant;
         delete conversation.lastMsgId;
+        if (conversation?.lastMsg) {
+          conversation.lastMsg = conversation.lastMsg[0];
+        }
         return conversation;
       });
+      console.log("conversations: ", conversations.length);
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
@@ -479,13 +511,31 @@ export default class MessageController {
       conversation[key] = value;
       conversation.msgIds.push(msgId);
       await conversation.save();
+      const conversationInfo = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: senderId,
+      });
+      const conversationInfoToRecipient = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: recipientId,
+      });
       await sendToSpecificUser({
         recipientId,
         io,
         path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-        payload: [result],
+        payload: {
+          msgs: [result],
+          conversationInfo: conversationInfoToRecipient,
+        },
       });
-      !!cb && cb({ status: "success", data: [result] });
+      !!cb &&
+        cb({
+          status: "success",
+          data: {
+            msgs: [result],
+            conversationInfo,
+          },
+        });
     } catch (err) {
       console.log("changeSettingConversation: ", err);
       cb({ status: "error", data: null });

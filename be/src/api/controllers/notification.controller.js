@@ -23,7 +23,6 @@ export const getNotifications = async (req, res) => {
         },
       },
       { $unwind: "$fromUserDetails" },
-
       {
         $lookup: {
           from: "posts",

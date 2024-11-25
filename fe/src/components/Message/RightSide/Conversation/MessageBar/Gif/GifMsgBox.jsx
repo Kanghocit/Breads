@@ -10,6 +10,7 @@ import Socket from "../../../../../../socket";
 import {
   addNewMsg,
   defaulMessageInfo,
+  updateConversations,
 } from "../../../../../../store/MessageSlice";
 
 const GifMsgBox = ({ onClose }) => {
@@ -34,8 +35,11 @@ const GifMsgBox = ({ onClose }) => {
         ],
       },
     };
-    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, (newMsg) => {
-      dispatch(addNewMsg(newMsg));
+    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, ({ data }) => {
+      const conversationInfo = data?.conversationInfo;
+      const msgs = data?.msgs;
+      dispatch(addNewMsg(msgs));
+      dispatch(updateConversations(conversationInfo));
     });
     onClose();
   };
@@ -73,7 +77,6 @@ const GifMsgBox = ({ onClose }) => {
             objectFit={"cover"}
             m={1}
             onClick={() => {
-              console.log("here");
               handleSendMsg(link);
             }}
           />

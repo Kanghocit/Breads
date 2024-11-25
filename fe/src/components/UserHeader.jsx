@@ -128,9 +128,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             )}
           </Box>
         </Flex>
-
         <Text>{user?.bio}</Text>
-
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
             <Button size={"sm"} w={"full"}>
