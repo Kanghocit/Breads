@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
-import Login from "../components/Login";
-import Signup from "../components/SignUp";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import Login from "./Login";
+import Signup from "./SignUp";
 
 const AuthPage = () => {
   const currentPage = useSelector((state) => state.util.currentPage);

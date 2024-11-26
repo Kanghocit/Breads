@@ -1,7 +1,6 @@
 import {
   Avatar,
   Button,
-  Container,
   Flex,
   Modal,
   ModalContent,
@@ -11,10 +10,14 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
+import Socket from "../../socket";
 import {
   defaultPostInfo,
   selectPost,
@@ -23,7 +26,8 @@ import {
   updatePostInfo,
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
-import { generateObjectId, replaceEmojis } from "../../util";
+import { setNotificationPostId } from "../../store/ToastCreatedPost";
+import { generateObjectId, handleUploadFiles, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
@@ -33,10 +37,9 @@ import PostPopupAction from "./action";
 import MediaDisplay from "./mediaDisplay";
 import PostReplied from "./PostReplied";
 import PostSurvey from "./survey";
-import { useTranslation } from "react-i18next";
-import { setNotificationPostId } from "../../store/ToastCreatedPost";
 
 const PostPopup = () => {
+  const postId = window.location.pathname.split("/")?.[2];
   const { t } = useTranslation();
   const MAX_CONTENT_LENGTH = 500;
   const bgColor = useColorModeValue("cbg.light", "cbg.dark");
@@ -52,6 +55,7 @@ const PostPopup = () => {
     usePopupCancel();
   const [content, setContent] = useState("");
   const [clickPost, setClickPost] = useState(false);
+  const [filesData, setFilesData] = useState([]);
   const debounceContent = useDebounce(content, 500);
   const init = useRef(true);
   const containsLink = (text) => {
@@ -79,7 +83,9 @@ const PostPopup = () => {
   }, [isEditing, postInfo, content]);
 
   const closePostAction =
-    !!postInfo.media?.length || postInfo.survey.length !== 0;
+    !!postInfo.media?.length ||
+    postInfo.survey.length !== 0 ||
+    postInfo.files.length !== 0;
 
   const checkUploadCondition = useCallback(() => {
     let checkResult = true;
@@ -112,7 +118,8 @@ const PostPopup = () => {
     if (
       !postInfo.content.trim() &&
       postInfo.survey.length === 0 &&
-      postInfo.media.length === 0
+      postInfo.media.length === 0 &&
+      filesData?.length === 0
     ) {
       checkResult = false;
       msg = "Can't upload new bread with empty payload";
@@ -128,27 +135,63 @@ const PostPopup = () => {
         type: postAction,
         ...postInfo,
       };
+      if (payload?.files?.length) {
+        const filesId = await handleUploadFiles({
+          files: filesData,
+          userId: userInfo?._id,
+        });
+        payload.files = filesId;
+        console.log("filesId: ", filesId);
+      }
+      const socket = Socket.getInstant();
       if (isEditing) {
         dispatch(editPost(payload));
       } else {
+        let notificationPayload = {};
+        payload._id = generateObjectId();
         if (postAction === PostConstants.ACTIONS.REPOST) {
           payload.quote = {
             _id: postSelected._id,
             content: `${postSelected.authorInfo.username}: ${postSelected.content}`,
           };
           payload.parentPost = postSelected._id;
+          if (postSelected?.authorId !== userInfo?._id) {
+            notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
+            notificationPayload.toUsers = [postSelected?.authorId];
+          }
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
+          if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
+            notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
+            notificationPayload.toUsers = [postReply?.authorId];
+          }
         }
-        if (payload.usersTag?.length) {
+        if (payload.usersTag?.length > 0) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
           usersId = new Set(usersId);
           payload.usersTag = [...usersId];
+          socket.emit(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, {
+            fromUser: userInfo._id,
+            toUsers: [...usersId],
+            action: Constants.NOTIFICATION_ACTION.TAG,
+            target: payload._id,
+          });
         }
-        payload._id = generateObjectId();
-        // xly bat dong bo
-        await dispatch(createPost({ postPayload: payload, action: postAction })).unwrap();
+        await dispatch(
+          createPost({ postPayload: payload, action: postAction })
+        ).unwrap();
         dispatch(setNotificationPostId(payload._id));
+        if (!!notificationPayload?.toUsers?.length) {
+          notificationPayload = {
+            ...notificationPayload,
+            fromUser: userInfo._id,
+            target: payload._id,
+          };
+          socket.emit(
+            Route.NOTIFICATION + NOTIFICATION_PATH.CREATE,
+            notificationPayload
+          );
+        }
       }
     } catch (err) {
       console.error(err);
@@ -174,14 +217,14 @@ const PostPopup = () => {
           dispatch(updatePostInfo(defaultPostInfo));
           postAction === PostConstants.ACTIONS.REPLY
             ? dispatch(selectPostReply(null))
-            : dispatch(selectPost(null));
+            : postId !== postSelected?._id && dispatch(selectPost(null));
         },
       });
     } else {
       dispatch(updatePostAction());
       postAction === PostConstants.ACTIONS.REPLY
         ? dispatch(selectPostReply(null))
-        : dispatch(selectPost(null));
+        : postId !== postSelected?._id && dispatch(selectPost(null));
     }
   };
 
@@ -192,9 +235,6 @@ const PostPopup = () => {
       showToast("", "Maximum characters for a post", "error");
     }
   };
-
-  let files = postInfo.files;
-  console.log(files);
 
   return (
     <>
@@ -235,9 +275,9 @@ const PostPopup = () => {
             >
               {postAction + " Bread"}
             </Text>
-            <Flex>
+            <Flex width={"100%"} gap={4}>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
-              <Container margin="0" paddingRight={0}>
+              <Flex flexDir={"column"} flex={1}>
                 <Text color={textColor} fontWeight="600">
                   {userInfo.username}
                 </Text>
@@ -246,17 +286,12 @@ const PostPopup = () => {
                   setText={(value) => handleContent(value)}
                   tagUsers={true}
                 />
-                {files && files?.length !== 0 && (
-                  <UploadDisplay isPost={true} />
-                )}
-                {files &&
-                  files?.length !== 0 &&
-                  console.log("đã chạy display upload")}
                 {!containsLink(content) && (
                   <>
                     <MediaDisplay post={postInfo} />
-
-                    {!closePostAction && <PostPopupAction />}
+                    {!closePostAction && (
+                      <PostPopupAction setFilesData={setFilesData} />
+                    )}
                     {postInfo.survey.length !== 0 && <PostSurvey />}
                     {postSelected?._id &&
                       postAction === PostConstants.ACTIONS.REPOST && (
@@ -266,7 +301,10 @@ const PostPopup = () => {
                       )}
                   </>
                 )}
-              </Container>
+                {postInfo.files && postInfo.files?.length !== 0 && (
+                  <UploadDisplay isPost={true} />
+                )}
+              </Flex>
             </Flex>
           </div>
           <ModalFooter padding="0">
@@ -289,10 +327,6 @@ const PostPopup = () => {
               borderRadius="6px"
               onClick={() => {
                 const { checkCondition, msg } = checkUploadCondition();
-                console.log({
-                  checkCondition,
-                  msg,
-                });
                 if (!checkCondition) {
                   showToast("Error", msg, "error");
                   return;

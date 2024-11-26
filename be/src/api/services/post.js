@@ -7,10 +7,7 @@ import SurveyOption from "../models/surveyOption.model.js";
 
 export const getPostDetail = async ({ postId, getFullInfo = false }) => {
   try {
-    const agg = [
-      {
-        $match: { _id: ObjectId(postId) },
-      },
+    const getRelativeProp = [
       {
         $lookup: {
           from: "users",
@@ -30,6 +27,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
                 avatar: 1,
                 bio: 1,
                 name: 1,
+                followed: 1,
               },
             },
           ],
@@ -47,6 +45,28 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
       },
       {
         $lookup: {
+          from: "links",
+          localField: "links",
+          foreignField: "_id",
+          as: "linksInfo",
+        },
+      },
+      {
+        $lookup: {
+          from: "files",
+          localField: "files",
+          foreignField: "_id",
+          as: "files",
+        },
+      },
+    ];
+
+    const agg = [
+      {
+        $match: { _id: ObjectId(postId) },
+      },
+      {
+        $lookup: {
           from: "posts",
           let: { searchId: { $toObjectId: "$parentPost" } },
           pipeline: [
@@ -61,14 +81,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           as: "parentPostInfo",
         },
       },
-      {
-        $lookup: {
-          from: "links",
-          localField: "links",
-          foreignField: "_id",
-          as: "linksInfo",
-        },
-      },
+      ...getRelativeProp,
     ];
     if (getFullInfo) {
       agg.push({
@@ -76,28 +89,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           from: "posts",
           localField: "replies",
           foreignField: "_id",
-          pipeline: [
-            {
-              $lookup: {
-                from: "users",
-                localField: "authorId",
-                foreignField: "_id",
-                pipeline: [
-                  {
-                    $project: {
-                      _id: 1,
-                      username: 1,
-                      avatar: 1,
-                    },
-                  },
-                ],
-                as: "authorInfo",
-              },
-            },
-            {
-              $unwind: "$authorInfo",
-            },
-          ],
+          pipeline: [...getRelativeProp],
           as: "replies",
         },
       });
@@ -120,6 +112,7 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
           name: 1,
           username: 1,
           bio: 1,
+          followed: 1,
         }
       );
       if (parentPostInfo?.survey.length) {
@@ -194,7 +187,6 @@ export const getPostsIdByFilter = async (payload) => {
               createdAt: -1,
             });
         }
-        // console.log(data);
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });
@@ -303,6 +295,7 @@ export const getUsersTagInfo = async ({ usersTagId }) => {
         name: 1,
         username: 1,
         bio: 1,
+        followed: 1,
       }
     );
     return usersTagInfo;

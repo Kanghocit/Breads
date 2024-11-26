@@ -19,6 +19,7 @@ const ConversationBar = ({ conversation, onSelect }) => {
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
   );
+  const isSeen = lastMsg?.usersSeen?.includes(userInfo?._id);
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleLastMsgInfo = () => {
@@ -61,7 +62,7 @@ const ConversationBar = ({ conversation, onSelect }) => {
             minWidth: "50px",
           }}
         >
-          {" • " + moment(updatedAt).fromNow(true)}
+          {" • " + moment(lastMsg?.createdAt).fromNow(true)}
         </span>
       </div>
     );
@@ -119,6 +120,7 @@ const ConversationBar = ({ conversation, onSelect }) => {
           alignItems={"center"}
           gap={1}
           maxWidth={"100%"}
+          color={isSeen ? "lightgray" : "white"}
         >
           {handleLastMsgInfo()}
         </Text>

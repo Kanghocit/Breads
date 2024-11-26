@@ -12,8 +12,8 @@ import { useTranslation } from "react-i18next";
 
 const NotificationCreatePost = ({ postId, onClose }) => {
   const { t } = useTranslation();
-  const bgColor = useColorModeValue("#444", "ccl.light");
-  const textColor = useColorModeValue("ccl.light", "ccl.dark");
+  const bgColor = useColorModeValue("ccl.light", "#444");
+  const textColor = useColorModeValue("ccl.dark", "ccl.light");
   const navigate = useNavigate();
 
   const handleViewPost = () => {
@@ -24,7 +24,7 @@ const NotificationCreatePost = ({ postId, onClose }) => {
   return (
     <Box
       position="fixed"
-      bottom={["60px", "60px", 0]}
+      bottom={["60px", "60px", "20px"]}
       left="50%"
       transform="translateX(-50%)"
       bg={bgColor}

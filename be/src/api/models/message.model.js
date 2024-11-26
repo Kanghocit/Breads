@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
+
+const msgType = Object.values(Constants.MSG_TYPE);
 
 const messageSchema = new mongoose.Schema(
   {
@@ -57,7 +60,7 @@ const messageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["text", "media", "file", "setting"],
+      enum: msgType,
     },
   },
   { timestamps: true }

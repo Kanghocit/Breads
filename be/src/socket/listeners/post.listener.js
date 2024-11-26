@@ -5,6 +5,7 @@ const PostListener = (socket, io) => {
   socket.on(Route.POST + POST_PATH.LIKE, (payload) =>
     PostController.likePost(payload, socket, io)
   );
+  
 };
 
 export default PostListener;

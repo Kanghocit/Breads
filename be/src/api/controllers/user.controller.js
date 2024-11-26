@@ -41,11 +41,18 @@ export const getAdminAccount = async (req, res) => {
 export const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
-    const user = await User.findOne({ $or: [{ email }, { username }] });
-    if (user?._id) {
+    const userEmail = await User.findOne({email});
+    const userUsername = await User.findOne({username});
+    if (userUsername?._id) {
+      return res.status(HTTPStatus.BAD_REQUEST).json({
+          errorType: "USERNAME_EXISTS",
+          error: "Tên người dùng đã tồn tại",
+      });
+    }
+    if (userEmail?._id) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
-        .json({ error: "Tài khoản đã tồn tại" });
+        .json({ errorType: "EMAIL_EXISTS", error: "Email đã tồn tại" });
     }
 
     // const salt = await bcrypt.genSalt(10);
@@ -201,24 +208,25 @@ export const updateUser = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { currentPW, newPW } = req.body;
+    const forgotPW = req.body?.forgotPW;
     const userId = req.params.id;
     if (!userId) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty userId");
     }
-    if (!currentPW || !newPW) {
+    if ((!currentPW || !newPW) && !forgotPW) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
     }
     const user = await User.findOne({ _id: ObjectId(userId) });
     if (!user) {
       return res.status(HTTPStatus.BAD_REQUEST).json("User not found");
     }
-    if (user.password !== currentPW) {
+    if (user.password !== currentPW && !forgotPW) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Wrong password");
     } else if (newPW.length < 6) {
       return res
         .status(HTTPStatus.BAD_REQUEST)
         .json("Password must be at least 6 characters");
-    } else if (currentPW === newPW) {
+    } else if (currentPW === newPW && !forgotPW) {
       return res.status(HTTPStatus.BAD_REQUEST).json("Nothing change");
     }
     await User.updateOne(
@@ -258,6 +266,18 @@ export const getUserProfile = async (req, res) => {
 export const getUserToFollows = async (req, res) => {
   try {
     const { userId, page, limit, searchValue } = req.query;
+    const isTest = req.query?.isTest ?? false;
+    if (isTest) {
+      const users = await User.find(
+        {},
+        {
+          _id: 1,
+          username: 1,
+          avatar: 1,
+        }
+      );
+      return res.status(HTTPStatus.OK).json(users);
+    }
     if (!userId) {
       return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
     }
@@ -332,6 +352,7 @@ export const getUsersFollow = async (req, res) => {
     });
   } catch (err) {
     console.log("getUsersFollow: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };
 
@@ -358,5 +379,48 @@ export const getUsersToTag = async (req, res) => {
     return data;
   } catch (err) {
     console.log("getUsersToTag: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const checkValidUser = async (req, res) => {
+  try {
+    const payload = req.body;
+    const userId = payload?.userId;
+    const userEmail = payload?.userEmail;
+    if (!userId && !userEmail) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(userEmail)) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Invalid email type");
+    }
+    const userInfo = await User.findOne({
+      $or: [{ _id: ObjectId(userId) }, { email: userEmail }],
+    });
+    if (userInfo) {
+      return res.status(HTTPStatus.OK).json(true);
+    } else {
+      return res.status(HTTPStatus.OK).json(false);
+    }
+  } catch (err) {
+    console.log("checkValidUser :", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getUserIdFromEmail = async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    if (!userEmail) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty email");
+    }
+    const userInfo = await User.findOne({
+      email: userEmail,
+    });
+    res.status(HTTPStatus.OK).json(userInfo._id);
+  } catch (err) {
+    console.log("getUserIdFromEmail: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json(err);
   }
 };

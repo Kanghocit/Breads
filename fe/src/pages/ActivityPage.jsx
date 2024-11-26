@@ -9,11 +9,11 @@ import Activity from "../components/Activity";
 const ActivityPage = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const currentPage = useSelector((state) => state.util.currentPage);
+  console.log("UserInfo",userInfo)
+  const { currentPage, displayPageData } = useSelector((state) => state.util);
   const notifications = useSelector(
     (state) => state.notification.notifications
   );
-
   useEffect(() => {
     dispatch(
       changePage({
@@ -35,7 +35,7 @@ const ActivityPage = () => {
   return (
     <>
       <ContainerLayout>
-        <Activity />
+        <Activity currentPage={displayPageData}/>
       </ContainerLayout>
     </>
   );

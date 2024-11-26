@@ -64,6 +64,10 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPWCode: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

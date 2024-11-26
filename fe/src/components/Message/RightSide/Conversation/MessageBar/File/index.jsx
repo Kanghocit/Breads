@@ -76,7 +76,10 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
         onChange={handleFileChange}
       />
       {isPost ? (
-        <AiOutlineFileAdd onClick={() => fileRef.current.click()} />
+        <AiOutlineFileAdd
+          cursor={"pointer"}
+          onClick={() => fileRef.current.click()}
+        />
       ) : (
         <SmallAddIcon
           style={iconStyle}

@@ -104,12 +104,31 @@ const postSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(createPost.fulfilled, (state, action) => {
-      const newPost = action.payload;
+      const { data: newPost, currentPage } = action.payload;
       if (!!newPost) {
-        if (state.postAction === PostConstants.ACTIONS.REPLY) {
-          state.postSelected.replies.push(newPost._id);
-        } else {
+        if (currentPage === PageConstant.USER) {
           state.listPost.unshift(newPost);
+        }
+        const { REPOST, REPLY } = PostConstants.ACTIONS;
+        if (
+          [REPOST, REPLY].includes(state.postAction) &&
+          state.postSelected?._id
+        ) {
+          const clonePostSelected = JSON.parse(
+            JSON.stringify(state.postSelected)
+          );
+          const postSelectedIndex = state.listPost?.findIndex(
+            ({ _id }) => _id === state.postSelected._id
+          );
+          if (state.postAction === REPLY) {
+            clonePostSelected.replies.push(newPost);
+          } else {
+            clonePostSelected.repostNum += 1;
+          }
+          if (postSelectedIndex !== -1) {
+            state.listPost[postSelectedIndex] = { ...clonePostSelected };
+          }
+          state.postSelected = clonePostSelected;
         }
       }
       state.isLoading = false;

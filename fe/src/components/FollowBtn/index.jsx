@@ -1,10 +1,14 @@
 import { Button } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
-import useShowToast from "../../hooks/useShowToast";
-import { followUser } from "../../store/UserSlice/asyncThunk";
 import { useState } from "react";
-import UnFollowPopup from "./UnfollowPopup";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import useShowToast from "../../hooks/useShowToast";
+import Socket from "../../socket";
+import { followUser } from "../../store/UserSlice/asyncThunk";
+import UnFollowPopup from "./UnfollowPopup";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   if (!userInfo?._id) {
@@ -18,12 +22,20 @@ export const handleFlow = async (userInfo, user, dispatch, showToast) => {
     })
   );
   try {
+    const socket = Socket.getInstant();
+    socket.emit(Route.NOTIFICATION + NOTIFICATION_PATH.CREATE, {
+      fromUser: userInfo._id,
+      toUsers: [user._id],
+      action: Constants.NOTIFICATION_ACTION.FOLLOW,
+      target: "",
+    });
   } catch (error) {
     showToast("Error", error, "error");
   }
 };
 
-const FollowBtn = ({ user }) => {
+const FollowBtn = ({ user, inUserFlBox = false }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentPage = useSelector((state) => state.util.currentPage);
@@ -34,11 +46,13 @@ const FollowBtn = ({ user }) => {
   return (
     <div
       style={{
-        flex: currentPage === PageConstant.FRIEND ? 1 : "",
+        flex: currentPage === PageConstant.FRIEND && !inUserFlBox ? 1 : "",
       }}
     >
       <Button
-        width={currentPage === PageConstant.FRIEND ? "100%" : ""}
+        width={
+          currentPage === PageConstant.FRIEND && !inUserFlBox ? "100%" : ""
+        }
         size={"md"}
         onClick={() => {
           if (isFollowing) {
@@ -49,16 +63,17 @@ const FollowBtn = ({ user }) => {
         }}
       >
         {isFollowing
-          ? "Unfollow"
+          ? t("unfollow")
           : userInfo.followed?.includes(user?._id)
-          ? "Follow Back"
-          : "Follow"}
+          ? t("followback")
+          : t("follow")}
       </Button>
       <UnFollowPopup
         user={user}
         isOpen={openCancelPopup}
         onClose={() => setOpenCancelPopup(false)}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           handleFlow(userInfo, user, dispatch, showToast);
           setOpenCancelPopup(false);
         }}

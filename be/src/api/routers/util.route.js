@@ -4,6 +4,7 @@ import fs from "fs";
 import { UTIL_PATH } from "../../Breads-Shared/APIConfig.js";
 import { fileTypes } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId } from "../../util/index.js";
+import { sendMail } from "../controllers/util.controller.js";
 import { getAllFiles, upload } from "../middlewares/upload.js";
 import File from "../models/file.model.js";
 
@@ -71,5 +72,6 @@ router.post(UTIL_PATH.UPLOAD, upload.array("files"), async (req, res) => {
     res.status(500).json(err);
   }
 });
+router.post(UTIL_PATH.SEND_FORGOT_PW_MAIL, sendMail);
 
 export default router;

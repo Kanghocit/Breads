@@ -25,7 +25,7 @@ export const signUp = createAsyncThunk(
       }
       return null;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err);
     }
   }
 );

@@ -128,9 +128,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
             )}
           </Box>
         </Flex>
-
         <Text>{user?.bio}</Text>
-
         {userInfo._id === user?._id && (
           <Link as={RouterLink} to="/update">
             <Button size={"sm"} w={"full"}>
@@ -160,13 +158,10 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 });
               }}
             >
-              {user?.followed.length} {t("followers")}
+              {user?.followed?.length} {t("followers")}
             </Text>
           </Flex>
           <Flex>
-            {/* <Box className="icon-container">
-              <BsInstagram size={24} cursor={"pointer"} />
-            </Box> */}
             {user?._id !== userInfo?._id && (
               <Box className="icon-container">
                 <Menu>
@@ -239,16 +234,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                               <Flex justifyContent={"space-between"} my={2}>
                                 <Flex direction={"column"}>
                                   <Text>{t("joindate")}</Text>
-                                  <Box>{`${month} ${t(
-                                    "year"
-                                  )} ${year} • 100 ${t("")} +`}</Box>
-                                </Flex>
-                              </Flex>
-                              <Divider borderWidth="1px" />
-                              <Flex justifyContent={"space-between"} mt={2}>
-                                <Flex direction={"column"}>
-                                  <Text>{t("oldusername")}</Text>
-                                  <Box>{t("change_name_count")}</Box>
+                                  <Box>{`${month} ${t("year")} ${year}`}</Box>
                                 </Flex>
                               </Flex>
                             </ModalBody>
@@ -263,8 +249,8 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
           </Flex>
         </Flex>
 
-        <Tabs w={"full"}>
-          <TabList w={"full"}>
+        <Tabs width={"100%"}>
+          <TabList width={"100%"}>
             {Object.keys(TABS).map((key) => (
               <Tab
                 flex={1}
@@ -274,45 +260,25 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 cursor={"pointer"}
                 onClick={() => dispatch(changeDisplayPageData(TABS[key]))}
               >
-                <Text fontWeight={"bold"}>{key}</Text>
+                <Text fontWeight={"bold"}>{t(key)}</Text>
               </Tab>
             ))}
           </TabList>
 
-          <TabPanels>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
-            <TabPanel p={0} mt={4}>
-              {isLoading ? (
-                <Flex direction="column" gap={2}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <SkeletonPost key={num} />
-                  ))}
-                </Flex>
-              ) : (
-                <ListPost posts={userPosts} />
-              )}
-            </TabPanel>
+          <TabPanels width={"100%"}>
+            {Object.keys(TABS).map((tab) => (
+              <TabPanel key={tab} p={0} mt={4} width={"100%"}>
+                {isLoading ? (
+                  <Flex direction="column" gap={2}>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SkeletonPost key={num} />
+                    ))}
+                  </Flex>
+                ) : (
+                  <ListPost posts={userPosts} />
+                )}
+              </TabPanel>
+            ))}
           </TabPanels>
         </Tabs>
       </VStack>

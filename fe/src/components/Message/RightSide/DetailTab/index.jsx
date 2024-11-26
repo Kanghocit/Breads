@@ -30,22 +30,25 @@ import ThemeModal from "./ConfigModal/ThemeModal";
 import ConversationDataTab from "./DataTab";
 import ConversationSearchTab from "./SearchMsgTab";
 import { IoIosArrowBack } from "react-icons/io";
+import { useTranslation } from "react-i18next";
 
-export const TAB_ITEMS = {
-  SEARCH: "search",
-  THEME: "Change theme",
-  EMOJI: "Change emoji",
-  MEDIA: "Media",
-  FILES: "Files",
-  LINKS: "Links",
+export const useTabItems = () => {
+  const { t } = useTranslation();
+  return {
+    SEARCH: t("search"),
+    THEME: t("changetheme"),
+    EMOJI: t("Changeemoji"),
+    MEDIA: "Media",
+    FILES: "Files",
+    LINKS: "Links",
+  };
 };
 
-const DetailConversationTab = ({
-  openDetailTab,
-  setOpenDetailTab,
-  // onCloseTab = false,
-}) => {
-  const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = TAB_ITEMS;
+
+const DetailConversationTab = ({openDetailTab,
+  setOpenDetailTab,}) => {
+  const { t } = useTranslation();
+  const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = useTabItems();
   const navigate = useNavigate();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -53,7 +56,7 @@ const DetailConversationTab = ({
   const [itemSelected, setItemSelected] = useState("");
   const participant = selectedConversation?.participant;
   const menu = {
-    "Customize chat": [
+    [t("Customizechat")]: [
       {
         name: THEME,
         icon: <MdColorLens />,
@@ -80,7 +83,7 @@ const DetailConversationTab = ({
   };
   const actions = [
     {
-      name: "Profile",
+      name: t("profile"),
       icon: <CgProfile width={"24px"} height={"24px"} />,
       onClick: () => {
         navigate(`/users/${participant?._id}`);

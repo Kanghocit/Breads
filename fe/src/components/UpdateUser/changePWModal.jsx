@@ -23,6 +23,36 @@ import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import { PUT } from "../../config/API";
 import useShowToast from "../../hooks/useShowToast";
 
+export const handleUpdatePW = async ({
+  currentPWValue,
+  newPWValue,
+  showToast,
+  endAction,
+  userId,
+  forgotPW = false,
+}) => {
+  try {
+    if (newPWValue.trim().length < 6) {
+      showToast("", "Password must have at least 6 characters");
+      return;
+    }
+    await PUT({
+      path: Route.USER + USER_PATH.CHANGE_PW + userId,
+      payload: {
+        currentPW: currentPWValue,
+        newPW: newPWValue,
+        forgotPW: forgotPW,
+      },
+      showToast: showToast,
+    });
+    showToast("", "Update success", "success");
+    endAction();
+  } catch (err) {
+    console.error(err);
+    endAction();
+  }
+};
+
 const ChangePWModal = ({ setPopup }) => {
   const { t } = useTranslation();
   const showToast = useShowToast();
@@ -37,35 +67,6 @@ const ChangePWModal = ({ setPopup }) => {
       value: "",
     },
   });
-
-  const handleUpdatePW = async () => {
-    try {
-      const currentPWValue = passwordInfo.currentPW.value;
-      const newPWValue = passwordInfo.newPW.value;
-      if (newPWValue.trim().length < 6) {
-        showToast("", "Password must have at least 6 characters");
-        return;
-      }
-      await PUT({
-        path: Route.USER + USER_PATH.CHANGE_PW + userInfo._id,
-        payload: {
-          currentPW: currentPWValue,
-          newPW: newPWValue,
-        },
-        showToast: showToast,
-      });
-      showToast("", "Update success", "success");
-      setPopup({
-        isOpen: false,
-        type: "",
-      });
-    } catch (err) {
-      setPopup({
-        isOpen: false,
-        type: "",
-      });
-    }
-  };
 
   const updateFieldValue = (value, isCurrentPW) => {
     const cloneState = { ...passwordInfo };
@@ -111,7 +112,7 @@ const ChangePWModal = ({ setPopup }) => {
       <ModalContent
         position={"relative"}
         boxSizing="border-box"
-        width={["420px","460px"]}
+        width={["420px", "460px"]}
         maxWidth={"620px"}
         borderRadius={"16px"}
         id="modal"
@@ -123,7 +124,10 @@ const ChangePWModal = ({ setPopup }) => {
           top={"-36px"}
           left={"50%"}
           transform={"translateX(-50%)"}
-          color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
+          color={getButtonColor(
+            currentPage === PageConstant.ACTIVITY,
+            colorMode
+          )}
           zIndex={4000}
           textTransform={"capitalize"}
           fontWeight={600}
@@ -135,7 +139,10 @@ const ChangePWModal = ({ setPopup }) => {
           position={"absolute"}
           top={"-36px"}
           left={"0"}
-          color={getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode)}
+          color={getButtonColor(
+            currentPage === PageConstant.ACTIVITY,
+            colorMode
+          )}
         />
         <ModalBody>
           <FormControl>
@@ -234,7 +241,18 @@ const ChangePWModal = ({ setPopup }) => {
             variant=""
             onClick={() => {
               if (userInfo?._id) {
-                handleUpdatePW();
+                handleUpdatePW({
+                  currentPWValue: passwordInfo.currentPW.value,
+                  newPWValue: passwordInfo.newPW.value,
+                  userId: userInfo._id,
+                  showToast: showToast,
+                  endAction: () => {
+                    setPopup({
+                      isOpen: false,
+                      type: "",
+                    });
+                  },
+                });
               }
             }}
           >

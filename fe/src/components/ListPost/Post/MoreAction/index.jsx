@@ -17,6 +17,7 @@ import PostConstants from "../../../../util/PostConstants";
 import useCopyLink from "./CopyLink";
 import { useNavigate } from "react-router-dom";
 import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
+import { useTranslation } from "react-i18next";
 
 const PostMoreActionBox = ({
   post,
@@ -33,6 +34,7 @@ const PostMoreActionBox = ({
   const { colorMode } = useColorMode();
   const showToast = useShowToast();
   const { copyURL } = useCopyLink();
+  const { t } = useTranslation();
   const savedBefore = useMemo(() => {
     return userInfo?.collection?.includes(postId);
   }, [userInfo._id]);
@@ -70,7 +72,7 @@ const PostMoreActionBox = ({
 
   const actions = [
     {
-      name: savedBefore ? "Unsave" : "Save",
+      name: savedBefore ? t('unsave') : t('save'),
       icon: savedBefore ? <GoBookmarkSlash /> : <CiBookmark />,
       onClick: handleSave,
     },
@@ -83,7 +85,7 @@ const PostMoreActionBox = ({
     //   icon: <GoReport />,
     // },
     {
-      name: "Copy link",
+      name: t('copylink'),
       icon: <IoIosLink />,
       onClick: () => {
         copyURL(post);
@@ -92,7 +94,7 @@ const PostMoreActionBox = ({
     ...(userInfo._id === post.authorId
       ? [
           {
-            name: "Delete",
+            name: t('delete'),
             icon: <MdDelete />,
             onClick: () => {
               setPopupCancelInfo({
@@ -114,7 +116,7 @@ const PostMoreActionBox = ({
             },
           },
           {
-            name: "Update",
+            name: t('update'),
             icon: <MdEdit />,
             onClick: () => {
               dispatch(updatePostAction(PostConstants.ACTIONS.EDIT));

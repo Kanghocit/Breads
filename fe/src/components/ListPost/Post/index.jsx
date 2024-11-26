@@ -24,6 +24,7 @@ import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
 import PostConstants from "../../../util/PostConstants";
+import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
 import UserInfoPopover from "../../UserInfoPopover";
@@ -67,14 +68,15 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   return (
     <>
       <Card
+        boxSizing={"border-box"}
         className="post-container"
         borderRadius="12px"
         border={isParentPost ? "1px solid gray" : "none"}
         boxShadow={isReply ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"}
         bg={colorMode === "dark" ? "#202020" : "#ffffff"}
         width={"100%"}
-        transform={isParentPost ? "scale(1.02)" : "none"}
         transition="transform 0.2s ease"
+        mt={isReply ? "8px" : ""}
       >
         <CardBody padding={isReply ? "0px" : "1.25rem"}>
           <Flex justifyContent={"space-between"}>
@@ -137,8 +139,11 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               )}
             </Flex>
           </Flex>
-          <Text
+          <Container
+            p={0}
+            m={0}
             my={2}
+            width={"100%"}
             cursor={
               !isDetail &&
               !(postAction === PostConstants.ACTIONS.REPOST && isParentPost)
@@ -160,7 +165,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 link={post?.linksInfo[post?.linksInfo?.length - 1]}
               />
             )}
-          </Text>
+          </Container>
           {isParentPost && post?.quote?._id && !postAction && (
             <Text
               display={"flex"}
@@ -176,11 +181,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
               {post?.quote?.content}
             </Text>
           )}
-          <MediaDisplay
-            post={post}
-            isDetail={isDetail}
-            isParentPost={isParentPost}
-          />
+          <MediaDisplay post={post} isDetail={isDetail} />
           {post?.survey?.length > 0 && <Survey post={post} />}
           {post?.parentPostInfo?._id && (
             <>
@@ -199,6 +200,9 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                 <Post post={post?.parentPostInfo} isParentPost={true} />
               )}
             </>
+          )}
+          {post?.files?.length > 0 && (
+            <UploadDisplay isPost={true} filesFromPost={post?.files} />
           )}
           {!isParentPost && (
             <Flex gap={3} mt={"10px"} mb={isDetail ? "10px" : ""}>

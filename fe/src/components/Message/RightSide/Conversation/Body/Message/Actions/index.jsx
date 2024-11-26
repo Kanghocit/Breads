@@ -11,12 +11,12 @@ import {
 } from "../../../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../../../Breads-Shared/Constants";
 import Socket from "../../../../../../../socket";
-import { updateMsg } from "../../../../../../../store/MessageSlice";
+import { selectMsg, updateMsg } from "../../../../../../../store/MessageSlice";
 import { getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 
-const MessageAction = ({ ownMsg, msgId, previousReact }) => {
+const MessageAction = ({ ownMsg, msg, previousReact }) => {
   const dispatch = useDispatch();
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -25,9 +25,13 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   const [openBox, setOpenBox] = useState(false);
   const [displayReactBox, setDisplayReactBox] = useState(false);
   const defaultEmoji = ["<3", ":D", ":O", ":(", ":slang"];
+  const msgId = msg?._id;
 
   const boxActions = [
     {
+      onClick: () => {
+        dispatch(selectMsg(msg));
+      },
       icon: <MdOutlineReply />,
       name: Constants.MSG_ACTION.REPLY,
     },
@@ -38,10 +42,32 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
   ];
   if (ownMsg) {
     boxActions.push({
+      onClick: () => {
+        handleRetriveMsg();
+      },
       icon: <FaDeleteLeft />,
       name: Constants.MSG_ACTION.RETRIEVE,
     });
   }
+
+  const handleRetriveMsg = async () => {
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.RETRIEVE,
+        {
+          msgId: msgId,
+          userId: userInfo?._id,
+          participantId: selectedConversation?.participant?._id,
+        },
+        ({ data }) => {
+          dispatch(updateMsg(data));
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleReactMsg = async (react) => {
     try {
@@ -105,7 +131,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
             zIndex={1000}
             minWidth={"140px"}
           >
-            {boxActions.map(({ icon, name }) => (
+            {boxActions.map(({ icon, name, onClick }) => (
               <Flex
                 key={name}
                 alignItems={"center"}
@@ -118,6 +144,9 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
                   bg: "gray",
                 }}
                 minWidth={"140px"}
+                onClick={() => {
+                  !!onClick && onClick();
+                }}
               >
                 {icon}
                 <Text textTransform={"capitalize"}>{name}</Text>
@@ -147,6 +176,7 @@ const MessageAction = ({ ownMsg, msgId, previousReact }) => {
             transform={"translateX(55%)"}
             border={"1px solid gray"}
             bg={useColorModeValue("gray.200", "#181818")}
+            zIndex={1000}
           >
             {defaultEmoji.map((emjStr) => (
               <IconWrapper

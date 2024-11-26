@@ -8,6 +8,8 @@ import Socket from "../../../../../socket";
 import {
   addNewMsg,
   defaulMessageInfo,
+  selectMsg,
+  updateConversations,
   updateLoadingUpload,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
@@ -19,7 +21,7 @@ import GifMsgBtn from "./Gif";
 import IconWrapper from "./IconWrapper";
 import MediaUpload from "./Media";
 import MessageIconBtn from "./MessageIconBtn";
-import UploadDisplay from "./UploadDisplay";
+import { useTranslation } from "react-i18next";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -40,11 +42,11 @@ export const iconStyle = {
 const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { msgInfo, loadingUploadMsg, selectedConversation } = useSelector(
-    (state) => state.message
-  );
+  const { msgInfo, loadingUploadMsg, selectedConversation, selectedMsg } =
+    useSelector((state) => state.message);
   const participant = selectedConversation?.participant;
   const files = msgInfo.files;
+  const media = msgInfo.media;
   const [popup, setPopup] = useState("");
   const [closeTooltip, setCloseTooltip] = useState(false);
   const [filesData, setFilesData] = useState([]);
@@ -53,8 +55,8 @@ const MessageInput = () => {
   const debouceContent = useDebounce(content, 200);
   const ableToSend =
     !!content.trim() ||
-    msgInfo.files?.length !== 0 ||
-    msgInfo.media?.length !== 0 ||
+    files?.length !== 0 ||
+    media?.length !== 0 ||
     msgInfo.icon;
   const { conversationBackground, user1Message } = getCurrentTheme(
     selectedConversation?.theme
@@ -62,6 +64,7 @@ const MessageInput = () => {
   const bg = conversationBackground?.backgroundColor;
   const textColor = user1Message?.color;
   const borderColor = user1Message?.borderColor;
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(
@@ -75,7 +78,6 @@ const MessageInput = () => {
   useEffect(() => {
     if (loadingUploadMsg) {
       handleSendMsg({ clickUpload: false });
-      dispatch(updateLoadingUpload(false));
     }
   }, [loadingUploadMsg]);
 
@@ -117,11 +119,11 @@ const MessageInput = () => {
 
   const handleSendMsg = async ({ clickUpload = true, sendIcon = false }) => {
     let payload = JSON.parse(JSON.stringify(msgInfo));
+    if (clickUpload) {
+      dispatch(updateLoadingUpload(true));
+      return;
+    }
     if (payload.files?.length) {
-      if (clickUpload) {
-        dispatch(updateLoadingUpload(true));
-        return;
-      }
       const filesId = await handleUploadFiles({
         files: filesData,
         userId: userInfo._id,
@@ -131,17 +133,25 @@ const MessageInput = () => {
     if (sendIcon) {
       payload.content = sendIcon;
     }
+    if (selectedMsg?._id) {
+      payload.respondTo = selectedMsg?._id;
+    }
     const socket = Socket.getInstant();
     const msgPayload = {
       recipientId: participant?._id,
       senderId: userInfo._id,
       message: payload,
     };
-    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, (newMsg) => {
-      dispatch(addNewMsg(newMsg));
+    socket.emit(Route.MESSAGE + MESSAGE_PATH.CREATE, msgPayload, ({ data }) => {
+      const conversationInfo = data?.conversationInfo;
+      const msgs = data?.msgs;
+      dispatch(addNewMsg(msgs));
+      dispatch(updateLoadingUpload(false));
+      dispatch(updateMsgInfo(defaulMessageInfo));
+      dispatch(selectMsg(null));
+      dispatch(updateConversations(conversationInfo));
+      setContent("");
     });
-    dispatch(updateMsgInfo(defaulMessageInfo));
-    setContent("");
   };
 
   return (
@@ -150,11 +160,10 @@ const MessageInput = () => {
         position: "relative",
         backgroundColor: conversationBackground?.backgroundColor,
         backgroundBlendMode: conversationBackground?.backgroundBlendMode,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {((!!files && files?.length !== 0) || msgInfo.media?.length !== 0) && (
-        <UploadDisplay />
-      )}
       <InputGroup
         alignItems={"center"}
         p={2}
@@ -169,7 +178,7 @@ const MessageInput = () => {
         <Input
           ref={inputRef}
           flex={1}
-          placeholder="Type a message"
+          placeholder={t("Typeamessage")}
           margin={"0 8px"}
           value={content}
           bg={loadingUploadMsg ? "gray" : bg ? bg : ""}
@@ -181,10 +190,10 @@ const MessageInput = () => {
             }
           }}
           onKeyDown={(e) => {
-            if (e.keyCode === 13 && ableToSend) {
-              if (!loadingUploadMsg) {
-                handleSendMsg({});
-              }
+            if (e.keyCode === 13 && ableToSend && !loadingUploadMsg) {
+              handleSendMsg({
+                clickUpload: files?.length > 0 || media?.length > 0,
+              });
             }
           }}
           opacity={loadingUploadMsg ? 0.4 : 1}
@@ -208,7 +217,9 @@ const MessageInput = () => {
                 style={iconStyle}
                 onClick={() => {
                   if (!loadingUploadMsg) {
-                    handleSendMsg({});
+                    handleSendMsg({
+                      clickUpload: files?.length > 0 || media?.length > 0,
+                    });
                   }
                 }}
               />

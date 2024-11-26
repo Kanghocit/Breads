@@ -7,10 +7,14 @@ import { MESSAGE_PATH, Route } from "../../Breads-Shared/APIConfig.js";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import { ObjectId, destructObjectId, getCollection } from "../../util/index.js";
 import Model from "../../util/ModelName.js";
-import { getUserSocketByUserId } from "../services/user.js";
+import { sendToSpecificUser } from "../services/message.js";
+import { getConversationInfo } from "../../api/services/message.js";
+import User from "../../api/models/user.model.js";
+
+const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
 
 export default class MessageController {
-  static async sendMessage(payload, cb, socket, io) {
+  static async sendMessage(payload, cb, io) {
     try {
       const { recipientId, senderId, message } = payload;
       let conversation = await Conversation.findOne({
@@ -18,13 +22,12 @@ export default class MessageController {
       });
       const listMsgId = [];
       const listMsg = [];
-      const { files, media, content } = message;
+      const { files, media, content, respondTo } = message;
       const numberNewMsg =
         files?.length + (media?.length > 0 ? 1 : 0) + (content ? 1 : 0);
       [...Array(numberNewMsg)].map((_) => {
         listMsgId.push(ObjectId());
       });
-      console.log("listMsgId: ", listMsgId);
       if (!conversation) {
         conversation = new Conversation({
           participants: [senderId, recipientId],
@@ -51,6 +54,7 @@ export default class MessageController {
       }
       let currentFileIndex = 0;
       let addMedia = false;
+      let isReplied = false;
       for (let index = 0; index < listMsgId.length; index++) {
         const _id = listMsgId[index];
         let newMsg = null;
@@ -62,7 +66,6 @@ export default class MessageController {
         if (content?.trim() && index === 0) {
           const urlRegex = /(https?:\/\/[^\s]+)/g;
           const urls = content.match(urlRegex);
-          console.log("urls: ", urls);
           const links = [];
           if (urls?.length) {
             for (let url of urls) {
@@ -76,15 +79,18 @@ export default class MessageController {
             }
           }
           if (links?.length > 0) {
-            console.log("links: ", links);
             await Link.insertMany(links, { ordered: false });
           }
           newMsg = {
             ...msgInfo,
             content: content,
             links: links?.map((_id) => _id),
-            type: "text",
+            type: TEXT,
           };
+          if (respondTo) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
         } else if (media?.length !== 0 && !addMedia) {
           const isAddGif =
             media?.length === 1 && media[0].type === Constants.MEDIA_TYPE.GIF;
@@ -104,8 +110,12 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             media: uploadMedia,
-            type: "media",
+            type: MEDIA,
           });
+          if (respondTo && !isReplied) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
           addMedia = true;
         } else if (
           files?.length !== 0 &&
@@ -116,8 +126,12 @@ export default class MessageController {
           newMsg = new Message({
             ...msgInfo,
             file: files[currentFileIndex],
-            type: "file",
+            type: FILE,
           });
+          if (respondTo && !isReplied) {
+            newMsg.respondTo = ObjectId(respondTo);
+            isReplied = true;
+          }
           currentFileIndex += 1;
         }
         console.log("newMsg: ", newMsg);
@@ -126,20 +140,52 @@ export default class MessageController {
       await Message.insertMany(listMsg, { ordered: false });
       const newMessages = await Message.find({
         _id: { $in: listMsgId },
-      }).populate({
-        path: "file",
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        })
+        .populate({
+          path: "respondTo",
+        });
+      const conversationInfo = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: senderId,
       });
-      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-          newMessages
-        );
-      }
-      !!cb && cb(newMessages);
+      const conversationInfoToRecipient = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: recipientId,
+      });
+      await User.updateOne(
+        {
+          _id: ObjectId(recipientId),
+        },
+        {
+          hasNewMsg: true,
+        }
+      );
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+        payload: {
+          msgs: newMessages,
+          conversationInfo: conversationInfoToRecipient,
+        },
+      });
+      !!cb &&
+        cb({
+          status: "success",
+          data: {
+            msgs: newMessages,
+            conversationInfo: conversationInfo,
+          },
+        });
     } catch (error) {
       console.error("sendMessage: ", error);
-      cb([]);
+      cb({ status: "error", data: [] });
     }
   }
 
@@ -161,23 +207,6 @@ export default class MessageController {
     }
   }
 
-  static async deleteMessage(payload, socket, io) {
-    try {
-      const { messageId, userId } = payload;
-      const mess = await getCollection(Model.MESSAGE).findOne({
-        _id: ObjectId(messageId),
-      });
-      if (mess.sender.toString() !== userId.toString()) {
-      }
-
-      await getCollection(Model.MESSAGE).deleteOne({
-        _id: ObjectId(messageId),
-      });
-    } catch (error) {
-      console.error("deleteMessage: ", error);
-    }
-  }
-
   static async getConversations(payload, cb) {
     const { userId, page, limit, searchValue } = payload;
     try {
@@ -186,6 +215,11 @@ export default class MessageController {
         {
           $match: {
             participants: ObjectId(userId),
+          },
+        },
+        {
+          $sort: {
+            updatedAt: -1,
           },
         },
         {
@@ -211,11 +245,6 @@ export default class MessageController {
         },
         {
           $limit: limit,
-        },
-        {
-          $sort: {
-            updatedAt: -1,
-          },
         },
         {
           $lookup: {
@@ -253,16 +282,20 @@ export default class MessageController {
             as: "lastMsg",
           },
         },
-        {
-          $unwind: "$lastMsg",
-        },
+        // {
+        //   $unwind: "$lastMsg",
+        // },
       ];
       const conversations = await Conversation.aggregate(agg);
-      const result = conversations.map((conversation) => {
+      const result = conversations.map((conversation, index) => {
         delete conversation.otherParticipant;
         delete conversation.lastMsgId;
+        if (conversation?.lastMsg) {
+          conversation.lastMsg = conversation.lastMsg[0];
+        }
         return conversation;
       });
+      console.log("conversations: ", conversations.length);
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
@@ -302,6 +335,9 @@ export default class MessageController {
         })
         .populate({
           path: "links",
+        })
+        .populate({
+          path: "respondTo",
         });
       const result = msgs?.sort((a, b) => -1);
       cb({ status: "success", data: result });
@@ -398,11 +434,9 @@ export default class MessageController {
             $set: {
               reacts: newReacts,
             },
-          }
+          },
+          { timestamps: false }
         );
-        result = await Message.findOne({
-          _id: ObjectId(msgId),
-        });
       } else {
         const newReact = {
           userId: userId,
@@ -416,23 +450,29 @@ export default class MessageController {
             $push: {
               reacts: newReact,
             },
-          }
+          },
+          { timestamps: false }
         );
-        result = await Message.findOne({
-          _id: ObjectId(msgId),
+      }
+      result = await Message.findOne({
+        _id: ObjectId(msgId),
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        })
+        .populate({
+          path: "respondTo",
         });
-      }
+      await sendToSpecificUser({
+        recipientId: participantId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: result,
+      });
       !!cb && cb({ status: "success", data: result });
-      const participantSocketId = await getUserSocketByUserId(
-        participantId,
-        io
-      );
-      if (participantSocketId) {
-        io.to(participantSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
-          result
-        );
-      }
     } catch (err) {
       console.log("reactMsg: ", err);
       cb({ status: "error", data: null });
@@ -465,23 +505,129 @@ export default class MessageController {
         conversationId: ObjectId(conversationId),
         content: changeSettingContent,
         sender: ObjectId(userId),
-        type: "setting",
+        type: SETTING,
       });
       const result = await settingMsg.save();
       conversation[key] = value;
       conversation.msgIds.push(msgId);
       await conversation.save();
-      const recipientSocketId = await getUserSocketByUserId(recipientId, io);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit(
-          Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
-          result
-        );
-      }
-      !!cb && cb({ status: "success", data: [result] });
+      const conversationInfo = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: senderId,
+      });
+      const conversationInfoToRecipient = await getConversationInfo({
+        conversationId: conversation._id,
+        userId: recipientId,
+      });
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+        payload: {
+          msgs: [result],
+          conversationInfo: conversationInfoToRecipient,
+        },
+      });
+      !!cb &&
+        cb({
+          status: "success",
+          data: {
+            msgs: [result],
+            conversationInfo,
+          },
+        });
     } catch (err) {
       console.log("changeSettingConversation: ", err);
       cb({ status: "error", data: null });
+    }
+  }
+  static async retrieveMsg(payload, cb, io) {
+    try {
+      const { msgId, userId, participantId } = payload;
+      if (!msgId || !userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const msgInfo = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
+      if (!msgInfo || destructObjectId(msgInfo?.sender) !== userId) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      await Message.updateOne(
+        {
+          _id: ObjectId(msgId),
+        },
+        {
+          isRetrieve: true,
+        },
+        { timestamps: false }
+      );
+      const result = await Message.findOne({
+        _id: ObjectId(msgId),
+      });
+      await sendToSpecificUser({
+        recipientId: participantId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: result,
+      });
+      !!cb &&
+        cb({
+          status: "success",
+          data: result,
+        });
+    } catch (err) {
+      console.log("retrieveMsg: ", err);
+      cb({ status: "error", data: null });
+    }
+  }
+  static async updateLastSeen(payload, cb, io) {
+    try {
+      const { userId, lastMsg, recipientId } = payload;
+      if (!userId || !lastMsg) {
+        cb({ status: "error", data: null });
+        return;
+      }
+      const conversationId = ObjectId(lastMsg.conversationId);
+      await Message.updateMany(
+        {
+          conversationId: conversationId,
+          usersSeen: {
+            $nin: [ObjectId(userId)],
+          },
+          createdAt: {
+            $lte: lastMsg.createdAt,
+          },
+        },
+        {
+          $push: {
+            usersSeen: ObjectId(userId),
+          },
+        }
+      );
+      const lastMsgUpdated = await Message.findOne({
+        _id: ObjectId(lastMsg._id),
+      })
+        .populate({
+          path: "file",
+        })
+        .populate({
+          path: "links",
+        })
+        .populate({
+          path: "respondTo",
+        });
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.UPDATE_MSG,
+        payload: lastMsgUpdated,
+      });
+      !!cb && cb({ status: "success", data: lastMsgUpdated });
+    } catch (err) {
+      console.log("updateLastSeen: ", err);
     }
   }
 }

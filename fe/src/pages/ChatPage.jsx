@@ -37,11 +37,12 @@ const ChatPage = () => {
 
   const handleBackToLeft = () => {
     setShowRightSide(false);
-    dispatch(selectConversation(null)); 
-  }
+    dispatch(selectConversation(null));
+  };
 
   return (
     <Flex
+      id={"chat-page"}
       position="absolute"
       left="50%"
       w={{
