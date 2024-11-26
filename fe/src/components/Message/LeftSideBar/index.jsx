@@ -47,6 +47,10 @@ const LeftSideBarMsg = ({ onSelectConversation }) => {
         <form>
           <Flex alignItems={"center"} gap={2}>
             <Input
+              fontSize={{
+                base: "lg",
+                md:"md"
+              }}
               placeholder={t("Searchforuser")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
