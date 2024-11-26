@@ -4,6 +4,7 @@ import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import Socket from "../../../../../socket";
 import {
   addNewMsg,
+  updateConversations,
   updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { messageThemes } from "../../../../../util/Themes/index";
@@ -28,14 +29,17 @@ const ThemeModal = ({ setItemSelected }) => {
         changeSettingContent: "has change conversation's theme into " + theme,
       },
       ({ data }) => {
-        if (data) {
-          dispatch(addNewMsg(data));
+        const conversationInfo = data?.conversationInfo;
+        const msgs = data?.msgs;
+        if (msgs?.length) {
+          dispatch(addNewMsg(msgs));
           dispatch(
             updateSelectedConversation({
               key: "theme",
               value: theme,
             })
           );
+          dispatch(updateConversations(conversationInfo));
         }
       }
     );

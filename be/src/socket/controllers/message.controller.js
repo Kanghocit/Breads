@@ -282,9 +282,6 @@ export default class MessageController {
             as: "lastMsg",
           },
         },
-        // {
-        //   $unwind: "$lastMsg",
-        // },
       ];
       const conversations = await Conversation.aggregate(agg);
       const result = conversations.map((conversation, index) => {
@@ -295,7 +292,6 @@ export default class MessageController {
         }
         return conversation;
       });
-      console.log("conversations: ", conversations.length);
       cb({ status: "success", data: result });
     } catch (error) {
       console.error("getConversations: ", error);
@@ -513,7 +509,7 @@ export default class MessageController {
       await conversation.save();
       const conversationInfo = await getConversationInfo({
         conversationId: conversation._id,
-        userId: senderId,
+        userId: userId,
       });
       const conversationInfoToRecipient = await getConversationInfo({
         conversationId: conversation._id,
