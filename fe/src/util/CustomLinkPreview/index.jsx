@@ -7,24 +7,27 @@ import { TiDeleteOutline } from "react-icons/ti";
 import PostConstants from "../PostConstants";
 
 const CustomLinkPreview = ({
-  url = "",
+  link = null,
+  url = "", //[]
   bg = "",
   color = "",
   borderColor = "",
 }) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(link);
   const [error, setError] = useState(false);
   const postAction = useSelector((state) => state.post.postAction);
 
   useEffect(() => {
-    if (url) {
-      fetchLinkData(url);
-    } else if (postInfo?.links.length > 0) {
-      setData(postInfo.links[0]);
+    if (!link) {
+      if (url) {
+        fetchLinkData(url);
+      } else if (postInfo?.links.length > 0) {
+        setData(postInfo.links[0]);
+      }
     }
-  }, [url, postInfo.links]);
+  }, [url, postInfo?.links?.length]);
 
   const fetchLinkData = async (fetchUrl) => {
     try {

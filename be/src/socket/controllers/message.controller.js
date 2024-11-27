@@ -10,6 +10,7 @@ import Model from "../../util/ModelName.js";
 import { sendToSpecificUser } from "../services/message.js";
 import { getConversationInfo } from "../../api/services/message.js";
 import User from "../../api/models/user.model.js";
+import { previewLinkKey } from "../../Breads-Shared/util/index.js";
 
 const { TEXT, MEDIA, FILE, SETTING } = Constants.MSG_TYPE;
 
@@ -69,13 +70,33 @@ export default class MessageController {
           const links = [];
           if (urls?.length) {
             for (let url of urls) {
-              const { data } = await axios.get(
-                `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${url}`
-              );
-              links.push({
-                _id: ObjectId(),
-                ...data,
-              });
+              let result = null;
+              const previewLen = previewLinkKey?.length;
+              let index = 1;
+              try {
+                do {
+                  let key = previewLinkKey[index - 1];
+                  try {
+                    const { data } = await axios.get(
+                      `https://api.linkpreview.net?key=${key}&q=${url}`
+                    );
+                    if (data) {
+                      result = data;
+                    }
+                  } catch (err) {
+                    index += 1;
+                    console.log("End of preview link quota: ", err);
+                  }
+                } while (index < previewLen && !result);
+              } catch (err) {
+                console.log("getLinkPreview: ", err);
+              }
+              if (result) {
+                links.push({
+                  _id: ObjectId(),
+                  ...result,
+                });
+              }
             }
           }
           if (links?.length > 0) {
@@ -134,7 +155,6 @@ export default class MessageController {
           }
           currentFileIndex += 1;
         }
-        console.log("newMsg: ", newMsg);
         listMsg.push(newMsg);
       }
       await Message.insertMany(listMsg, { ordered: false });

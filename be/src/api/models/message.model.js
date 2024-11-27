@@ -61,6 +61,7 @@ const messageSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: msgType,
+      default: Constants.MSG_TYPE.TEXT,
     },
   },
   { timestamps: true }
