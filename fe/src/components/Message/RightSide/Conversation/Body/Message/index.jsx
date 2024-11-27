@@ -241,56 +241,48 @@ const Message = ({ msg, isLastSeen = false }) => {
     );
   };
 
+  const settingMsgProp = {
+    _id: `msg_$msg?._id}`,
+    width: "100%",
+    height: "fit-content",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 1,
+  };
+
+  const messageProp = {
+    pos: "relative",
+    flexDir: ownMessage ? "column" : "",
+    gap: 2,
+    alignSelf: ownMessage ? "flex-end" : "flex-start",
+    width: "fit-content",
+    onMouseEnter: () => {
+      if (!isRetrieve) {
+        setDisplayAction(true);
+      }
+    },
+    onMouseLeave: () => {
+      setDisplayAction(false);
+    },
+  };
+
   return (
     <>
       <Tooltip
         label={!isSettingMsg && getTooltipTime()}
         placement={ownMessage ? "left" : "right"}
       >
-        <>
-          {isSettingMsg ? (
-            <Flex
-              _id={`msg_${msg?._id}`}
-              width={"100%"}
-              height={"fit-content"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              gap={1}
-            >
-              {handleSettingMsg()}
-            </Flex>
-          ) : (
-            <Flex
-              pos={"relative"}
-              flexDir={ownMessage ? "column" : ""}
-              gap={2}
-              alignSelf={ownMessage ? "flex-end" : "flex-start"}
-              width={"fit-content"}
-              onMouseEnter={() => {
-                if (!isRetrieve) {
-                  setDisplayAction(true);
-                }
-              }}
-              onMouseLeave={() => {
-                setDisplayAction(false);
-              }}
-            >
-              {msgContent()}
-            </Flex>
-          )}
-          {isLastSeen && msg?.sender === userInfo?._id && (
-            <Flex justifyContent={"end"}>
-              <Tooltip label={getUserSeenTooltip()} placement={"top"}>
-                <Avatar
-                  width={"16px"}
-                  height={"16px"}
-                  src={participant?.avatar}
-                />
-              </Tooltip>
-            </Flex>
-          )}
-        </>
+        <Flex {...(isSettingMsg ? settingMsgProp : messageProp)}>
+          {isSettingMsg ? handleSettingMsg() : msgContent()}
+        </Flex>
       </Tooltip>
+      {isLastSeen && msg?.sender === userInfo?._id && (
+        <Flex justifyContent={"end"}>
+          <Tooltip label={getUserSeenTooltip()} placement={"top"}>
+            <Avatar width={"16px"} height={"16px"} src={participant?.avatar} />
+          </Tooltip>
+        </Flex>
+      )}
     </>
   );
 };
