@@ -40,7 +40,6 @@ const RepliedMsgBar = () => {
     );
   };
 
-  handleMsgContent();
   return (
     <Flex
       width={"100%"}

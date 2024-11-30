@@ -22,6 +22,7 @@ import {
 import { getCurrentTheme } from "../../../../../util/Themes";
 import InfiniteScroll from "../../../../InfiniteScroll";
 import Message from "./Message";
+import SendNextBox from "./SendNextBox";
 
 const ConversationBody = ({ openDetailTab }) => {
   const currentDateFormat = formatDateToDDMMYYYY(new Date());
@@ -64,7 +65,7 @@ const ConversationBody = ({ openDetailTab }) => {
         );
         if (!isValid) {
           dispatch(addNewMsg(msgs));
-          dispatch(updateConversations(conversationInfo));
+          dispatch(updateConversations([conversationInfo]));
           setScrollText("New message");
           if (conversationInfo?._id !== selectedConversation?._id) {
             dispatch(
@@ -185,32 +186,36 @@ const ConversationBody = ({ openDetailTab }) => {
   };
 
   const handleGetMsgs = async ({ page }) => {
-    const socket = Socket.getInstant();
-    socket.emit(
-      Route.MESSAGE + MESSAGE_PATH.GET_MESSAGES,
-      {
-        userId: userInfo._id,
-        conversationId: selectedConversation?._id,
-        page: page,
-        limit: 30,
-      },
-      (res) => {
-        const isNew = page === 1;
-        const { data } = res;
-        if (data.length) {
-          dispatch(
-            getMsgs({
-              isNew: isNew ? true : false,
-              msgs: data,
-            })
-          );
-          dispatch(updateCurrentPageMsg(page));
-          setTimeout(() => {
-            setFirstLoad(false);
-          }, 1500);
+    try {
+      const socket = Socket.getInstant();
+      socket.emit(
+        Route.MESSAGE + MESSAGE_PATH.GET_MESSAGES,
+        {
+          userId: userInfo._id,
+          conversationId: selectedConversation?._id,
+          page: page,
+          limit: 30,
+        },
+        (res) => {
+          const isNew = page === 1;
+          const { data } = res;
+          if (data.length) {
+            dispatch(
+              getMsgs({
+                isNew: isNew ? true : false,
+                msgs: data,
+              })
+            );
+            dispatch(updateCurrentPageMsg(page));
+            setTimeout(() => {
+              setFirstLoad(false);
+            }, 1500);
+          }
         }
-      }
-    );
+      );
+    } catch (err) {
+      console.error("handleGetMsgs: ", err);
+    }
   };
 
   return (
@@ -309,6 +314,7 @@ const ConversationBody = ({ openDetailTab }) => {
           </Flex>
         </Button>
       )}
+      <SendNextBox />
     </>
   );
 };

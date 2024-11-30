@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 const LeftSideBarMsg = ({ onSelectConversation }) => {
   const [searchValue, setSearchValue] = useState("");
   const { t } = useTranslation();
+
   return (
     <Flex
       gap={4}
@@ -49,7 +50,7 @@ const LeftSideBarMsg = ({ onSelectConversation }) => {
             <Input
               fontSize={{
                 base: "lg",
-                md:"md"
+                md: "md",
               }}
               placeholder={t("Searchforuser")}
               value={searchValue}

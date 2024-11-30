@@ -11,6 +11,7 @@ import {
   addNewMsg,
   defaulMessageInfo,
   updateConversations,
+  updateMsgAction,
 } from "../../../../../../store/MessageSlice";
 
 const GifMsgBox = ({ onClose }) => {
@@ -39,7 +40,7 @@ const GifMsgBox = ({ onClose }) => {
       const conversationInfo = data?.conversationInfo;
       const msgs = data?.msgs;
       dispatch(addNewMsg(msgs));
-      dispatch(updateConversations(conversationInfo));
+      dispatch(updateConversations([conversationInfo]));
     });
     onClose();
   };

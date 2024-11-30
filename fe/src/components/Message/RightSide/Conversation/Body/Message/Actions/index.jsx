@@ -11,7 +11,12 @@ import {
 } from "../../../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../../../Breads-Shared/Constants";
 import Socket from "../../../../../../../socket";
-import { selectMsg, updateMsg } from "../../../../../../../store/MessageSlice";
+import {
+  selectMsg,
+  updateMsg,
+  updateMsgAction,
+  updateSendNextBox,
+} from "../../../../../../../store/MessageSlice";
 import { getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
@@ -26,27 +31,43 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
   const [displayReactBox, setDisplayReactBox] = useState(false);
   const defaultEmoji = ["<3", ":D", ":O", ":(", ":slang"];
   const msgId = msg?._id;
+  const { SEND_NEXT, REPLY, RETRIEVE } = Constants.MSG_ACTION;
 
   const boxActions = [
     {
       onClick: () => {
         dispatch(selectMsg(msg));
+        dispatch(updateMsgAction(REPLY));
+        setOpenBox(false);
       },
       icon: <MdOutlineReply />,
-      name: Constants.MSG_ACTION.REPLY,
+      name: REPLY,
     },
     {
+      onClick: () => {
+        dispatch(
+          updateSendNextBox({
+            key: "open",
+            value: true,
+          })
+        );
+        dispatch(selectMsg(msg));
+        dispatch(updateMsgAction(SEND_NEXT));
+        setOpenBox(false);
+      },
       icon: <IoMdSend />,
-      name: Constants.MSG_ACTION.SEND_NEXT,
+      name: SEND_NEXT,
     },
   ];
   if (ownMsg) {
     boxActions.push({
       onClick: () => {
         handleRetriveMsg();
+        dispatch(updateMsgAction(RETRIEVE));
+        setOpenBox(false);
       },
       icon: <FaDeleteLeft />,
-      name: Constants.MSG_ACTION.RETRIEVE,
+      name: RETRIEVE,
     });
   }
 
@@ -117,43 +138,42 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
             />
           }
         />
-        {openBox && (
-          <Flex
-            position={"absolute"}
-            flexDir={"column"}
-            borderRadius={4}
-            border={"1px solid gray"}
-            p={2}
-            top={"calc(100% + 4px)"}
-            bg={useColorModeValue("gray.200", "#181818")}
-            left={ownMsg ? "" : "0"}
-            right={ownMsg ? "0" : ""}
-            zIndex={1000}
-            minWidth={"140px"}
-          >
-            {boxActions.map(({ icon, name, onClick }) => (
-              <Flex
-                key={name}
-                alignItems={"center"}
-                gap={3}
-                px={2}
-                py={1}
-                cursor={"pointer"}
-                borderRadius={4}
-                _hover={{
-                  bg: "gray",
-                }}
-                minWidth={"140px"}
-                onClick={() => {
-                  !!onClick && onClick();
-                }}
-              >
-                {icon}
-                <Text textTransform={"capitalize"}>{name}</Text>
-              </Flex>
-            ))}
-          </Flex>
-        )}
+        <Flex
+          display={openBox ? "flex" : "none"}
+          position={"absolute"}
+          flexDir={"column"}
+          borderRadius={4}
+          border={"1px solid gray"}
+          p={2}
+          top={"calc(100% + 4px)"}
+          bg={useColorModeValue("gray.200", "#181818")}
+          left={ownMsg ? "" : "0"}
+          right={ownMsg ? "0" : ""}
+          zIndex={1000}
+          minWidth={"140px"}
+        >
+          {boxActions.map(({ icon, name, onClick }) => (
+            <Flex
+              key={name}
+              alignItems={"center"}
+              gap={3}
+              px={2}
+              py={1}
+              cursor={"pointer"}
+              borderRadius={4}
+              _hover={{
+                bg: "gray",
+              }}
+              minWidth={"140px"}
+              onClick={() => {
+                !!onClick && onClick();
+              }}
+            >
+              {icon}
+              <Text textTransform={"capitalize"}>{name}</Text>
+            </Flex>
+          ))}
+        </Flex>
       </ClickOutsideComponent>
       <ClickOutsideComponent onClose={() => setDisplayReactBox(false)}>
         <IconWrapper

@@ -646,4 +646,75 @@ export default class MessageController {
       console.log("updateLastSeen: ", err);
     }
   }
+  static async sendNext(payload, cb, io) {
+    const { userId, msgInfo, conversationsInfo } = payload;
+    const listMsg = conversationsInfo.map((ele) => {
+      const newMsgInfo = {
+        ...msgInfo,
+        _id: ObjectId(),
+        sender: userId,
+        usersSeen: [],
+        reacts: [],
+        conversationId: ele._id,
+        parentMsg: msgInfo._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      return newMsgInfo;
+    });
+
+    await Message.insertMany(listMsg, { ordered: false });
+
+    for (let i = 0; i < conversationsInfo.length; i++) {
+      const recipientId = conversationsInfo[i].recipientId;
+      await Conversation.updateOne(
+        {
+          _id: conversationsInfo[i]._id,
+        },
+        {
+          lastMsgId: listMsg[i]._id,
+        }
+      );
+      await User.updateOne(
+        {
+          _id: ObjectId(recipientId),
+        },
+        {
+          hasNewMsg: true,
+        }
+      );
+    }
+
+    const listConversationInfo = [];
+    for (let index = 0; index < listMsg.length; index++) {
+      const msg = listMsg[index];
+      const recipientId = conversationsInfo[index].recipientId;
+      const conversationInfoToRecipient = await getConversationInfo({
+        conversationId: msg.conversationId,
+        userId: recipientId,
+      });
+      const conversationInfo = await getConversationInfo({
+        conversationId: msg.conversationId,
+        userId: userId,
+      });
+      listConversationInfo[index] = conversationInfo;
+      await sendToSpecificUser({
+        recipientId,
+        io,
+        path: Route.MESSAGE + MESSAGE_PATH.GET_MESSAGE,
+        payload: {
+          msgs: [msg],
+          conversationInfo: conversationInfoToRecipient,
+        },
+      });
+    }
+    !!cb &&
+      cb({
+        status: "success",
+        data: {
+          msgs: listMsg,
+          listConversationInfo: listConversationInfo,
+        },
+      });
+  }
 }
