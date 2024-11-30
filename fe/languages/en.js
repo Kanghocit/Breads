@@ -26,7 +26,7 @@ const enTranslations = {
   forYou: "For you",
   following: "Following",
   followback: "Follow back",
-  liked: "Liked",
+  Liked: "Liked",
   likes: "Likes",
   saved: "Saved",
   activity: "Activity",

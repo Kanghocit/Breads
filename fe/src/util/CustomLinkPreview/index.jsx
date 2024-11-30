@@ -5,6 +5,7 @@ import { updatePostInfo } from "../../store/PostSlice";
 import "./index.css";
 import { TiDeleteOutline } from "react-icons/ti";
 import PostConstants from "../PostConstants";
+import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
 
 const CustomLinkPreview = ({
   url = "",
@@ -18,18 +19,18 @@ const CustomLinkPreview = ({
   const [error, setError] = useState(false);
   const postAction = useSelector((state) => state.post.postAction);
 
+  const finalLink = url[url.length - 1];
+
   useEffect(() => {
     if (url) {
-      fetchLinkData(url);
-    } else if (postInfo?.links.length > 0) {
-      setData(postInfo.links[0]);
+      fetchLinkData(finalLink);
     }
-  }, [url, postInfo.links]);
+  }, [url]);
 
   const fetchLinkData = async (fetchUrl) => {
     try {
       const { data } = await axios.get(
-        `https://api.linkpreview.net?key=d8f12a27e6e5631b820f629ea7f570b8&q=${fetchUrl}`
+        `https://api.linkpreview.net?key=6e7b8bc11c79257b251760d26dad6645&q=${fetchUrl}`
       );
       setData(data);
       dispatch(
@@ -45,7 +46,10 @@ const CustomLinkPreview = ({
 
   const handleDeleteLink = () => {
     const remainingLinks = postInfo.links.filter((link) => link !== data);
-    setData(remainingLinks[0] || null);
+    // console.log("Postdata", postInfo.links);
+    // console.log("remainLink", remainingLinks);
+    setData(remainingLinks[0]);
+    // console.log("data", data);
     dispatch(
       updatePostInfo({
         ...postInfo,
@@ -53,7 +57,13 @@ const CustomLinkPreview = ({
       })
     );
   };
-  if (!data) return <div>Loading...</div>;
+  if (!data)
+    return (
+      <Box padding="6" boxShadow="lg" bg="#202020" maxW="sm" borderRadius="md">
+        <Skeleton height="200px" borderRadius="md" />
+        <SkeletonText my="4" noOfLines={1} spacing="4" skeletonHeight="3" />
+      </Box>
+    );
 
   return (
     <div
