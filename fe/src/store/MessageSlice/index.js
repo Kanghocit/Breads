@@ -30,6 +30,11 @@ export const initialMsgState = {
   currentPageMsg: 1,
   currentPageConversation: 1,
   limitConversation: 15,
+  sendNextBox: {
+    open: false,
+    conversations: [],
+  },
+  msgAction: "",
 };
 
 const msgSlice = createSlice({
@@ -86,6 +91,8 @@ const msgSlice = createSlice({
           lastMsg: lastMsg,
         };
       }
+      state.selectedMsg = null;
+      state.loadingUploadMsg = false;
     },
     updateLoadingUpload: (state, action) => {
       state.loadingUploadMsg = action.payload;
@@ -99,7 +106,7 @@ const msgSlice = createSlice({
         const msgInListIndex = state.messages[msgDateConvert]?.findIndex(
           (msg) => msg._id === msgUpdate._id
         );
-        if (msgInListIndex !== -1) {
+        if (!!msgInListIndex && msgInListIndex !== -1) {
           state.messages[msgDateConvert][msgInListIndex] = msgUpdate;
         }
       }
@@ -108,24 +115,33 @@ const msgSlice = createSlice({
       state.selectedMsg = action.payload;
     },
     updateConversations: (state, action) => {
-      const conversation = action.payload;
-      const converstaionIndex = state.conversations.findIndex(
-        ({ _id }) => _id === conversation?._id
-      );
-      if (converstaionIndex !== -1) {
-        state.conversations.splice(converstaionIndex, 1);
-      } else {
-        if (state.limitConversation - 1 === 0) {
-          state.limitConversation = 15;
-          state.currentPageConversation += 1;
+      const conversations = action.payload;
+      for (let conversation of conversations) {
+        const converstaionIndex = state.conversations.findIndex(
+          ({ _id }) => _id === conversation?._id
+        );
+        if (converstaionIndex !== -1) {
+          state.conversations.splice(converstaionIndex, 1);
         } else {
-          state.limitConversation -= 1;
+          if (state.limitConversation - 1 === 0) {
+            state.limitConversation = 15;
+            state.currentPageConversation += 1;
+          } else {
+            state.limitConversation -= 1;
+          }
         }
+        state.conversations.unshift(conversation);
       }
-      state.conversations.unshift(conversation);
     },
     updateCurrentPageConversation: (state, action) => {
       state.currentPageConversation = action.payload;
+    },
+    updateSendNextBox: (state, action) => {
+      const { key, value } = action.payload;
+      state.sendNextBox[key] = value;
+    },
+    updateMsgAction: (state, action) => {
+      state.msgAction = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -188,5 +204,7 @@ export const {
   selectMsg,
   updateConversations,
   updateCurrentPageConversation,
+  updateSendNextBox,
+  updateMsgAction,
 } = msgSlice.actions;
 export default msgSlice.reducer;

@@ -39,7 +39,7 @@ const ThemeModal = ({ setItemSelected }) => {
               value: theme,
             })
           );
-          dispatch(updateConversations(conversationInfo));
+          dispatch(updateConversations([conversationInfo]));
         }
       }
     );

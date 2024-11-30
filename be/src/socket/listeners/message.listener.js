@@ -26,6 +26,9 @@ const MessageListener = (socket, io) => {
   socket.on(Route.MESSAGE + MESSAGE_PATH.SEEN_MSGS, (payload, cb) => {
     MessageController.updateLastSeen(payload, cb, io);
   });
+  socket.on(Route.MESSAGE + MESSAGE_PATH.SEND_NEXT, (payload, cb) => {
+    MessageController.sendNext(payload, cb, io);
+  });
 };
 
 export default MessageListener;

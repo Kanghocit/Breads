@@ -12,12 +12,16 @@ import ConversationHeader from "./Header";
 import MessageInput from "./MessageBar";
 import RepliedMsgBar from "./MessageBar/RepliedMsgBar";
 import UploadDisplay from "./MessageBar/UploadDisplay";
+import { Constants } from "../../../../Breads-Shared/Constants";
 
 const ConversationScreen = ({ openDetailTab, setOpenDetailTab, onBack }) => {
-  const { msgInfo, selectedMsg } = useSelector((state) => state.message);
+  const { msgInfo, selectedMsg, msgAction } = useSelector(
+    (state) => state.message
+  );
   const { files, media } = msgInfo;
   const footerOffset = useBreakpointValue({ base: 75, md: 24 });
   // const footerOffset = 24
+
   return (
     <Flex
       flex={1}
@@ -35,7 +39,9 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab, onBack }) => {
       />
       <Divider />
       <ConversationBody openDetailTab={openDetailTab} />
-      {selectedMsg?._id && <RepliedMsgBar />}
+      {selectedMsg?._id && msgAction === Constants.MSG_ACTION.REPLY && (
+        <RepliedMsgBar />
+      )}
       {((!!files && files?.length !== 0) || media?.length !== 0) && (
         <UploadDisplay />
       )}

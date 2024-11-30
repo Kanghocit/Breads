@@ -58,6 +58,11 @@ const messageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    parentMsg: {
+      type: ObjectId,
+      ref: "Message",
+      required: false,
+    },
     type: {
       type: String,
       enum: msgType,

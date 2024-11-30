@@ -22,6 +22,7 @@ import IconWrapper from "./IconWrapper";
 import MediaUpload from "./Media";
 import MessageIconBtn from "./MessageIconBtn";
 import { useTranslation } from "react-i18next";
+import { Constants } from "../../../../../Breads-Shared/Constants";
 
 export const ACTIONS = {
   FILES: "Files",
@@ -42,8 +43,13 @@ export const iconStyle = {
 const MessageInput = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { msgInfo, loadingUploadMsg, selectedConversation, selectedMsg } =
-    useSelector((state) => state.message);
+  const {
+    msgInfo,
+    loadingUploadMsg,
+    selectedConversation,
+    selectedMsg,
+    msgAction,
+  } = useSelector((state) => state.message);
   const participant = selectedConversation?.participant;
   const files = msgInfo.files;
   const media = msgInfo.media;
@@ -133,7 +139,7 @@ const MessageInput = () => {
     if (sendIcon) {
       payload.content = sendIcon;
     }
-    if (selectedMsg?._id) {
+    if (selectedMsg?._id && msgAction === Constants.MSG_ACTION.REPLY) {
       payload.respondTo = selectedMsg?._id;
     }
     const socket = Socket.getInstant();
@@ -148,8 +154,7 @@ const MessageInput = () => {
       dispatch(addNewMsg(msgs));
       dispatch(updateLoadingUpload(false));
       dispatch(updateMsgInfo(defaulMessageInfo));
-      dispatch(selectMsg(null));
-      dispatch(updateConversations(conversationInfo));
+      dispatch(updateConversations([conversationInfo]));
       setContent("");
     });
   };
