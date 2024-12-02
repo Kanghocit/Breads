@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import Activity from "../components/Activity";
 import ContainerLayout from "../components/MainBoxLayout";
 import { getNotificattions } from "../store/NotificationSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
-import Activity from "../components/Activity";
 
 const ActivityPage = () => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("UserInfo",userInfo)
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   const notifications = useSelector(
     (state) => state.notification.notifications
@@ -35,7 +34,7 @@ const ActivityPage = () => {
   return (
     <>
       <ContainerLayout>
-        <Activity currentPage={displayPageData}/>
+        <Activity currentPage={displayPageData} />
       </ContainerLayout>
     </>
   );
