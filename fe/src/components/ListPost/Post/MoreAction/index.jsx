@@ -35,9 +35,7 @@ const PostMoreActionBox = ({
   const showToast = useShowToast();
   const { copyURL } = useCopyLink();
   const { t } = useTranslation();
-  const savedBefore = useMemo(() => {
-    return userInfo?.collection?.includes(postId);
-  }, [userInfo._id]);
+  const savedBefore = userInfo?.collection?.includes(postId);
 
   const handleSave = () => {
     const payload = {
@@ -72,7 +70,7 @@ const PostMoreActionBox = ({
 
   const actions = [
     {
-      name: savedBefore ? t('unsave') : t('save'),
+      name: savedBefore ? t("unsave") : t("save"),
       icon: savedBefore ? <GoBookmarkSlash /> : <CiBookmark />,
       onClick: handleSave,
     },
@@ -85,7 +83,7 @@ const PostMoreActionBox = ({
     //   icon: <GoReport />,
     // },
     {
-      name: t('copylink'),
+      name: t("copylink"),
       icon: <IoIosLink />,
       onClick: () => {
         copyURL(post);
@@ -94,7 +92,7 @@ const PostMoreActionBox = ({
     ...(userInfo._id === post.authorId
       ? [
           {
-            name: t('delete'),
+            name: t("delete"),
             icon: <MdDelete />,
             onClick: () => {
               setPopupCancelInfo({
@@ -116,7 +114,7 @@ const PostMoreActionBox = ({
             },
           },
           {
-            name: t('update'),
+            name: t("update"),
             icon: <MdEdit />,
             onClick: () => {
               dispatch(updatePostAction(PostConstants.ACTIONS.EDIT));

@@ -44,9 +44,7 @@ export const useTabItems = () => {
   };
 };
 
-
-const DetailConversationTab = ({openDetailTab,
-  setOpenDetailTab,}) => {
+const DetailConversationTab = ({ openDetailTab, setOpenDetailTab }) => {
   const { t } = useTranslation();
   const { SEARCH, THEME, EMOJI, MEDIA, FILES, LINKS } = useTabItems();
   const navigate = useNavigate();
@@ -158,8 +156,7 @@ const DetailConversationTab = ({openDetailTab,
             gap={3}
           >
             {isMobile && (
-              <Flex width={"100%"} justifyContent={"start"}
-              mt={2}>
+              <Flex width={"100%"} justifyContent={"start"} mt={2}>
                 <IoIosArrowBack
                   onClick={() => {
                     setOpenDetailTab(!openDetailTab);
@@ -191,7 +188,7 @@ const DetailConversationTab = ({openDetailTab,
               ))}
             </Flex>
           </Flex>
-          <Accordion defaultIndex={isMobile ? [0,1] : [0]} allowMultiple>
+          <Accordion defaultIndex={isMobile ? [0, 1] : [0]} allowMultiple>
             {Object.keys(menu).map((itemName) => {
               const subItems = menu[itemName];
               return (
@@ -204,7 +201,7 @@ const DetailConversationTab = ({openDetailTab,
                       <AccordionIcon />
                     </AccordionButton>
                   </h2>
-                  <AccordionPanel py={isMobile ? 0: 3} px={4}>
+                  <AccordionPanel py={isMobile ? 0 : 1} px={4}>
                     {subItems.map(({ name, icon }) => (
                       <Flex
                         key={name}
