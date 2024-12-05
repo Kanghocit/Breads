@@ -21,7 +21,7 @@ import MsgMediaLayout from "./MediaLayout";
 import MessageReactsBox from "./ReactsBox";
 import RepliedMsg from "./RepliedMsg";
 
-const Message = ({ msg, isLastSeen = false }) => {
+const Message = ({ msg, isLastSeen = false, displayUserAva = false }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const selectedConversation = useSelector(
     (state) => state.message.selectedConversation
@@ -133,12 +133,13 @@ const Message = ({ msg, isLastSeen = false }) => {
           />
         )}
         {!ownMessage && (
-          <Avatar
-            src={participant?.avatar}
-            w={"32px"}
-            h={"32px"}
-            mr={ownMessage ? 0 : 2}
-          />
+          <>
+            {displayUserAva ? (
+              <Avatar src={participant?.avatar} w={"32px"} h={"32px"} mr={2} />
+            ) : (
+              <Container w={"32px"} h={"32px"} mr={2} />
+            )}
+          </>
         )}
         <Flex
           flexDir={"column"}
@@ -229,7 +230,7 @@ const Message = ({ msg, isLastSeen = false }) => {
           {ownMessage ? "You " : participant?.username + " "}
           {msg?.content}
         </Text>
-        {isTheme && (
+        {isTheme && bgImg && (
           <Image
             src={bgImg}
             width={"20px"}

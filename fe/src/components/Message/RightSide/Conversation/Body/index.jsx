@@ -259,7 +259,7 @@ const ConversationBody = ({ openDetailTab }) => {
             }}
             data={Object.keys(messages)}
             cpnFc={(date) => {
-              const msgs = messages[date];
+              const msgs = JSON.parse(JSON.stringify(messages[date]));
               const brStyle = {
                 height: "2px",
                 backgroundColor: user1Message?.backgroundColor,
@@ -270,6 +270,22 @@ const ConversationBody = ({ openDetailTab }) => {
                 msg?.usersSeen?.includes(participant?._id)
               );
               const lastUserSeen = participantSeen[participantSeen?.length - 1];
+              const participantMsgsIndex = [];
+              msgs.forEach((msg, index) => {
+                if (msg?.sender !== userInfo?._id) {
+                  participantMsgsIndex.push(index);
+                }
+              });
+              const displayAvaIndex = [];
+              for (let i = 0; i < participantMsgsIndex.length; i++) {
+                if (
+                  participantMsgsIndex[i - 1]
+                    ? participantMsgsIndex[i - 1] != participantMsgsIndex[i] - 1
+                    : true
+                ) {
+                  displayAvaIndex.push(participantMsgsIndex[i]);
+                }
+              }
               return (
                 <Fragment key={date}>
                   <Flex alignItems={"center"} justifyContent={"center"}>
@@ -279,10 +295,11 @@ const ConversationBody = ({ openDetailTab }) => {
                     </Text>
                     <div style={brStyle} />
                   </Flex>
-                  {msgs.map((msg) => (
+                  {msgs.map((msg, index) => (
                     <Message
                       msg={msg}
                       isLastSeen={lastUserSeen?._id === msg?._id}
+                      displayUserAva={displayAvaIndex.includes(index)}
                     />
                   ))}
                 </Fragment>
