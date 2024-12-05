@@ -103,8 +103,6 @@ const Login = () => {
     if (fieldName === "password") {
       if (!password) {
         newErrors.password = "Mật khẩu là bắt buộc.";
-      } else if (password.length < 6) {
-        newErrors.password = "Mật khẩu phải không đúng.";
       } else {
         delete newErrors.password;
       }
