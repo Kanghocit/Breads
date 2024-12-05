@@ -112,10 +112,6 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
             style={{
               width: inMsgTab ? "100%" : "",
             }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
           >
             {fileDisplay()}
           </a>
@@ -128,10 +124,6 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
             target="_self"
             style={{
               width: inMsgTab ? "100%" : "",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
             }}
           >
             {fileDisplay()}
