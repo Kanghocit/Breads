@@ -73,7 +73,19 @@ const Login = () => {
       console.error("handleGetAllAcc: ", err);
     }
   };
+  const validateAllFields = () => {
+    const newErrors = {};
+    const { email, password } = inputs;
 
+    if (!email) {
+      newErrors.email = "Email là bắt buộc.";
+    }
+    if (!password) {
+      newErrors.password = "Mật khẩu là bắt buộc.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const validateField = (fieldName) => {
     const newErrors = { ...errors };
     const { email, password } = inputs;
@@ -92,11 +104,7 @@ const Login = () => {
       if (!password) {
         newErrors.password = "Mật khẩu là bắt buộc.";
       } else if (password.length < 6) {
-        newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
-      } else if (!/[A-Z]/.test(password)) {
-        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái hoa.";
-      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+        newErrors.password = "Mật khẩu phải không đúng.";
       } else {
         delete newErrors.password;
       }
@@ -106,6 +114,7 @@ const Login = () => {
   };
 
   const handleLogin = async (loginAsAdmin) => {
+    if (!validateAllFields()) return;
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
@@ -114,7 +123,6 @@ const Login = () => {
       return;
     }
     if (!validateField("email") || !validateField("password")) return;
-
     try {
       await dispatch(login(payload)).unwrap();
       showToast("Thành công", "Đăng nhập thành công", "success");
