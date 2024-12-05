@@ -26,7 +26,7 @@ const vnTranslations = {
   forYou: "Dành cho bạn",
   following: "Đang theo dõi",
   followback: "Theo dõi lại",
-  liked: "Đã thích",
+  Liked: "Đã thích",
   likes: "Thích",
   saved: "Đã lưu",
   activity: "Hoạt động",

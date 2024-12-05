@@ -70,8 +70,15 @@ const TextArea = ({ text, setText, tagUsers = false }) => {
         }
       }
     }
-    const extractedUrls = value.match(urlRegex) || [];
-    setUrls(extractedUrls);
+
+    let extractedUrls = value.match(urlRegex) || [];
+    // Loại bỏ các URL trùng lặp
+    extractedUrls = [...new Set(extractedUrls)];
+    // Cập nhật nếu khác với danh sách URL hiện tại
+    if (JSON.stringify(extractedUrls) !== JSON.stringify(urls)) {
+      setUrls(extractedUrls);
+    }
+
     setText(value);
   };
 

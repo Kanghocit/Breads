@@ -24,7 +24,7 @@ const Header = () => {
   const getBoxItems = () => {
     switch (currentPage) {
       case PageConstant.HOME:
-        return [t("forYou"), t("following"), t("liked"), t("saved")];
+        return [t("forYou"), t("following"), t("Liked"), t("saved")];
       case PageConstant.ACTIVITY:
         return [
           t("all"),
@@ -45,7 +45,7 @@ const Header = () => {
       [PageConstant.FOR_YOU]: t("forYou"),
       [PageConstant.FOLLOWING]: t("following"),
       [PageConstant.FOLLOWS]: t("follows"),
-      [PageConstant.LIKED]: t("liked"),
+      [PageConstant.LIKED]: t("Liked"),
       [PageConstant.LIKES]: t("likes"),
       [PageConstant.REPOSTS]: t("reposts"),
       [PageConstant.REPLIES]: t("replies"),
@@ -64,7 +64,7 @@ const Header = () => {
         } else if (displayPageData === PageConstant.FOLLOWING) {
           return t("following");
         } else if (displayPageData === PageConstant.LIKED) {
-          return t("liked");
+          return t("Liked");
         } else if (displayPageData === PageConstant.SAVED) {
           return t("saved");
         }
@@ -110,7 +110,7 @@ const Header = () => {
       const pageMap = {
         [t("forYou")]: PageConstant.FOR_YOU,
         [t("following")]: PageConstant.FOLLOWING,
-        [t("liked")]: PageConstant.LIKED,
+        [t("Liked")]: PageConstant.LIKED,
         [t("saved")]: PageConstant.SAVED,
       };
       const targetPage = pageMap[item] || item;
