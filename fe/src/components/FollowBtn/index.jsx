@@ -11,8 +11,10 @@ import { followUser } from "../../store/UserSlice/asyncThunk";
 import UnFollowPopup from "./UnfollowPopup";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
+  const { t } = useTranslation();
+
   if (!userInfo?._id) {
-    showToast("Error", "Please login to follow", "error");
+    showToast("Error", t("logintofollow"), "error");
     return;
   }
   dispatch(

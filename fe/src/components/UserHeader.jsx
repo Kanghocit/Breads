@@ -58,7 +58,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
   const copyURL = () => {
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
-      showToast("", "Profile link copied", "success");
+      showToast("", t("Profilelinkcopied"), "success");
     });
   };
   const hoverColor = useColorModeValue("cbg.light", "cbg.dark");

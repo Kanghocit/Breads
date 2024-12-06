@@ -31,6 +31,7 @@ import useShowToast from "../hooks/useShowToast";
 import { login } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { genRandomCode } from "../util/index";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const showToast = useShowToast();
   const codeSend = useRef(genRandomCode());
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (countClick >= 5) {
@@ -117,18 +119,18 @@ const Login = () => {
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
       dispatch(login(payload));
-      showToast("Thành công", "Đăng nhập bằng Admin thành công", "success");
+      showToast(t("success"), "Đăng nhập bằng Admin thành công", t("success"));
       return;
     }
     if (!validateField("email") || !validateField("password")) return;
     try {
       await dispatch(login(payload)).unwrap();
-      showToast("Thành công", "Đăng nhập thành công", "success");
+      showToast(t("success"), t("loginsuccess"), t("success"));
     } catch (error) {
       showToast(
         "Không thành công!",
-        error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
-        "error"
+        error?.error || t("checkagain"),
+        t("error")
       );
     }
   };
@@ -144,7 +146,7 @@ const Login = () => {
           },
         });
         if (isValidAccount) {
-          showToast("", "Code send", "success");
+          showToast("", t("codesend"), t("success"));
           console.log("code: ", codeSend.current);
           const codeSendDecoded = encodedString(codeSend.current);
           try {
@@ -165,10 +167,10 @@ const Login = () => {
             console.error(err);
           }
         } else {
-          showToast("", "Invalid account", "error");
+          showToast("", t("Invalidaccount"), "error");
         }
       } else {
-        showToast("", "Invalid email", "error");
+        showToast("", t("Invalidemail"), "error");
       }
     } catch (err) {
       console.error(err);
@@ -187,7 +189,7 @@ const Login = () => {
         });
         navigate(`/reset-pw/${userId}/${code}`);
       } else {
-        showToast("", "Wrong code", "error");
+        showToast("", t("wrongcode"), "error");
       }
     } catch (err) {
       console.error(err);
