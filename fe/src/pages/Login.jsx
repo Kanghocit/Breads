@@ -21,6 +21,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Route, USER_PATH, UTIL_PATH } from "../Breads-Shared/APIConfig";
@@ -33,6 +34,7 @@ import { changePage } from "../store/UtilSlice/asyncThunk";
 import { genRandomCode } from "../util/index";
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -73,6 +75,7 @@ const Login = () => {
       console.error("handleGetAllAcc: ", err);
     }
   };
+
   const validateAllFields = () => {
     const newErrors = {};
     const { email, password } = inputs;
@@ -86,15 +89,16 @@ const Login = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const validateField = (fieldName) => {
     const newErrors = { ...errors };
     const { email, password } = inputs;
 
     if (fieldName === "email") {
       if (!email) {
-        newErrors.email = "Email là bắt buộc.";
+        newErrors.email = t("emailRequired");
       } else if (!/\S+@\S+\.\S+/.test(email)) {
-        newErrors.email = "Email không hợp lệ.";
+        newErrors.email = t("invalidEmail");
       } else {
         delete newErrors.email;
       }
@@ -102,9 +106,9 @@ const Login = () => {
 
     if (fieldName === "password") {
       if (!password) {
-        newErrors.password = "Mật khẩu là bắt buộc.";
+        newErrors.password = t("passwordRequired");
       } else if (password.length < 6) {
-        newErrors.password = "Mật khẩu phải không đúng.";
+        newErrors.password = t("incorrectPassword");
       } else {
         delete newErrors.password;
       }
@@ -114,23 +118,23 @@ const Login = () => {
   };
 
   const handleLogin = async (loginAsAdmin) => {
-    if (!validateAllFields()) return;
+    if (!validateAllFields() && !loginAsAdmin) return;
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
       dispatch(login(payload));
-      showToast("Thành công", "Đăng nhập bằng Admin thành công", "success");
+      showToast(t("success"), "Đăng nhập bằng Admin thành công", t("success"));
       return;
     }
     if (!validateField("email") || !validateField("password")) return;
     try {
       await dispatch(login(payload)).unwrap();
-      showToast("Thành công", "Đăng nhập thành công", "success");
+      showToast(t("success"), t("loginsuccess"), t("success"));
     } catch (error) {
       showToast(
         "Không thành công!",
-        error?.error || "Vui lòng xem lại email hoặc mật khẩu!!",
-        "error"
+        error?.error || t("checkagain"),
+        t("error")
       );
     }
   };
@@ -146,7 +150,7 @@ const Login = () => {
           },
         });
         if (isValidAccount) {
-          showToast("", "Code send", "success");
+          showToast("", t("codesend"), t("success"));
           console.log("code: ", codeSend.current);
           const codeSendDecoded = encodedString(codeSend.current);
           try {
@@ -158,19 +162,19 @@ const Login = () => {
               url: `${window.location.origin}/reset-pw/userId/${codeSendDecoded}`,
             };
             localStorage.setItem("encodedCode", codeSendDecoded);
+            setOpenCodeBox(true);
             await POST({
               path: Route.UTIL + UTIL_PATH.SEND_FORGOT_PW_MAIL,
               payload: options,
             });
-            setOpenCodeBox(true);
           } catch (err) {
             console.error(err);
           }
         } else {
-          showToast("", "Invalid account", "error");
+          showToast("", t("Invalidaccount"), "error");
         }
       } else {
-        showToast("", "Invalid email", "error");
+        showToast("", t("Invalidemail"), "error");
       }
     } catch (err) {
       console.error(err);
@@ -189,7 +193,7 @@ const Login = () => {
         });
         navigate(`/reset-pw/${userId}/${code}`);
       } else {
-        showToast("", "Wrong code", "error");
+        showToast("", t("wrongcode"), "error");
       }
     } catch (err) {
       console.error(err);
@@ -272,7 +276,7 @@ const Login = () => {
             textAlign={"center"}
             onClick={() => setCountClick((prev) => prev + 1)}
           >
-            Đăng Nhập
+            {t("SignIn")}
           </Heading>
         </Stack>
         <Box
@@ -300,7 +304,7 @@ const Login = () => {
               <FormErrorMessage>{errors.email}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired isInvalid={!!errors.password}>
-              <FormLabel>Mật Khẩu</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -332,7 +336,7 @@ const Login = () => {
                 _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={() => handleLogin()}
               >
-                Đăng Nhập
+                {t("SignIn")}
               </Button>
             </Stack>
             <Stack pt={6}>
@@ -343,11 +347,11 @@ const Login = () => {
                     handleForgotPassword();
                   }}
                 >
-                  Forgot password
+                  {t("forgotPW")}
                 </Link>
               </Text>
               <Text align={"center"}>
-                Bạn chưa có tài khoản?{" "}
+                {t("dontHaveAccount")}{" "}
                 <Link
                   color={"blue.400"}
                   onClick={() =>
@@ -359,7 +363,7 @@ const Login = () => {
                     )
                   }
                 >
-                  Đăng Ký
+                  {t("SignUp")}
                 </Link>
               </Text>
             </Stack>
@@ -377,18 +381,16 @@ const Login = () => {
           >
             <Flex flexDir={"column"}>
               <Text textAlign={"center"} fontWeight={600} fontSize={18} py={3}>
-                Forgot code validation
+                {t("forgotCode")}
               </Text>
-              <Text fontSize={14}>
-                Type the code sent to your email to change your password
-              </Text>
+              <Text fontSize={14}>{t("forgotCodeDes")}</Text>
               <Input
                 placeholder="Type your code here ..."
                 my={4}
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
               />
-              <Button onClick={() => handleSubmitCode()}>Submit</Button>
+              <Button onClick={() => handleSubmitCode()}>{t("submit")}</Button>
             </Flex>
           </ModalBody>
         </ModalContent>

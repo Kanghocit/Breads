@@ -44,10 +44,10 @@ const PostMoreActionBox = ({
     };
     if (savedBefore) {
       dispatch(removePostFromCollection(payload));
-      showToast("", "Unsaved", "success");
+      showToast("", t("unsaved"), "success");
     } else {
       dispatch(addPostToCollection(payload));
-      showToast("", "Saved", "success");
+      showToast("", t("saved"), "success");
     }
   };
 
@@ -55,7 +55,7 @@ const PostMoreActionBox = ({
     try {
       dispatch(deletePost({ postId: postId }));
       closePopupCancel();
-      showToast("", "Delete success", "success");
+      showToast("", t("deletesuccess"), "success");
       if (
         postId === postSelected?._id &&
         currentPage === PageConstant.POST_DETAIL
@@ -97,10 +97,10 @@ const PostMoreActionBox = ({
             onClick: () => {
               setPopupCancelInfo({
                 open: true,
-                title: "Delete Bread",
-                content: `Do you want to delete this bread ?`,
-                leftBtnText: "Cancel",
-                rightBtnText: "Delete",
+                title: t("delete") + " Bread",
+                content: t("wannadelete"),
+                leftBtnText: t("updateProfile.cancel"),
+                rightBtnText: t("updateProfile.delete"),
                 leftBtnAction: () => {
                   closePopupCancel();
                 },

@@ -8,6 +8,7 @@ import { fileTypes } from "../../../../../../Breads-Shared/Constants";
 import useShowToast from "../../../../../../hooks/useShowToast";
 import { updateMsgInfo } from "../../../../../../store/MessageSlice";
 import { updatePostInfo } from "../../../../../../store/PostSlice";
+import { useTranslation } from "react-i18next";
 
 const FileUpload = ({ setFilesData, isPost = false }) => {
   const dispatch = useDispatch();
@@ -15,12 +16,13 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
   const postInfo = useSelector((state) => state.post.postInfo);
   const showToast = useShowToast();
   const fileRef = useRef();
+  const { t } = useTranslation();
 
   const handleFileChange = (e) => {
     const selectedFiles = Object.values(e.target.files);
 
     if (selectedFiles?.length > 5) {
-      showToast("", "You can only upload a maximum of 5 files", "info");
+      showToast("", t("uploadmax"), "info");
       return;
     }
     if (
@@ -61,7 +63,7 @@ const FileUpload = ({ setFilesData, isPost = false }) => {
         );
       }
     } else {
-      showToast("", "Invalid file's type", "error");
+      showToast("", t("invalidtype"), "error");
     }
   };
 

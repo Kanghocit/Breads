@@ -2,23 +2,26 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   Input,
   InputGroup,
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { decodeString } from "../Breads-Shared/util";
+import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
 import useShowToast from "../hooks/useShowToast";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import ErrorPage from "./ErrorPage";
-import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
 
 const ResetPWPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const showToast = useShowToast();
@@ -31,6 +34,7 @@ const ResetPWPage = () => {
     confirmPassword: "",
     passwordsMatch: true,
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     dispatch(changePage({ nextPage: PageConstant.RESET_PW }));
@@ -61,6 +65,34 @@ const ResetPWPage = () => {
     }
   };
 
+  const validateInputs = () => {
+    const validationErrors = {};
+    if (!passwordData.password) {
+      validationErrors.password = t("passwordRequired2");
+    } else if (passwordData.password.length <= 6) {
+      validationErrors.password = t("minPassWarning");
+    }
+    if (
+      passwordData.confirmPassword !== passwordData.password &&
+      !!passwordData.password.trim()
+    ) {
+      validationErrors.confirmPW = t("confirmWarning");
+    }
+    return validationErrors;
+  };
+
+  const handleBlur = (field) => {
+    const validate = validateInputs();
+    let newErrors = { ...errors };
+    if (field === "password") {
+      newErrors.password = validate.password || "";
+    }
+    if (field == "confirmPassword") {
+      newErrors.confirmPW = validate.confirmPW || "";
+    }
+    setErrors(newErrors);
+  };
+
   return (
     <>
       {isTrueCode ? (
@@ -78,18 +110,22 @@ const ResetPWPage = () => {
               fontSize={24}
               mb={8}
             >
-              Change Password
+              {t("changePW")}
             </Text>
             <Text
               sx={{ marginTop: "10px", fontSize: "15px", marginLeft: "8px" }}
             >
-              New Password
+              {t("newPW")}
             </Text>
-            <FormControl sx={{ m: 1, width: "400px" }} variant="outlined">
+            <FormControl
+              sx={{ m: 1, width: "400px" }}
+              variant="outlined"
+              isInvalid={!!errors.password}
+            >
               <InputGroup size="lg">
                 <Input
                   fontSize={16}
-                  placeholder="Please enter password"
+                  placeholder={t("passwordRequired2")}
                   type={showPassword ? "text" : "password"}
                   value={passwordData.password}
                   onChange={(e) =>
@@ -98,6 +134,7 @@ const ResetPWPage = () => {
                       password: e.target.value,
                     })
                   }
+                  onBlur={() => handleBlur("password")}
                 />
                 <InputRightElement width="4.5rem">
                   <Button
@@ -109,17 +146,22 @@ const ResetPWPage = () => {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
             <Text
               sx={{ marginTop: "24px", fontSize: "15px", marginLeft: "8px" }}
             >
-              Confirm New Password
+              {t("confirmPW")}
             </Text>
-            <FormControl sx={{ m: 1, width: "400px" }} variant="outlined">
+            <FormControl
+              sx={{ m: 1, width: "400px" }}
+              variant="outlined"
+              isInvalid={!!errors.confirmPW}
+            >
               <InputGroup size={"lg"}>
                 <Input
                   fontSize={16}
-                  placeholder="Please enter confirm password"
+                  placeholder={t("confirmPWRequired")}
                   type={showPassword ? "text" : "password"}
                   value={passwordData.confirmPassword}
                   onChange={(e) =>
@@ -128,6 +170,7 @@ const ResetPWPage = () => {
                       confirmPassword: e.target.value,
                     })
                   }
+                  onBlur={() => handleBlur("confirmPassword")}
                 />
                 <InputRightElement width="4.5rem">
                   <Button
@@ -139,14 +182,10 @@ const ResetPWPage = () => {
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{errors.confirmPW}</FormErrorMessage>
             </FormControl>
-            {!passwordData.passwordsMatch && (
-              <div className="confirmPasswordWarning">
-                Confirm password needs to be the same as password
-              </div>
-            )}
             <Flex justifyContent={"end"} mt={4}>
-              <Button onClick={handleSubmit}>Submit</Button>
+              <Button onClick={handleSubmit}>{t("submit")}</Button>
             </Flex>
           </div>
         </Flex>
