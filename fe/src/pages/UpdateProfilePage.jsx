@@ -25,7 +25,7 @@ import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import { convertToBase64 } from "../util/index";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const POPUP_TYPE = {
   LINKS: "links",
@@ -64,7 +64,7 @@ const UpdateProfilePage = () => {
 
   useEffect(() => {
     if (updating && userInfo?._id) {
-      showToast("Success", "Profile updated successfully", "success");
+      showToast("Success", t("updateProfile"), "success");
       dispatch(changePage({ nextPage: PageConstant.USER }));
       navigate(`/users/${userInfo._id}`);
       setUpdating(false);
@@ -80,11 +80,7 @@ const UpdateProfilePage = () => {
     }
     const needUpdate = compareUpdateValue(payload);
     if (!needUpdate || updating) {
-      showToast(
-        "",
-        !needUpdate ? "There is nothing new to update" : "Loading",
-        "info"
-      );
+      showToast("", !needUpdate ? t("nothingtoupdate") : "Loading", "info");
       return;
     }
     for (let key of Object.keys(payload)) {
@@ -195,7 +191,7 @@ const UpdateProfilePage = () => {
             p={6}
           >
             <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-            {t("updateProfile.title")}
+              {t("updateProfile.title")}
             </Heading>
             <FormControl id="userName">
               <Stack direction={["column", "row"]} spacing={6}>
@@ -209,7 +205,7 @@ const UpdateProfilePage = () => {
                 </Center>
                 <Center w="full">
                   <Button w="full" onClick={() => fileRef.current.click()}>
-                  {t("updateProfile.changeAvatar")}
+                    {t("updateProfile.changeAvatar")}
                   </Button>
                   <Input
                     type="file"
@@ -314,7 +310,7 @@ const UpdateProfilePage = () => {
                   navigate(-1);
                 }}
               >
-             {t("updateProfile.cancel")}
+                {t("updateProfile.cancel")}
               </Button>
               <Button
                 bg={"green.400"}
@@ -326,9 +322,9 @@ const UpdateProfilePage = () => {
                 type="submit"
                 isLoading={updating}
                 disabled={updating}
-                mb={["36px","36px",0]}
+                mb={["36px", "36px", 0]}
               >
-                 {t("updateProfile.confirm")}
+                {t("updateProfile.confirm")}
               </Button>
             </Stack>
           </Stack>

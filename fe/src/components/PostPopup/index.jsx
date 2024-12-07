@@ -205,12 +205,12 @@ const PostPopup = () => {
     if (media.length || survey.length || content.length) {
       setPopupCancelInfo({
         open: true,
-        title: isEditing ? "Stop Editing" : "Stop Creating",
-        content: `Do you want to stop ${
-          isEditing ? "editing" : "creating"
-        } this bread?`,
-        leftBtnText: "Cancel",
-        rightBtnText: "Discard",
+        title: isEditing ? t("stopediting") : t("stopcreating"),
+        content: t("wannastop") `${
+          isEditing ? t("editing") : t("creating")
+        }` + t("this bread") + `?`,
+        leftBtnText: t("updateProfile.cancel"),
+        rightBtnText: t("Discard"),
         leftBtnAction: closePopupCancel,
         rightBtnAction: () => {
           dispatch(updatePostAction());
@@ -232,7 +232,7 @@ const PostPopup = () => {
     if (value.length <= 600) {
       setContent(replaceEmojis(value));
     } else {
-      showToast("", "Maximum characters for a post", "error");
+      showToast("", t("maxforpost"), "error");
     }
   };
 

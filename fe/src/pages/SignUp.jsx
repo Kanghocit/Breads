@@ -82,7 +82,7 @@ const Signup = () => {
       const result = await dispatch(signUp(inputs));
 
       if (result?.meta?.requestStatus === "fulfilled") {
-        showToast("Success", "Đăng ký thành công", "success");
+        showToast("Success", t("signupsuccess"), "success");
         dispatch(
           changePage({
             nextPage: PageConstant.LOGIN,
@@ -94,15 +94,15 @@ const Signup = () => {
 
         // Set specific errors based on errorType
         if (errorType === "USERNAME_EXISTS") {
-          showToast("Error", "Tên người dùng đã tồn tại!", "error");
+          showToast("Error", t("usernameexsists"), "error");
         }
         if (errorType === "EMAIL_EXISTS") {
-          showToast("Error", "Email đã tồn tại!", "error");
+          showToast("Error", t("emailexsists"), "error");
         }
       }
     } catch (error) {
       console.error("Error in handleSignup:", error.message);
-      showToast("Error", error.message || "Đăng ký không thành công!", "error");
+      showToast("Error", error.message || t("signupfail"), "error");
     }
   };
 

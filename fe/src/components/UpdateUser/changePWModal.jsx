@@ -31,9 +31,10 @@ export const handleUpdatePW = async ({
   userId,
   forgotPW = false,
 }) => {
+  const { t } = useTranslation();
   try {
     if (newPWValue.trim().length < 6) {
-      showToast("", "Password must have at least 6 characters");
+      showToast("", t("minPassWarning"));
       return;
     }
     await PUT({
