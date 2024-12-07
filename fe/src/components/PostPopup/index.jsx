@@ -93,7 +93,7 @@ const PostPopup = () => {
 
     if (content.length > MAX_CONTENT_LENGTH) {
       checkResult = false;
-      msg = "Maximum characters for a post";
+      msg = t("maxcharacter");
     }
 
     if (postInfo.survey.length) {
@@ -105,14 +105,14 @@ const PostPopup = () => {
 
       if ([...setValue].length < postSurvey.length) {
         checkResult = false;
-        msg = "Each option should be a unique value";
+        msg = t("uniquevalue");
       }
       if (
         !postInfo.survey[0].value.trim() ||
         !postInfo.survey[1].value.trim()
       ) {
         checkResult = false;
-        msg = "Option can't not be empty";
+        msg = t("optnotempty");
       }
     }
     if (
@@ -122,7 +122,7 @@ const PostPopup = () => {
       filesData?.length === 0
     ) {
       checkResult = false;
-      msg = "Can't upload new bread with empty payload";
+      msg = t("emptypayload");
     }
 
     return { checkCondition: checkResult, msg };

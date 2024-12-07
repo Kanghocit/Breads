@@ -119,10 +119,10 @@ const vnTranslations = {
   delete: "Xóa bài viết",
   update: "Cập nhật ",
   Profilelinkcopied: "Đã sao chép liên kết trang cá nhân",
-  logintofollow:"Đăng nhập để theo dõi",
+  logintofollow: "Đăng nhập để theo dõi",
   deletesuccess: "Xóa thành công",
   wannadelete: "Bạn có muốn xóa bài đăng này không?",
-  uploadmax : "Bạn có thể đang tối đa 5 files",
+  uploadmax: "Bạn có thể đang tối đa 5 files",
   invalidtype: "Lỗi kiểu files",
   maxforpost: "Đạt số kí tự tối đa cho bài đăng",
   stopediting: "Dừng chỉnh sửa",
@@ -143,10 +143,15 @@ const vnTranslations = {
   signupsuccess: "Đăng ký thành công",
   usernameexsists: "Tên người dùng đã tồn tại!",
   emailexsists: "Email đã tồn tại!",
-  signupfail:"Đăng ký không thành công!",
+  signupfail: "Đăng ký không thành công!",
   updateProfile: "Cập nhật trang cá nhân thành công!",
   nothingtoupdate: "Không có thông tin gì mới để cập nhật",
-
+  maxcharacter: "Đạt số lượng kí tự tối đa cho bài đăng!",
+  uniquevalue: "Mỗi lựa chọn nên có một giá trị duy nhất",
+  optnotempty: "Lựa chọn không được để trống",
+  emptypayload: "Không thể tạo bài viết mới không có nội dung",
+  fileerror: "Kiểu tệp không hợp lệ",
+  plchoose: "Vui lòng chọn tệp hình ảnh",
 };
 
 export default vnTranslations;
