@@ -64,6 +64,36 @@ const enTranslations = {
   create: "Create",
   chat: "Chat",
 
+  password: "Password",
+  forgotCode: "Forgot code validation",
+  forgotCodeDes: "Type the code sent to your email to change your password",
+  submit: "Submit",
+  forgotPW: "Forgot pasword",
+  SignUp: "Sign Up",
+  SignIn: "Sign In",
+  dontHaveAccount: "You haven't had an account before ?",
+  hadAccount: "You had an account ?",
+  emailRequired: "Email is required.",
+  invalidEmail: "Invalid email",
+  passwordRequired: "Password is required.",
+  incorrectPassword: "Incorrect password",
+
+  nameRequired: "Pleast type your user name",
+  loginNameRequired: "Pleast type your login name",
+  emailRequired2: "Pleast type your email",
+  passwordRequired2: "Pleast type your password",
+  minPassWarning: "Password requires at least 6 characters",
+
+  fullName: "Full Name",
+  loginName: "Login name",
+  email: "Email address",
+
+  changePW: "Change Password",
+  newPW: "New Password",
+  confirmPW: "Confirm New Password",
+  confirmPWRequired: "Pleast confirm your password",
+  confirmWarning: "Confirm password needs to be the same as password",
+
   // thêm các từ khóa khác ở đây
   toastCreadtedPost: "New article created successfully!",
   show: "Show",

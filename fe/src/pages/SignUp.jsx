@@ -22,8 +22,10 @@ import useShowToast from "../hooks/useShowToast";
 import { signUp } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import { useTranslation } from "react-i18next";
 
 const Signup = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [inputs, setInputs] = useState({
@@ -43,27 +45,28 @@ const Signup = () => {
     const validationErrors = {};
     const { name, username, email, password } = inputs;
 
-    if (!name) validationErrors.name = "Vui lòng nhập họ và tên!";
+    if (!name) validationErrors.name = t("addName");
 
-    if (!username) validationErrors.username = "Vui lòng nhập tên đăng nhập!";
+    if (!username) validationErrors.username = t("loginNameRequired");
 
     if (!email) {
-      validationErrors.email = "Vui lòng nhập địa chỉ email!";
+      validationErrors.email = t("emailRequired2");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      validationErrors.email = "Địa chỉ email không hợp lệ!";
+      validationErrors.email = t("invalidEmail");
     }
 
     if (!password) {
-      validationErrors.password = "Vui lòng nhập mật khẩu!";
+      validationErrors.password = t("passwordRequired2");
     } else if (password.length <= 6) {
-      validationErrors.password = "Mật khẩu phải dài hơn 6 ký tự!";
-    } else if (!/[A-Z]/.test(password)) {
-      validationErrors.password =
-        "Mật khẩu phải chứa ít nhất một chữ cái viết hoa!";
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      validationErrors.password =
-        "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!";
+      validationErrors.password = t("minPassWarning");
     }
+    // else if (!/[A-Z]/.test(password)) {
+    //   validationErrors.password =
+    //     "Mật khẩu phải chứa ít nhất một chữ cái viết hoa!";
+    // } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    //   validationErrors.password =
+    //     "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!";
+    // }
 
     return validationErrors;
   };
@@ -91,13 +94,11 @@ const Signup = () => {
 
         // Set specific errors based on errorType
         if (errorType === "USERNAME_EXISTS") {
-          showToast("Error",  "Tên người dùng đã tồn tại!", "error");
+          showToast("Error", "Tên người dùng đã tồn tại!", "error");
         }
         if (errorType === "EMAIL_EXISTS") {
-          showToast("Error",  "Email đã tồn tại!", "error");
+          showToast("Error", "Email đã tồn tại!", "error");
         }
-
-        
       }
     } catch (error) {
       console.error("Error in handleSignup:", error.message);
@@ -114,17 +115,24 @@ const Signup = () => {
 
   const handleBlur = (field) => {
     if (!inputs[field]) {
+      let errMsg = "";
+      switch (field) {
+        case "username":
+          errMsg = t("loginNameRequired");
+          break;
+        case "name":
+          errMsg = t("nameRequired");
+          break;
+        case "email":
+          errMsg = t("emailRequired2");
+          break;
+        default:
+          errMsg = t("passwordRequired2");
+          break;
+      }
       setErrors((prev) => ({
         ...prev,
-        [field]: `Vui lòng nhập ${
-          field === "username"
-            ? "tên đăng nhập"
-            : field === "name"
-            ? "họ và tên"
-            : field === "email"
-            ? "địa chỉ email"
-            : "mật khẩu"
-        }!`,
+        [field]: errMsg,
       }));
     } else {
       setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -152,7 +160,7 @@ const Signup = () => {
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
           <Heading fontSize={"4xl"} textAlign={"center"}>
-            Đăng ký
+            {t("SignUp")}
           </Heading>
         </Stack>
         <Box
@@ -165,7 +173,7 @@ const Signup = () => {
             <HStack spacing={4}>
               <Box flex="1">
                 <FormControl isRequired isInvalid={!!errors.name}>
-                  <FormLabel>Họ và tên</FormLabel>
+                  <FormLabel>{t("fullName")}</FormLabel>
                   <Input
                     type="text"
                     onChange={(e) =>
@@ -180,7 +188,7 @@ const Signup = () => {
               </Box>
               <Box flex="1">
                 <FormControl isRequired isInvalid={!!errors.username}>
-                  <FormLabel>Tên đăng nhập</FormLabel>
+                  <FormLabel>{t("loginName")}</FormLabel>
                   <Input
                     type="text"
                     ref={usernameRef}
@@ -196,7 +204,7 @@ const Signup = () => {
               </Box>
             </HStack>
             <FormControl id="email" isRequired isInvalid={!!errors.email}>
-              <FormLabel>Địa chỉ email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <Input
                 type="email"
                 ref={emailRef}
@@ -210,7 +218,7 @@ const Signup = () => {
               <FormErrorMessage>{errors.email}</FormErrorMessage>
             </FormControl>
             <FormControl id="password" isRequired isInvalid={!!errors.password}>
-              <FormLabel>Mật khẩu</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -240,12 +248,12 @@ const Signup = () => {
                 _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
                 onClick={handleSignup}
               >
-                Đăng Ký
+                {t("SignUp")}
               </Button>
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>
-                Đã có tài khoản?{" "}
+                {t("hadAccount")}{" "}
                 <Link
                   color={"blue.400"}
                   onClick={() => {
@@ -257,7 +265,7 @@ const Signup = () => {
                     );
                   }}
                 >
-                  Đăng nhập
+                  {t("SignIn")}
                 </Link>
               </Text>
             </Stack>

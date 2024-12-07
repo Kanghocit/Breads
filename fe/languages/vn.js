@@ -63,6 +63,38 @@ const vnTranslations = {
   save: "Lưu",
   create: "Tạo",
   chat: "Nhắn tin",
+
+  password: "Mật khẩu",
+  forgotCode: "Xác minh quên mật khẩu",
+  forgotCodeDes:
+    "Nhập mã xác minh được gửi đến email của bạn để thay đổi mật khẩu",
+  submit: "Xác nhận",
+  forgotPW: "Quên mật khẩu",
+  SignUp: "Đăng ký",
+  SignIn: "Đăng nhập",
+  dontHaveAccount: "Bạn chưa có tài khoản ?",
+  hadAccount: "Bạn đã có tài khoản",
+  emailRequired: "Email là bắt buộc.",
+  invalidEmail: "Email không hợp lệ.",
+  passwordRequired: "Mật khẩu là bắt buộc.",
+  incorrectPassword: "Mật khẩu không đúng.",
+
+  nameRequired: "Vui lòng nhập họ và tên",
+  loginNameRequired: "Vui lòng nhập tên đăng nhập",
+  emailRequired2: "Vui lòng nhập địa chỉ email",
+  passwordRequired2: "Vui lòng nhập mật khẩu",
+  minPassWarning: "Mật khẩu phải dài hơn 6 ký tự!",
+
+  fullName: "Họ và tên",
+  loginName: "Tên đăng nhập",
+  email: "Địa chỉ email",
+
+  changePW: "Đổi mật khẩu",
+  newPW: "Mật khẩu mới",
+  confirmPW: "Xác nhận mật khẩu",
+  confirmPWRequired: "Vui lòng xác nhận mật khẩu",
+  confirmWarning: "Mật khẩu xác nhận phải khớp với mật khẩu mới",
+
   // thêm các từ khóa khác ở đây
   toastCreadtedPost: "Bài viết mới được tạo thành công!",
   show: "Xem",
