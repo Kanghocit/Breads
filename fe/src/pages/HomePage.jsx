@@ -52,7 +52,10 @@ const HomePage = () => {
   return (
     <ContainerLayout>
       <>
-        {displayPageData === FOR_YOU && <CreatePostBar />}
+        {(displayPageData === FOR_YOU ||
+          window.location.pathname
+            ?.slice(1, window.location.pathname.length)
+            ?.toLowerCase() === PageConstant.HOME) && <CreatePostBar />}
         <ListPost />
       </>
     </ContainerLayout>

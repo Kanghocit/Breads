@@ -1,12 +1,15 @@
 import { Box, Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
-import { FaFacebookMessenger, FaRegHeart } from "react-icons/fa";
+import { useMemo } from "react";
+import { BsFilePost } from "react-icons/bs";
+import { FaFacebookMessenger, FaRegHeart, FaUsers } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
-import { GrHomeRounded } from "react-icons/gr";
+import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useSocket from "../../hooks/useSocket";
 import { updateHasNotification } from "../../store/NotificationSlice";
@@ -15,15 +18,60 @@ import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
 import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
+import { LeftSideBarWidth } from "..";
 
 const LeftSideBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { colorMode, toggleColorMode } = useColorMode();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   const hasNewNotification = useSelector(
     (state) => state.notification.hasNewNotification
+  );
+  const linkIcon = useMemo(
+    () => (
+      <Box position="relative" display="inline-block">
+        <FaRegHeart size={24} />
+        {hasNewNotification && (
+          <Box
+            position="absolute"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
+    [hasNewNotification]
+  );
+
+  const messIcon = useMemo(
+    () => (
+      <Box position="relative" display="inline-block">
+        <FaFacebookMessenger size={24} />
+        {userInfo.hasNewMsg && (
+          <Box
+            position="absolute"
+            top="-2px"
+            right="-6px"
+            width="12px"
+            height="12px"
+            borderRadius="full"
+            bg="red"
+            border="2px solid"
+            borderColor={colorMode === "dark" ? "gray.800" : "white"}
+          />
+        )}
+      </Box>
+    ),
+    [userInfo.hasNewMsg]
   );
 
   useSocket((socket) => {
@@ -43,114 +91,84 @@ const LeftSideBar = () => {
     return colorMode === "dark" ? "#171717" : "#f0f0f0";
   };
 
-  const LikeItem = {
-    icon: (
-      <Box position="relative" display="inline-block">
-        <FaRegHeart size={24} />
-        {hasNewNotification && (
-          <Box
-            position="absolute"
-            top="-2px"
-            right="-6px"
-            width="12px"
-            height="12px"
-            borderRadius="full"
-            bg="red"
-            border="2px solid"
-            borderColor={colorMode === "dark" ? "gray.800" : "white"}
-          />
-        )}
-      </Box>
-    ),
-    linkTo: "/" + PageConstant.ACTIVITY,
-    onClick: () => {
-      if (currentPage !== PageConstant.ACTIVITY) {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.ACTIVITY }));
-      }
-      navigate("/" + PageConstant.ACTIVITY);
-      dispatch(updateHasNotification(false));
-    },
-    color: getButtonColor(currentPage === PageConstant.ACTIVITY, colorMode),
+  const getItemPropByPage = (page, queryInParams = null) => {
+    const linkTo = "/" + page + (queryInParams ?? "");
+    return {
+      linkTo: linkTo,
+      onClick: () => {
+        if (currentPage !== page) {
+          dispatch(
+            changePage({
+              currentPage,
+              nextPage: page,
+            })
+          );
+        }
+        navigate(linkTo);
+      },
+      color: getButtonColor(currentPage === page, colorMode),
+    };
   };
 
-  const messItem = {
-    icon: (
-      <Box position="relative" display="inline-block">
-        <FaFacebookMessenger size={24} />
-        {userInfo.hasNewMsg && (
-          <Box
-            position="absolute"
-            top="-2px"
-            right="-6px"
-            width="12px"
-            height="12px"
-            borderRadius="full"
-            bg="red"
-            border="2px solid"
-            borderColor={colorMode === "dark" ? "gray.800" : "white"}
-          />
-        )}
-      </Box>
-    ),
-    linkTo: "/" + PageConstant.CHAT,
-    onClick: () => {
-      if (currentPage !== PageConstant.CHAT) {
-        dispatch(changePage({ currentPage, nextPage: PageConstant.CHAT }));
-      }
-      navigate("/" + PageConstant.CHAT);
-    },
-    color: getButtonColor(currentPage === PageConstant.CHAT, colorMode),
-  };
-
-  const listItems = [
-    {
-      icon: <GrHomeRounded size={24} />,
-      linkTo: "/",
-      onClick: () => {
-        if (currentPage !== PageConstant.HOME) {
-          dispatch(changePage({ currentPage, nextPage: PageConstant.HOME }));
-          if (displayPageData !== PageConstant.FOR_YOU) {
-            dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
-          }
-        }
-        navigate("/");
-      },
-      color: getButtonColor(currentPage === PageConstant.HOME, colorMode),
-    },
-    {
-      icon: <FiSearch size={24} />,
-      linkTo: "/" + PageConstant.SEARCH,
-      onClick: () => {
-        if (currentPage !== PageConstant.SEARCH) {
-          dispatch(changePage({ currentPage, nextPage: PageConstant.SEARCH }));
-        }
-        navigate("/" + PageConstant.SEARCH);
-      },
-      color: getButtonColor(currentPage === PageConstant.SEARCH, colorMode),
-    },
-    LikeItem,
-    {
-      icon: <MdAdd size={24} />,
-      onClick: () => {
-        dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
-      },
-    },
-    {
-      icon: <FaRegUser size={24} />,
-      linkTo: "/" + PageConstant.USER + `/${userInfo._id}`,
-      onClick: () => {
-        if (currentPage !== PageConstant.USER) {
-          dispatch(changePage({ currentPage, nextPage: PageConstant.USER }));
-        }
-        navigate("/" + PageConstant.USER + `/${userInfo._id}`);
-      },
-      color: getButtonColor(currentPage === PageConstant.USER, colorMode),
-    },
-    messItem,
-  ];
+  const listItems = isAdmin
+    ? [
+        {
+          icon: <GrOverview size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.DEFAULT),
+        },
+        {
+          icon: <BsFilePost size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.POSTS),
+        },
+        {
+          icon: <FaUsers size={24} />,
+          ...getItemPropByPage(PageConstant.ADMIN.USERS),
+        },
+      ]
+    : [
+        {
+          icon: <GrHomeRounded size={24} />,
+          ...getItemPropByPage(PageConstant.HOME),
+          onClick: () => {
+            getItemPropByPage(PageConstant.HOME).onClick();
+            if (displayPageData !== PageConstant.FOR_YOU) {
+              dispatch(changeDisplayPageData(PageConstant.FOR_YOU));
+            }
+          },
+        },
+        {
+          icon: <FiSearch size={24} />,
+          ...getItemPropByPage(PageConstant.SEARCH),
+        },
+        {
+          icon: linkIcon,
+          ...getItemPropByPage(PageConstant.ACTIVITY),
+          onClick: () => {
+            getItemPropByPage(PageConstant.ACTIVITY).onClick();
+            dispatch(updateHasNotification(false));
+          },
+        },
+        {
+          icon: <MdAdd size={24} />,
+          onClick: () => {
+            dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
+          },
+        },
+        {
+          icon: <FaRegUser size={24} />,
+          ...getItemPropByPage(PageConstant.USER, `/${userInfo._id}`),
+        },
+        {
+          icon: messIcon,
+          ...getItemPropByPage(PageConstant.CHAT),
+        },
+      ];
 
   return (
-    <Flex direction={["column", "row"]}>
+    <Flex
+      direction={["column", "row"]}
+      width={[`${LeftSideBarWidth}px`, "100%"]}
+    >
       <Box
         height={["auto", "auto", "100vh"]}
         color="white"
@@ -208,10 +226,8 @@ const LeftSideBar = () => {
                     e.stopPropagation();
                     if (item.linkTo) {
                       e.preventDefault();
-                      item.onClick && item.onClick();
-                    } else {
-                      item.onClick && item.onClick();
                     }
+                    item.onClick && item.onClick();
                   }}
                 >
                   {item?.linkTo ? (
@@ -260,7 +276,11 @@ const LeftSideBar = () => {
           width="100%"
         >
           {listItems
-            .filter((item) => item !== LikeItem && item !== messItem)
+            .filter(({ linkTo }) => {
+              return ![PageConstant.ACTIVITY, PageConstant.CHAT].includes(
+                linkTo?.slice(1, linkTo.length)
+              );
+            })
             .map((item, index) => (
               <Box key={`side-bar-item-${index}`}>
                 <Button

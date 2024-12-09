@@ -6,7 +6,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import { HeaderHeight } from "../../../../Layout/Header";
+import { HeaderHeight } from "../../../../Layout";
 import ConversationBody from "./Body";
 import ConversationHeader from "./Header";
 import MessageInput from "./MessageBar";

@@ -34,6 +34,7 @@ import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
 import SkeletonPost from "./ListPost/Post/skeleton";
 import UserFollowBox from "./UserFollowBox";
+
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",

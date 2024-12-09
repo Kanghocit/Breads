@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import PostConstants from "../../be/src/Breads-Shared/Constants/PostConstants";
 import * as APIConfig from "./Breads-Shared/APIConfig";
+import { Constants } from "./Breads-Shared/Constants";
 import PageConstant from "./Breads-Shared/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
 import NotificationCreatePost from "./components/PostPopup/NotificationPost";
 import SeeMedia from "./components/SeeMedia";
 import Layout from "./Layout";
-import { HeaderHeight } from "./Layout/Header";
+import { HeaderHeight } from "./Layout";
 import ActivityPage from "./pages/ActivityPage";
+import AdminPage from "./pages/Admin";
 import AuthPage from "./pages/AuthPage";
 import ChatPage from "./pages/ChatPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -38,6 +40,7 @@ function App() {
   const toastPostId = useSelector(
     (state) => state.notificationCreatedPosts.postId
   );
+  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
 
   useEffect(() => {
     if (!!userId) {
@@ -91,8 +94,8 @@ function App() {
   };
 
   const HomeRoute = () => {
-    const { FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
-    return ["", FOR_YOU, FOLLOWING, LIKED, SAVED].map((page) => (
+    const { HOME, FOR_YOU, FOLLOWING, LIKED, SAVED } = PageConstant;
+    return ["", HOME, FOR_YOU, FOLLOWING, LIKED, SAVED].map((page) => (
       <Route
         key={`route-${page}`}
         path={`/${page}`}
@@ -102,14 +105,17 @@ function App() {
       />
     ));
   };
-  // useEffect(() => {
-  //   if (toastPostId) {
-  //     const timer = setTimeout(() => {
-  //       handleCloseToast();
-  //     }, 3000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [toastPostId]);
+
+  const AdminRoute = () => {
+    const { DEFAULT, POSTS, USERS } = PageConstant.ADMIN;
+    return [DEFAULT, POSTS, USERS].map((page) => (
+      <Route
+        key={`route-${page}`}
+        path={`/${page}`}
+        element={!!userId && isAdmin && <AdminPage />}
+      />
+    ));
+  };
 
   const handleCloseToast = () => {
     dispatch(clearNotificationPostId());
@@ -134,7 +140,8 @@ function App() {
         {!!userId &&
           !seeMediaInfo.open &&
           location.pathname !== "/error" &&
-          !location.pathname?.includes("chat") && <CreatePostBtn />}
+          !location.pathname?.includes("chat") &&
+          !isAdmin && <CreatePostBtn />}
       </Container>
 
       <Routes>
@@ -163,8 +170,9 @@ function App() {
         <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/chat/:conversationId" element={<ChatPage />} />
-        <Route path="*" element={<ErrorPage />} />
+        {AdminRoute()}
         {ActivityRoute()}
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
       {seeMediaInfo.open && <SeeMedia />}
       {openPostPopup && <PostPopup />}

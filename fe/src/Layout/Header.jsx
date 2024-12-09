@@ -1,38 +1,37 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { HeaderHeight } from ".";
+import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import { containerBoxWidth } from "../components/MainBoxLayout";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import ClickOutsideComponent from "../util/ClickoutCPN";
-import { useTranslation } from "react-i18next";
 import { BtnLike, BtnMess } from "./LeftSideBar/ActionsBtns";
-
-export const HeaderHeight = 60;
 
 const Header = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { currentPage, displayPageData } = useSelector((state) => state.util);
-  const userSelected = useSelector((state) => state.user.userSelected);
+  const { userInfo, userSelected } = useSelector((state) => state.user);
   const { colorMode } = useColorMode();
   const [openBox, setOpenBox] = useState(false);
+  const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
+
+  if (isAdmin) {
+    return <></>;
+  }
 
   const getBoxItems = () => {
     switch (currentPage) {
       case PageConstant.HOME:
         return [t("forYou"), t("following"), t("Liked"), t("saved")];
       case PageConstant.ACTIVITY:
-        return [
-          t("all"),
-          t("follows"),
-          t("replies"),
-          t("likes"),
-          t("reposts"),
-        ];
+        return [t("all"), t("follows"), t("replies"), t("likes"), t("reposts")];
       default:
         return [];
     }
@@ -78,7 +77,7 @@ const Header = () => {
           return t("follows");
         } else if (displayPageData === PageConstant.REPLIES) {
           return t("replies");
-        }  else if (displayPageData === PageConstant.REPOSTS) {
+        } else if (displayPageData === PageConstant.REPOSTS) {
           return t("reposts");
         }
 
@@ -118,7 +117,6 @@ const Header = () => {
       dispatch(changeDisplayPageData(targetPage));
     }
   };
-  
 
   return (
     <Flex
@@ -148,9 +146,7 @@ const Header = () => {
       >
         {getHeaderContent()}
         {[PageConstant.HOME, PageConstant.ACTIVITY].includes(currentPage) && (
-          <ClickOutsideComponent
-            onClose={() => setOpenBox(false)}
-          >
+          <ClickOutsideComponent onClose={() => setOpenBox(false)}>
             <ChevronDownIcon
               width={"32px"}
               height={"32px"}
