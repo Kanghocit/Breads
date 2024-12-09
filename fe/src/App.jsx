@@ -2,6 +2,7 @@ import { Container } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import PostConstants from "../../be/src/Breads-Shared/Constants/PostConstants";
 import * as APIConfig from "./Breads-Shared/APIConfig";
 import PageConstant from "./Breads-Shared/Constants/PageConstants";
 import CreatePostBtn from "./components/CreatePostBtn";
@@ -24,7 +25,6 @@ import UserPage from "./pages/UserPage";
 import Socket from "./socket";
 import { clearNotificationPostId } from "./store/ToastCreatedPost";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
-import PostConstants from "./util/PostConstants";
 
 function App() {
   const dispatch = useDispatch();

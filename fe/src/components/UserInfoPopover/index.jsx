@@ -86,7 +86,7 @@ export const UserInfoBox = ({ user }) => {
   );
 };
 
-const UserInfoPopover = ({ user, isParentPost = false }) => {
+const UserInfoPopover = ({ user, isParentPost = false, isDetail = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo, userSelected } = useSelector((state) => state.user);
@@ -127,22 +127,23 @@ const UserInfoPopover = ({ user, isParentPost = false }) => {
         </Link>
       </PopoverTrigger>
 
-      {!isParentPost &&
+      {((!isParentPost &&
         (isFrPage
           ? userSelected?._id !== user?._id
-          : userInfo?._id !== user?._id) && (
-          <PopoverContent
-            top="-1"
-            left="-7"
-            transform="translateX(-50%)"
-            borderRadius={"10px"}
-            zIndex={10000}
-          >
-            <UserInfoBox
-              user={user?._id === userSelected?._id ? userSelected : user}
-            />
-          </PopoverContent>
-        )}
+          : userInfo?._id !== user?._id)) ||
+        isDetail) && (
+        <PopoverContent
+          top="-1"
+          left="-7"
+          transform="translateX(-50%)"
+          borderRadius={"10px"}
+          zIndex={10000}
+        >
+          <UserInfoBox
+            user={user?._id === userSelected?._id ? userSelected : user}
+          />
+        </PopoverContent>
+      )}
     </Popover>
   );
 };

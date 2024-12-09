@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import {
   createPost,
   deletePost,
@@ -8,8 +10,6 @@ import {
   getUserPosts,
   selectSurveyOption,
 } from "./asyncThunk";
-import PostConstants from "../../util/PostConstants";
-import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 
 export const surveyTemplate = ({ placeholder, value }) => {
   return {

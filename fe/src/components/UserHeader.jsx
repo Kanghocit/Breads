@@ -6,7 +6,10 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Modal,
   ModalBody,
+  ModalContent,
+  ModalOverlay,
   Portal,
   Tab,
   TabList,
@@ -17,22 +20,20 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { CgMoreO } from "react-icons/cg";
+import { useTranslation } from "react-i18next";
+import { CgDanger, CgMoreO } from "react-icons/cg";
+import { FaLink } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import { EmptyContentSvg } from "../assests/icons";
+import PostConstants from "../Breads-Shared/Constants/PostConstants";
+import ListPost from "../components/ListPost";
 import useShowToast from "../hooks/useShowToast";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
-import FollowBtn from "./FollowBtn";
-import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react";
-import ListPost from "../components/ListPost";
-import UserFollowBox from "./UserFollowBox";
-import { CgDanger } from "react-icons/cg";
-import { FaLink } from "react-icons/fa";
-import PostConstants from "../util/PostConstants";
 import ConversationBtn from "./ConversationBtn";
+import FollowBtn from "./FollowBtn";
 import SkeletonPost from "./ListPost/Post/skeleton";
-import { useTranslation } from "react-i18next";
+import UserFollowBox from "./UserFollowBox";
 const FOLLOW_TAB = {
   FOLLOWED: "followed",
   FOLLOWING: "following",

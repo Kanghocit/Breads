@@ -118,7 +118,9 @@ const Login = () => {
   };
 
   const handleLogin = async (loginAsAdmin) => {
-    if (!validateAllFields() && !loginAsAdmin) return;
+    if (!validateAllFields() && !loginAsAdmin) {
+      return;
+    }
     let payload = inputs;
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
@@ -126,7 +128,9 @@ const Login = () => {
       showToast(t("success"), "Đăng nhập bằng Admin thành công", t("success"));
       return;
     }
-    if (!validateField("email") || !validateField("password")) return;
+    if (!validateField("email") || !validateField("password")) {
+      return;
+    }
     try {
       await dispatch(login(payload)).unwrap();
       showToast(t("success"), t("loginsuccess"), t("success"));
