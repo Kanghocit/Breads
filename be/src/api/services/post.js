@@ -4,6 +4,8 @@ import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants.js";
 
 export const getPostDetail = async ({ postId, getFullInfo = false }) => {
   try {
@@ -155,6 +157,9 @@ export const getPostsIdByFilter = async (payload) => {
       limit = 20;
     }
 
+    const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
+      Constants.POST_STATUS;
+
     const skip = (page - 1) * limit;
     switch (filter.page) {
       case PageConstant.SAVED:
@@ -168,7 +173,13 @@ export const getPostsIdByFilter = async (payload) => {
         const value = filter.value;
         if (!!value) {
           data = await Post.find(
-            { authorId: ObjectId(userId), type: value },
+            {
+              authorId: ObjectId(userId),
+              type: value,
+              status: {
+                $nin: [PENDING, DELETED],
+              },
+            },
             { _id: 1 }
           )
             .skip(skip)
@@ -178,7 +189,18 @@ export const getPostsIdByFilter = async (payload) => {
             });
         } else {
           data = await Post.find(
-            { authorId: ObjectId(userId), type: { $nin: ["reply", "repost"] } },
+            {
+              authorId: ObjectId(userId),
+              type: {
+                $nin: [
+                  PostConstants.ACTIONS.REPLY,
+                  PostConstants.ACTIONS.REPOST,
+                ],
+              },
+              status: {
+                $nin: [PENDING, DELETED],
+              },
+            },
             { _id: 1 }
           )
             .skip(skip)

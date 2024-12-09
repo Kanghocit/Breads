@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
+
+const postStatus = Object.values(Constants.POST_STATUS);
 
 const postSchema = mongoose.Schema(
   {
@@ -74,6 +77,11 @@ const postSchema = mongoose.Schema(
         required: false,
       },
     ],
+    status: {
+      type: Number,
+      enum: postStatus,
+      default: Constants.POST_STATUS.PENDING,
+    },
   },
   {
     timestamps: true,

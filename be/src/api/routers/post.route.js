@@ -12,6 +12,7 @@ import {
 } from "../controllers/post.controller.js";
 import { crawlPosts } from "../crawl.js";
 import protectRoute from "../middlewares/protectRoute.js";
+import Post from "../models/post.model.js";
 
 const router = express.Router();
 const { GET_ALL, USER, CREATE, UPDATE, LIKE, TICK_SURVEY, CRAWL_POST } =
@@ -26,5 +27,19 @@ router.put(UPDATE, updatePost);
 router.post(LIKE + ":id", protectRoute, likeUnlikePost);
 router.put(TICK_SURVEY, tickPostSurvey);
 router.post(CRAWL_POST, crawlPosts);
+router.post("/update-post-status", async (req, res) => {
+  try {
+    await Post.updateMany(
+      {},
+      {
+        status: 1,
+      }
+    );
+    res.status(200).json("OK");
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 
 export default router;

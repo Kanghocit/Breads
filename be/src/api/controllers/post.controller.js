@@ -1,10 +1,11 @@
-import { HttpStatusCode } from "axios";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants.js";
 import HTTPStatus from "../../util/httpStatus.js";
 import { ObjectId } from "../../util/index.js";
+import Link from "../models/link.model.js";
 import Post from "../models/post.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
 import User from "../models/user.model.js";
-import Link from "../models/link.model.js";
 import {
   getPostDetail,
   getPostsIdByFilter,
@@ -109,12 +110,12 @@ export const createPost = async (req, res) => {
       links: linksId,
       files,
     };
-    if (action === "repost") {
+    if (action === PostConstants.ACTIONS.REPOST) {
       newPostPayload.parentPost = parentPost;
     }
     const newPost = new Post(newPostPayload);
     const postSaved = await newPost.save();
-    if (parentPost && action === "reply") {
+    if (parentPost && action === PostConstants.ACTIONS.REPLY) {
       await handleReplyForParentPost({
         parentId: parentPost,
         replyId: newPost._id,
@@ -164,7 +165,12 @@ export const deletePost = async (req, res) => {
     }
     const repliesId = post.replies;
     if (repliesId?.length) {
-      await Post.deleteMany({ _id: { $in: repliesId } });
+      await Post.updateMany(
+        { _id: { $in: repliesId } },
+        {
+          status: Constants.POST_STATUS.DELETED,
+        }
+      );
     }
     await Post.updateMany(
       {
@@ -182,7 +188,14 @@ export const deletePost = async (req, res) => {
         quote: {},
       }
     );
-    await Post.findByIdAndDelete(postId);
+    await Post.updateOne(
+      {
+        _id: ObjectId(postId),
+      },
+      {
+        status: Constants.POST_STATUS.DELETED,
+      }
+    );
 
     res.status(HTTPStatus.OK).json({ message: "Post deleted successfully!" });
   } catch (err) {

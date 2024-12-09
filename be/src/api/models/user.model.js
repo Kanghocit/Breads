@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const userStatus = Object.values(Constants.USER_STATUS);
 
 const userSchema = mongoose.Schema(
   {
@@ -67,6 +69,11 @@ const userSchema = mongoose.Schema(
     resetPWCode: {
       type: String,
       required: false,
+    },
+    status: {
+      type: String,
+      enum: userStatus,
+      default: Constants.USER_STATUS.ACTIVE,
     },
   },
   {
