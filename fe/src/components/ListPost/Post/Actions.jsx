@@ -18,13 +18,13 @@ import {
   ShareIcon,
 } from "../../../assests/icons";
 import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
+import PostConstants from "../../../Breads-Shared/Constants/PostConstants";
 import Socket from "../../../socket";
 import {
   selectPost,
   selectPostReply,
   updatePostAction,
 } from "../../../store/PostSlice";
-import PostConstants from "../../../util/PostConstants";
 import useCopyLink from "./MoreAction/CopyLink";
 
 const ACTIONS_NAME = {

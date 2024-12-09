@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import useDebounce from "../../hooks/useDebounce";
 import usePopupCancel from "../../hooks/usePopupCancel";
 import useShowToast from "../../hooks/useShowToast";
@@ -29,7 +30,6 @@ import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { setNotificationPostId } from "../../store/ToastCreatedPost";
 import { generateObjectId, handleUploadFiles, replaceEmojis } from "../../util";
 import PopupCancel from "../../util/PopupCancel";
-import PostConstants from "../../util/PostConstants";
 import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
 import UploadDisplay from "../Message/RightSide/Conversation/MessageBar/UploadDisplay";
@@ -93,7 +93,7 @@ const PostPopup = () => {
 
     if (content.length > MAX_CONTENT_LENGTH) {
       checkResult = false;
-      msg = "Maximum characters for a post";
+      msg = t("maxcharacter");
     }
 
     if (postInfo.survey.length) {
@@ -105,14 +105,14 @@ const PostPopup = () => {
 
       if ([...setValue].length < postSurvey.length) {
         checkResult = false;
-        msg = "Each option should be a unique value";
+        msg = t("uniquevalue");
       }
       if (
         !postInfo.survey[0].value.trim() ||
         !postInfo.survey[1].value.trim()
       ) {
         checkResult = false;
-        msg = "Option can't not be empty";
+        msg = t("optnotempty");
       }
     }
     if (
@@ -122,7 +122,7 @@ const PostPopup = () => {
       filesData?.length === 0
     ) {
       checkResult = false;
-      msg = "Can't upload new bread with empty payload";
+      msg = t("emptypayload");
     }
 
     return { checkCondition: checkResult, msg };
@@ -206,9 +206,10 @@ const PostPopup = () => {
       setPopupCancelInfo({
         open: true,
         title: isEditing ? t("stopediting") : t("stopcreating"),
-        content: t("wannastop") `${
-          isEditing ? t("editing") : t("creating")
-        }` + t("this bread") + `?`,
+        content:
+          t("wannastop")`${isEditing ? t("editing") : t("creating")}` +
+          t("this bread") +
+          `?`,
         leftBtnText: t("updateProfile.cancel"),
         rightBtnText: t("Discard"),
         leftBtnAction: closePopupCancel,

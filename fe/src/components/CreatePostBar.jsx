@@ -4,16 +4,15 @@ import {
   Card,
   Flex,
   Input,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
-import { updatePostAction } from "../store/PostSlice";
-import PostConstants from "../util/PostConstants";
-import { changePage } from "../store/UtilSlice/asyncThunk";
-import PageConstant from "../Breads-Shared/Constants/PageConstants";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import PageConstant from "../Breads-Shared/Constants/PageConstants";
+import PostConstants from "../Breads-Shared/Constants/PostConstants";
+import { updatePostAction } from "../store/PostSlice";
+import { changePage } from "../store/UtilSlice/asyncThunk";
 
 const CreatePostBar = () => {
   const { t } = useTranslation();

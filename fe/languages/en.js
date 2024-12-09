@@ -145,7 +145,12 @@ const enTranslations = {
   signupfail:"Sign up fail!",
   updateProfile: "Update Profile successfully!!",
   nothingtoupdate: "There is nothing new to update",
-  
+  maxcharacter: "Maximum characters for a post",
+  uniquevalue: "Each option should be a unique value",
+  optnotempty: "Option can't not be empty",
+  emptypayload: "Can't upload new bread with empty payload",
+  fileerror:"The file type is invalid",
+  plchoose:"Please choose the image file"
 };
 
 export default enTranslations;

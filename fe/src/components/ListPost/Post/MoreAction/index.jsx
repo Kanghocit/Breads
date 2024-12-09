@@ -1,11 +1,13 @@
 import { Container, Flex, Text, useColorMode } from "@chakra-ui/react";
-import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { CiBookmark } from "react-icons/ci";
-import { GoBookmarkSlash, GoReport } from "react-icons/go";
+import { GoBookmarkSlash } from "react-icons/go";
 import { IoIosLink } from "react-icons/io";
-import { IoBan } from "react-icons/io5";
-import { MdDelete, MdEdit } from "react-icons/md"; // Correct icons for delete and update
+import { MdDelete, MdEdit } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
+import PostConstants from "../../../../Breads-Shared/Constants/PostConstants";
 import useShowToast from "../../../../hooks/useShowToast";
 import { updatePostAction, updatePostInfo } from "../../../../store/PostSlice";
 import { deletePost } from "../../../../store/PostSlice/asyncThunk";
@@ -13,11 +15,7 @@ import {
   addPostToCollection,
   removePostFromCollection,
 } from "../../../../store/UserSlice/asyncThunk";
-import PostConstants from "../../../../util/PostConstants";
 import useCopyLink from "./CopyLink";
-import { useNavigate } from "react-router-dom";
-import PageConstant from "../../../../Breads-Shared/Constants/PageConstants";
-import { useTranslation } from "react-i18next";
 
 const PostMoreActionBox = ({
   post,

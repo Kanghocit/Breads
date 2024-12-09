@@ -17,13 +17,13 @@ import { RiDoubleQuotesL } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
+import PostConstants from "../../../Breads-Shared/Constants/PostConstants";
 import usePopupCancel from "../../../hooks/usePopupCancel";
 import useSocket from "../../../hooks/useSocket";
 import { updatePostLike } from "../../../store/PostSlice";
 import ClickOutsideComponent from "../../../util/ClickoutCPN";
 import CustomLinkPreview from "../../../util/CustomLinkPreview";
 import PopupCancel from "../../../util/PopupCancel";
-import PostConstants from "../../../util/PostConstants";
 import UploadDisplay from "../../Message/RightSide/Conversation/MessageBar/UploadDisplay";
 import MediaDisplay from "../../PostPopup/mediaDisplay";
 import ViewActivity from "../../PostPopup/ViewActivity";
@@ -93,6 +93,7 @@ const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
                   user={post?.authorInfo}
                   content={post?.content}
                   isParentPost={isParentPost}
+                  isDetail={isDetail}
                 />
               </Flex>
             </Flex>

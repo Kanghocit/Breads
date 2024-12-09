@@ -1,7 +1,8 @@
 import { useState } from "react";
 import useShowToast from "./useShowToast";
-
+import { useTranslation } from "react-i18next";
 const usePreviewImg = () => {
+  const { t } = useTranslation();
   const [imgUrl, setImgUrl] = useState(null);
   const showToast = useShowToast();
   const handleImageChange = (e) => {
@@ -13,7 +14,7 @@ const usePreviewImg = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      showToast("Kiểu tệp không hợp lệ", "Vui lòng chọn tệp hình ảnh", "lỗi");
+      showToast(t("fileerror"), t("plchoose"), "lỗi");
       setImgUrl(null);
     }
   };

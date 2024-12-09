@@ -1,11 +1,11 @@
+import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { TiDeleteOutline } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import { updatePostInfo } from "../../store/PostSlice";
 import "./index.css";
-import { TiDeleteOutline } from "react-icons/ti";
-import PostConstants from "../PostConstants";
-import { Box, Skeleton, SkeletonText } from "@chakra-ui/react";
 
 const CustomLinkPreview = ({
   link = null,
