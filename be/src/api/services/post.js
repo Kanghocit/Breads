@@ -231,6 +231,14 @@ export const getPostsIdByFilter = async (payload) => {
             createdAt: -1,
           });
         break;
+      case PageConstant.ADMIN.POSTS_VALIDATION:
+        data = await Post.find({ status: PENDING }, { _id: 1 })
+          .skip(skip)
+          .limit(limit)
+          .sort({
+            createdAt: -1,
+          });
+        break;
       default:
         data = await Post.aggregate([
           {

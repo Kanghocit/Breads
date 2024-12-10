@@ -52,6 +52,7 @@ const ListPost = () => {
                   style={{
                     borderColor: "transparent",
                     height: "12px",
+                    margin: "0px",
                   }}
                 />
               </Fragment>

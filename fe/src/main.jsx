@@ -1,13 +1,14 @@
-import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
+import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import "../languages/i18n";
 import App from "./App.jsx";
 import "./index.css";
 import store from "./store/index.js";
-import React from "react";
-import '../languages/i18n';
 
 const styles = {
   global: (props) => ({
@@ -30,18 +31,18 @@ const colors = {
     light: "#616161",
     dark: "#0a0a0a",
   },
-  cbg:{
+  cbg: {
     light: "#fafafa",
-    dark: "#181818"
+    dark: "#181818",
   },
-  cuse:{
+  cuse: {
     light: "#ffffff",
-    dark: "#202020"
+    dark: "#202020",
   },
-  ccl:{
+  ccl: {
     light: "#f3f5f7",
     dark: "#000000",
-  }
+  },
 };
 
 const theme = extendTheme({ config, styles, colors });
