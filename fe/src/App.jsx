@@ -10,8 +10,7 @@ import CreatePostBtn from "./components/CreatePostBtn";
 import PostPopup from "./components/PostPopup";
 import NotificationCreatePost from "./components/PostPopup/NotificationPost";
 import SeeMedia from "./components/SeeMedia";
-import Layout from "./Layout";
-import { HeaderHeight } from "./Layout";
+import Layout, { HeaderHeight } from "./Layout";
 import ActivityPage from "./pages/ActivityPage";
 import AdminPage from "./pages/Admin";
 import AuthPage from "./pages/AuthPage";
@@ -107,12 +106,12 @@ function App() {
   };
 
   const AdminRoute = () => {
-    const { DEFAULT, POSTS, USERS } = PageConstant.ADMIN;
-    return [DEFAULT, POSTS, USERS].map((page) => (
+    const { DEFAULT, POSTS, POSTS_VALIDATION, USERS } = PageConstant.ADMIN;
+    return [DEFAULT, POSTS, USERS, POSTS_VALIDATION].map((page) => (
       <Route
         key={`route-${page}`}
         path={`/${page}`}
-        element={!!userId && isAdmin && <AdminPage />}
+        element={!!userId ? isAdmin ? <AdminPage /> : <></> : <ErrorPage />}
       />
     ));
   };
@@ -130,12 +129,16 @@ function App() {
             PageConstant.SIGNUP,
             PageConstant.LOGIN,
             PageConstant.RESET_PW,
+            PageConstant.ADMIN.DEFAULT,
+            PageConstant.ADMIN.POSTS,
+            PageConstant.ADMIN.POSTS_VALIDATION,
+            PageConstant.ADMIN.USERS,
           ].includes(currentPage) && HeaderHeight + 12 + "px",
       }}
     >
-      {!!userId && !seeMediaInfo.open && location.pathname !== "/error" && (
-        <Layout />
-      )}
+      {!seeMediaInfo.open &&
+        location.pathname !== "/error" &&
+        userInfo?._id && <Layout />}
       <Container maxW="620px">
         {!!userId &&
           !seeMediaInfo.open &&

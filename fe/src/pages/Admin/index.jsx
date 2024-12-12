@@ -8,6 +8,7 @@ import PostsCmsPage from "./PostsCmsPage";
 import UsersCmsPage from "./UsersCmsPage";
 import { Container } from "@chakra-ui/react";
 import { LeftSideBarWidth } from "../../Layout";
+import PostsValidationPage from "./PostsValidationPage";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
@@ -16,14 +17,14 @@ const AdminPage = () => {
   const currentPage = useSelector((state) => state.util.currentPage);
   let pathname = window.location.pathname;
   pathname = pathname.slice(1, pathname?.length);
-  const { DEFAULT, POSTS, USERS } = PageConstant.ADMIN;
+  const { DEFAULT, POSTS, USERS, POSTS_VALIDATION } = PageConstant.ADMIN;
 
   useEffect(() => {
     dispatch(changePage({ nextPage: pathname }));
   }, []);
 
   if (!isAdmin) {
-    return <></>;
+    return <>Invalid Access</>;
   }
 
   const wrapPageContent = useMemo(() => {
@@ -34,6 +35,8 @@ const AdminPage = () => {
         return <PostsCmsPage />;
       case USERS:
         return <UsersCmsPage />;
+      case POSTS_VALIDATION:
+        return <PostsValidationPage />;
       default:
         return <></>;
     }
@@ -46,9 +49,9 @@ const AdminPage = () => {
       width={`calc(100vw - ${LeftSideBarWidth + 8}px)`}
       maxW={`calc(100vw - ${LeftSideBarWidth + 8}px)`}
       height="fit-content"
+      minH={"100vh"}
       pos={"relative"}
       left={`${LeftSideBarWidth}px`}
-      bg="gray"
     >
       {wrapPageContent}
     </Container>

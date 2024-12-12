@@ -152,3 +152,18 @@ export const selectSurveyOption = createAsyncThunk(
     }
   }
 );
+
+export const updatePostStatus = createAsyncThunk(
+  "post/updatePostStatus",
+  async (payload, thunkApi) => {
+    try {
+      await POST({
+        path: Route.POST + POST_PATH.UPDATE_POST_STATUS,
+        payload,
+      });
+      return payload.postId;
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.response.data);
+    }
+  }
+);

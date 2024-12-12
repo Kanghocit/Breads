@@ -125,6 +125,8 @@ const Login = () => {
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
       dispatch(login(payload));
+      window.location.href =
+        window.location.origin + "/" + PageConstant.ADMIN.DEFAULT;
       showToast(t("success"), "Đăng nhập bằng Admin thành công", t("success"));
       return;
     }

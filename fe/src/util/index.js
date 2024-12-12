@@ -502,3 +502,5 @@ export const genRandomCode = () => {
   }
   return code;
 };
+
+export const isAdminPage = window.location.pathname.includes("admin");

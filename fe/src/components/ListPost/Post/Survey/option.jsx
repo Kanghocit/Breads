@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSurveyOption } from "../../../../store/PostSlice/asyncThunk";
 import "./index.css";
+import { isAdminPage } from "../../../../util";
 
 const SurveyOption = ({ option, post, isParentPost = false }) => {
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ const SurveyOption = ({ option, post, isParentPost = false }) => {
         <input
           type="checkbox"
           onChange={() => {
-            if (!isParentPost) {
+            if (!isParentPost && !isAdminPage) {
               handleTickOption();
             }
           }}

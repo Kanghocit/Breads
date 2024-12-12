@@ -141,9 +141,72 @@ export const getPostDetail = async ({ postId, getFullInfo = false }) => {
     }
     return result;
   } catch (err) {
-    console.log(err);
+    console.log("getPostDetail: ", err);
     return null;
   }
+};
+
+const getQueryPostValidation = (filter) => {
+  const user = filter.user;
+  const postContent = filter?.postContent;
+  const postType = filter?.postType;
+  if (!user && !postContent && !postType) {
+    return { status: Constants.POST_STATUS.PENDING };
+  }
+  let userQuery = null;
+  let postContentQuery = null;
+  let postTypeQuery = null;
+  if (!!user) {
+    userQuery = {
+      authorId: ObjectId(user),
+    };
+  }
+  if (!!postContent && postContent?.length > 0) {
+    const contentConditions = [];
+    const { GIF, IMAGE, VIDEO } = Constants.MEDIA_TYPE;
+    postContent.forEach((contentType) => {
+      if (contentType === "text") {
+        contentConditions.push({
+          $and: [{ media: { $size: 0 } }, { survey: { $size: 0 } }],
+        });
+      } else if (contentType === GIF) {
+        contentConditions.push({ "media.type": GIF });
+      } else if (contentType === IMAGE) {
+        contentConditions.push({ "media.type": IMAGE });
+      } else if (contentType === VIDEO) {
+        contentConditions.push({ "media.type": VIDEO });
+      } else if (contentType === "survey") {
+        contentConditions.push({
+          $expr: {
+            $gt: [{ $size: "$survey" }, 0],
+          },
+        });
+      }
+    });
+    postContentQuery = {
+      $or: contentConditions,
+    };
+  }
+  if (!!postType && postType?.length > 0) {
+    const postTypeConditions = postType.map((type) => {
+      return {
+        type: type,
+      };
+    });
+    postTypeQuery = {
+      $or: postTypeConditions,
+    };
+  }
+  const subQueries = [{ status: Constants.POST_STATUS.PENDING }];
+  [userQuery, postContentQuery, postTypeQuery].forEach((subQuery) => {
+    if (subQuery) {
+      subQueries.push(subQuery);
+    }
+  });
+  const query = {
+    $and: subQueries,
+  };
+  return query;
 };
 
 export const getPostsIdByFilter = async (payload) => {
@@ -231,6 +294,12 @@ export const getPostsIdByFilter = async (payload) => {
             createdAt: -1,
           });
         break;
+      case PageConstant.ADMIN.POSTS_VALIDATION:
+        const query = getQueryPostValidation(filter);
+        data = await Post.find(query, { _id: 1 }).skip(skip).limit(limit).sort({
+          createdAt: -1,
+        });
+        break;
       default:
         data = await Post.aggregate([
           {
@@ -271,7 +340,7 @@ export const getPostsIdByFilter = async (payload) => {
     }
     return data;
   } catch (err) {
-    console.log(err);
+    console.log("getPostsIdByFilter: ", err);
   }
 };
 
@@ -301,7 +370,7 @@ export const handleReplyForParentPost = async ({
       );
     }
   } catch (err) {
-    console.log(err);
+    console.log("handleReplyForParentPost: ", err);
   }
 };
 

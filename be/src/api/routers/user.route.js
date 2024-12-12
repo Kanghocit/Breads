@@ -14,6 +14,7 @@ import {
   logoutUser,
   signupUser,
   updateUser,
+  getUsersPendingPost,
 } from "../controllers/user.controller.js";
 // import protectRoute from "../middlewares/protectRoute.js";
 import { USER_PATH } from "../../Breads-Shared/APIConfig.js";
@@ -34,6 +35,7 @@ const {
   USERS_TO_TAG,
   CHECK_VALID_USER,
   GET_USER_ID_FROM_EMAIL,
+  GET_USERS_PENDING_POST,
 } = USER_PATH;
 
 router.get(USERS_FOLLOW, getUsersFollow);
@@ -41,6 +43,7 @@ router.get(ADMIN, getAdminAccount);
 router.get(PROFILE + ":userId", getUserProfile);
 router.get(USERS_TO_FOLLOW, getUserToFollows);
 router.get(USERS_TO_TAG, getUsersToTag);
+router.post(GET_USERS_PENDING_POST, getUsersPendingPost);
 router.post(SIGN_UP, signupUser);
 router.post(LOGIN, loginUser);
 router.post(LOGOUT, logoutUser);

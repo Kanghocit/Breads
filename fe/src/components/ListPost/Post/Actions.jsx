@@ -26,6 +26,9 @@ import {
   updatePostAction,
 } from "../../../store/PostSlice";
 import useCopyLink from "./MoreAction/CopyLink";
+import { isAdminPage } from "../../../util";
+import { updatePostStatus } from "../../../store/PostSlice/asyncThunk";
+import { Constants } from "../../../Breads-Shared/Constants";
 
 const ACTIONS_NAME = {
   LIKE: "like",
@@ -108,6 +111,40 @@ const Actions = ({ post }) => {
       },
     },
   ];
+
+  const handleUpdatePostStatus = (status) => {
+    dispatch(
+      updatePostStatus({
+        userId: userInfo._id,
+        postId: post._id,
+        status: status,
+      })
+    );
+  };
+
+  if (isAdminPage) {
+    return (
+      <Flex alignItems={"center"} gap={3} width={"100%"} mt={1}>
+        <Button
+          flex={1}
+          bg="green"
+          onClick={() => {
+            handleUpdatePostStatus(Constants.POST_STATUS.PUBLIC);
+          }}
+        >
+          Accept
+        </Button>
+        <Button
+          flex={1}
+          onClick={() => {
+            handleUpdatePostStatus(Constants.POST_STATUS.DELETED);
+          }}
+        >
+          Reject
+        </Button>
+      </Flex>
+    );
+  }
 
   return (
     <>

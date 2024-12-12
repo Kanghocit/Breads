@@ -19,6 +19,7 @@
     "@mui/x-charts": "^7.23.1",
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
     "framer-motion": "^11.11.17",
     "i18next": "^23.16.4",
     "moment": "^2.30.1",

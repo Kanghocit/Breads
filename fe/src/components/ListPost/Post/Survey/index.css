@@ -19,6 +19,9 @@
     align-items: center;
 
     overflow: hidden;
+    p {
+      margin: 0;
+    }
     .action-wrapper {
       display: flex;
       align-items: center;
