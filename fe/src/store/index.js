@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
+import AdminReducer from "./AdminSlice";
 import MessageReducer from "./MessageSlice";
 import NotificationReducer from "./NotificationSlice";
 import PostReducer from "./PostSlice";
+import ToastCreatedPost from "./ToastCreatedPost";
 import UserReducer from "./UserSlice";
 import UtilReducer from "./UtilSlice";
-import ToastCreatedPost from "./ToastCreatedPost"
+
 const store = configureStore({
   reducer: {
     user: UserReducer,
@@ -12,7 +14,8 @@ const store = configureStore({
     util: UtilReducer,
     message: MessageReducer,
     notification: NotificationReducer,
-    notificationCreatedPosts: ToastCreatedPost
+    notificationCreatedPosts: ToastCreatedPost,
+    admin: AdminReducer,
   },
 });
 

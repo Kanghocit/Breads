@@ -9,14 +9,23 @@ import {
   likeUnlikePost,
   tickPostSurvey,
   updatePost,
+  updatePostStatus,
 } from "../controllers/post.controller.js";
 import { crawlPosts } from "../crawl.js";
 import protectRoute from "../middlewares/protectRoute.js";
 import Post from "../models/post.model.js";
 
 const router = express.Router();
-const { GET_ALL, USER, CREATE, UPDATE, LIKE, TICK_SURVEY, CRAWL_POST } =
-  POST_PATH;
+const {
+  GET_ALL,
+  USER,
+  CREATE,
+  UPDATE,
+  LIKE,
+  TICK_SURVEY,
+  CRAWL_POST,
+  UPDATE_POST_STATUS,
+} = POST_PATH;
 
 router.get(GET_ALL, getPosts);
 router.get(USER, getUserPosts);
@@ -27,6 +36,7 @@ router.put(UPDATE, updatePost);
 router.post(LIKE + ":id", protectRoute, likeUnlikePost);
 router.put(TICK_SURVEY, tickPostSurvey);
 router.post(CRAWL_POST, crawlPosts);
+router.post(UPDATE_POST_STATUS, updatePostStatus);
 router.post("/update-post-status", async (req, res) => {
   try {
     await Post.updateMany(

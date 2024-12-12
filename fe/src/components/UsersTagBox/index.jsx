@@ -1,18 +1,20 @@
+import { Flex, Spinner, Text } from "@chakra-ui/react";
 import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, USER_PATH } from "../../Breads-Shared/APIConfig";
 import { GET } from "../../config/API";
 import useDebounce from "../../hooks/useDebounce";
+import { updatePostInfo } from "../../store/PostSlice";
 import { updateHasMoreData } from "../../store/UtilSlice";
 import InfiniteScroll from "../InfiniteScroll";
 import UserBox from "../UserFollowBox/UserBox";
 import UserBoxSekeleton from "../UserFollowBox/UserBox/skeleton";
-import { Flex, Spinner, Text } from "@chakra-ui/react";
 
 const UsersTagBox = ({ searchValue, setOpenTagBox }) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
   const hasMoreData = useSelector((state) => state.util.hasMoreData);
+  const postInfo = useSelector((state) => state.post.postInfo);
   const [users, setUsers] = useState([]);
   const debounceValue = useDebounce(searchValue, 500);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +51,23 @@ const UsersTagBox = ({ searchValue, setOpenTagBox }) => {
     }
   };
 
+  const tagUser = (user) => {
+    dispatch(
+      updatePostInfo({
+        ...postInfo,
+        usersTag: [
+          ...postInfo.usersTag,
+          {
+            searchValue: searchValue,
+            username: user.username,
+            userId: user._id,
+          },
+        ],
+      })
+    );
+    setOpenTagBox(false);
+  };
+
   return (
     <>
       {isLoading && (
@@ -72,6 +91,7 @@ const UsersTagBox = ({ searchValue, setOpenTagBox }) => {
             isTagBox={true}
             setOpenTagBox={setOpenTagBox}
             searchValue={debounceValue}
+            onClick={(user) => tagUser(user)}
           />
         )}
         condition={!!userInfo._id}

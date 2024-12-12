@@ -5,43 +5,21 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updatePostInfo } from "../../../store/PostSlice";
 import UserInfoPopover from "../../UserInfoPopover";
 
 const UserBox = ({
   user,
   isTagBox = false,
-  setOpenTagBox = null,
-  searchValue = "",
   inFollowBox = false,
+  onClick = null,
 }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const textColor = useColorModeValue("ccl.light", "ccl.dark");
-  const postInfo = useSelector((state) => state.post.postInfo);
 
   const getToUserPage = () => {
     navigate(`/users/${user._id}`);
-  };
-
-  const tagUser = () => {
-    dispatch(
-      updatePostInfo({
-        ...postInfo,
-        usersTag: [
-          ...postInfo.usersTag,
-          {
-            searchValue: searchValue,
-            username: user.username,
-            userId: user._id,
-          },
-        ],
-      })
-    );
-    setOpenTagBox(false);
   };
 
   return (
@@ -55,10 +33,9 @@ const UserBox = ({
         opacity: isTagBox ? "0.8" : "",
       }}
       mb={isTagBox ? "4px" : ""}
-      onClick={() => {
-        if (isTagBox) {
-          tagUser();
-        }
+      onClick={(e) => {
+        e.stopPropagation();
+        !!onClick && onClick(user);
       }}
     >
       <Avatar

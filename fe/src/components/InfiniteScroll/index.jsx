@@ -73,10 +73,10 @@ const InfiniteScroll = ({
 
   useEffect(
     () => {
-      if (!!reloadPageDeps) {
+      if (!!reloadPageDeps && reloadPageDeps?.length > 0) {
         if (page !== 1) {
-          setPage(1);
           setIsLoading(true);
+          setPage(1);
           dispatch(updateHasMoreData(true));
         }
       }

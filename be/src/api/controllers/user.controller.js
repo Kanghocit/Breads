@@ -2,13 +2,14 @@ import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 import { Constants } from "../../Breads-Shared/Constants/index.js";
 import HTTPStatus from "../../util/httpStatus.js";
-import { ObjectId } from "../../util/index.js";
+import { destructObjectId, ObjectId } from "../../util/index.js";
 import User from "../models/user.model.js";
 import { getUserInfo, getUsersByPage, updateFollow } from "../services/user.js";
 import generateTokenAndSetCookie from "../utils/genarateTokenAndSetCookie.js";
 import Collection from "../models/collection.model.js";
 import { uploadFileFromBase64 } from "../utils/index.js";
 import { crawlUser } from "../crawl.js";
+import Post from "../models/post.model.js";
 
 export const getAdminAccount = async (req, res) => {
   try {
@@ -41,12 +42,12 @@ export const getAdminAccount = async (req, res) => {
 export const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
-    const userEmail = await User.findOne({email});
-    const userUsername = await User.findOne({username});
+    const userEmail = await User.findOne({ email });
+    const userUsername = await User.findOne({ username });
     if (userUsername?._id) {
       return res.status(HTTPStatus.BAD_REQUEST).json({
-          errorType: "USERNAME_EXISTS",
-          error: "Tên người dùng đã tồn tại",
+        errorType: "USERNAME_EXISTS",
+        error: "Tên người dùng đã tồn tại",
       });
     }
     if (userEmail?._id) {
@@ -422,5 +423,46 @@ export const getUserIdFromEmail = async (req, res) => {
   } catch (err) {
     console.log("getUserIdFromEmail: ", err);
     res.status(HTTPStatus.SERVER_ERR).json(err);
+  }
+};
+
+export const getUsersPendingPost = async (req, res) => {
+  try {
+    const { userId, page, limit, searchValue } = req.body;
+    const skip = (page - 1) * limit;
+    if (!userId) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json("Unauthorize");
+    }
+    if (!page || !limit) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Need page and limit");
+    }
+    const userInfo = await User.findOne({ _id: ObjectId(userId) });
+    const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
+    if (!isAdmin) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json("Only for admin");
+    }
+    const authorIds = (
+      await Post.find(
+        { status: Constants.POST_STATUS.PENDING },
+        { _id: 0, authorId: 1 }
+      ).lean()
+    )?.map(({ authorId }) => authorId);
+    const users = await User.find(
+      {
+        _id: { $in: authorIds },
+        username: { $regex: searchValue, $options: "i" },
+      },
+      {
+        _id: 1,
+        username: 1,
+        avatar: 1,
+      }
+    )
+      .skip(skip)
+      .limit(limit);
+    return res.status(HTTPStatus.OK).json(users);
+  } catch (err) {
+    console.log("getPostPendingUsers: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };

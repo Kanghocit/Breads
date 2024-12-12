@@ -12,6 +12,12 @@ const SearchBar = ({ value, setValue, placeholder }) => {
     }
   }, [debounceValue]);
 
+  useEffect(() => {
+    if (value !== text) {
+      setText(value);
+    }
+  }, [value]);
+
   return (
     <Input
       type="text"

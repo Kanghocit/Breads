@@ -9,6 +9,7 @@ import {
   getPosts,
   getUserPosts,
   selectSurveyOption,
+  updatePostStatus,
 } from "./asyncThunk";
 
 export const surveyTemplate = ({ placeholder, value }) => {
@@ -213,6 +214,12 @@ const postSlice = createSlice({
       const userPosts = action.payload;
       state.listPost = userPosts;
       state.isLoading = false;
+    });
+    builder.addCase(updatePostStatus.fulfilled, (state, action) => {
+      const postId = action.payload;
+      let newListPost = JSON.parse(JSON.stringify(state.listPost));
+      newListPost = newListPost.filter(({ _id }) => _id !== postId);
+      state.listPost = newListPost;
     });
   },
 });

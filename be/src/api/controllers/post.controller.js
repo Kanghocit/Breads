@@ -331,3 +331,31 @@ export const tickPostSurvey = async (req, res) => {
     res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
   }
 };
+
+export const updatePostStatus = async (req, res) => {
+  try {
+    const { userId, postId, status } = req.body;
+    if (!userId || !postId) {
+      return res.status(HTTPStatus.BAD_REQUEST).json("Empty payload");
+    }
+    const userInfo = await User.findOne({
+      _id: ObjectId(userId),
+    });
+    const isAdmin = userInfo?.role === Constants.USER_ROLE.ADMIN;
+    if (!isAdmin) {
+      return res.status(HTTPStatus.UNAUTHORIZED).json("Only for admin");
+    }
+    await Post.updateOne(
+      {
+        _id: ObjectId(postId),
+      },
+      {
+        status: status,
+      }
+    );
+    res.status(HTTPStatus.OK).json("OK");
+  } catch (err) {
+    console.log("updatePostStatus: ", err);
+    res.status(HTTPStatus.SERVER_ERR).json({ error: err.message });
+  }
+};
