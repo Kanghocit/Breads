@@ -300,6 +300,9 @@ export const getPostsIdByFilter = async (payload) => {
           createdAt: -1,
         });
         break;
+      case PageConstant.ADMIN.POSTS:
+        data = await Post.find({}, { _id: 1 }).sort({ createdAt: 1 });
+        break;
       default:
         data = await Post.aggregate([
           {

@@ -75,7 +75,6 @@ export const deletePost = createAsyncThunk(
   }
 );
 
-// Temp
 export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (params, thunkApi) => {

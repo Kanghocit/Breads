@@ -4,6 +4,7 @@ import express from "express";
 import helmet from "helmet";
 import connectDB from "./api/db/connectDB.js";
 import router from "./api/routers/index.js";
+import { getCollection } from "./util/index.js";
 
 // Connect to MongoDB
 await connectDB();

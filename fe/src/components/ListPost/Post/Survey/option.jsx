@@ -28,28 +28,46 @@ const SurveyOption = ({ option, post, isParentPost = false }) => {
     return Math.floor((option.usersId?.length / total) * 100);
   }, [post]);
 
+  console.log("isAdminPage: ", isAdminPage);
+
   return (
     <div className="survey-opt">
-      <p className="value">{option.value}</p>
-      <div className="action-wrapper">
-        <p className="percent">{percent}%</p>
-        <input
-          type="checkbox"
-          onChange={() => {
-            if (!isParentPost && !isAdminPage) {
-              handleTickOption();
-            }
-          }}
-          checked={option.usersId?.includes(userInfo._id)}
-        />
-      </div>
+      <p
+        className="value"
+        style={
+          isAdminPage
+            ? {
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                flexGrow: 1,
+              }
+            : {}
+        }
+      >
+        {option.value}
+      </p>
+      {!isAdminPage && (
+        <div className="action-wrapper">
+          <p className="percent">{percent}%</p>
+          <input
+            type="checkbox"
+            onChange={() => {
+              if (!isParentPost && !isAdminPage) {
+                handleTickOption();
+              }
+            }}
+            checked={option.usersId?.includes(userInfo._id)}
+          />
+        </div>
+      )}
       <div
         className="opt-bg"
         style={{
           width: `${percent}%`,
           transition: "width 0.5s ease-in-out",
         }}
-      ></div>
+      />
     </div>
   );
 };

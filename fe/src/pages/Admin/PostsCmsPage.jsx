@@ -1,16 +1,84 @@
-import { Button, Flex } from "@chakra-ui/react";
-import { useState } from "react";
+import { Button, Container, Flex, Image } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import PageConstants from "../../Breads-Shared/Constants/PageConstants";
+import PaginationBtn from "../../components/PaginationBtn";
+import { GET, POST } from "../../config/API";
+import { POST_PATH, Route } from "../../Breads-Shared/APIConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { changePage } from "../../store/UtilSlice/asyncThunk";
+import MsgMediaLayout from "../../components/Message/RightSide/Conversation/Body/Message/MediaLayout";
+import { Constants } from "../../Breads-Shared/Constants";
+import { updateSeeMedia } from "../../store/UtilSlice";
+import FileMsg from "../../components/Message/RightSide/Conversation/Body/Message/Files";
+import Survey from "../../components/ListPost/Post/Survey";
 
 const PostsCmsPage = () => {
-  const roles = ["Admin", "User", "Normie guy", "Chill guy"];
-  // Generate data for the table
-  const tableData = Array.from({ length: 50 }, (_, index) => ({
-    id: index + 1,
-    name: `User ${index + 1}`,
-    email: `user${index + 1}@example.com`,
-    role: roles[Math.floor(Math.random() * roles.length)],
-  }));
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const props = [
+    "author",
+    "content",
+    "media",
+    "files",
+    "survey",
+    "type",
+    "status",
+    "statistic",
+  ];
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    dispatch(changePage({ nextPage: PageConstants.ADMIN.POSTS }));
+    handleGetPosts();
+  }, []);
+
+  const handleGetPosts = async () => {
+    try {
+      const data = await GET({
+        path: Route.POST + POST_PATH.GET_ALL,
+        params: {
+          filter: { page: PageConstants.ADMIN.POSTS },
+          userId: userInfo._id,
+        },
+      });
+      setPosts(data);
+    } catch (err) {
+      console.error("handleGetPosts: ", err);
+    }
+  };
+
+  const tableData = posts?.map(
+    ({
+      _id,
+      authorInfo,
+      content,
+      media,
+      files,
+      survey,
+      type,
+      status,
+      replies,
+      repostNum,
+      usersLike,
+    }) => {
+      const statistic = {
+        like: usersLike.length,
+        reply: replies.length,
+        repost: repostNum,
+      };
+      return {
+        _id,
+        author: authorInfo.username,
+        content,
+        media,
+        files,
+        survey,
+        type,
+        status,
+        statistic,
+      };
+    }
+  );
 
   // State for search, sorting, pagination, and data
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +104,7 @@ const PostsCmsPage = () => {
   });
 
   // Paginate data
-  const totalRows = sortedData.length;
+  const totalRows = posts.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -50,6 +118,22 @@ const PostsCmsPage = () => {
       direction = "desc";
     }
     setSortConfig({ key, direction });
+  };
+
+  const handleSeeMedia = (media, index) => {
+    dispatch(
+      updateSeeMedia({
+        open: true,
+        media: media,
+        currentMediaIndex: index,
+      })
+    );
+  };
+
+  const convertStatus = (status) => {
+    const entries = Object.entries(Constants.POST_STATUS);
+    const currentStatusStr = entries.find(([str, num]) => num === status)[0];
+    return currentStatusStr;
   };
 
   return (
@@ -88,59 +172,131 @@ const PostsCmsPage = () => {
       <table className="table table-striped table-bordered">
         <thead className="thead-dark">
           <tr>
-            <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-              ID{" "}
-              {sortConfig.key === "id" &&
-                (sortConfig.direction === "asc" ? "▲" : "▼")}
-            </th>
-            <th
-              onClick={() => handleSort("name")}
-              style={{ cursor: "pointer" }}
-            >
-              Name{" "}
-              {sortConfig.key === "name" &&
-                (sortConfig.direction === "asc" ? "▲" : "▼")}
-            </th>
-            <th
-              onClick={() => handleSort("email")}
-              style={{ cursor: "pointer" }}
-            >
-              Email{" "}
-              {sortConfig.key === "email" &&
-                (sortConfig.direction === "asc" ? "▲" : "▼")}
-            </th>
-            <th
-              onClick={() => handleSort("role")}
-              style={{ cursor: "pointer" }}
-            >
-              Role{" "}
-              {sortConfig.key === "role" &&
-                (sortConfig.direction === "asc" ? "▲" : "▼")}
-            </th>
-            <th>Action</th>
+            {props.map((col) => (
+              <th
+                onClick={() => handleSort("id")}
+                style={{ cursor: "pointer", textTransform: "capitalize" }}
+              >
+                {col}
+                {sortConfig.key === "id" &&
+                  (sortConfig.direction === "asc" ? "▲" : "▼")}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
             paginatedData.map((row) => (
-              <tr key={row.id}>
-                <td>{row.id}</td>
-                <td>{row.name}</td>
-                <td>{row.email}</td>
-                <td>{row.role}</td>
-                <td>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    onClick={() => alert(`Action clicked for ID: ${row.id}`)}
-                  >
-                    Action
-                  </button>
+              <tr key={row._id}>
+                <td style={{ width: "120px" }}>{row.author}</td>
+                <td
+                  style={{
+                    width: "120px",
+                  }}
+                >
+                  {row.content}
+                </td>
+                <td
+                  style={{
+                    width: "120px",
+                  }}
+                >
+                  {row.media.length > 0 && (
+                    <Container
+                      style={{
+                        position: "relative",
+                        maxWidth: "120px",
+                        width: "fit-content",
+                        cursor: "absolute",
+                      }}
+                    >
+                      {row.media?.[0]?.type === Constants.MEDIA_TYPE.VIDEO ? (
+                        <video
+                          src={row.media?.[0]?.url}
+                          style={{
+                            maxWidth: "100%",
+                            objectFit: "cover",
+                            maxHeight: "100px",
+                          }}
+                          onClick={() => handleSeeMedia(row.media, 0)}
+                        />
+                      ) : (
+                        <Image
+                          src={row.media?.[0]?.url}
+                          maxWidth={"100%"}
+                          objectFit={"cover"}
+                          maxHeight={"100px"}
+                          cursor={"pointer"}
+                          _hover={{
+                            opacity: 0.7,
+                          }}
+                          onClick={() => handleSeeMedia(row.media, 0)}
+                        />
+                      )}
+                      {row.media.length - 1 > 0 && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: "50%",
+                            top: "50%",
+                            color: "white",
+                            transform: "translate(-50%, -50%)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          + {row.media.length - 1}
+                        </div>
+                      )}
+                    </Container>
+                  )}
+                </td>
+                <td style={{ width: "200px" }}>
+                  <Flex flexDir={"column"} gap={1}>
+                    {row.files.map((file) => (
+                      <FileMsg file={file} />
+                    ))}
+                  </Flex>
+                </td>
+                <td style={{ width: "160px" }}>
+                  <Survey post={row} />
+                </td>
+                <td
+                  style={{
+                    textTransform: "capitalize",
+                    width: "100px",
+                  }}
+                >
+                  {row.type}
+                </td>
+                <td
+                  style={{
+                    textTransform: "capitalize",
+                    width: "100px",
+                  }}
+                >
+                  {convertStatus(row.status).toLowerCase()}
+                </td>
+                <td
+                  style={{
+                    width: "100px",
+                  }}
+                >
+                  {Object.entries(row.statistic).map(([key, value]) => (
+                    <p
+                      style={{
+                        margin: 0,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {key} : {value}
+                    </p>
+                  ))}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="text-center">
+              <td colSpan={props.length} className="text-center">
                 No matching data found
               </td>
             </tr>
@@ -151,45 +307,11 @@ const PostsCmsPage = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <nav className="d-flex justify-content-center">
-          <ul className="pagination">
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button
-                className="page-link"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              >
-                Previous
-              </button>
-            </li>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <li
-                key={index}
-                className={`page-item ${
-                  currentPage === index + 1 ? "active" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-            <li
-              className={`page-item ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
-            >
-              <button
-                className="page-link"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-              >
-                Next
-              </button>
-            </li>
-          </ul>
+          <PaginationBtn
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </nav>
       )}
     </div>
