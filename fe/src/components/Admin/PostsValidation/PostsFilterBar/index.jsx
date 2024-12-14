@@ -8,7 +8,11 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, USER_PATH } from "../../../../Breads-Shared/APIConfig";
+import {
+  ANALYTICS_PATH,
+  Route,
+  USER_PATH,
+} from "../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../Breads-Shared/Constants";
 import PostConstants from "../../../../Breads-Shared/Constants/PostConstants";
 import { POST } from "../../../../config/API";
@@ -16,6 +20,7 @@ import { updateFilterPostValidation } from "../../../../store/AdminSlice";
 import InfiniteScroll from "../../../InfiniteScroll";
 import SearchBar from "../../../SearchBar";
 import UserBox from "../../../UserFollowBox/UserBox";
+import { getAnalyticsInfoFromBrowser } from "../../../../util";
 
 export const filterPostWidth = 360;
 
@@ -157,6 +162,17 @@ const PostsFilterBar = () => {
 
   const handleFilter = async () => {
     dispatch(updateFilterPostValidation({ ...filter }));
+    // const analyticsInfo = await getAnalyticsInfoFromBrowser();
+    // const payload = {
+    //   ...analyticsInfo,
+    //   userId: userInfo._id,
+    //   event: "filter_post_validation",
+    //   payload: filter,
+    // };
+    await POST({
+      path: Route.ANALYTICS + ANALYTICS_PATH.CREATE,
+      payload: payload,
+    });
   };
 
   return (

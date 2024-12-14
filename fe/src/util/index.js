@@ -504,3 +504,36 @@ export const genRandomCode = () => {
 };
 
 export const isAdminPage = window.location.pathname.includes("admin");
+
+export const getAnalyticsInfoFromBrowser = async () => {
+  const deviceInfo = {
+    category: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", // Detect mobile or desktop
+    mobile_brand_name: /Samsung|Apple|Huawei/i.test(navigator.userAgent)
+      ? navigator.userAgent.match(/(Samsung|Apple|Huawei)/)[0]
+      : "Unknown",
+    mobile_model_name: navigator.userAgent, // No direct way to get model from JS, will get the whole UA string
+    operating_system: navigator.platform, // Platform information (e.g., "Win32", "Linux")
+    operating_system_version: navigator.appVersion, // OS version
+  };
+
+  const webInfo = {
+    browser_version: navigator.userAgent,
+    hostname: window.location.hostname,
+  };
+
+  const browserInfo = {
+    appName: navigator.appName,
+    appVersion: navigator.appVersion,
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    online: navigator.onLine,
+    cookiesEnabled: navigator.cookieEnabled,
+  };
+
+  const localeInfo = {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    locale: navigator.language,
+  };
+
+  return { deviceInfo, browserInfo, localeInfo, webInfo };
+};

@@ -95,7 +95,7 @@ const enTranslations = {
   confirmWarning: "Confirm password needs to be the same as password",
 
   // thêm các từ khóa khác ở đây
-  toastCreadtedPost: "New article created successfully!",
+  toastCreadtedPost: "Your post is waiting for validation from admin!",
   show: "Show",
   Yourconversations: "Your conversations",
   Searchforuser: "Search for a user",
@@ -118,10 +118,10 @@ const enTranslations = {
   delete: "Delete",
   update: "Update",
   Profilelinkcopied: "Profile link copied",
-  logintofollow:"Please login to follow",
+  logintofollow: "Please login to follow",
   deletesuccess: "Delete Success",
   wannadelete: "Do you want to delete this bread ?",
-  uploadmax : "You can only upload a maximum of 5 files",
+  uploadmax: "You can only upload a maximum of 5 files",
   invalidtype: "Invalid file's type",
   maxforpost: "Maximum characters for a post",
   stopediting: "Stop Editing",
@@ -142,15 +142,15 @@ const enTranslations = {
   signupsuccess: "Sign up successfully",
   usernameexsists: "The username has existed!",
   emailexsists: "The Email has existed!",
-  signupfail:"Sign up fail!",
+  signupfail: "Sign up fail!",
   updateProfile: "Update Profile successfully!!",
   nothingtoupdate: "There is nothing new to update",
   maxcharacter: "Maximum characters for a post",
   uniquevalue: "Each option should be a unique value",
   optnotempty: "Option can't not be empty",
   emptypayload: "Can't upload new bread with empty payload",
-  fileerror:"The file type is invalid",
-  plchoose:"Please choose the image file"
+  fileerror: "The file type is invalid",
+  plchoose: "Please choose the image file",
 };
 
 export default enTranslations;
