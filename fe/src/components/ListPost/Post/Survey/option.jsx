@@ -28,8 +28,6 @@ const SurveyOption = ({ option, post, isParentPost = false }) => {
     return Math.floor((option.usersId?.length / total) * 100);
   }, [post]);
 
-  console.log("isAdminPage: ", isAdminPage);
-
   return (
     <div className="survey-opt">
       <p

@@ -218,7 +218,10 @@ const PostsCmsPage = () => {
                             objectFit: "cover",
                             maxHeight: "100px",
                           }}
-                          onClick={() => handleSeeMedia(row.media, 0)}
+                          onClick={(e) => {
+                            handleSeeMedia(row.media, 0);
+                            e.stopPropagation();
+                          }}
                         />
                       ) : (
                         <Image
@@ -230,7 +233,10 @@ const PostsCmsPage = () => {
                           _hover={{
                             opacity: 0.7,
                           }}
-                          onClick={() => handleSeeMedia(row.media, 0)}
+                          onClick={(e) => {
+                            handleSeeMedia(row.media, 0);
+                            e.stopPropagation();
+                          }}
                         />
                       )}
                       {row.media.length - 1 > 0 && (
@@ -242,6 +248,11 @@ const PostsCmsPage = () => {
                             color: "white",
                             transform: "translate(-50%, -50%)",
                             cursor: "pointer",
+                            zIndex: 0,
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                           }}
                         >
                           + {row.media.length - 1}

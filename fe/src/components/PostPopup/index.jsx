@@ -279,7 +279,7 @@ const PostPopup = () => {
             <Flex width={"100%"} gap={4}>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
               <Flex flexDir={"column"} flex={1}>
-                <Text color={textColor} fontWeight="600">
+                <Text color={textColor} fontWeight="600" m={0}>
                   {userInfo.username}
                 </Text>
                 <TextArea
