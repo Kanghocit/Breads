@@ -125,9 +125,7 @@ const Login = () => {
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
       dispatch(login(payload));
-      window.location.href =
-        window.location.origin + "/" + PageConstant.ADMIN.DEFAULT;
-      showToast(t("success"), "Đăng nhập bằng Admin thành công", t("success"));
+      showToast(t("success"), "Đăng nhập bằng Admin thành công", "success");
       return;
     }
     if (!validateField("email") || !validateField("password")) {
@@ -135,13 +133,9 @@ const Login = () => {
     }
     try {
       await dispatch(login(payload)).unwrap();
-      showToast(t("success"), t("loginsuccess"), t("success"));
+      showToast(t("success"), t("loginsuccess"), "success");
     } catch (error) {
-      showToast(
-        "Không thành công!",
-        error?.error || t("checkagain"),
-        t("error")
-      );
+      showToast("Không thành công!", error?.error || t("checkagain"), "error");
     }
   };
 
@@ -156,7 +150,7 @@ const Login = () => {
           },
         });
         if (isValidAccount) {
-          showToast("", t("codesend"), t("success"));
+          showToast("", t("codesend"), "success");
           console.log("code: ", codeSend.current);
           const codeSendDecoded = encodedString(codeSend.current);
           try {
