@@ -12,12 +12,22 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
 import { updateSeeMedia } from "../../store/UtilSlice";
+import { addEvent } from "../../util";
 
 const SeeMedia = () => {
   const dispatch = useDispatch();
   const seeMediaInfo = useSelector((state) => state.util.seeMediaInfo);
   const { colorMode } = useColorMode();
   const currentMedia = seeMediaInfo.media?.[seeMediaInfo.currentMediaIndex];
+
+  useEffect(() => {
+    addEvent({
+      event: "see_media",
+      payload: {
+        media: seeMediaInfo?.media,
+      },
+    });
+  }, []);
 
   useEffect(() => {
     if (seeMediaInfo?.media.length > 1) {

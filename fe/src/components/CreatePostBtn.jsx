@@ -5,10 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { updatePostAction } from "../store/PostSlice";
+import { addEvent } from "../util";
 
 const CreatePostBtn = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
   return (
     <>
       <Button
@@ -21,6 +23,10 @@ const CreatePostBtn = () => {
         bg={"#444444"}
         zIndex={1000}
         onClick={() => {
+          addEvent({
+            event: "click_create_post_btn",
+            payload: {},
+          });
           dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
         }}
       >

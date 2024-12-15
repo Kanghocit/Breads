@@ -11,6 +11,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getCurrentTheme } from "../../../../../util/Themes";
+import { addEvent } from "../../../../../util";
 
 const ConversationHeader = ({ openDetailTab, setOpenDetailTab, onBack }) => {
   const navigate = useNavigate();
@@ -88,6 +89,10 @@ const ConversationHeader = ({ openDetailTab, setOpenDetailTab, onBack }) => {
         height={"20px"}
         cursor={"pointer"}
         onClick={() => {
+          addEvent({
+            event: "open_detail_chat_tab",
+            payload: {},
+          });
           setOpenDetailTab(!openDetailTab);
         }}
       />

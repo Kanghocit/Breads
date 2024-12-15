@@ -13,7 +13,11 @@ import {
   updateLoadingUpload,
   updateMsgInfo,
 } from "../../../../../store/MessageSlice";
-import { handleUploadFiles, replaceEmojis } from "../../../../../util";
+import {
+  addEvent,
+  handleUploadFiles,
+  replaceEmojis,
+} from "../../../../../util";
 import { getCurrentTheme } from "../../../../../util/Themes";
 import EmojiMsgBtn from "./Emoji";
 import FileUpload from "./File";
@@ -134,6 +138,13 @@ const MessageInput = () => {
         files: filesData,
         userId: userInfo._id,
       });
+      addEvent({
+        event: "upload_msg_files",
+        payload: {
+          conversationId: selectedConversation?._id,
+          filesIds: filesId,
+        },
+      });
       payload.files = filesId;
     }
     if (sendIcon) {
@@ -141,6 +152,20 @@ const MessageInput = () => {
     }
     if (selectedMsg?._id && msgAction === Constants.MSG_ACTION.REPLY) {
       payload.respondTo = selectedMsg?._id;
+      addEvent({
+        event: "reply_msg",
+        payload: {
+          conversationId: selectedConversation?._id,
+          msgId: selectedMsg?._id,
+        },
+      });
+    } else {
+      addEvent({
+        event: "send_msg",
+        payload: {
+          conversationId: selectedConversation?._id,
+        },
+      });
     }
     const socket = Socket.getInstant();
     const msgPayload = {
