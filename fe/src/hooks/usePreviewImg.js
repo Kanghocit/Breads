@@ -14,7 +14,7 @@ const usePreviewImg = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      showToast(t("fileerror"), t("plchoose"), "lỗi");
+      showToast(t("fileerror"), t("plchoose"), "error");
       setImgUrl(null);
     }
   };
