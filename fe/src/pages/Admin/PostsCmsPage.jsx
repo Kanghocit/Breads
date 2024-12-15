@@ -132,7 +132,7 @@ const PostsCmsPage = () => {
 
   const convertStatus = (status) => {
     const entries = Object.entries(Constants.POST_STATUS);
-    const currentStatusStr = entries.find(([str, num]) => num === status)[0];
+    const currentStatusStr = entries.find(([str, num]) => num === status)?.[0];
     return currentStatusStr;
   };
 
@@ -274,7 +274,7 @@ const PostsCmsPage = () => {
                     width: "100px",
                   }}
                 >
-                  {convertStatus(row.status).toLowerCase()}
+                  {convertStatus(row.status)?.toLowerCase()}
                 </td>
                 <td
                   style={{
