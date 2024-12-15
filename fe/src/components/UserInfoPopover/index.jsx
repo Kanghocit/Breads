@@ -11,15 +11,16 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
 import useShowToast from "../../hooks/useShowToast";
+import { selectUser } from "../../store/UserSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
+import { addEvent } from "../../util";
 import { handleFlow } from "../FollowBtn";
 import UnFollowPopup from "../FollowBtn/UnfollowPopup";
-import { selectUser } from "../../store/UserSlice";
 
 export const UserInfoBox = ({ user }) => {
   const dispatch = useDispatch();
@@ -113,6 +114,12 @@ const UserInfoPopover = ({ user, isParentPost = false, isDetail = false }) => {
           onMouseEnter={() => {
             if (userSelected?._id !== user?._id && !isFrPage) {
               dispatch(selectUser(user));
+              addEvent({
+                event: "hover_user_popup",
+                payload: {
+                  userId: user?._id,
+                },
+              });
             }
           }}
         >

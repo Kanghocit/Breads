@@ -3,7 +3,7 @@ import { useState } from "react";
 import ConversationScreen from "./Conversation";
 import DetailConversationTab from "./DetailTab";
 
-const RightSideMsg = ({ onBack , onDetailBack  }) => {
+const RightSideMsg = ({ onBack, onDetailBack }) => {
   const [openDetailTab, setOpenDetailTab] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   return (
@@ -20,7 +20,6 @@ const RightSideMsg = ({ onBack , onDetailBack  }) => {
           <DetailConversationTab
             openDetailTab={openDetailTab}
             setOpenDetailTab={setOpenDetailTab}
-            // onCloseTab={handleDetailBack}
           />
         </Container>
       )}

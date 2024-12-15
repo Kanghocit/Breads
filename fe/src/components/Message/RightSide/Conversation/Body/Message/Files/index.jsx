@@ -1,5 +1,5 @@
 import { Button, Container, Flex, Image, Text } from "@chakra-ui/react";
-import { FILE_TYPES } from "../../../../../../../util";
+import { addEvent, FILE_TYPES } from "../../../../../../../util";
 import { formatItemDate } from "../../../../../../../util";
 import { FaFileDownload } from "react-icons/fa";
 
@@ -112,6 +112,14 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
             style={{
               width: inMsgTab ? "100%" : "",
             }}
+            onClick={() => {
+              addEvent({
+                event: "open_file",
+                payload: {
+                  url: linkType,
+                },
+              });
+            }}
           >
             {fileDisplay()}
           </a>
@@ -124,6 +132,14 @@ const FileMsg = ({ file, inMsgTab = false, bg = "", color = "" }) => {
             target="_self"
             style={{
               width: inMsgTab ? "100%" : "",
+            }}
+            onClick={() => {
+              addEvent({
+                event: "open_file",
+                payload: {
+                  url: linkType,
+                },
+              });
             }}
           >
             {fileDisplay()}

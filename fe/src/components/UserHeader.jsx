@@ -30,6 +30,7 @@ import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import ListPost from "../components/ListPost";
 import useShowToast from "../hooks/useShowToast";
 import { changeDisplayPageData, updateSeeMedia } from "../store/UtilSlice";
+import { addEvent } from "../util";
 import ConversationBtn from "./ConversationBtn";
 import FollowBtn from "./FollowBtn";
 import SkeletonPost from "./ListPost/Post/skeleton";
@@ -58,6 +59,12 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
   });
 
   const copyURL = () => {
+    addEvent({
+      event: "copy_user_link",
+      payload: {
+        userId: user?._id,
+      },
+    });
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
       showToast("", t("Profilelinkcopied"), "success");
@@ -67,6 +74,12 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
   const bgColor = useColorModeValue("cuse.light", "cuse.dark");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleSeeAvatar = () => {
+    addEvent({
+      event: "see_avatar",
+      payload: {
+        userId: user?._id,
+      },
+    });
     dispatch(
       updateSeeMedia({
         open: true,
@@ -83,7 +96,6 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
   const date = new Date(user.createdAt);
   const monthOptions = { month: "long" };
   const yearOptions = { year: "numeric" };
-
   const month = date.toLocaleString("vi-VN", monthOptions);
   const year = date.toLocaleString("vi-VN", yearOptions);
 
@@ -102,7 +114,7 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 p={1}
                 borderRadius={"full"}
               >
-                KF.net
+                Breads.net
               </Text>
             </Flex>
           </Box>
@@ -260,7 +272,15 @@ const UserHeader = ({ user, usersFollow, userPosts }) => {
                 justifyContent={"center"}
                 pb={3}
                 cursor={"pointer"}
-                onClick={() => dispatch(changeDisplayPageData(TABS[key]))}
+                onClick={() => {
+                  addEvent({
+                    event: "change_user_post_tab",
+                    payload: {
+                      tab: TABS[key],
+                    },
+                  });
+                  dispatch(changeDisplayPageData(TABS[key]));
+                }}
               >
                 <Text fontWeight={"bold"}>{t(key)}</Text>
               </Tab>

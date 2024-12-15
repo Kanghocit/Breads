@@ -8,6 +8,7 @@ import {
   updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
 import { messageThemes } from "../../../../../util/Themes/index";
+import { addEvent } from "../../../../../util";
 
 const ThemeModal = ({ setItemSelected }) => {
   const dispatch = useDispatch();
@@ -17,6 +18,13 @@ const ThemeModal = ({ setItemSelected }) => {
   );
 
   const handleChangeTheme = async (theme) => {
+    addEvent({
+      event: "change_conversation_theme",
+      payload: {
+        theme: theme,
+        conversationId: selectedConversation?._id,
+      },
+    });
     const socket = Socket.getInstant();
     socket.emit(
       Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION,

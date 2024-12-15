@@ -12,12 +12,19 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Constants, gif } from "../../Breads-Shared/Constants";
 import { updatePostInfo } from "../../store/PostSlice";
+import { addEvent } from "../../util";
 
 const GifBox = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const postInfo = useSelector((state) => state.post.postInfo);
 
   const handleAddGif = (url) => {
+    addEvent({
+      event: "add_post_gif",
+      payload: {
+        gif: url,
+      },
+    });
     dispatch(
       updatePostInfo({
         ...postInfo,

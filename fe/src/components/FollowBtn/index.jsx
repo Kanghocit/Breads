@@ -9,6 +9,7 @@ import useShowToast from "../../hooks/useShowToast";
 import Socket from "../../socket";
 import { followUser } from "../../store/UserSlice/asyncThunk";
 import UnFollowPopup from "./UnfollowPopup";
+import { addEvent } from "../../util";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
   const { t } = useTranslation();
@@ -60,6 +61,12 @@ const FollowBtn = ({ user, inUserFlBox = false }) => {
           if (isFollowing) {
             setOpenCancelPopup(true);
           } else {
+            addEvent({
+              event: "follow_user",
+              payload: {
+                userId: user._id,
+              },
+            });
             handleFlow(userInfo, user, dispatch, showToast);
           }
         }}
@@ -76,6 +83,12 @@ const FollowBtn = ({ user, inUserFlBox = false }) => {
         onClose={() => setOpenCancelPopup(false)}
         onClick={(e) => {
           e.stopPropagation();
+          addEvent({
+            event: "unfollow_user",
+            payload: {
+              userId: user._id,
+            },
+          });
           handleFlow(userInfo, user, dispatch, showToast);
           setOpenCancelPopup(false);
         }}

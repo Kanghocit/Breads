@@ -33,7 +33,7 @@ import PostContent from "./Content";
 import "./index.css";
 import PostMoreActionBox from "./MoreAction";
 import Survey from "./Survey";
-import { isAdminPage } from "../../../util";
+import { addEvent, isAdminPage } from "../../../util";
 
 const Post = ({ post, isDetail, isParentPost = false, isReply = false }) => {
   const [isOpen, setIsOpen] = useState(false);

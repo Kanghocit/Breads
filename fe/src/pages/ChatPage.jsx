@@ -8,6 +8,7 @@ import RightSideMsg from "../components/Message/RightSide";
 import { selectConversation } from "../store/MessageSlice";
 import { getConversationById } from "../store/MessageSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const ChatPage = () => {
   const dispatch = useDispatch();
@@ -19,6 +20,16 @@ const ChatPage = () => {
   const [showRightSide, setShowRightSide] = useState(false);
   const isMobile = useBreakpointValue({ base: true, md: false });
   const marginBottom = useBreakpointValue({ base: "50px", md: "0" });
+
+  useEffect(() => {
+    addEvent({
+      event: "see_page",
+      payload: {
+        page: "chat",
+      },
+    });
+  }, []);
+
   useEffect(() => {
     if (!!conversationId) {
       if (
@@ -27,7 +38,9 @@ const ChatPage = () => {
       ) {
         dispatch(getConversationById(conversationId));
       }
-      if (isMobile) setShowRightSide(true);
+      if (isMobile) {
+        setShowRightSide(true);
+      }
     }
     if (init.current) {
       dispatch(changePage({ nextPage: PageConstant.CHAT }));
@@ -57,15 +70,20 @@ const ChatPage = () => {
       // bottom={isMobile ? "100px" : "0px"}
     >
       {!isMobile || !showRightSide ? (
-        <Box w={isMobile? "100%" : "30%"} display={showRightSide && isMobile ? "none" : "block"}>
+        <Box
+          w={isMobile ? "100%" : "30%"}
+          display={showRightSide && isMobile ? "none" : "block"}
+        >
           <LeftSideBarMsg onSelectConversation={() => setShowRightSide(true)} />
         </Box>
       ) : null}
 
       {!isMobile || showRightSide ? (
         <Box w="100%" display={!showRightSide && isMobile ? "none" : "block"}>
-          <RightSideMsg onBack={handleBackToLeft} 
-           onDetailBack={() => setShowRightSide(true)}/>
+          <RightSideMsg
+            onBack={handleBackToLeft}
+            onDetailBack={() => setShowRightSide(true)}
+          />
         </Box>
       ) : null}
     </Flex>

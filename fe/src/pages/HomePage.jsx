@@ -7,6 +7,7 @@ import ContainerLayout from "../components/MainBoxLayout";
 import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,12 @@ const HomePage = () => {
       })
     );
     handleGetDataByPage();
+    addEvent({
+      event: "see_page",
+      payload: {
+        page: "home",
+      },
+    });
   }, []);
 
   useEffect(() => {

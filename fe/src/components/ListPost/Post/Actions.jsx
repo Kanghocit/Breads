@@ -18,6 +18,7 @@ import {
   ShareIcon,
 } from "../../../assests/icons";
 import { POST_PATH, Route } from "../../../Breads-Shared/APIConfig";
+import { Constants } from "../../../Breads-Shared/Constants";
 import PostConstants from "../../../Breads-Shared/Constants/PostConstants";
 import Socket from "../../../socket";
 import {
@@ -25,10 +26,9 @@ import {
   selectPostReply,
   updatePostAction,
 } from "../../../store/PostSlice";
-import useCopyLink from "./MoreAction/CopyLink";
-import { isAdminPage } from "../../../util";
 import { updatePostStatus } from "../../../store/PostSlice/asyncThunk";
-import { Constants } from "../../../Breads-Shared/Constants";
+import { addEvent, isAdminPage } from "../../../util";
+import useCopyLink from "./MoreAction/CopyLink";
 
 const ACTIONS_NAME = {
   LIKE: "like",
@@ -81,6 +81,14 @@ const Actions = ({ post }) => {
       statistic: convertStatistic(post.usersLike?.length),
       onClick: () => {
         handleLike();
+        addEvent({
+          event: post.usersLike?.includes(userInfo._id)
+            ? "unlike_post"
+            : "like_post",
+          payload: {
+            postId: post._id,
+          },
+        });
       },
     },
     {
@@ -191,6 +199,12 @@ const Actions = ({ post }) => {
                     onClick={() => {
                       copyURL(post);
                       setOpenSubBox(false);
+                      addEvent({
+                        event: "copy_post_link",
+                        payload: {
+                          postId: post._id,
+                        },
+                      });
                     }}
                   >
                     Copy Link

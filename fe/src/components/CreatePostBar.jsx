@@ -13,6 +13,7 @@ import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import PostConstants from "../Breads-Shared/Constants/PostConstants";
 import { updatePostAction } from "../store/PostSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const CreatePostBar = () => {
   const { t } = useTranslation();
@@ -23,6 +24,10 @@ const CreatePostBar = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   const handleOpenPostPopup = () => {
+    addEvent({
+      event: "click_create_post_bar",
+      payload: {},
+    });
     dispatch(updatePostAction(PostConstants.ACTIONS.CREATE));
   };
 

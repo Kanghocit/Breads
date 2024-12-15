@@ -6,7 +6,7 @@ import { VscListSelection } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { Constants } from "../../Breads-Shared/Constants";
 import { surveyTemplate, updatePostInfo } from "../../store/PostSlice";
-import { convertToBase64 } from "../../util";
+import { addEvent, convertToBase64 } from "../../util";
 import FileUpload from "../Message/RightSide/Conversation/MessageBar/File";
 
 import { TbLibraryPhoto } from "react-icons/tb";
@@ -32,7 +32,10 @@ const PostPopupAction = ({ setFilesData }) => {
         };
       })
     );
-
+    addEvent({
+      event: "add_post_media",
+      payload: {},
+    });
     dispatch(
       updatePostInfo({
         ...postInfo,
@@ -42,6 +45,10 @@ const PostPopupAction = ({ setFilesData }) => {
   };
 
   const handleAddSurvey = () => {
+    addEvent({
+      event: "add_post_survey",
+      payload: {},
+    });
     dispatch(
       updatePostInfo({
         ...postInfo,
@@ -63,6 +70,10 @@ const PostPopupAction = ({ setFilesData }) => {
         ref={fileUploadRef}
         onChange={(e) => {
           setFilesData(e.target.files);
+          addEvent({
+            event: "add_post_files",
+            payload: {},
+          });
         }}
       />
       <Input

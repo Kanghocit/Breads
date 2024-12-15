@@ -17,7 +17,7 @@ import {
   updateMsgAction,
   updateSendNextBox,
 } from "../../../../../../../store/MessageSlice";
-import { getEmojiIcon } from "../../../../../../../util";
+import { addEvent, getEmojiIcon } from "../../../../../../../util";
 import ClickOutsideComponent from "../../../../../../../util/ClickoutCPN";
 import IconWrapper from "../../../MessageBar/IconWrapper";
 
@@ -73,6 +73,13 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
 
   const handleRetriveMsg = async () => {
     try {
+      addEvent({
+        event: "retrieve_msg",
+        payload: {
+          msgId: msg?._id,
+          conversationId: selectedConversation?._id,
+        },
+      });
       const socket = Socket.getInstant();
       socket.emit(
         Route.MESSAGE + MESSAGE_PATH.RETRIEVE,
@@ -92,6 +99,14 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
 
   const handleReactMsg = async (react) => {
     try {
+      addEvent({
+        event: "react_msg",
+        payload: {
+          msgId: msg?._id,
+          conversationId: selectedConversation?._id,
+          react: react,
+        },
+      });
       const socket = Socket.getInstant();
       socket.emit(
         Route.MESSAGE + MESSAGE_PATH.REACT,

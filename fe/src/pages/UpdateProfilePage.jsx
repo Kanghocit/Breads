@@ -24,7 +24,7 @@ import LinksModal from "../components/UpdateUser/linksModal";
 import useShowToast from "../hooks/useShowToast";
 import { updateProfile } from "../store/UserSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
-import { convertToBase64 } from "../util/index";
+import { addEvent, convertToBase64 } from "../util/index";
 import { useTranslation } from "react-i18next";
 
 const POPUP_TYPE = {
@@ -58,6 +58,12 @@ const UpdateProfilePage = () => {
         bio: userInfo.bio,
         links: userInfo.links ?? [""],
         avatar: userInfo.avatar,
+      });
+      addEvent({
+        event: "see_page",
+        payload: {
+          page: "update_profile",
+        },
       });
     }
   }, [userInfo._id]);
