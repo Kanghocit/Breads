@@ -8,17 +8,17 @@ import { GrHomeRounded, GrOverview } from "react-icons/gr";
 import { MdAdd } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { LeftSideBarWidth } from "..";
 import { NOTIFICATION_PATH, Route } from "../../Breads-Shared/APIConfig";
 import { Constants } from "../../Breads-Shared/Constants";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants";
 import useSocket from "../../hooks/useSocket";
 import { updateHasNotification } from "../../store/NotificationSlice";
 import { updatePostAction } from "../../store/PostSlice";
 import { changeDisplayPageData } from "../../store/UtilSlice";
 import { changePage } from "../../store/UtilSlice/asyncThunk";
-import PostConstants from "../../util/PostConstants";
 import SidebarMenu from "./SidebarMenu";
-import { LeftSideBarWidth } from "..";
 
 const LeftSideBar = () => {
   const dispatch = useDispatch();
@@ -118,7 +118,7 @@ const LeftSideBar = () => {
         },
         {
           icon: <BsFilePost size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.POSTS),
+          ...getItemPropByPage(PageConstant.ADMIN.POSTS_VALIDATION),
         },
         {
           icon: <FaUsers size={24} />,

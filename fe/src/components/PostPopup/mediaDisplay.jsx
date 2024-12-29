@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Constants } from "../../Breads-Shared/Constants";
 import PostConstants from "../../Breads-Shared/Constants/PostConstants";
-import { updatePostInfo } from "../../store/PostSlice";
+import { selectPost, updatePostInfo } from "../../store/PostSlice";
 import { updateSeeMedia } from "../../store/UtilSlice";
 
 const MediaDisplay = ({ post, isDetail }) => {

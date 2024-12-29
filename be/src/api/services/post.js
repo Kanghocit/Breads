@@ -1,11 +1,11 @@
+import { Constants } from "../../Breads-Shared/Constants/index.js";
 import PageConstant from "../../Breads-Shared/Constants/PageConstants.js";
+import PostConstants from "../../Breads-Shared/Constants/PostConstants.js";
 import { ObjectId } from "../../util/index.js";
 import Collection from "../models/collection.model.js";
 import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
 import SurveyOption from "../models/surveyOption.model.js";
-import { Constants } from "../../Breads-Shared/Constants/index.js";
-import PostConstants from "../../Breads-Shared/Constants/PostConstants.js";
+import User from "../models/user.model.js";
 
 export const getPostDetail = async ({ postId, getFullInfo = false }) => {
   try {
@@ -209,6 +209,44 @@ const getQueryPostValidation = (filter) => {
   return query;
 };
 
+export const getForYouPostsId = async ({ userId, skip, limit }) => {
+  const data = await Post.aggregate([
+    {
+      $match: {
+        type: { $ne: "reply" },
+        authorId: { $ne: ObjectId(userId) },
+      },
+    },
+    {
+      $addFields: {
+        interactionCount: {
+          $add: [
+            { $size: "$usersLike" },
+            { $size: "$replies" },
+            { $size: "$media" },
+            { $size: "$survey" },
+          ],
+        },
+      },
+    },
+    {
+      $sort: { interactionCount: -1 },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: parseInt(limit),
+    },
+    {
+      $project: {
+        _id: 1,
+      },
+    },
+  ]);
+  return data?.map(({ _id }) => _id) ?? [];
+};
+
 export const getPostsIdByFilter = async (payload) => {
   try {
     let data = null;
@@ -219,11 +257,12 @@ export const getPostsIdByFilter = async (payload) => {
     if (!limit) {
       limit = 20;
     }
-
     const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
       Constants.POST_STATUS;
-
     const skip = (page - 1) * limit;
+    let query = {};
+    let project = { _id: 1 };
+    let sort = { createdAt: -1 };
     switch (filter.page) {
       case PageConstant.SAVED:
         data = (
@@ -234,112 +273,44 @@ export const getPostsIdByFilter = async (payload) => {
         break;
       case PageConstant.USER || PageConstant.FRIEND:
         const value = filter.value;
-        if (!!value) {
-          data = await Post.find(
-            {
-              authorId: ObjectId(userId),
-              type: value,
-              status: {
-                $nin: [PENDING, DELETED],
-              },
-            },
-            { _id: 1 }
-          )
-            .skip(skip)
-            .limit(limit)
-            .sort({
-              createdAt: -1,
-            });
-        } else {
-          data = await Post.find(
-            {
-              authorId: ObjectId(userId),
-              type: {
-                $nin: [
-                  PostConstants.ACTIONS.REPLY,
-                  PostConstants.ACTIONS.REPOST,
-                ],
-              },
-              status: {
-                $nin: [PENDING, DELETED],
-              },
-            },
-            { _id: 1 }
-          )
-            .skip(skip)
-            .limit(limit)
-            .sort({
-              createdAt: -1,
-            });
+        let type = value;
+        const status = {
+          $nin: [PENDING, DELETED],
+        };
+        if (!value) {
+          type = {
+            $nin: [PostConstants.ACTIONS.REPLY, PostConstants.ACTIONS.REPOST],
+          };
         }
+        query = {
+          authorId: ObjectId(userId),
+          type,
+          status,
+        };
         break;
       case PageConstant.FOLLOWING:
         const userInfo = await User.findOne({ _id: userId });
         const userFollowing = JSON.parse(JSON.stringify(userInfo)).following;
-        data = await Post.find(
-          { type: { $ne: "reply" }, authorId: { $in: userFollowing } },
-          { _id: 1 }
-        )
-          .skip(skip)
-          .limit(limit)
-          .sort({
-            createdAt: -1,
-          });
+        query = {
+          type: { $ne: PostConstants.ACTIONS.REPLY },
+          authorId: { $in: userFollowing },
+        };
         break;
       case PageConstant.LIKED:
-        data = await Post.find({ usersLike: userId }, { _id: 1 })
-          .skip(skip)
-          .limit(limit)
-          .sort({
-            createdAt: -1,
-          });
+        query = { usersLike: userId };
         break;
       case PageConstant.ADMIN.POSTS_VALIDATION:
-        const query = getQueryPostValidation(filter);
-        data = await Post.find(query, { _id: 1 }).skip(skip).limit(limit).sort({
-          createdAt: -1,
-        });
+        query = getQueryPostValidation(filter);
         break;
       case PageConstant.ADMIN.POSTS:
-        data = await Post.find({}, { _id: 1 }).sort({ createdAt: 1 });
+        sort = { createdAt: 1 };
         break;
       default:
-        data = await Post.aggregate([
-          {
-            $match: {
-              type: { $ne: "reply" },
-              authorId: { $ne: ObjectId(userId) },
-            },
-          },
-          {
-            $addFields: {
-              interactionCount: {
-                $add: [
-                  { $size: "$usersLike" },
-                  { $size: "$replies" },
-                  { $size: "$media" },
-                  { $size: "$survey" },
-                ],
-              },
-            },
-          },
-          {
-            $sort: { interactionCount: -1 },
-          },
-          {
-            $skip: skip,
-          },
-          {
-            $limit: parseInt(limit),
-          },
-          {
-            $project: {
-              _id: 1,
-            },
-          },
-        ]);
-        data = data.map(({ _id }) => _id);
+        data = await getForYouPostsId({ userId, skip, limit });
         break;
+    }
+    if (Object.keys(query).length > 0) {
+      data = await Post.find(query, project).skip(skip).limit(limit).sort(sort);
     }
     return data;
   } catch (err) {
@@ -353,25 +324,19 @@ export const handleReplyForParentPost = async ({
   addNew,
 }) => {
   try {
-    if (addNew) {
-      await Post.updateOne(
-        {
-          _id: parentId,
-        },
-        {
+    const action = addNew
+      ? {
           $push: { replies: replyId },
         }
-      );
-    } else {
-      await Post.updateOne(
-        {
-          _id: parentId,
-        },
-        {
+      : {
           $pull: { replies: replyId },
-        }
-      );
-    }
+        };
+    await Post.updateOne(
+      {
+        _id: parentId,
+      },
+      action
+    );
   } catch (err) {
     console.log("handleReplyForParentPost: ", err);
   }
