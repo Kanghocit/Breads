@@ -12,8 +12,6 @@ import UnFollowPopup from "./UnfollowPopup";
 import { addEvent } from "../../util";
 
 export const handleFlow = async (userInfo, user, dispatch, showToast) => {
-  const { t } = useTranslation();
-
   if (!userInfo?._id) {
     showToast("Error", t("logintofollow"), "error");
     return;
