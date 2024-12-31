@@ -257,6 +257,7 @@ export const getPostsIdByFilter = async (payload) => {
     if (!limit) {
       limit = 20;
     }
+    console.log(filter);
     const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
       Constants.POST_STATUS;
     const skip = (page - 1) * limit;
@@ -309,7 +310,10 @@ export const getPostsIdByFilter = async (payload) => {
         data = await getForYouPostsId({ userId, skip, limit });
         break;
     }
-    if (Object.keys(query).length > 0) {
+    if (
+      Object.keys(query).length > 0 ||
+      filter.page === PageConstant.ADMIN.POSTS
+    ) {
       data = await Post.find(query, project).skip(skip).limit(limit).sort(sort);
     }
     return data;

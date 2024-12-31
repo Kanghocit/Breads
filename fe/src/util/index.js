@@ -519,6 +519,7 @@ export const getAnalyticsInfoFromBrowser = async () => {
   const webInfo = {
     browser_version: navigator.userAgent,
     hostname: window.location.hostname,
+    path: window.location.pathname,
   };
 
   const browserInfo = {
