@@ -13,6 +13,7 @@ import { getConversations } from "../../../../store/MessageSlice/asyncThunk";
 import InfiniteScroll from "../../../InfiniteScroll";
 import ConversationBar from "./ConversationBar";
 import ConversationSkeleton from "./ConversationBar/skeleton";
+import { addEvent } from "../../../../util";
 
 const Conversations = ({ searchValue, onSelect }) => {
   const { conversationId } = useParams();
@@ -48,6 +49,12 @@ const Conversations = ({ searchValue, onSelect }) => {
   useEffect(() => {
     if (!init) {
       handleGetConversations({ page: 1 });
+      addEvent({
+        event: "search_conversations",
+        payload: {
+          searchValue: searchValue,
+        },
+      });
     }
   }, [searchValue]);
 

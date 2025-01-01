@@ -34,7 +34,7 @@ export const handleUpdatePW = async ({
   const { t } = useTranslation();
   try {
     if (newPWValue.trim().length < 6) {
-      showToast("", t("minPassWarning"));
+      showToast("", t("minPassWarning"), "error");
       return;
     }
     await PUT({

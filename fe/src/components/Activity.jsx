@@ -94,7 +94,6 @@ const Activity = ({ currentPage }) => {
       {filteredNotifications.map((item) => {
         const actionDetails =
           actionList.find((action) => action.name === item.action) || {};
-          console.log("khangdzno1",item.FromUserDetails.avatar)
         return (
           <Flex
             key={item._id}
@@ -211,18 +210,3 @@ const Activity = ({ currentPage }) => {
 };
 
 export default Activity;
-{
-  /* <Button
-                    bg="#232323"
-                    color="white"
-                    border="1px solid white"
-                    size="sm"
-                    _hover={{
-                      bg: "#222222",
-                      borderColor: "gray.600",
-                    }}
-                    onClick={() => setIsFollowing(!isFollowing)}
-                  >
-                    {isFollowing ? t("following") : t("followback")}
-                  </Button> */
-}

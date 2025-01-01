@@ -1,6 +1,7 @@
 import { useState } from "react";
-import useShowToast from "./useShowToast";
 import { useTranslation } from "react-i18next";
+import useShowToast from "./useShowToast";
+
 const usePreviewImg = () => {
   const { t } = useTranslation();
   const [imgUrl, setImgUrl] = useState(null);
@@ -14,7 +15,7 @@ const usePreviewImg = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      showToast(t("fileerror"), t("plchoose"), "lỗi");
+      showToast(t("fileerror"), t("plchoose"), "error");
       setImgUrl(null);
     }
   };

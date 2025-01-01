@@ -8,6 +8,7 @@ import Post from "../components/ListPost/Post";
 import ContainerLayout from "../components/MainBoxLayout";
 import { getPost } from "../store/PostSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const PostDetail = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,12 @@ const PostDetail = () => {
     if (postId) {
       dispatch(changePage({ currentPage, nextPage: PageConstant.POST_DETAIL }));
       dispatch(getPost(postId));
+      addEvent({
+        event: "see_detail_post",
+        payload: {
+          postId: postId,
+        },
+      });
     }
   }, []);
 

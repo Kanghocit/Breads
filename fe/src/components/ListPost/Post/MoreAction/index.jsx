@@ -16,6 +16,7 @@ import {
   removePostFromCollection,
 } from "../../../../store/UserSlice/asyncThunk";
 import useCopyLink from "./CopyLink";
+import { addEvent } from "../../../../util";
 
 const PostMoreActionBox = ({
   post,
@@ -47,10 +48,22 @@ const PostMoreActionBox = ({
       dispatch(addPostToCollection(payload));
       showToast("", t("saved"), "success");
     }
+    addEvent({
+      event: savedBefore ? "unsave_post" : "save_post",
+      payload: {
+        postId: postId,
+      },
+    });
   };
 
   const handleDelete = () => {
     try {
+      addEvent({
+        event: "delete_post",
+        payload: {
+          postId: postId,
+        },
+      });
       dispatch(deletePost({ postId: postId }));
       closePopupCancel();
       showToast("", t("deletesuccess"), "success");
@@ -84,6 +97,12 @@ const PostMoreActionBox = ({
       name: t("copylink"),
       icon: <IoIosLink />,
       onClick: () => {
+        addEvent({
+          event: "copy_post_link",
+          payload: {
+            postId: postId,
+          },
+        });
         copyURL(post);
       },
     },

@@ -6,6 +6,7 @@ import { GET } from "../../config/API";
 import useDebounce from "../../hooks/useDebounce";
 import { updatePostInfo } from "../../store/PostSlice";
 import { updateHasMoreData } from "../../store/UtilSlice";
+import { addEvent } from "../../util";
 import InfiniteScroll from "../InfiniteScroll";
 import UserBox from "../UserFollowBox/UserBox";
 import UserBoxSekeleton from "../UserFollowBox/UserBox/skeleton";
@@ -52,6 +53,13 @@ const UsersTagBox = ({ searchValue, setOpenTagBox }) => {
   };
 
   const tagUser = (user) => {
+    addEvent({
+      event: "tag_user",
+      payload: {
+        searchValue: searchValue,
+        userId: user._id,
+      },
+    });
     dispatch(
       updatePostInfo({
         ...postInfo,

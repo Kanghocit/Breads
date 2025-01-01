@@ -5,6 +5,7 @@ import Activity from "../components/Activity";
 import ContainerLayout from "../components/MainBoxLayout";
 import { getNotificattions } from "../store/NotificationSlice/asyncThunk";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const ActivityPage = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,12 @@ const ActivityPage = () => {
           limit: 15,
         })
       );
+      addEvent({
+        event: "see_page",
+        payload: {
+          page: "activity",
+        },
+      });
     }
   }, [userInfo]);
 

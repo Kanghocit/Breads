@@ -1,31 +1,39 @@
 import { Container } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import PostConstants from "../../be/src/Breads-Shared/Constants/PostConstants";
 import * as APIConfig from "./Breads-Shared/APIConfig";
 import { Constants } from "./Breads-Shared/Constants";
 import PageConstant from "./Breads-Shared/Constants/PageConstants";
-import CreatePostBtn from "./components/CreatePostBtn";
-import PostPopup from "./components/PostPopup";
-import NotificationCreatePost from "./components/PostPopup/NotificationPost";
-import SeeMedia from "./components/SeeMedia";
-import Layout, { HeaderHeight } from "./Layout";
-import ActivityPage from "./pages/ActivityPage";
-import AdminPage from "./pages/Admin";
-import AuthPage from "./pages/AuthPage";
-import ChatPage from "./pages/ChatPage";
-import ErrorPage from "./pages/ErrorPage";
-import HomePage from "./pages/HomePage";
-import PostDetail from "./pages/PostDetail";
-import ResetPWPage from "./pages/ResetPWPage";
-import SearchPage from "./pages/SearchPage";
-import SettingPage from "./pages/SettingPage";
-import UpdateProfilePage from "./pages/UpdateProfilePage";
-import UserPage from "./pages/UserPage";
+import PostConstants from "./Breads-Shared/Constants/PostConstants";
+import { HeaderHeight } from "./Layout";
 import Socket from "./socket";
 import { clearNotificationPostId } from "./store/ToastCreatedPost";
 import { getUserInfo } from "./store/UserSlice/asyncThunk";
+
+const AuthPage = lazy(() => import("./pages/AuthPage"));
+const CreatePostBtn = lazy(() => import("./components/CreatePostBtn"));
+const PostPopup = lazy(() => import("./components/PostPopup"));
+const NotificationCreatePost = lazy(() =>
+  import("./components/PostPopup/NotificationPost")
+);
+const SeeMedia = lazy(() => import("./components/SeeMedia"));
+const Layout = lazy(() => import("./Layout"));
+const ActivityPage = lazy(() => import("./pages/ActivityPage"));
+const AdminPage = lazy(() => import("./pages/Admin"));
+const ChatPage = lazy(() => import("./pages/ChatPage"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
+const PostDetail = lazy(() => import("./pages/PostDetail"));
+const ResetPWPage = lazy(() => import("./pages/ResetPWPage"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const SettingPage = lazy(() => import("./pages/SettingPage"));
+const UpdateProfilePage = lazy(() => import("./pages/UpdateProfilePage"));
+const UserPage = lazy(() => import("./pages/UserPage"));
+
+const wrapSuspense = (cpn) => {
+  return <Suspense>{cpn}</Suspense>;
+};
 
 function App() {
   const dispatch = useDispatch();
@@ -83,7 +91,7 @@ function App() {
         path={ALL ? `${ACTIVITY}` : `${ACTIVITY}/${page}`}
         element={
           !!userId ? (
-            <ActivityPage />
+            wrapSuspense(<ActivityPage />)
           ) : (
             <Navigate to={`/${PageConstant.AUTH}`} />
           )
@@ -99,7 +107,11 @@ function App() {
         key={`route-${page}`}
         path={`/${page}`}
         element={
-          !!userId ? <HomePage /> : <Navigate to={`/${PageConstant.AUTH}`} />
+          !!userId ? (
+            wrapSuspense(<HomePage />)
+          ) : (
+            <Navigate to={`/${PageConstant.AUTH}`} />
+          )
         }
       />
     ));
@@ -111,7 +123,17 @@ function App() {
       <Route
         key={`route-${page}`}
         path={`/${page}`}
-        element={!!userId ? isAdmin ? <AdminPage /> : <></> : <ErrorPage />}
+        element={
+          !!userId ? (
+            isAdmin ? (
+              wrapSuspense(<AdminPage />)
+            ) : (
+              <></>
+            )
+          ) : (
+            wrapSuspense(<ErrorPage />)
+          )
+        }
       />
     ));
   };
@@ -138,53 +160,68 @@ function App() {
     >
       {!seeMediaInfo.open &&
         location.pathname !== "/error" &&
-        userInfo?._id && <Layout />}
+        userInfo?._id &&
+        wrapSuspense(<Layout />)}
       <Container maxW="620px">
         {!!userId &&
           !seeMediaInfo.open &&
           location.pathname !== "/error" &&
           !location.pathname?.includes("chat") &&
-          !isAdmin && <CreatePostBtn />}
+          !isAdmin &&
+          wrapSuspense(<CreatePostBtn />)}
       </Container>
 
       <Routes>
         {HomeRoute()}
         <Route
           path={`/${PageConstant.AUTH}`}
-          element={!userId ? <AuthPage /> : <Navigate to="/" />}
+          element={!userId ? wrapSuspense(<AuthPage />) : <Navigate to="/" />}
         />
         <Route
           path="/update"
           element={
             !!userId ? (
-              <UpdateProfilePage />
+              wrapSuspense(<UpdateProfilePage />)
             ) : (
               <Navigate to={`/${PageConstant.AUTH}`} />
             )
           }
         />
-        <Route path="/reset-pw/:userId/:code" element={<ResetPWPage />} />
-        <Route path="/users/:userId" element={<UserPage />} />
+        <Route
+          path="/reset-pw/:userId/:code"
+          element={wrapSuspense(<ResetPWPage />)}
+        />
+        <Route path="/users/:userId" element={wrapSuspense(<UserPage />)} />
         <Route
           path="/posts/:postId"
           element={<PostDetail key={location.pathname} />}
         />
-        <Route path={`/${PageConstant.SEARCH}`} element={<SearchPage />} />
-        <Route path={`/${PageConstant.SETTING}`} element={<SettingPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-        <Route path="/chat/:conversationId" element={<ChatPage />} />
+        <Route
+          path={`/${PageConstant.SEARCH}`}
+          element={wrapSuspense(<SearchPage />)}
+        />
+        <Route
+          path={`/${PageConstant.SETTING}`}
+          element={wrapSuspense(<SettingPage />)}
+        />
+        <Route path="/chat" element={wrapSuspense(<ChatPage />)} />
+        <Route
+          path="/chat/:conversationId"
+          element={wrapSuspense(<ChatPage />)}
+        />
         {AdminRoute()}
         {ActivityRoute()}
-        <Route path="*" element={<ErrorPage />} />
+        <Route path="*" element={wrapSuspense(<ErrorPage />)} />
       </Routes>
-      {seeMediaInfo.open && <SeeMedia />}
-      {openPostPopup && <PostPopup />}
-      {toastPostId && (
-        <NotificationCreatePost
-          postId={toastPostId}
-          onClose={handleCloseToast}
-        />
-      )}
+      {seeMediaInfo.open && wrapSuspense(<SeeMedia />)}
+      {openPostPopup && wrapSuspense(<PostPopup />)}
+      {toastPostId &&
+        wrapSuspense(
+          <NotificationCreatePost
+            postId={toastPostId}
+            onClose={handleCloseToast}
+          />
+        )}
     </div>
   );
 }

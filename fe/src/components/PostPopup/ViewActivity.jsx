@@ -13,11 +13,22 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { BsChatRightQuote } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 import { TbMessageReply } from "react-icons/tb";
+import { addEvent } from "../../util";
 
 const ViewActivity = ({ post, isOpen, onClose }) => {
+  useEffect(() => {
+    addEvent({
+      event: "see_post_activity",
+      payload: {
+        postId: post._id,
+      },
+    });
+  }, []);
+
   const actionsArray = [
     {
       action: CiHeart,
@@ -50,7 +61,9 @@ const ViewActivity = ({ post, isOpen, onClose }) => {
         id="modal"
       >
         <Box p={1}></Box>
-        <ModalHeader textAlign={"center"}>Hoạt động đối với bài viết</ModalHeader>
+        <ModalHeader textAlign={"center"}>
+          Hoạt động đối với bài viết
+        </ModalHeader>
 
         <ModalBody>
           <Flex
@@ -69,30 +82,27 @@ const ViewActivity = ({ post, isOpen, onClose }) => {
               height={"40px"}
             />
             <Container margin="0" paddingRight={0}>
-              <Text color="black" fontWeight={"600"}>
+              <Text color="black" fontWeight={"600"} m={0}>
                 {post.authorInfo.username}
               </Text>
-              <Text>{post.content}</Text>
+              <Text m={0}>{post.content}</Text>
             </Container>
           </Flex>
           <Box>
             {actionsArray.map((item, index) => (
               <Box key={index} m={1}>
                 <Flex justifyContent={"space-between"} alignItems="center">
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    borderRadius="8px"
-                    p={2}
-                  >
-                    <Flex alignItems="center">
-                      <item.action style={{ marginRight: "8px" }} />
-                      <Text fontWeight="semibold" fontSize="lg">
+                  <Box display="flex" alignItems="center" borderRadius="8px">
+                    <Flex alignItems="center" px={2}>
+                      <item.action
+                        style={{ marginRight: "8px", padding: "0" }}
+                      />
+                      <Text fontWeight="semibold" fontSize="lg" m={0}>
                         {item.name}
                       </Text>
                     </Flex>
                   </Box>
-                  <Text alignItems="center" p={2}>
+                  <Text alignItems="center" px={3} m={0}>
                     {item.num}
                   </Text>
                 </Flex>

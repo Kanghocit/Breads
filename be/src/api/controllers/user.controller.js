@@ -196,7 +196,6 @@ export const updateUser = async (req, res) => {
 
     user = await user.save();
     const result = await getUserInfo(userId);
-    console.log("userUpdated: ", result);
     delete result.password;
 
     res.status(HTTPStatus.OK).json(result);

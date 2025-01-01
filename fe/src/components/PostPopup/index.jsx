@@ -28,7 +28,12 @@ import {
 } from "../../store/PostSlice";
 import { createPost, editPost } from "../../store/PostSlice/asyncThunk";
 import { setNotificationPostId } from "../../store/ToastCreatedPost";
-import { generateObjectId, handleUploadFiles, replaceEmojis } from "../../util";
+import {
+  addEvent,
+  generateObjectId,
+  handleUploadFiles,
+  replaceEmojis,
+} from "../../util";
 import PopupCancel from "../../util/PopupCancel";
 import TextArea from "../../util/TextArea";
 import Post from "../ListPost/Post";
@@ -141,11 +146,16 @@ const PostPopup = () => {
           userId: userInfo?._id,
         });
         payload.files = filesId;
-        console.log("filesId: ", filesId);
       }
       const socket = Socket.getInstant();
       if (isEditing) {
         dispatch(editPost(payload));
+        addEvent({
+          event: "edit_post",
+          payload: {
+            postId: payload?._id,
+          },
+        });
       } else {
         let notificationPayload = {};
         payload._id = generateObjectId();
@@ -159,12 +169,33 @@ const PostPopup = () => {
             notificationPayload.action = Constants.NOTIFICATION_ACTION.REPOST;
             notificationPayload.toUsers = [postSelected?.authorId];
           }
+          addEvent({
+            event: "repost_post",
+            payload: {
+              postId: payload._id,
+              parentPostId: postSelected._id,
+            },
+          });
         } else if (postAction === PostConstants.ACTIONS.REPLY) {
           payload.parentPost = postReply._id;
           if (!!postReply?.authorId && postReply?.authorId !== userInfo?._id) {
             notificationPayload.action = Constants.NOTIFICATION_ACTION.REPLY;
             notificationPayload.toUsers = [postReply?.authorId];
           }
+          addEvent({
+            event: "reply_post",
+            payload: {
+              postId: payload._id,
+              parentPostId: postReply._id,
+            },
+          });
+        } else {
+          addEvent({
+            event: "create_post",
+            payload: {
+              postId: payload?._id,
+            },
+          });
         }
         if (payload.usersTag?.length > 0) {
           let usersId = payload.usersTag.map(({ userId }) => userId);
@@ -230,7 +261,7 @@ const PostPopup = () => {
   };
 
   const handleContent = (value) => {
-    if (value.length <= 600) {
+    if (value.length <= 500) {
       setContent(replaceEmojis(value));
     } else {
       showToast("", t("maxforpost"), "error");
@@ -279,7 +310,7 @@ const PostPopup = () => {
             <Flex width={"100%"} gap={4}>
               <Avatar src={userInfo.avatar} width="40px" height="40px" />
               <Flex flexDir={"column"} flex={1}>
-                <Text color={textColor} fontWeight="600">
+                <Text color={textColor} fontWeight="600" m={0}>
                   {userInfo.username}
                 </Text>
                 <TextArea

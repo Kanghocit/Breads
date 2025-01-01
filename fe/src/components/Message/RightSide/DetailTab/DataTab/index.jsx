@@ -14,11 +14,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
 import { Constants } from "../../../../../Breads-Shared/Constants";
 import { POST } from "../../../../../config/API";
-import ConversationTabHeader from "../tabHeader";
+import { updateSeeMedia } from "../../../../../store/UtilSlice";
+import { addEvent } from "../../../../../util";
+import { getCurrentTheme } from "../../../../../util/Themes";
 import FileMsg from "../../Conversation/Body/Message/Files";
 import LinkBox from "../../Conversation/Body/Message/Links";
-import { updateSeeMedia } from "../../../../../store/UtilSlice";
-import { getCurrentTheme } from "../../../../../util/Themes";
+import ConversationTabHeader from "../tabHeader";
 
 const TABS = {
   MEDIA: "Media",
@@ -51,6 +52,12 @@ const ConversationDataTab = ({ currentTab, setItemSelected }) => {
     setTabIndex(index);
     const tab = Object.values(TABS)[index];
     await handleGetDataByTab(tab);
+    addEvent({
+      event: "change_conversation_data_tab",
+      payload: {
+        tab: tab,
+      },
+    });
   };
 
   const handleGetDataByTab = async (tab) => {

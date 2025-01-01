@@ -19,6 +19,7 @@ import { handleUpdatePW } from "../components/UpdateUser/changePWModal";
 import useShowToast from "../hooks/useShowToast";
 import { changePage } from "../store/UtilSlice/asyncThunk";
 import ErrorPage from "./ErrorPage";
+import { addEvent } from "../util";
 
 const ResetPWPage = () => {
   const { t } = useTranslation();
@@ -38,6 +39,12 @@ const ResetPWPage = () => {
 
   useEffect(() => {
     dispatch(changePage({ nextPage: PageConstant.RESET_PW }));
+    addEvent({
+      event: "see_page",
+      payload: {
+        page: "reset_password",
+      },
+    });
   }, []);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);

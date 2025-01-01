@@ -35,8 +35,11 @@ const NotificationCreatePost = ({ postId, onClose }) => {
       minWidth="280px"
     >
       <Flex justifyContent="space-between" alignItems="center">
-        <Text color={textColor}>{t("toastCreadtedPost")}</Text>
-        <Text
+        <Text color={textColor} m={0}>
+          {t("toastCreadtedPost")}
+        </Text>
+        {/* <Text
+          m={0}
           mx={[0, "10px"]}
           color={"blue.300"}
           textDecoration="underline"
@@ -44,7 +47,7 @@ const NotificationCreatePost = ({ postId, onClose }) => {
           onClick={handleViewPost}
         >
           {t("show")}
-        </Text>
+        </Text> */}
 
         <Button
           position="absolute"

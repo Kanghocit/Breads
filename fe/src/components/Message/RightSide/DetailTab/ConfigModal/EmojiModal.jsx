@@ -3,15 +3,19 @@ import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import Socket from "../../../../../socket";
-import { getEmojiIcon, getEmojiNameFromIcon } from "../../../../../util";
-import EmojiBox from "../../Conversation/MessageBar/Emoji/EmojiBox";
-import IconWrapper from "../../Conversation/MessageBar/IconWrapper";
 import { MESSAGE_PATH, Route } from "../../../../../Breads-Shared/APIConfig";
+import Socket from "../../../../../socket";
 import {
   addNewMsg,
   updateSelectedConversation,
 } from "../../../../../store/MessageSlice";
+import {
+  addEvent,
+  getEmojiIcon,
+  getEmojiNameFromIcon,
+} from "../../../../../util";
+import EmojiBox from "../../Conversation/MessageBar/Emoji/EmojiBox";
+import IconWrapper from "../../Conversation/MessageBar/IconWrapper";
 
 const EmojiModal = ({ setItemSelected }) => {
   const dispatch = useDispatch();
@@ -23,6 +27,13 @@ const EmojiModal = ({ setItemSelected }) => {
 
   const handleChangeEmoji = async (emojiStr) => {
     try {
+      addEvent({
+        event: "change_conversation_emoji",
+        payload: {
+          emojiStr: emojiStr,
+          conversationId: selectedConversation?._id,
+        },
+      });
       const socket = Socket.getInstant();
       socket.emit(
         Route.MESSAGE + MESSAGE_PATH.CONFIG_CONVERSATION,

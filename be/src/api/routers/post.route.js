@@ -5,7 +5,6 @@ import {
   deletePost,
   getPost,
   getPosts,
-  getUserPosts,
   likeUnlikePost,
   tickPostSurvey,
   updatePost,
@@ -18,7 +17,6 @@ import Post from "../models/post.model.js";
 const router = express.Router();
 const {
   GET_ALL,
-  USER,
   CREATE,
   UPDATE,
   LIKE,
@@ -28,7 +26,6 @@ const {
 } = POST_PATH;
 
 router.get(GET_ALL, getPosts);
-router.get(USER, getUserPosts);
 router.get("/:id", getPost);
 router.post(CREATE, createPost);
 router.delete("/:id", deletePost);

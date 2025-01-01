@@ -125,8 +125,6 @@ const Login = () => {
     if (loginAsAdmin) {
       payload.loginAsAdmin = true;
       dispatch(login(payload));
-      window.location.href =
-        window.location.origin + "/" + PageConstant.ADMIN.DEFAULT;
       showToast(t("success"), "Đăng nhập bằng Admin thành công", "success");
       return;
     }
@@ -137,11 +135,7 @@ const Login = () => {
       await dispatch(login(payload)).unwrap();
       showToast(t("success"), t("loginsuccess"), "success");
     } catch (error) {
-      showToast(
-        "Không thành công!",
-        error?.error || t("checkagain"),
-        "error"
-      );
+      showToast("Không thành công!", error?.error || t("checkagain"), "error");
     }
   };
 

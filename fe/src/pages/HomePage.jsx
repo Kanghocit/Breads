@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Constants } from "../Breads-Shared/Constants";
 import PageConstant from "../Breads-Shared/Constants/PageConstants";
 import CreatePostBar from "../components/CreatePostBar";
 import ListPost from "../components/ListPost";
@@ -7,11 +8,20 @@ import ContainerLayout from "../components/MainBoxLayout";
 import { getPosts } from "../store/PostSlice/asyncThunk";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const HomePage = () => {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.userInfo);
   const { currentPage, displayPageData } = useSelector((state) => state.util);
   const { FOR_YOU } = PageConstant;
+
+  useEffect(() => {
+    if (userInfo?._id && userInfo?.role === Constants.USER_ROLE.ADMIN) {
+      window.location.href =
+        window.location.origin + "/" + PageConstant.ADMIN.DEFAULT;
+    }
+  }, [userInfo?._id]);
 
   useEffect(() => {
     dispatch(
@@ -21,6 +31,12 @@ const HomePage = () => {
       })
     );
     handleGetDataByPage();
+    addEvent({
+      event: "see_page",
+      payload: {
+        page: "home",
+      },
+    });
   }, []);
 
   useEffect(() => {

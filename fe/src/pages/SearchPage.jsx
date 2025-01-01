@@ -11,6 +11,7 @@ import UserFollowBox from "../components/UserFollowBox";
 import UserFollowBoxSkeleton from "../components/UserFollowBox/skeleton";
 import { GET } from "../config/API";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const SearchPage = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,12 @@ const SearchPage = () => {
     }
     if (init.current) {
       dispatch(changePage({ nextPage: PageConstant.SEARCH }));
+      addEvent({
+        event: "see_page",
+        payload: {
+          page: "search",
+        },
+      });
     }
     init.current = false;
   }, [searchValue]);

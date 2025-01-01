@@ -10,6 +10,7 @@ import { getUserPosts } from "../store/PostSlice/asyncThunk";
 import { getUserInfo } from "../store/UserSlice/asyncThunk";
 import { changeDisplayPageData } from "../store/UtilSlice";
 import { changePage } from "../store/UtilSlice/asyncThunk";
+import { addEvent } from "../util";
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -31,6 +32,13 @@ const UserPage = () => {
   useEffect(() => {
     if (!!userId) {
       dispatch(getUserPosts(userId));
+      addEvent({
+        event: "see_page",
+        payload: {
+          page: "user",
+          userPage: userId,
+        },
+      });
     }
   }, [displayPageData, userId]);
 

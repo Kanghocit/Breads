@@ -96,7 +96,7 @@ const vnTranslations = {
   confirmWarning: "Mật khẩu xác nhận phải khớp với mật khẩu mới",
 
   // thêm các từ khóa khác ở đây
-  toastCreadtedPost: "Bài viết mới được tạo thành công!",
+  toastCreadtedPost: "Bài viết của bạn đang đợi được phê duyệt!",
   show: "Xem",
   Yourconversations: "Cuộc trò chuyện của bạn",
   Searchforuser: "Tìm kiếm bạn bè",

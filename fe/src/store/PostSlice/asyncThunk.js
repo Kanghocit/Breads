@@ -124,7 +124,7 @@ export const getUserPosts = createAsyncThunk(
       const displayPageData = rootState.util.displayPageData;
       const currentPage = rootState.util.currentPage;
       const data = await GET({
-        path: Route.POST + POST_PATH.USER,
+        path: Route.POST + POST_PATH.GET_ALL,
         params: {
           userId: userId,
           filter: { page: PageConstant.USER, value: displayPageData },

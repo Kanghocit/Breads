@@ -95,7 +95,6 @@ const DetailConversationTab = ({ openDetailTab, setOpenDetailTab }) => {
       },
     },
   ];
-  const [searchEmojiValue, setSearchEmojiValue] = useState("");
   const { conversationBackground, user1Message } = getCurrentTheme(
     selectedConversation?.theme
   );

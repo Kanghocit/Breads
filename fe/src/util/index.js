@@ -1,5 +1,5 @@
 import { POST } from "../config/API";
-import { Route, UTIL_PATH } from "../Breads-Shared/APIConfig";
+import { Route, UTIL_PATH, ANALYTICS_PATH } from "../Breads-Shared/APIConfig";
 import moment from "moment";
 
 export const emojiMap = {
@@ -504,3 +504,54 @@ export const genRandomCode = () => {
 };
 
 export const isAdminPage = window.location.pathname.includes("admin");
+
+export const getAnalyticsInfoFromBrowser = async () => {
+  const deviceInfo = {
+    category: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", // Detect mobile or desktop
+    mobile_brand_name: /Samsung|Apple|Huawei/i.test(navigator.userAgent)
+      ? navigator.userAgent.match(/(Samsung|Apple|Huawei)/)[0]
+      : "Unknown",
+    mobile_model_name: navigator.userAgent, // No direct way to get model from JS, will get the whole UA string
+    operating_system: navigator.platform, // Platform information (e.g., "Win32", "Linux")
+    operating_system_version: navigator.appVersion, // OS version
+  };
+
+  const webInfo = {
+    browser_version: navigator.userAgent,
+    hostname: window.location.hostname,
+  };
+
+  const browserInfo = {
+    appName: navigator.appName,
+    appVersion: navigator.appVersion,
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    online: navigator.onLine,
+    cookiesEnabled: navigator.cookieEnabled,
+  };
+
+  const localeInfo = {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    locale: navigator.language,
+  };
+
+  return { deviceInfo, browserInfo, localeInfo, webInfo };
+};
+
+export const addEvent = async ({ event, payload }) => {
+  try {
+    const analyticsInfo = await getAnalyticsInfoFromBrowser();
+    const payloadSend = {
+      ...analyticsInfo,
+      userId: localStorage.getItem("userId"),
+      event: event,
+      payload: payload,
+    };
+    await POST({
+      path: Route.ANALYTICS + ANALYTICS_PATH.CREATE,
+      payload: payloadSend,
+    });
+  } catch (err) {
+    console.error("addEvent: ", err);
+  }
+};
