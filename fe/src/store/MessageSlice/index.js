@@ -106,7 +106,8 @@ const msgSlice = createSlice({
         const msgInListIndex = state.messages[msgDateConvert]?.findIndex(
           (msg) => msg._id === msgUpdate._id
         );
-        if (!!msgInListIndex && msgInListIndex !== -1) {
+        console.log("msgIndex: ", msgInListIndex);
+        if (msgInListIndex !== -1) {
           state.messages[msgDateConvert][msgInListIndex] = msgUpdate;
         }
       }

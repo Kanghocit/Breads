@@ -257,7 +257,6 @@ export const getPostsIdByFilter = async (payload) => {
     if (!limit) {
       limit = 20;
     }
-    console.log(filter);
     const { PENDING, PUBLIC, ONLY_ME, ONLY_FOLLOWERS, DELETED } =
       Constants.POST_STATUS;
     const skip = (page - 1) * limit;

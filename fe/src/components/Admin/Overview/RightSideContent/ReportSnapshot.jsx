@@ -3,6 +3,7 @@ import LineGraph from "../AnalyticsGraph/LineGraph";
 import BarGraph from "../AnalyticsGraph/BarGraph";
 import MapGraph from "../AnalyticsGraph/MapGraph";
 import DoughnutGraph from "../AnalyticsGraph/DonutGraph";
+import DetailStatisticTable from "../AnalyticsGraph/DetailStatistic";
 
 const ReportSnapshot = () => {
   return (
@@ -39,6 +40,7 @@ const ReportSnapshot = () => {
       </Flex>
       <MapGraph />
       <DoughnutGraph />
+      <DetailStatisticTable />
     </Container>
   );
 };
