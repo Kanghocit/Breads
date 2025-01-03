@@ -309,7 +309,10 @@ export const getPostsIdByFilter = async (payload) => {
         data = await getForYouPostsId({ userId, skip, limit });
         break;
     }
-    if (Object.keys(query).length > 0) {
+    if (
+      Object.keys(query).length > 0 ||
+      filter.page === PageConstant.ADMIN.POSTS
+    ) {
       data = await Post.find(query, project).skip(skip).limit(limit).sort(sort);
     }
     return data;

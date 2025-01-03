@@ -37,7 +37,6 @@ const ConversationScreen = ({ openDetailTab, setOpenDetailTab, onBack }) => {
         setOpenDetailTab={setOpenDetailTab}
         onBack={onBack}
       />
-      <Divider />
       <ConversationBody openDetailTab={openDetailTab} />
       {selectedMsg?._id && msgAction === Constants.MSG_ACTION.REPLY && (
         <RepliedMsgBar />

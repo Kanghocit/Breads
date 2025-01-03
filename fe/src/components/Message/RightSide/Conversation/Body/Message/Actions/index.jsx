@@ -1,4 +1,4 @@
-import { Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { FaDeleteLeft } from "react-icons/fa6";
@@ -117,6 +117,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           react: react,
         },
         ({ data }) => {
+          console.log("data: ", data);
           setDisplayReactBox(false);
           if (data?._id) {
             dispatch(updateMsg(data));
@@ -161,7 +162,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
           border={"1px solid gray"}
           p={2}
           top={"calc(100% + 4px)"}
-          bg={useColorModeValue("gray.200", "#181818")}
+          // bg={useColorModeValue("gray.200", "#181818")}
           left={ownMsg ? "" : "0"}
           right={ownMsg ? "0" : ""}
           zIndex={1000}
@@ -210,7 +211,7 @@ const MessageAction = ({ ownMsg, msg, previousReact }) => {
             right={"50%"}
             transform={"translateX(55%)"}
             border={"1px solid gray"}
-            bg={useColorModeValue("gray.200", "#181818")}
+            // bg={useColorModeValue("gray.200", "#181818")}
             zIndex={1000}
           >
             {defaultEmoji.map((emjStr) => (

@@ -118,7 +118,7 @@ const LeftSideBar = () => {
         },
         {
           icon: <BsFilePost size={24} />,
-          ...getItemPropByPage(PageConstant.ADMIN.POSTS_VALIDATION),
+          ...getItemPropByPage(PageConstant.ADMIN.POSTS),
         },
         {
           icon: <FaUsers size={24} />,
